@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>metadata-form playground</title>
+    <style>
+      /* Radix <Theme> sets min-height:100vh on its root; the browser's default
+         8px body margin then pushes the page past the viewport → a vertical
+         scrollbar even when content is short. Resetting the margin fixes it.
+         (The off-canvas Preferences panel is clipped by its own fixed wrapper,
+         so no global overflow rule is needed for it.) */
+      body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix health: <http://healthdataportal.eu/ns/health#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/dataset/covid-registry> a dcat:Dataset ;
+    dcterms:title "COVID-19 Patient Registry" ;
+    dcterms:description "Anonymised registry of COVID-19 cases collected during 2020-2022." ;
+    dcat:keyword "covid-19", "epidemiology" ;
+    dcterms:issued "2023-01-15"^^xsd:date ;
+    health:numberOfRecords "152340"^^xsd:integer ;
+    dcterms:publisher [
+        a foaf:Agent ;
+        foaf:name "National Health Institute"
+    ] .

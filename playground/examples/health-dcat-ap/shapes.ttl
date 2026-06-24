@@ -1,0 +1,274 @@
+@prefix sh:        <http://www.w3.org/ns/shacl#> .
+@prefix dash:      <http://datashapes.org/dash#> .
+@prefix xsd:       <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcat:      <http://www.w3.org/ns/dcat#> .
+@prefix dcterms:   <http://purl.org/dc/terms/> .
+@prefix foaf:      <http://xmlns.com/foaf/0.1/> .
+@prefix vcard:     <http://www.w3.org/2006/vcard/ns#> .
+@prefix skos:      <http://www.w3.org/2004/02/skos/core#> .
+@prefix adms:      <http://www.w3.org/ns/adms#> .
+@prefix health:    <http://healthdataportal.eu/ns/health#> .
+@prefix ex:        <http://example.org/health-dcat-ap/shapes#> .
+
+#################################################################
+# HealthDCAT-AP — curated demo subset.  See SOURCE.md.
+#################################################################
+
+### Property groups (sections) ###############################################
+
+ex:GeneralGroup a sh:PropertyGroup ;
+    rdfs:label "General"@en ;
+    sh:order 1 .
+
+ex:ProvenanceGroup a sh:PropertyGroup ;
+    rdfs:label "Provenance"@en ;
+    sh:order 2 .
+
+ex:HealthGroup a sh:PropertyGroup ;
+    rdfs:label "Health-specific"@en ;
+    sh:order 3 .
+
+ex:DistributionGroup a sh:PropertyGroup ;
+    rdfs:label "Distributions"@en ;
+    sh:order 4 .
+
+### Dataset shape ############################################################
+
+ex:DatasetShape a sh:NodeShape ;
+    sh:targetClass dcat:Dataset ;
+    rdfs:label "Health Dataset"@en ;
+
+    sh:property [
+        sh:path dcterms:title ;
+        sh:name "Title"@en ;
+        sh:description "A name given to the dataset."@en ;
+        sh:datatype xsd:string ;
+        dash:singleLine true ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:group ex:GeneralGroup ;
+        sh:order 1 ;
+    ] ;
+
+    sh:property [
+        sh:path dcterms:description ;
+        sh:name "Description"@en ;
+        sh:description "A free-text account of the dataset."@en ;
+        sh:datatype xsd:string ;
+        dash:singleLine false ;
+        sh:minCount 1 ;
+        sh:group ex:GeneralGroup ;
+        sh:order 2 ;
+    ] ;
+
+    sh:property [
+        sh:path dcat:keyword ;
+        sh:name "Keywords"@en ;
+        sh:description "Keywords or tags describing the dataset."@en ;
+        sh:datatype xsd:string ;
+        sh:group ex:GeneralGroup ;
+        sh:order 3 ;
+    ] ;
+
+    sh:property [
+        sh:path dcat:theme ;
+        sh:name "Theme"@en ;
+        sh:description "A category of the dataset (data theme)."@en ;
+        sh:nodeKind sh:IRI ;
+        sh:class skos:Concept ;
+        sh:group ex:GeneralGroup ;
+        sh:order 4 ;
+    ] ;
+
+    sh:property [
+        sh:path dcterms:accessRights ;
+        sh:name "Access rights"@en ;
+        sh:description "Information about who can access the dataset."@en ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:in (
+            <http://publications.europa.eu/resource/authority/access-right/PUBLIC>
+            <http://publications.europa.eu/resource/authority/access-right/RESTRICTED>
+            <http://publications.europa.eu/resource/authority/access-right/NON_PUBLIC>
+        ) ;
+        sh:group ex:GeneralGroup ;
+        sh:order 5 ;
+    ] ;
+
+    sh:property [
+        sh:path dcterms:issued ;
+        sh:name "Release date"@en ;
+        sh:datatype xsd:date ;
+        sh:maxCount 1 ;
+        sh:group ex:ProvenanceGroup ;
+        sh:order 1 ;
+    ] ;
+
+    sh:property [
+        sh:path dcterms:modified ;
+        sh:name "Modification date"@en ;
+        sh:datatype xsd:date ;
+        sh:maxCount 1 ;
+        sh:group ex:ProvenanceGroup ;
+        sh:order 2 ;
+    ] ;
+
+    sh:property [
+        sh:path dcterms:publisher ;
+        sh:name "Publisher"@en ;
+        sh:description "The entity responsible for making the dataset available."@en ;
+        sh:node ex:AgentShape ;
+        dash:editor dash:DetailsEditor ;
+        sh:maxCount 1 ;
+        sh:minCount 1 ;
+        sh:group ex:ProvenanceGroup ;
+        sh:order 3 ;
+    ] ;
+
+    sh:property [
+        sh:path dcat:contactPoint ;
+        sh:name "Contact point"@en ;
+        sh:node ex:ContactShape ;
+        dash:editor dash:DetailsEditor ;
+        sh:maxCount 1 ;
+        sh:group ex:ProvenanceGroup ;
+        sh:order 4 ;
+    ] ;
+
+    sh:property [
+        sh:path health:healthTheme ;
+        sh:name "Health theme"@en ;
+        sh:description "Health categories the dataset belongs to."@en ;
+        sh:nodeKind sh:IRI ;
+        sh:class skos:Concept ;
+        sh:group ex:HealthGroup ;
+        sh:order 1 ;
+    ] ;
+
+    sh:property [
+        sh:path health:populationCoverage ;
+        sh:name "Population coverage"@en ;
+        sh:description "Description of the population covered by the dataset."@en ;
+        sh:datatype xsd:string ;
+        dash:singleLine false ;
+        sh:maxCount 1 ;
+        sh:group ex:HealthGroup ;
+        sh:order 2 ;
+    ] ;
+
+    sh:property [
+        sh:path health:numberOfRecords ;
+        sh:name "Number of records"@en ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxCount 1 ;
+        sh:group ex:HealthGroup ;
+        sh:order 3 ;
+    ] ;
+
+    sh:property [
+        sh:path health:hasCodeSystem ;
+        sh:name "Coding system"@en ;
+        sh:description "Coding systems used (e.g. ICD-10, SNOMED CT)."@en ;
+        sh:datatype xsd:string ;
+        sh:group ex:HealthGroup ;
+        sh:order 4 ;
+    ] ;
+
+    sh:property [
+        sh:path dcat:distribution ;
+        sh:name "Distributions"@en ;
+        sh:description "Accessible forms of the dataset."@en ;
+        sh:node ex:DistributionShape ;
+        dash:editor dash:DetailsEditor ;
+        sh:group ex:DistributionGroup ;
+        sh:order 1 ;
+    ] .
+
+### Agent (publisher) ########################################################
+
+ex:AgentShape a sh:NodeShape ;
+    sh:targetClass foaf:Agent ;
+    sh:property [
+        sh:path foaf:name ;
+        sh:name "Name"@en ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
+    ] ;
+    sh:property [
+        sh:path foaf:homepage ;
+        sh:name "Homepage"@en ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
+    ] ;
+    sh:property [
+        sh:path foaf:mbox ;
+        sh:name "Email"@en ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:order 3 ;
+    ] .
+
+### Contact point ############################################################
+
+ex:ContactShape a sh:NodeShape ;
+    sh:targetClass vcard:Kind ;
+    sh:property [
+        sh:path vcard:fn ;
+        sh:name "Full name"@en ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
+    ] ;
+    sh:property [
+        sh:path vcard:hasEmail ;
+        sh:name "Email"@en ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
+    ] .
+
+### Distribution #############################################################
+
+ex:DistributionShape a sh:NodeShape ;
+    sh:targetClass dcat:Distribution ;
+    sh:property [
+        sh:path dcterms:title ;
+        sh:name "Title"@en ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
+    ] ;
+    sh:property [
+        sh:path dcat:accessURL ;
+        sh:name "Access URL"@en ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
+    ] ;
+    sh:property [
+        sh:path dcterms:format ;
+        sh:name "Format"@en ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:in (
+            <http://publications.europa.eu/resource/authority/file-type/CSV>
+            <http://publications.europa.eu/resource/authority/file-type/JSON>
+            <http://publications.europa.eu/resource/authority/file-type/XML>
+            <http://publications.europa.eu/resource/authority/file-type/RDF_TURTLE>
+        ) ;
+        sh:order 3 ;
+    ] ;
+    sh:property [
+        sh:path dcat:byteSize ;
+        sh:name "Byte size"@en ;
+        sh:datatype xsd:decimal ;
+        sh:maxCount 1 ;
+        sh:order 4 ;
+    ] .
