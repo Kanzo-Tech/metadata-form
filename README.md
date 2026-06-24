@@ -14,16 +14,20 @@ get a form that edits the graph and serializes back to **Turtle** and
   overriding its widget.
 - ✅ **Live SHACL validation** — per-field errors via `rdf-validate-shacl`, plus
   a ready-made `<ValidationSummary>` pill.
+- 🤖 **Optional AI assist** — one `assist` seam: streaming inline ghost-text
+  completion (a CodeMirror editor; Tab/Esc) and live value suggestions, with a
+  one-line [Vercel AI SDK](https://sdk.vercel.ai) adapter. The core imports no LLM SDK.
 - 📦 **Bundled example shapes** (e.g. **HealthDCAT-AP**) for demos.
 
 ## Install
 
 ```sh
-npm install metadata-form react react-dom @radix-ui/themes
+npm install metadata-form react react-dom @radix-ui/themes @radix-ui/react-icons
 ```
 
-ESM-only. The UI is built on [@radix-ui/themes](https://www.radix-ui.com/themes):
-render forms inside a `<Theme>` and import its stylesheet.
+ESM-only. The UI is built on [@radix-ui/themes](https://www.radix-ui.com/themes)
+(icons from [@radix-ui/react-icons](https://www.radix-ui.com/icons)): render forms
+inside a `<Theme>` and import its stylesheet.
 
 ## The contract
 
@@ -71,14 +75,16 @@ All data/AI help goes through a single `assist` object. The library **never call
 an LLM or a vocabulary service itself** — it maps to the two canonical editor
 patterns and renders what these (all optional) callbacks return:
 
-- `suggest` — ✨ candidate values for a field (a menu); for short free text.
-- `complete` — a **streaming** inline continuation (ghost text, Tab to accept); for `textarea`.
+- `suggest` — value candidates for a field, **streamed** into a ✨ popover (a fixed
+  window that refills as you dismiss rows); for short free text.
+- `complete` — a **streaming** inline continuation (ghost text in a CodeMirror editor;
+  **Tab** accepts, **Esc** dismisses); for `textarea`.
 - `search` — `sh:class` instance autocomplete (a typeahead combobox); for `reference`.
 
 Every callback gets an `AbortSignal` so the UI can cancel stale runs.
 
 **Simplest setup — the optional `metadata-form/ai` adapter** turns any
-[Vercel AI SDK](https://sdk.vercel.ai) model into a ready `assist` (typed
+[Vercel AI SDK](https://sdk.vercel.ai) model into a ready `assist` (streaming
 suggestions + streaming completion), one line:
 
 ```tsx
@@ -98,13 +104,14 @@ The core never imports `ai` — the adapter lives at a separate subpath. Add you
 
 ```tsx
 assist={{
-  suggest: async ({ field, locale, signal }) => [/* FieldSuggestion[] */],
+  // both stream — each yields items/chunks as they're produced
+  suggest: async function* ({ field, locale, signal }) { /* yield FieldSuggestion */ },
   complete: ({ field, value, signal }) => myLLM.stream(value, { signal }), // AsyncIterable<string>
 }}
 ```
 
 The callbacks run in the consumer, so the core imports **no LLM SDK** and stays
-portable. The `search`/`suggest` menus are accessible (downshift / Radix `DropdownMenu`).
+portable. The `search` combobox (downshift) and the `suggest` popover (Radix) are accessible.
 
 ### The assistant (`<FormAssistant>` + a swappable mascot)
 
@@ -185,17 +192,52 @@ const widgets: WidgetRegistry = {
 
 ## Architecture
 
-```
-SchemaAdapter (SHACL | ShEx)  →  FormModel (agnostic)  →  React layer  →  widgets
-        ▲ schema + dataGraph              ▲ groups/fields/editorId/values
-        └ Validator  →  per-field errors (agnostic)
+```mermaid
+flowchart LR
+  shape["SHACL / DASH shape"]
+  data[("RDF data graph<br/>(optional)")]
+
+  subgraph core["Core — agnostic · no React, no LLM"]
+    direction TB
+    adapter["SchemaAdapter<br/>SHACL · ShEx (next)"]
+    model["FormModel<br/>groups · fields · editorId · values"]
+    validator["Validator<br/>per-field errors"]
+    adapter --> model --> validator
+  end
+
+  subgraph ui["React layer"]
+    direction TB
+    controller["useMetadataForm<br/>controller + observable graph"]
+    form["MetadataForm → FieldRenderer"]
+    binding["binding layer<br/>RDF ⇄ primitive"]
+    widgets["dumb widgets · by WidgetKind"]
+    controller --> form --> widgets
+    widgets <--> binding
+  end
+
+  subgraph assist["assist seam · optional"]
+    direction TB
+    seam["suggest · complete · search"]
+    ai["metadata-form/ai<br/>Vercel AI SDK adapter"]
+    ai -. provides .-> seam
+  end
+
+  shape --> adapter
+  data --> controller
+  model --> controller
+  validator --> controller
+  binding --> controller
+  seam -. streams .-> widgets
+  controller --> out["Turtle · JSON-LD · live quads"]
 ```
 
-The React layer, validation-display and serialization depend only on
-`SchemaAdapter` / `FormModel` — never on SHACL. Adding ShEx means implementing
-`SchemaAdapter` in `src/core/adapters/shex/`. Example shapes are plain strings, not
-a special input type — see the playground's `playground/examples/health-dcat-ap/`
-(incl. `SOURCE.md`).
+Everything left of the React layer is **agnostic**: the React layer, the
+validation display and serialization depend only on `SchemaAdapter` / `FormModel`,
+never on SHACL — and nothing in the core imports an LLM SDK (the `assist` seam is
+fed entirely by the consumer). Adding **ShEx** means implementing one
+`SchemaAdapter` in `src/core/adapters/shex/`; the UI doesn't change. Example shapes
+are plain strings, not a special input type — see the playground's
+`playground/examples/health-dcat-ap/` (incl. `SOURCE.md`).
 
 ## Develop
 
