@@ -3,7 +3,7 @@ import { Box, Button, Flex, Text } from "@radix-ui/themes";
 import { PlusIcon } from "@radix-ui/react-icons";
 import type { Term } from "@rdfjs/types";
 import type { FieldModel, FormModel, ValueSlot } from "../../core/schema/FormModel.js";
-import { Editors } from "../../core/editors/ids.js";
+import { Editors } from "../../core/vocab/shacl-ui.js";
 import { defaultWidgets } from "../widgets/defaultWidgets.js";
 import { languageOf, optionsFor, primitiveToTerm, stepFor, termToPrimitive, widgetKind, widgetRender, widgetAssist } from "../widgets/widgets.js";
 import { useFormContext } from "./context.js";
