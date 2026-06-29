@@ -11,13 +11,25 @@ import type { RudofModule, RudofSession } from "./abi.js";
  */
 let moduleOnce: Promise<typeof import("rudof-wasm")> | undefined;
 
-export async function loadRudof(): Promise<RudofModule> {
-  const wasm = await (moduleOnce ??= (async () => {
-    const m = await import(/* @vite-ignore */ "rudof-wasm");
-    await m.default();
-    return m;
-  })());
+async function instantiate(): Promise<typeof import("rudof-wasm")> {
+  const m = await import(/* @vite-ignore */ "rudof-wasm");
+  await m.default();
+  return m;
+}
 
+export async function loadRudof(): Promise<RudofModule> {
+  // Memoize only on SUCCESS. A transient failure (wasm fetch/instantiate) must
+  // not poison the loader forever: caching a rejected promise would leave every
+  // future mount permanently broken with no way to recover but a full reload.
+  if (!moduleOnce) {
+    const attempt = instantiate();
+    moduleOnce = attempt;
+    attempt.catch(() => {
+      if (moduleOnce === attempt) moduleOnce = undefined; // allow a retry next call
+    });
+  }
+
+  const wasm = await moduleOnce;
   return {
     newSession: () => new wasm.Session() as unknown as RudofSession,
   };
