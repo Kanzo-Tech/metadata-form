@@ -11,7 +11,9 @@ const entries = {
   // Optional adapter subpath — Vercel AI SDK lives here, never in the core.
   "ai/index": r("src/ai/index.ts"),
   // Direct rudof-engine access subpath (`metadata-form/rudof`) for custom wiring.
-  "rudof/index": r("src/engine/index.ts"),
+  // Emitted under dist/engine/ so the JS bundle and the dts (which mirrors the
+  // src tree) share a path; package.json maps `./rudof` → dist/engine/index.*.
+  "engine/index": r("src/engine/index.ts"),
 };
 
 // Anything that must NOT be bundled into the library output.

@@ -29,7 +29,7 @@ function toValidationResult(r: RudofResult): ValidationResult {
 
 /** A {@link GraphBackend} over a rudof session's current graph. The session owns
  *  the single in-wasm graph; this just adapts term marshalling to RDF/JS. */
-class RudofGraphBackend implements GraphBackend {
+export class RudofGraphBackend implements GraphBackend {
   constructor(private readonly session: RudofSession) {}
 
   add(s: Term, p: Term, o: Term): void {

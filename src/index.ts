@@ -104,28 +104,13 @@ export type {
   ProjectedProperty,
   ProjectedValue,
 } from "./model/ShapeIR.js";
-export { pathKey } from "./engine/pathKey.js";
 
-// Engine ports (hexagonal) + the rudof engine (the default; backed by the wasm loader)
-export type { RdfEngine } from "./engine/ports/RdfEngine.js";
-export type { GraphBackend } from "./engine/ports/GraphBackend.js";
-export { RudofEngine } from "./engine/RudofEngine.js";
-export { shapeModelFromJson } from "./engine/rehydrate.js";
-export type {
-  RudofModule,
-  RudofSession,
-  RudofLoader,
-  RudofQuad,
-  RudofReport,
-  RudofResult,
-  ShapeModelJson,
-} from "./engine/abi.js";
-
-// The default engine is rudof-over-WASM (see `RudofEngine` / `createRudofShaclAdapter`).
+// The default SHACL adapter (rudof-over-WASM). The engine internals it is built
+// on — RudofEngine, createRudofEngine, projectTree, rehydrate, the wasm ABI types,
+// RudofGraphBackend — live on the `metadata-form/rudof` subpath for power-users.
 export { createRudofShaclAdapter } from "./shacl/adapter.js";
 
 // RDF utilities
 export { toStore, toStoreSync, parseTurtle, parseJsonLd } from "./rdf/parse.js";
 export { toTurtle, toJsonLd, toNQuads } from "./rdf/serialize.js";
-export { GraphState } from "./state/GraphState.js";
 export * as ns from "./rdf/factory.js";
