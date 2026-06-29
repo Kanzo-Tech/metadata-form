@@ -25,6 +25,9 @@ export interface RdfEngine {
   newGraph(): GraphBackend | Promise<GraphBackend>;
   /** Validate the current graph (optionally scoped to one shape) against the shapes. */
   validate(shapeId?: string): ValidationResult[] | Promise<ValidationResult[]>;
+  /** Validate a single focus node against one shape — scoped revalidation for a
+   *  form bound to one focus (cheaper than re-validating the whole graph). */
+  validateFocus(focus: Term, shapeId: string): ValidationResult[] | Promise<ValidationResult[]>;
   /** Evaluate every property path of a shape for a focus node against the graph. */
   projectForm(focus: Term, shapeId: string): ProjectedForm | Promise<ProjectedForm>;
 }

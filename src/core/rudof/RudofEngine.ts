@@ -93,6 +93,11 @@ export class RudofEngine implements RdfEngine {
     return this.s.validate(shapeId ?? null).results.map(toValidationResult);
   }
 
+  async validateFocus(focus: Term, shapeId: string): Promise<ValidationResult[]> {
+    await this.ready();
+    return this.s.validateFocus(toTermValue(focus), shapeId).results.map(toValidationResult);
+  }
+
   async projectForm(focus: Term, shapeId: string): Promise<ProjectedForm> {
     await this.ready();
     return this.s.projectForm(toTermValue(focus), shapeId);

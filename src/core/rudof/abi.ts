@@ -71,6 +71,9 @@ export interface RudofSession {
   projectForm(focus: TermValue, shapeId: string): ProjectedForm;
   /** Validate the current graph (optionally scoped) against the loaded shapes. */
   validate(shapeId: string | null): RudofReport;
+  /** Validate a single focus node against one shape (the scoped path, via the
+   *  validator's `validate_focus`). For per-field/per-node revalidation. */
+  validateFocus(focus: TermValue, shapeId: string): RudofReport;
 }
 
 export interface RudofModule {

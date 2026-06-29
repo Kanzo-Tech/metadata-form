@@ -96,6 +96,29 @@ d("RudofEngine over the REAL wasm", () => {
     expect(await engine.validate()).toHaveLength(0);
   });
 
+  it("validateFocus scopes validation to a single focus node (the spine's validate_focus)", async () => {
+    await engine.loadShapes(shapesTtl);
+    // Two Persons, both missing ex:name → both violate sh:minCount 1.
+    await engine.loadData(`
+      @prefix ex: <${EX}> .
+      ex:dave a ex:Person .
+      ex:erin a ex:Person .
+    `);
+    // Whole-graph validation flags BOTH.
+    const all = await engine.validate();
+    expect(all.some((r) => r.focusNode.value === `${EX}dave`)).toBe(true);
+    expect(all.some((r) => r.focusNode.value === `${EX}erin`)).toBe(true);
+
+    // Scoped to dave → only dave's violation, erin excluded.
+    const scoped = await engine.validateFocus(namedNode(`${EX}dave`), SHAPE);
+    expect(scoped.length).toBeGreaterThan(0);
+    expect(scoped.every((r) => r.focusNode.value === `${EX}dave`)).toBe(true);
+
+    // A conforming focus → no violations.
+    await engine.loadData(dataTtl);
+    expect(await engine.validateFocus(namedNode(`${EX}alice`), SHAPE)).toHaveLength(0);
+  });
+
   it("exposes a live editable GraphBackend (add / match / remove / serialize)", async () => {
     const graph = await engine.newGraph();
     const s = namedNode(`${EX}carol`);
