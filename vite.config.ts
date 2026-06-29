@@ -48,6 +48,12 @@ export default defineConfig(({ command }) => {
     ].filter(Boolean),
     // In dev/preview the playground is the app root.
     root: isLibBuild ? undefined : r("playground"),
+    // The dev root is `playground/`, but the alias below resolves the wasm to the
+    // sibling rudof-fork checkout and the lib sources live one level up in `src/`.
+    // Both are outside the dev root, so allow them through Vite's fs sandbox.
+    server: isLibBuild
+      ? undefined
+      : { fs: { allow: [r("."), r("../rudof-fork")] } },
     build: isLibBuild
       ? {
           lib: {
