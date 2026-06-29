@@ -1,0 +1,82 @@
+import type {
+  NodeShapeIR,
+  ProjectedForm,
+  PropertyGroupIR,
+  TermValue,
+} from "../shape/ShapeIR.js";
+
+/**
+ * The ABI contract for the `rudof_wasm` crate (rudof fork) — exactly what the
+ * `#[wasm_bindgen]` surface exposes to JavaScript. The TypeScript side
+ * (`RudofEngine`) programs against this; the wasm module is wired in via the
+ * loader.
+ *
+ * Marshalling: terms cross the boundary as {@link TermValue} JSON records;
+ * shapes cross as {@link ShapeModelJson} (the IR with arrays instead of Maps);
+ * the rest are plain strings/JSON. (Assumes serde-wasm-bindgen on the Rust side.)
+ */
+
+/** The IR's {@link ShapeModel} in a JSON-serializable (Map-free) form. */
+export interface ShapeModelJson {
+  nodeShapes: NodeShapeIR[];
+  groups: PropertyGroupIR[];
+  byTargetClass: [string, string][];
+}
+
+export interface RudofQuad {
+  subject: TermValue;
+  predicate: TermValue;
+  object: TermValue;
+}
+
+export interface RudofResult {
+  focusNode: TermValue;
+  path?: TermValue;
+  value?: TermValue;
+  message: string[];
+  severity?: string;
+  sourceConstraintComponent?: string;
+}
+
+export interface RudofReport {
+  conforms: boolean;
+  results: RudofResult[];
+}
+
+/**
+ * One form session = one rudof instance holding the current shapes + the current
+ * data graph. Mirrors rudof's stateful `Rudof` facade. All graph mutations and
+ * queries are small boundary calls against the in-wasm store (no re-serialization
+ * per edit).
+ */
+export interface RudofSession {
+  /** Parse shapes (SHACL or ShEx) into the IR JSON and retain them. */
+  loadShapes(text: string, mediaType: string): ShapeModelJson;
+  /** Parse a data document as the current graph. */
+  loadData(text: string, mediaType: string): void;
+  /** Replace the current graph with an empty one. */
+  newData(): void;
+
+  add(subject: TermValue, predicate: TermValue, object: TermValue): void;
+  remove(subject: TermValue, predicate: TermValue, object: TermValue): void;
+  /** Quads matching the pattern; null positions are wildcards. */
+  quads(
+    subject: TermValue | null,
+    predicate: TermValue | null,
+    object: TermValue | null,
+  ): RudofQuad[];
+  serialize(mediaType: string): string;
+
+  /** Evaluate every property path of `shapeId` for `focus` against the graph. */
+  projectForm(focus: TermValue, shapeId: string): ProjectedForm;
+  /** Validate the current graph (optionally scoped) against the loaded shapes. */
+  validate(shapeId: string | null): RudofReport;
+}
+
+export interface RudofModule {
+  /** Create a fresh, independent session (shapes + graph). */
+  newSession(): RudofSession;
+}
+
+/** Async loader for the wasm module (instantiates + initializes it once). */
+export type RudofLoader = () => Promise<RudofModule>;

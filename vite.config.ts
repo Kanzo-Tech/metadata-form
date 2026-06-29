@@ -10,6 +10,8 @@ const entries = {
   index: r("src/index.ts"),
   // Optional adapter subpath — Vercel AI SDK lives here, never in the core.
   "ai/index": r("src/ai/index.ts"),
+  // Direct rudof-engine access subpath (`metadata-form/rudof`) for custom wiring.
+  "rudof/index": r("src/core/rudof/index.ts"),
 };
 
 // Anything that must NOT be bundled into the library output.
@@ -20,7 +22,8 @@ const external = [
   "n3",
   "grapoi",
   "jsonld",
-  "rdf-validate-shacl",
+  // The rudof WASM module — provided by `npm run build:wasm`, never bundled.
+  "rudof-wasm",
   "@rdfjs/namespace",
   "@radix-ui/themes",
   // The /ai adapter's deps — kept external (optional peer deps).
@@ -80,6 +83,12 @@ export default defineConfig(({ command }) => {
         "metadata-form/ai": r("src/ai/index.ts"),
         "metadata-form": r("src/index.ts"),
         "@": r("src"),
+        // In dev/preview the playground must actually load the wasm: resolve it to
+        // the built pkg (rudof fork sibling checkout). In lib build it stays
+        // external (see `external` above) so consumers provide it themselves.
+        ...(isLibBuild
+          ? {}
+          : { "rudof-wasm": r("../rudof-fork/rudof_wasm/pkg/rudof_wasm.js") }),
       },
     },
   };

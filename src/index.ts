@@ -73,13 +73,57 @@ export type {
   Severity,
 } from "./core/schema/validation.js";
 
-// Editors (DASH editor ids + selection)
-export { Editors } from "./core/editors/ids.js";
-export { selectEditor, type EditorMatchInput } from "./core/editors/selectEditor.js";
+// Editors (SHACL-UI editor ids + rule-based resolution)
+export { Editors, type KnownEditorId } from "./core/vocab/shacl-ui.js";
+export {
+  createEditorResolver,
+  defaultEditorRules,
+  deriveContext,
+  type EditorResolver,
+  type EditorRule,
+  type ResolutionContext,
+} from "./core/editors/EditorResolver.js";
+export {
+  resolveWidgetKind,
+  defaultWidgetKindMap,
+  type WidgetKindMap,
+} from "./core/editors/widgetMap.js";
 
-// SHACL adapter (default)
-export { shaclAdapter } from "./core/adapters/shacl/index.js";
-export type { ShaclParsedSchema } from "./core/adapters/shacl/index.js";
+// Shape IR (vocabulary-agnostic parsing seam)
+export type {
+  ShapeModel,
+  NodeShapeIR,
+  PropertyShapeIR,
+  PathExpr,
+  ValueConstraints,
+  PresentationHints,
+  ComponentIR,
+  TermValue,
+  LangString,
+  ProjectedForm,
+  ProjectedProperty,
+  ProjectedValue,
+} from "./core/shape/ShapeIR.js";
+export type { ShapeSource, ShapeInput } from "./core/shape/ShapeSource.js";
+export { pathKey } from "./core/shape/pathKey.js";
+
+// Engine ports (hexagonal) + the rudof engine (the default; backed by the wasm loader)
+export type { RdfEngine } from "./core/ports/RdfEngine.js";
+export type { GraphBackend } from "./core/ports/GraphBackend.js";
+export { RudofEngine } from "./core/rudof/RudofEngine.js";
+export { shapeModelFromJson, shapeModelToJson } from "./core/rudof/rehydrate.js";
+export type {
+  RudofModule,
+  RudofSession,
+  RudofLoader,
+  RudofQuad,
+  RudofReport,
+  RudofResult,
+  ShapeModelJson,
+} from "./core/rudof/abi.js";
+
+// The default engine is rudof-over-WASM (see `RudofEngine` / `createRudofShaclAdapter`).
+export { createRudofShaclAdapter } from "./core/rudof/adapter.js";
 
 // RDF utilities
 export { toStore, toStoreSync, parseTurtle, parseJsonLd } from "./core/rdf/parse.js";

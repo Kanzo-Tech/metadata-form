@@ -19,10 +19,11 @@ const FRIENDLY: Record<string, string> = {
 };
 
 function friendly(result: ValidationResult): string {
-  const msg = result.message?.trim();
-  if (msg && msg !== "Invalid value") return msg;
+  // Prefer the curated message for known constraint components, so the wording is
+  // friendly and consistent regardless of the engine (rudof, rdf-validate-shacl…).
   if (result.constraint && FRIENDLY[result.constraint]) return FRIENDLY[result.constraint];
-  return msg || "Invalid value";
+  const msg = result.message?.trim();
+  return msg && msg !== "Invalid value" ? msg : "Invalid value";
 }
 
 /**

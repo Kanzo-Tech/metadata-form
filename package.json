@@ -31,6 +31,10 @@
     "./ai": {
       "types": "./dist/ai/index.d.ts",
       "import": "./dist/ai/index.js"
+    },
+    "./rudof": {
+      "types": "./dist/rudof/index.d.ts",
+      "import": "./dist/rudof/index.js"
     }
   },
   "scripts": {
@@ -40,7 +44,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build:wasm": "bash ../rudof-fork/rudof_wasm/build.sh"
   },
   "peerDependencies": {
     "@radix-ui/themes": ">=3",
@@ -62,8 +67,7 @@
     "@rdfjs/namespace": "^2.0.1",
     "downshift": "^9.3.6",
     "jsonld": "^8.3.2",
-    "n3": "^1.17.4",
-    "rdf-validate-shacl": "^0.5.6"
+    "n3": "^1.17.4"
   },
   "devDependencies": {
     "@ai-sdk/anthropic": "^3.0.86",
