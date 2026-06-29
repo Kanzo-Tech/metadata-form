@@ -9,17 +9,13 @@ declare module "rudof-wasm" {
   /** Async init: instantiates the wasm module (default export of the web build). */
   export default function init(input?: unknown): Promise<unknown>;
 
-  /** One form session — see `src/core/rudof/abi.ts` (`RudofSession`). */
+  /**
+   * Opaque session handle. The typed contract is `RudofSession` in
+   * `./abi.ts` (the single source of truth), which the loader casts to at the
+   * one boundary — so the method surface is deliberately NOT mirrored here
+   * (mirroring it just lets it drift, as it did with `validateFocus`).
+   */
   export class Session {
     constructor();
-    loadShapes(text: string, mediaType: string): unknown;
-    loadData(text: string, mediaType: string): void;
-    newData(): void;
-    add(subject: unknown, predicate: unknown, object: unknown): void;
-    remove(subject: unknown, predicate: unknown, object: unknown): void;
-    quads(subject: unknown, predicate: unknown, object: unknown): unknown;
-    serialize(mediaType: string): string;
-    projectForm(focus: unknown, shapeId: string): unknown;
-    validate(shapeId?: string | null): unknown;
   }
 }

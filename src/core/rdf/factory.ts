@@ -29,11 +29,6 @@ export const rdfs = ns(NS.rdfs);
 export const xsd = ns(NS.xsd);
 export const sh = ns(NS.sh);
 export const shui = ns(NS.shui);
-export const owl = ns(NS.owl);
-export const skos = ns(NS.skos);
-export const dcat = ns(NS.dcat);
-export const dcterms = ns(NS.dcterms);
-export const foaf = ns(NS.foaf);
 
 /** Default prefix map used by the Turtle/JSON-LD serializers. */
 export const DEFAULT_PREFIXES: Record<string, string> = { ...NS };

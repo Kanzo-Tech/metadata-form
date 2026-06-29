@@ -1,5 +1,3 @@
-import type { Literal } from "@rdfjs/types";
-
 /** Anything carrying a value + language tag (rdfjs Literal or an IR LangString). */
 interface LangTagged {
   value: string;
@@ -32,12 +30,4 @@ export function pickByLanguage<T extends LangTagged>(
     else if (lang === "") untagged = untagged ?? item;
   }
   return exact ?? base ?? untagged ?? items[0];
-}
-
-/** Back-compat alias for sh:name / sh:description / sh:message over rdfjs Literals. */
-export function selectByLanguage(
-  literals: Literal[],
-  locale: string | undefined,
-): Literal | undefined {
-  return pickByLanguage(literals, locale);
 }

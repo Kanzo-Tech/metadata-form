@@ -9,12 +9,3 @@ export function shapeModelFromJson(json: ShapeModelJson): ShapeModel {
     byTargetClass: new Map(json.byTargetClass),
   };
 }
-
-/** Dehydrate a {@link ShapeModel} (Maps) into the JSON form (arrays). */
-export function shapeModelToJson(model: ShapeModel): ShapeModelJson {
-  return {
-    nodeShapes: [...model.nodeShapes.values()],
-    groups: [...model.groups.values()],
-    byTargetClass: [...model.byTargetClass],
-  };
-}

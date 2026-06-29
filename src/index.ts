@@ -104,14 +104,13 @@ export type {
   ProjectedProperty,
   ProjectedValue,
 } from "./core/shape/ShapeIR.js";
-export type { ShapeSource, ShapeInput } from "./core/shape/ShapeSource.js";
 export { pathKey } from "./core/shape/pathKey.js";
 
 // Engine ports (hexagonal) + the rudof engine (the default; backed by the wasm loader)
 export type { RdfEngine } from "./core/ports/RdfEngine.js";
 export type { GraphBackend } from "./core/ports/GraphBackend.js";
 export { RudofEngine } from "./core/rudof/RudofEngine.js";
-export { shapeModelFromJson, shapeModelToJson } from "./core/rudof/rehydrate.js";
+export { shapeModelFromJson } from "./core/rudof/rehydrate.js";
 export type {
   RudofModule,
   RudofSession,
