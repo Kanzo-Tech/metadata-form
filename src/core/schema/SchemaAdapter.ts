@@ -1,7 +1,9 @@
 import type { Store } from "n3";
-import type { NamedNode, Term } from "@rdfjs/types";
+import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import type { FormModel } from "./FormModel.js";
 import type { Validator } from "./validation.js";
+import type { GraphBackend } from "../ports/GraphBackend.js";
+import type { ProjectedValues } from "../form/buildFormModel.js";
 
 /**
  * Opaque, adapter-specific parsed schema. The SHACL adapter stores the shapes
@@ -27,7 +29,9 @@ export type DiagnosticSink = (diagnostic: Diagnostic) => void;
 
 export interface BuildFormModelArgs {
   schema: ParsedSchema;
-  /** The data graph being edited (may be empty for a blank form). */
+  /** The data graph being edited (may be empty for a blank form). Unused when
+   *  `values` is supplied (the single-graph path projects values from the
+   *  engine session instead of reading this store). */
   data: Store;
   /** Subject to edit; created fresh if absent. */
   focusNode?: Term;
@@ -37,6 +41,23 @@ export interface BuildFormModelArgs {
   locale?: string;
   /** Receives non-fatal issues instead of dropping them silently. */
   onDiagnostic?: DiagnosticSink;
+  /** Pre-projected field values (the single-graph path). When present, values
+   *  come from here rather than being read from `data`. */
+  values?: ProjectedValues;
+}
+
+/**
+ * The live editable graph of a form session: the engine-owned {@link GraphBackend}
+ * (the single source of truth) plus the resolved subject and root shape, returned
+ * by {@link SchemaAdapter.createGraph}.
+ */
+export interface GraphSession {
+  /** The live, mutable, queryable data graph (the engine session). */
+  backend: GraphBackend;
+  /** The resolved subject to edit (inferred/seeded when not given). */
+  focusNode: Term;
+  /** The resolved root node-shape id — for projection + scoped validation. */
+  rootShapeId: string;
 }
 
 /**
@@ -50,13 +71,21 @@ export interface SchemaAdapter {
   buildFormModel(args: BuildFormModelArgs): FormModel;
   createValidator(schema: ParsedSchema): Validator;
   /**
-   * Optionally infer the subject to edit from an existing data graph (e.g. the
-   * first instance of a target class). Returns undefined when none is found.
+   * Load the initial data into the engine session ONCE, resolve + seed the focus
+   * node into it, and return the live editable {@link GraphSession} — the single
+   * source of truth the form edits, projects and validates against (no per-edit
+   * reload). Replaces the old infer/seed-into-an-n3-store dance.
    */
-  inferFocusNode?(schema: ParsedSchema, data: Store, rootShape?: NamedNode): Term | undefined;
+  createGraph(
+    schema: ParsedSchema,
+    initialData: Quad[],
+    focusNode?: Term,
+    rootShape?: NamedNode,
+  ): Promise<GraphSession>;
   /**
-   * Seed required type triples (e.g. the target class) on the focus node so the
-   * validator targets it and the output graph is complete. Mutates `store`.
+   * Project the focus node's value tree (recursively, sync) from the current
+   * session graph into the {@link ProjectedValues} consumed by `buildFormModel`.
+   * Called on every edit to re-derive field values from the single graph.
    */
-  seedFocusNode?(schema: ParsedSchema, store: Store, focusNode: Term, rootShape?: NamedNode): void;
+  projectValues(schema: ParsedSchema, focusNode: Term, rootShapeId: string): ProjectedValues;
 }

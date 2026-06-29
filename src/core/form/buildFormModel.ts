@@ -286,9 +286,20 @@ export function resolveRootShape(
   focusNode: Term,
   rootShape?: NamedNode,
 ): NodeShapeIR | undefined {
+  const types = data.getQuads(focusNode, RDF_TYPE, null, null).map((q) => q.object.value);
+  return resolveRootShapeFromTypes(shapes, types, rootShape);
+}
+
+/** {@link resolveRootShape} over a pre-read list of the focus node's rdf:type
+ *  values — so the single-graph path can resolve from the engine session backend
+ *  without an n3 `Store`. */
+export function resolveRootShapeFromTypes(
+  shapes: ShapeModel,
+  types: string[],
+  rootShape?: NamedNode,
+): NodeShapeIR | undefined {
   if (rootShape) return shapes.nodeShapes.get(rootShape.value);
 
-  const types = data.getQuads(focusNode, RDF_TYPE, null, null).map((q) => q.object.value);
   for (const t of types) {
     const id = shapes.byTargetClass.get(t);
     if (id) return shapes.nodeShapes.get(id);
@@ -315,22 +326,6 @@ function collectNodeRefs(properties: PropertyShapeIR[], out: Set<string>): void 
       collectNodeRefs([branch], out);
     }
   }
-}
-
-/** Infer the subject to edit from an existing data graph: the first instance of
- *  the root shape's target class. Returns undefined when none is found. */
-export function inferFocusNode(
-  shapes: ShapeModel,
-  data: Store,
-  rootShape?: NamedNode,
-): Term | undefined {
-  const shape = rootShape ? shapes.nodeShapes.get(rootShape.value) : undefined;
-  const targetClasses = shape ? shape.targetClasses : [...shapes.byTargetClass.keys()];
-  for (const cls of targetClasses) {
-    const q = data.getQuads(null, RDF_TYPE, namedNode(cls), null)[0];
-    if (q) return q.subject as Term;
-  }
-  return undefined;
 }
 
 /** Stamp the focus node with the root shape's target class (so it's targeted and

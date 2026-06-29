@@ -30,4 +30,8 @@ export interface RdfEngine {
   validateFocus(focus: Term, shapeId: string): ValidationResult[] | Promise<ValidationResult[]>;
   /** Evaluate every property path of a shape for a focus node against the graph. */
   projectForm(focus: Term, shapeId: string): ProjectedForm | Promise<ProjectedForm>;
+  /** Synchronous projection — valid once {@link ready} has resolved. Lets the
+   *  React per-edit rebuild project the live graph without an await straddling the
+   *  model `useMemo` (the single-graph sync path). */
+  projectFormSync(focus: Term, shapeId: string): ProjectedForm;
 }

@@ -1,4 +1,4 @@
-import type { NamedNode, Quad, Term } from "@rdfjs/types";
+import type { NamedNode, Term } from "@rdfjs/types";
 
 export type Severity = "violation" | "warning" | "info";
 
@@ -33,8 +33,6 @@ export interface Validator {
 }
 
 export interface ValidatorInput {
-  /** The data graph to validate, as RDF/JS quads. */
-  data: Quad[];
   /** When set, validate just this focus node against its resolved root shape
    *  (scoped revalidation) instead of every target of every shape. */
   focusNode?: Term;

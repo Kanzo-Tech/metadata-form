@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Store } from "n3";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
-import { blankNode, namedNode } from "../../core/rdf/factory.js";
+import { namedNode } from "../../core/rdf/factory.js";
 import { collectPrefixes, toStore, type RdfInput } from "../../core/rdf/parse.js";
 import { toJsonLd, toTurtle } from "../../core/rdf/serialize.js";
 import type { JsonLdOptions, SerializeOptions } from "../../core/rdf/serialize.js";
@@ -83,10 +83,17 @@ interface Prepared {
   graph: GraphState;
   initialQuads: Quad[];
   focusNode: Term;
+  /** The resolved root node-shape id — drives projection + scoped validation. */
+  rootShapeId: string;
   prefixes: Record<string, string>;
 }
 
 const NOOP_UNSUB = () => () => {};
+
+/** Shared empty n3 store: the single-graph path projects values from the engine
+ *  session, so `buildFormModel` never reads a data store — but its `data` arg is
+ *  still required by the (ShEx-agnostic) contract. */
+const EMPTY_DATA = new Store();
 
 export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormController {
   const {
@@ -128,24 +135,26 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
         ...collectPrefixes(shapes),
         ...(data ? collectPrefixes(data) : {}),
       };
-      const graph = new GraphState(data ? await toStore(data) : new Store());
-      const dataStore = graph.store;
       const root = rootShape ? (namedNode(rootShape) as NamedNode) : undefined;
-      const stableFocus: Term = focusNode
-        ? namedNode(focusNode)
-        : adapter.inferFocusNode?.(schema, dataStore, root) ?? blankNode();
-      // Stamp the target class so SHACL targets the node (else empty = vacuously
-      // valid) and the output declares its type. Seeded before capturing the
-      // reset baseline.
-      adapter.seedFocusNode?.(schema, dataStore, stableFocus, root);
-      const initialQuads = dataStore.getQuads(null, null, null, null) as Quad[];
+      // Load the initial data into the engine session ONCE, seed the focus into it,
+      // and build GraphState over that live session — the single source of truth.
+      const initialData = data ? ((await toStore(data)).getQuads(null, null, null, null) as Quad[]) : [];
+      const session = await adapter.createGraph(
+        schema,
+        initialData,
+        focusNode ? namedNode(focusNode) : undefined,
+        root,
+      );
+      const graph = new GraphState(session.backend);
       if (!active) return;
       setPrepared({
         schema,
         validator: adapter.createValidator(schema),
         graph,
-        initialQuads,
-        focusNode: stableFocus,
+        // Reset baseline = the seeded session graph (focus type + sh:hasValue seeds).
+        initialQuads: graph.allQuads(),
+        focusNode: session.focusNode,
+        rootShapeId: session.rootShapeId,
         prefixes: derivedPrefixes,
       });
     })().catch((e) => active && setError(e instanceof Error ? e : new Error(String(e))));
@@ -165,17 +174,21 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
 
   const model = useMemo<FormModel | undefined>(() => {
     if (!prepared) return undefined;
+    // Single graph: re-derive field values from the engine session (sync, after
+    // ready()) on every edit, then build the model over them — no n3 read path.
+    const values = adapter.projectValues(prepared.schema, prepared.focusNode, prepared.rootShapeId);
     return adapter.buildFormModel({
       schema: prepared.schema,
-      data: prepared.graph.store,
+      data: EMPTY_DATA,
       focusNode: prepared.focusNode,
-      rootShape: rootShape ? (namedNode(rootShape) as NamedNode) : undefined,
+      rootShape: namedNode(prepared.rootShapeId) as NamedNode,
       locale,
       onDiagnostic,
+      values,
     });
     // `version` re-projects field values from the graph after each edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [adapter, prepared, version, rootShape, locale, onDiagnostic]);
+  }, [adapter, prepared, version, locale, onDiagnostic]);
 
   // Debounced live validation.
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -183,10 +196,10 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     if (!prepared || validateOn !== "change") return;
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
+      // Validate the live session in place (no reload) — scoped to the focus.
       const results = await prepared.validator.validate({
-        data: prepared.graph.allQuads(),
         focusNode: prepared.focusNode,
-        rootShape: rootShape ? (namedNode(rootShape) as NamedNode) : undefined,
+        rootShape: namedNode(prepared.rootShapeId) as NamedNode,
       });
       setErrors(mapResults(results));
     }, validationDebounceMs);
@@ -215,15 +228,22 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   );
 
   const reset = useCallback(() => {
-    setPrepared((p) =>
-      p ? { ...p, graph: new GraphState(new Store(p.initialQuads as never[])) } : p,
-    );
-    setErrors(new Map());
-  }, []);
+    if (!prepared) return;
+    // Reset the session too: reload the captured baseline into a fresh session graph.
+    void adapter
+      .createGraph(prepared.schema, prepared.initialQuads, prepared.focusNode, namedNode(prepared.rootShapeId) as NamedNode)
+      .then((session) => {
+        setPrepared((p) => (p ? { ...p, graph: new GraphState(session.backend) } : p));
+        setErrors(new Map());
+      });
+  }, [adapter, prepared]);
 
   const validate = useCallback(async () => {
     if (!prepared) return [];
-    const results = await prepared.validator.validate({ data: prepared.graph.allQuads() });
+    const results = await prepared.validator.validate({
+      focusNode: prepared.focusNode,
+      rootShape: namedNode(prepared.rootShapeId) as NamedNode,
+    });
     const map = mapResults(results);
     setErrors(map);
     return [...map.values()].flat();
