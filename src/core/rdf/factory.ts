@@ -14,7 +14,7 @@ export const NS = {
   rdfs: "http://www.w3.org/2000/01/rdf-schema#",
   xsd: "http://www.w3.org/2001/XMLSchema#",
   sh: "http://www.w3.org/ns/shacl#",
-  dash: "http://datashapes.org/dash#",
+  shui: "http://www.w3.org/ns/shacl-ui#",
   owl: "http://www.w3.org/2002/07/owl#",
   skos: "http://www.w3.org/2004/02/skos/core#",
   dcat: "http://www.w3.org/ns/dcat#",
@@ -28,7 +28,7 @@ export const rdf = ns(NS.rdf);
 export const rdfs = ns(NS.rdfs);
 export const xsd = ns(NS.xsd);
 export const sh = ns(NS.sh);
-export const dash = ns(NS.dash);
+export const shui = ns(NS.shui);
 export const owl = ns(NS.owl);
 export const skos = ns(NS.skos);
 export const dcat = ns(NS.dcat);
