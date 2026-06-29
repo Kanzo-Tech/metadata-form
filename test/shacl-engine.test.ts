@@ -1,30 +1,60 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { Store } from "n3";
-import { shaclAdapter } from "@/core/adapters/shacl/index.js";
-import { Editors } from "@/core/editors/ids.js";
+import type { Term } from "@rdfjs/types";
+import {
+  buildFormModel,
+  seedFocusNode,
+} from "@/core/form/buildFormModel.js";
+import { createRudofEngine } from "@/core/rudof/index.js";
+import { Editors } from "@/core/vocab/shacl-ui.js";
 import { allFields } from "@/core/schema/FormModel.js";
 import { computeFormReport } from "@/react/validation/useFormReport.js";
-import type { FieldError } from "@/core/schema/validation.js";
+import type { DiagnosticSink } from "@/core/schema/SchemaAdapter.js";
+import type { FieldError, ValidationResult } from "@/core/schema/validation.js";
 import { mapResults } from "@/core/validation/mapResults.js";
 import { toJsonLd, toTurtle } from "@/core/rdf/serialize.js";
 import type { Diagnostic } from "@/core/schema/SchemaAdapter.js";
 import { parseTurtle } from "@/core/rdf/parse.js";
 import { namedNode } from "@/core/rdf/factory.js";
+import type { ShapeModel } from "@/core/shape/ShapeIR.js";
 import { healthDcatApShapes, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
 
 const shapesTtl = healthDcatApShapes;
 const rootShape = namedNode(healthDcatApRootShape);
 
+/** Parse a SHACL document into the agnostic ShapeModel via rudof (a fresh,
+ *  isolated session per call). */
+function parseShapes(ttl: string): Promise<ShapeModel> {
+  return Promise.resolve(createRudofEngine().loadShapes(ttl));
+}
+
+function buildFrom(
+  shapes: ShapeModel,
+  data: Store,
+  focusNode: Term,
+  rootIri: string,
+  onDiagnostic?: DiagnosticSink,
+) {
+  const shape = shapes.nodeShapes.get(rootIri);
+  if (!shape) throw new Error(`No node shape ${rootIri}`);
+  return buildFormModel({ shapes, data, focusNode, shape, locale: "en", onDiagnostic });
+}
+
+/** Validate a data graph against shapes, in rudof-over-WASM. */
+async function validateAgainst(ttl: string, data: Store): Promise<ValidationResult[]> {
+  const engine = createRudofEngine();
+  await engine.loadShapes(ttl);
+  await engine.loadData(await toTurtle(data.getQuads(null, null, null, null) as never));
+  return engine.validate();
+}
+
+let shapes: ShapeModel;
+beforeAll(async () => {
+  shapes = await parseShapes(shapesTtl);
+});
+
 function build(dataStore: Store, focusNode = namedNode("http://example.org/d1")) {
-  const schema = shaclAdapter.parseSchema(shapesTtl);
-  const model = shaclAdapter.buildFormModel({
-    schema,
-    data: dataStore,
-    focusNode,
-    rootShape,
-    locale: "en",
-  });
-  return { schema, model };
+  return { model: buildFrom(shapes, dataStore, focusNode, rootShape.value) };
 }
 
 describe("SHACL → FormModel", () => {
@@ -40,7 +70,7 @@ describe("SHACL → FormModel", () => {
     expect(title?.editorId).toBe(Editors.TextField);
   });
 
-  it("selects DASH editors via heuristics", () => {
+  it("selects SHACL-UI editors via the resolver rules", () => {
     const { model } = build(new Store());
     const fields = allFields(model);
     const byPath = (suffix: string) => fields.find((f) => f.path.value.endsWith(suffix));
@@ -49,7 +79,7 @@ describe("SHACL → FormModel", () => {
     expect(byPath("/issued")?.editorId).toBe(Editors.DatePicker);
     expect(byPath("accessRights")?.editorId).toBe(Editors.EnumSelect);
     expect(byPath("/publisher")?.editorId).toBe(Editors.Details);
-    expect(byPath("numberOfRecords")?.editorId).toBe(Editors.TextField);
+    expect(byPath("numberOfRecords")?.editorId).toBe(Editors.NumberField);
   });
 
   it("projects existing values from the data graph", () => {
@@ -79,7 +109,7 @@ describe("SHACL → FormModel", () => {
     expect(keyword?.values.map((v) => v.value?.value).sort()).toEqual(["a", "b", "c"]);
   });
 
-  it("renders sh:inversePath as a read-only field with the inverse subjects", () => {
+  it("renders sh:inversePath as a read-only field with the inverse subjects", async () => {
     const shape = `
       @prefix sh: <http://www.w3.org/ns/shacl#> .
       @prefix ex: <http://example.org/> .
@@ -94,14 +124,12 @@ describe("SHACL → FormModel", () => {
         ex:c2 ex:parent ex:d1 .
       `) as never[],
     );
-    const schema = shaclAdapter.parseSchema(shape);
-    const model = shaclAdapter.buildFormModel({
-      schema,
+    const model = buildFrom(
+      await parseShapes(shape),
       data,
-      focusNode: namedNode("http://example.org/d1"),
-      rootShape: namedNode("http://example.org/S"),
-      locale: "en",
-    });
+      namedNode("http://example.org/d1"),
+      "http://example.org/S",
+    );
     const children = allFields(model).find((f) => f.label === "Children");
     expect(children?.readOnly).toBe(true);
     expect(children?.values.map((v) => v.value?.value).sort()).toEqual([
@@ -152,37 +180,45 @@ describe("computeFormReport (single derived state)", () => {
 });
 
 describe("build diagnostics (no silent failures)", () => {
-  function diagnosticsFor(shape: string): Diagnostic[] {
+  async function diagnosticsFor(shape: string): Promise<Diagnostic[]> {
     const diags: Diagnostic[] = [];
-    shaclAdapter.buildFormModel({
-      schema: shaclAdapter.parseSchema(shape),
-      data: new Store(),
-      focusNode: namedNode("http://example.org/d1"),
-      rootShape: namedNode("http://example.org/S"),
-      locale: "en",
-      onDiagnostic: (d) => diags.push(d),
-    });
+    buildFrom(
+      await parseShapes(shape),
+      new Store(),
+      namedNode("http://example.org/d1"),
+      "http://example.org/S",
+      (d) => diags.push(d),
+    );
     return diags;
   }
 
-  it("reports a sh:node pointing at a missing shape", () => {
-    const diags = diagnosticsFor(`
+  it("resolves a sh:node to an undefined shape leniently (rudof stubs it as empty)", async () => {
+    // rudof's parser registers a referenced-but-undefined shape as an empty node
+    // shape, so the build resolves it (empty sub-form) rather than crashing. The
+    // legacy n3 reader flagged this as a `missing-shape` diagnostic; rudof is more
+    // lenient — a dangling sh:node yields an empty sub-form, not an error.
+    const shapes = await parseShapes(`
       @prefix sh: <http://www.w3.org/ns/shacl#> .
       @prefix ex: <http://example.org/> .
       ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
         sh:property [ sh:path ex:child ; sh:node ex:Missing ] .
     `);
-    expect(diags.some((d) => d.code === "missing-shape")).toBe(true);
+    expect(shapes.nodeShapes.get("http://example.org/Missing")?.properties).toEqual([]);
+    const diags: Diagnostic[] = [];
+    buildFrom(shapes, new Store(), namedNode("http://example.org/d1"), "http://example.org/S", (d) =>
+      diags.push(d),
+    );
+    expect(diags.some((d) => d.code === "missing-shape")).toBe(false);
   });
 
-  it("reports a dropped unsupported complex path (sequence)", () => {
-    const diags = diagnosticsFor(`
+  it("defers a complex path (sequence): captured in the IR, projection deferred to rudof", async () => {
+    const diags = await diagnosticsFor(`
       @prefix sh: <http://www.w3.org/ns/shacl#> .
       @prefix ex: <http://example.org/> .
       ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
         sh:property [ sh:path ( ex:a ex:b ) ] .
     `);
-    expect(diags.some((d) => d.code === "unsupported-path")).toBe(true);
+    expect(diags.some((d) => d.code === "deferred-path")).toBe(true);
   });
 });
 
@@ -210,9 +246,7 @@ describe("SHACL validation", () => {
         <http://example.org/d1> a dcat:Dataset .
       `) as never[],
     );
-    const schema = shaclAdapter.parseSchema(shapesTtl);
-    const validator = shaclAdapter.createValidator(schema);
-    const results = await validator.validate({ data: data.getQuads(null, null, null, null) });
+    const results = await validateAgainst(shapesTtl, data);
     const errors = mapResults(results);
     // title, description and publisher are required (minCount >= 1)
     const allMessages = [...errors.values()].flat();
@@ -234,9 +268,7 @@ describe("SHACL validation", () => {
         <http://example.org/agent1> a foaf:Agent .
       `) as never[],
     );
-    const schema = shaclAdapter.parseSchema(shapesTtl);
-    const validator = shaclAdapter.createValidator(schema);
-    const results = await validator.validate({ data: data.getQuads(null, null, null, null) });
+    const results = await validateAgainst(shapesTtl, data);
     // The Agent (publisher) is missing foaf:name (minCount 1) — reported on the
     // agent node, not the root dataset (no focus filter drops it).
     const nameError = results.find((r) => r.path?.value.endsWith("/name"));
@@ -246,7 +278,7 @@ describe("SHACL validation", () => {
 });
 
 describe("seedFocusNode", () => {
-  it("seeds sh:defaultValue / sh:hasValue into an empty focus node", () => {
+  it("seeds sh:defaultValue / sh:hasValue into an empty focus node", async () => {
     const ttl = `
       @prefix sh: <http://www.w3.org/ns/shacl#> .
       @prefix ex: <http://example.org/> .
@@ -255,10 +287,9 @@ describe("seedFocusNode", () => {
         sh:property [ sh:path ex:status ; sh:defaultValue "draft" ] ;
         sh:property [ sh:path ex:kind ; sh:hasValue ex:Dataset ] .
     `;
-    const schema = shaclAdapter.parseSchema(ttl);
     const store = new Store();
     const focus = namedNode("http://example.org/d1");
-    shaclAdapter.seedFocusNode!(schema, store, focus, namedNode("http://example.org/S"));
+    seedFocusNode(await parseShapes(ttl), store, focus, namedNode("http://example.org/S"));
     const objects = store
       .getQuads(focus, null, null, null)
       .map((q) => q.object.value)

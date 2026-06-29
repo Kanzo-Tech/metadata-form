@@ -10,7 +10,7 @@ import type { FormModel } from "../../core/schema/FormModel.js";
 import type { FieldError, Validator } from "../../core/schema/validation.js";
 import type { DiagnosticSink, ParsedSchema, SchemaAdapter } from "../../core/schema/SchemaAdapter.js";
 import { GraphState } from "../../core/state/GraphState.js";
-import { shaclAdapter } from "../../core/adapters/shacl/index.js";
+import { createRudofShaclAdapter } from "../../core/rudof/adapter.js";
 import type { FormAssist } from "../widgets/widgets.js";
 import { computeFormReport, type FormReport } from "../validation/useFormReport.js";
 
@@ -92,7 +92,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const {
     shapes,
     data,
-    adapter = shaclAdapter,
+    adapter: providedAdapter,
     focusNode,
     rootShape,
     locale = "en",
@@ -103,6 +103,8 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     assist,
     onDiagnostic,
   } = options;
+
+  const adapter = useMemo(() => providedAdapter ?? createRudofShaclAdapter(), [providedAdapter]);
 
   const [prepared, setPrepared] = useState<Prepared | null>(null);
   const [error, setError] = useState<Error | undefined>(undefined);

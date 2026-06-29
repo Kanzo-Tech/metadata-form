@@ -1,5 +1,5 @@
 @prefix sh:        <http://www.w3.org/ns/shacl#> .
-@prefix dash:      <http://datashapes.org/dash#> .
+@prefix shui:      <http://www.w3.org/ns/shacl-ui#> .
 @prefix xsd:       <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#> .
@@ -45,7 +45,6 @@ ex:DatasetShape a sh:NodeShape ;
         sh:name "Title"@en ;
         sh:description "A name given to the dataset."@en ;
         sh:datatype xsd:string ;
-        dash:singleLine true ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:group ex:GeneralGroup ;
@@ -57,7 +56,7 @@ ex:DatasetShape a sh:NodeShape ;
         sh:name "Description"@en ;
         sh:description "A free-text account of the dataset."@en ;
         sh:datatype xsd:string ;
-        dash:singleLine false ;
+        shui:editor shui:TextAreaEditor ;
         sh:minCount 1 ;
         sh:group ex:GeneralGroup ;
         sh:order 2 ;
@@ -120,7 +119,7 @@ ex:DatasetShape a sh:NodeShape ;
         sh:name "Publisher"@en ;
         sh:description "The entity responsible for making the dataset available."@en ;
         sh:node ex:AgentShape ;
-        dash:editor dash:DetailsEditor ;
+        shui:editor shui:DetailsEditor ;
         sh:maxCount 1 ;
         sh:minCount 1 ;
         sh:group ex:ProvenanceGroup ;
@@ -131,7 +130,7 @@ ex:DatasetShape a sh:NodeShape ;
         sh:path dcat:contactPoint ;
         sh:name "Contact point"@en ;
         sh:node ex:ContactShape ;
-        dash:editor dash:DetailsEditor ;
+        shui:editor shui:DetailsEditor ;
         sh:maxCount 1 ;
         sh:group ex:ProvenanceGroup ;
         sh:order 4 ;
@@ -152,7 +151,7 @@ ex:DatasetShape a sh:NodeShape ;
         sh:name "Population coverage"@en ;
         sh:description "Description of the population covered by the dataset."@en ;
         sh:datatype xsd:string ;
-        dash:singleLine false ;
+        shui:editor shui:TextAreaEditor ;
         sh:maxCount 1 ;
         sh:group ex:HealthGroup ;
         sh:order 2 ;
@@ -182,7 +181,7 @@ ex:DatasetShape a sh:NodeShape ;
         sh:name "Distributions"@en ;
         sh:description "Accessible forms of the dataset."@en ;
         sh:node ex:DistributionShape ;
-        dash:editor dash:DetailsEditor ;
+        shui:editor shui:DetailsEditor ;
         sh:group ex:DistributionGroup ;
         sh:order 1 ;
     ] .
