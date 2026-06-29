@@ -1,4 +1,4 @@
-import type { Store } from "n3";
+import { Store } from "n3";
 import type { NamedNode, Term } from "@rdfjs/types";
 import { toTurtle } from "../rdf/serialize.js";
 import {
@@ -67,8 +67,15 @@ export function createRudofShaclAdapter(engine: RdfEngine = createRudofEngine())
     createValidator(schema: ParsedSchema): Validator {
       if (!isRudof(schema)) throw new Error("rudof adapter received a non-SHACL schema");
       return {
-        async validate({ data }) {
+        async validate({ data, focusNode, rootShape }) {
           await engine.loadData(await toTurtle(data as never));
+          // Scope to the form's focus + its resolved root shape when known —
+          // cheaper and semantically tighter than validating every shape's
+          // targets. Falls back to whole-graph validation otherwise.
+          if (focusNode) {
+            const shape = resolveRootShape(schema.shapes, new Store(data), focusNode, rootShape);
+            if (shape) return engine.validateFocus(focusNode, shape.id);
+          }
           return engine.validate();
         },
       };

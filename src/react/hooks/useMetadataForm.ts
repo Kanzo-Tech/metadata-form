@@ -183,7 +183,11 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     if (!prepared || validateOn !== "change") return;
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
-      const results = await prepared.validator.validate({ data: prepared.graph.allQuads() });
+      const results = await prepared.validator.validate({
+        data: prepared.graph.allQuads(),
+        focusNode: prepared.focusNode,
+        rootShape: rootShape ? (namedNode(rootShape) as NamedNode) : undefined,
+      });
       setErrors(mapResults(results));
     }, validationDebounceMs);
     return () => {
