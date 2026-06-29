@@ -1,6 +1,6 @@
 import type { Term } from "@rdfjs/types";
 import { blankNode, literal, namedNode } from "./factory.js";
-import type { TermValue } from "../shape/ShapeIR.js";
+import type { TermValue } from "../model/ShapeIR.js";
 
 /**
  * Conversion between RDF/JS {@link Term}s and the JSON-ish {@link TermValue} used

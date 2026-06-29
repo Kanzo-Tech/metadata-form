@@ -5,15 +5,15 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { Store } from "n3";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
-import { createRudofShaclAdapter } from "@/core/rudof/adapter.js";
-import { RudofEngine } from "@/core/rudof/RudofEngine.js";
-import { namedNode, literal } from "@/core/rdf/factory.js";
-import { buildFormModel } from "@/core/form/buildFormModel.js";
-import { projectTree, projectTreeSync } from "@/core/rudof/projectTree.js";
-import { allFields } from "@/core/schema/FormModel.js";
-import { Editors } from "@/core/vocab/shacl-ui.js";
-import type { RudofModule, RudofSession } from "@/core/rudof/abi.js";
-import type { ProjectedForm } from "@/core/shape/ShapeIR.js";
+import { createRudofShaclAdapter } from "@/shacl/adapter.js";
+import { RudofEngine } from "@/engine/RudofEngine.js";
+import { namedNode, literal } from "@/rdf/factory.js";
+import { buildFormModel } from "@/shacl/buildFormModel.js";
+import { projectTree, projectTreeSync } from "@/engine/projectTree.js";
+import { allFields } from "@/model/FormModel.js";
+import { Editors } from "@/shacl/vocab/shacl-ui.js";
+import type { RudofModule, RudofSession } from "@/engine/abi.js";
+import type { ProjectedForm } from "@/model/ShapeIR.js";
 import { healthDcatApShapes, healthDcatApRootShape, healthDcatApSampleData } from "@examples/health-dcat-ap/index.js";
 
 /**

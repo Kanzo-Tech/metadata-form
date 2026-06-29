@@ -1,9 +1,9 @@
 import type { Term } from "@rdfjs/types";
 import { toTerm } from "../rdf/termValue.js";
-import { pathKey } from "../shape/pathKey.js";
-import type { ProjectedForm, ShapeModel } from "../shape/ShapeIR.js";
-import type { ProjectedValues } from "../form/buildFormModel.js";
-import type { RdfEngine } from "../ports/RdfEngine.js";
+import { pathKey } from "./pathKey.js";
+import type { ProjectedForm, ShapeModel } from "../model/ShapeIR.js";
+import type { ProjectedValues } from "../model/SchemaAdapter.js";
+import type { RdfEngine } from "./ports/RdfEngine.js";
 
 /** A synchronous projector: `(focus, shapeId) => ProjectedForm`. */
 export type SyncProjector = (focus: Term, shapeId: string) => ProjectedForm;

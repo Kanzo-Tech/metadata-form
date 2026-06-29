@@ -1,4 +1,4 @@
-import type { PathExpr } from "./ShapeIR.js";
+import type { PathExpr } from "../model/ShapeIR.js";
 
 /**
  * A canonical, stable string for a {@link PathExpr}, used to key a property's

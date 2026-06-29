@@ -1,7 +1,7 @@
 import { streamText, streamObject, type LanguageModel } from "ai";
 import { z } from "zod";
-import type { FieldModel } from "../core/schema/FormModel.js";
-import type { GraphState } from "../core/state/GraphState.js";
+import type { FieldModel } from "../model/FormModel.js";
+import type { GraphState } from "../state/GraphState.js";
 import type { FieldSuggestion, FormAssist } from "../react/widgets/widgets.js";
 
 /**

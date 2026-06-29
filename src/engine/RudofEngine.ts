@@ -1,10 +1,10 @@
 import type { Quad, Term } from "@rdfjs/types";
 import { quad } from "../rdf/factory.js";
 import { toTerm, toTermValue } from "../rdf/termValue.js";
-import type { ProjectedForm, ShapeModel } from "../shape/ShapeIR.js";
-import type { GraphBackend } from "../ports/GraphBackend.js";
-import type { RdfEngine } from "../ports/RdfEngine.js";
-import type { Severity, ValidationResult } from "../schema/validation.js";
+import type { ProjectedForm, ShapeModel } from "../model/ShapeIR.js";
+import type { GraphBackend } from "./ports/GraphBackend.js";
+import type { RdfEngine } from "./ports/RdfEngine.js";
+import type { Severity, ValidationResult } from "../model/validation.js";
 import { shapeModelFromJson } from "./rehydrate.js";
 import type { RudofLoader, RudofResult, RudofSession } from "./abi.js";
 

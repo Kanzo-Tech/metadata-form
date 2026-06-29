@@ -9,7 +9,7 @@ import { loadRudof } from "./loader.js";
 export { loadRudof };
 export { RudofEngine } from "./RudofEngine.js";
 export { projectTree, projectTreeSync, type SyncProjector } from "./projectTree.js";
-export { createRudofShaclAdapter } from "./adapter.js";
+export { createRudofShaclAdapter } from "../shacl/adapter.js";
 
 /** A ready-to-use {@link RudofEngine} backed by the wasm loader. */
 export function createRudofEngine(): RudofEngine {

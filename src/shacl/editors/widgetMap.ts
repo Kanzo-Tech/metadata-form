@@ -1,6 +1,6 @@
-import { NS } from "../rdf/factory.js";
+import { NS } from "../../rdf/factory.js";
 import { Editors } from "../vocab/shacl-ui.js";
-import type { FieldModel } from "../schema/FormModel.js";
+import type { FieldModel } from "../../model/FormModel.js";
 
 /**
  * Presentational widget kinds. The canonical home is core (not React) so the

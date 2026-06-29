@@ -2,8 +2,7 @@ import type { Store } from "n3";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import type { FormModel } from "./FormModel.js";
 import type { Validator } from "./validation.js";
-import type { GraphBackend } from "../ports/GraphBackend.js";
-import type { ProjectedValues } from "../form/buildFormModel.js";
+import type { GraphBackend } from "../engine/ports/GraphBackend.js";
 
 /**
  * Opaque, adapter-specific parsed schema. The SHACL adapter stores the shapes
@@ -12,6 +11,19 @@ import type { ProjectedValues } from "../form/buildFormModel.js";
 export interface ParsedSchema {
   readonly language: string;
 }
+
+/** One projected value occurrence: the value term, plus the sub-focus to recurse
+ *  into for nested (sh:node) properties. */
+export interface ProjectedSlot {
+  value: Term;
+  nestedFocus?: Term;
+}
+
+/** Pre-projected values keyed by `${focusNode}|${pathKey}`. When supplied, values
+ *  come from here (the engine's `projectForm`, projected recursively up front so
+ *  the build stays sync) instead of being read from the n3 `data` store. This is
+ *  the language-agnostic projection contract exchanged across the adapter seam. */
+export type ProjectedValues = Map<string, ProjectedSlot[]>;
 
 /** A non-fatal issue surfaced while building the form (instead of failing
  * silently) — e.g. a property dropped for an unsupported path, or a `sh:node`

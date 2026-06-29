@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Store } from "n3";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
-import { namedNode } from "../../core/rdf/factory.js";
-import { collectPrefixes, toStore, type RdfInput } from "../../core/rdf/parse.js";
-import { toJsonLd, toTurtle } from "../../core/rdf/serialize.js";
-import type { JsonLdOptions, SerializeOptions } from "../../core/rdf/serialize.js";
-import { mapResults } from "../../core/validation/mapResults.js";
-import type { FormModel } from "../../core/schema/FormModel.js";
-import type { FieldError, Validator } from "../../core/schema/validation.js";
-import type { DiagnosticSink, ParsedSchema, SchemaAdapter } from "../../core/schema/SchemaAdapter.js";
-import { GraphState } from "../../core/state/GraphState.js";
-import { createRudofShaclAdapter } from "../../core/rudof/adapter.js";
+import { namedNode } from "../../rdf/factory.js";
+import { collectPrefixes, toStore, type RdfInput } from "../../rdf/parse.js";
+import { toJsonLd, toTurtle } from "../../rdf/serialize.js";
+import type { JsonLdOptions, SerializeOptions } from "../../rdf/serialize.js";
+import { mapResults } from "../../validation/mapResults.js";
+import type { FormModel } from "../../model/FormModel.js";
+import type { FieldError, Validator } from "../../model/validation.js";
+import type { DiagnosticSink, ParsedSchema, SchemaAdapter } from "../../model/SchemaAdapter.js";
+import { GraphState } from "../../state/GraphState.js";
+import { createRudofShaclAdapter } from "../../shacl/adapter.js";
 import type { FormAssist } from "../widgets/widgets.js";
 import { computeFormReport, type FormReport } from "../validation/useFormReport.js";
 

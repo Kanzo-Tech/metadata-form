@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import type { Term } from "@rdfjs/types";
-import { literal, namedNode, NS } from "../../core/rdf/factory.js";
-import { NUMERIC, resolveWidgetKind, type WidgetKind } from "../../core/editors/widgetMap.js";
-import type { FieldModel } from "../../core/schema/FormModel.js";
-import type { GraphState } from "../../core/state/GraphState.js";
+import { literal, namedNode, NS } from "../../rdf/factory.js";
+import { NUMERIC, resolveWidgetKind, type WidgetKind } from "../../shacl/editors/widgetMap.js";
+import type { FieldModel } from "../../model/FormModel.js";
+import type { GraphState } from "../../state/GraphState.js";
 
 /**
  * The presentation contract. Widgets are *dumb*: they render an input for a

@@ -3,10 +3,10 @@ import {
   createEditorResolver,
   deriveContext,
   type EditorRule,
-} from "../src/core/editors/EditorResolver.js";
-import { Editors } from "../src/core/vocab/shacl-ui.js";
-import { NS } from "../src/core/rdf/factory.js";
-import type { PropertyShapeIR, ValueConstraints } from "../src/core/shape/ShapeIR.js";
+} from "../src/shacl/editors/EditorResolver.js";
+import { Editors } from "../src/shacl/vocab/shacl-ui.js";
+import { NS } from "../src/rdf/factory.js";
+import type { PropertyShapeIR, ValueConstraints } from "../src/model/ShapeIR.js";
 
 const XSD = NS.xsd;
 

@@ -1,6 +1,6 @@
 import type { Term } from "@rdfjs/types";
-import type { ProjectedForm, ShapeModel } from "../shape/ShapeIR.js";
-import type { ValidationResult } from "../schema/validation.js";
+import type { ProjectedForm, ShapeModel } from "../../model/ShapeIR.js";
+import type { ValidationResult } from "../../model/validation.js";
 import type { GraphBackend } from "./GraphBackend.js";
 
 /**

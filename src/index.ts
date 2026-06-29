@@ -55,7 +55,7 @@ export type {
   BuildFormModelArgs,
   Diagnostic,
   DiagnosticSink,
-} from "./core/schema/SchemaAdapter.js";
+} from "./model/SchemaAdapter.js";
 export type {
   FormModel,
   GroupModel,
@@ -64,17 +64,17 @@ export type {
   FieldConstraints,
   FieldOption,
   EditorId,
-} from "./core/schema/FormModel.js";
-export { allFields } from "./core/schema/FormModel.js";
+} from "./model/FormModel.js";
+export { allFields } from "./model/FormModel.js";
 export type {
   Validator,
   ValidationResult,
   FieldError,
   Severity,
-} from "./core/schema/validation.js";
+} from "./model/validation.js";
 
 // Editors (SHACL-UI editor ids + rule-based resolution)
-export { Editors, type KnownEditorId } from "./core/vocab/shacl-ui.js";
+export { Editors, type KnownEditorId } from "./shacl/vocab/shacl-ui.js";
 export {
   createEditorResolver,
   defaultEditorRules,
@@ -82,12 +82,12 @@ export {
   type EditorResolver,
   type EditorRule,
   type ResolutionContext,
-} from "./core/editors/EditorResolver.js";
+} from "./shacl/editors/EditorResolver.js";
 export {
   resolveWidgetKind,
   defaultWidgetKindMap,
   type WidgetKindMap,
-} from "./core/editors/widgetMap.js";
+} from "./shacl/editors/widgetMap.js";
 
 // Shape IR (vocabulary-agnostic parsing seam)
 export type {
@@ -103,14 +103,14 @@ export type {
   ProjectedForm,
   ProjectedProperty,
   ProjectedValue,
-} from "./core/shape/ShapeIR.js";
-export { pathKey } from "./core/shape/pathKey.js";
+} from "./model/ShapeIR.js";
+export { pathKey } from "./engine/pathKey.js";
 
 // Engine ports (hexagonal) + the rudof engine (the default; backed by the wasm loader)
-export type { RdfEngine } from "./core/ports/RdfEngine.js";
-export type { GraphBackend } from "./core/ports/GraphBackend.js";
-export { RudofEngine } from "./core/rudof/RudofEngine.js";
-export { shapeModelFromJson } from "./core/rudof/rehydrate.js";
+export type { RdfEngine } from "./engine/ports/RdfEngine.js";
+export type { GraphBackend } from "./engine/ports/GraphBackend.js";
+export { RudofEngine } from "./engine/RudofEngine.js";
+export { shapeModelFromJson } from "./engine/rehydrate.js";
 export type {
   RudofModule,
   RudofSession,
@@ -119,13 +119,13 @@ export type {
   RudofReport,
   RudofResult,
   ShapeModelJson,
-} from "./core/rudof/abi.js";
+} from "./engine/abi.js";
 
 // The default engine is rudof-over-WASM (see `RudofEngine` / `createRudofShaclAdapter`).
-export { createRudofShaclAdapter } from "./core/rudof/adapter.js";
+export { createRudofShaclAdapter } from "./shacl/adapter.js";
 
 // RDF utilities
-export { toStore, toStoreSync, parseTurtle, parseJsonLd } from "./core/rdf/parse.js";
-export { toTurtle, toJsonLd, toNQuads } from "./core/rdf/serialize.js";
-export { GraphState } from "./core/state/GraphState.js";
-export * as ns from "./core/rdf/factory.js";
+export { toStore, toStoreSync, parseTurtle, parseJsonLd } from "./rdf/parse.js";
+export { toTurtle, toJsonLd, toNQuads } from "./rdf/serialize.js";
+export { GraphState } from "./state/GraphState.js";
+export * as ns from "./rdf/factory.js";

@@ -4,19 +4,19 @@ import type { Term } from "@rdfjs/types";
 import {
   buildFormModel,
   seedFocusNode,
-} from "@/core/form/buildFormModel.js";
-import { createRudofEngine } from "@/core/rudof/index.js";
-import { Editors } from "@/core/vocab/shacl-ui.js";
-import { allFields } from "@/core/schema/FormModel.js";
+} from "@/shacl/buildFormModel.js";
+import { createRudofEngine } from "@/engine/index.js";
+import { Editors } from "@/shacl/vocab/shacl-ui.js";
+import { allFields } from "@/model/FormModel.js";
 import { computeFormReport } from "@/react/validation/useFormReport.js";
-import type { DiagnosticSink } from "@/core/schema/SchemaAdapter.js";
-import type { FieldError, ValidationResult } from "@/core/schema/validation.js";
-import { mapResults } from "@/core/validation/mapResults.js";
-import { toJsonLd, toTurtle } from "@/core/rdf/serialize.js";
-import type { Diagnostic } from "@/core/schema/SchemaAdapter.js";
-import { parseTurtle } from "@/core/rdf/parse.js";
-import { namedNode } from "@/core/rdf/factory.js";
-import type { ShapeModel } from "@/core/shape/ShapeIR.js";
+import type { DiagnosticSink } from "@/model/SchemaAdapter.js";
+import type { FieldError, ValidationResult } from "@/model/validation.js";
+import { mapResults } from "@/validation/mapResults.js";
+import { toJsonLd, toTurtle } from "@/rdf/serialize.js";
+import type { Diagnostic } from "@/model/SchemaAdapter.js";
+import { parseTurtle } from "@/rdf/parse.js";
+import { namedNode } from "@/rdf/factory.js";
+import type { ShapeModel } from "@/model/ShapeIR.js";
 import { healthDcatApShapes, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
 
 const shapesTtl = healthDcatApShapes;

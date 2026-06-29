@@ -1,4 +1,4 @@
-import type { ShapeModel } from "../shape/ShapeIR.js";
+import type { ShapeModel } from "../model/ShapeIR.js";
 import type { ShapeModelJson } from "./abi.js";
 
 /** Rehydrate the JSON shape model (arrays) into the {@link ShapeModel} (Maps). */

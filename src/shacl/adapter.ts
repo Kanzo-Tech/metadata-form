@@ -8,21 +8,21 @@ import {
   freshFocusNode,
   resolveRootShape,
   resolveRootShapeFromTypes,
-} from "../form/buildFormModel.js";
+} from "./buildFormModel.js";
 import type {
   BuildFormModelArgs,
   GraphSession,
   ParsedSchema,
+  ProjectedValues,
   SchemaAdapter,
-} from "../schema/SchemaAdapter.js";
-import type { ProjectedValues } from "../form/buildFormModel.js";
-import type { FormModel } from "../schema/FormModel.js";
-import type { Validator } from "../schema/validation.js";
-import type { GraphBackend } from "../ports/GraphBackend.js";
-import type { NodeShapeIR, ShapeModel } from "../shape/ShapeIR.js";
-import type { RdfEngine } from "../ports/RdfEngine.js";
-import { projectTreeSync } from "./projectTree.js";
-import { createRudofEngine } from "./index.js";
+} from "../model/SchemaAdapter.js";
+import type { FormModel } from "../model/FormModel.js";
+import type { Validator } from "../model/validation.js";
+import type { GraphBackend } from "../engine/ports/GraphBackend.js";
+import type { NodeShapeIR, ShapeModel } from "../model/ShapeIR.js";
+import type { RdfEngine } from "../engine/ports/RdfEngine.js";
+import { projectTreeSync } from "../engine/projectTree.js";
+import { createRudofEngine } from "../engine/index.js";
 
 const RDF_TYPE = namedNode(rdf("type").value);
 

@@ -3,13 +3,13 @@ import type { NamedNode, Term } from "@rdfjs/types";
 import { blankNode, namedNode, quad, rdf } from "../rdf/factory.js";
 import { pickByLanguage } from "../rdf/terms.js";
 import { toTerm } from "../rdf/termValue.js";
-import { Sh } from "../vocab/shacl.js";
+import { Sh } from "./vocab/shacl.js";
 import {
   createEditorResolver,
   deriveContext,
   type EditorResolver,
-} from "../editors/EditorResolver.js";
-import { Editors } from "../vocab/shacl-ui.js";
+} from "./editors/EditorResolver.js";
+import { Editors } from "./vocab/shacl-ui.js";
 import type {
   FieldConstraints,
   FieldModel,
@@ -17,30 +17,18 @@ import type {
   FormModel,
   GroupModel,
   ValueSlot,
-} from "../schema/FormModel.js";
-import type { DiagnosticSink } from "../schema/SchemaAdapter.js";
+} from "../model/FormModel.js";
+import type { DiagnosticSink, ProjectedValues } from "../model/SchemaAdapter.js";
 import type {
   NodeShapeIR,
   PropertyShapeIR,
   ShapeModel,
-} from "../shape/ShapeIR.js";
+} from "../model/ShapeIR.js";
 
 /** Objects of `subject predicate ?o` in the n3 data store. */
 function objects(store: Store, subject: Term, predicate: NamedNode): Term[] {
   return store.getQuads(subject, predicate, null, null).map((q) => q.object as Term);
 }
-
-/** One projected value occurrence: the value term, plus the sub-focus to recurse
- *  into for nested (sh:node) properties. */
-export interface ProjectedSlot {
-  value: Term;
-  nestedFocus?: Term;
-}
-
-/** Pre-projected values keyed by `${focusNode}|${pathKey}`. When supplied, values
- *  come from here (the rudof engine's `projectForm`, projected recursively up
- *  front so the build stays sync) instead of being read from the n3 `data` store. */
-export type ProjectedValues = Map<string, ProjectedSlot[]>;
 
 export interface BuildArgs {
   shapes: ShapeModel;

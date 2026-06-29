@@ -1,5 +1,5 @@
 import { Card, Flex, Heading } from "@radix-ui/themes";
-import type { FormModel } from "../../core/schema/FormModel.js";
+import type { FormModel } from "../../model/FormModel.js";
 import type { GridLayout } from "../form/context.js";
 import { FieldsGrid } from "./FieldsGrid.js";
 

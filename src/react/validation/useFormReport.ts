@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import type { FieldModel, FormModel } from "../../core/schema/FormModel.js";
-import type { FieldError, Severity } from "../../core/schema/validation.js";
+import type { FieldModel, FormModel } from "../../model/FormModel.js";
+import type { FieldError, Severity } from "../../model/validation.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 
 /**

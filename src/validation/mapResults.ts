@@ -1,5 +1,5 @@
 import type { Term } from "@rdfjs/types";
-import type { FieldError, ValidationResult } from "../schema/validation.js";
+import type { FieldError, ValidationResult } from "../model/validation.js";
 
 /** Key matching FieldModel.id: `${focusNode}|${path}`. */
 export function fieldKey(focusNode: Term, path: Term): string {

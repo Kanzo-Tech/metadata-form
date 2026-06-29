@@ -11,7 +11,7 @@ const entries = {
   // Optional adapter subpath — Vercel AI SDK lives here, never in the core.
   "ai/index": r("src/ai/index.ts"),
   // Direct rudof-engine access subpath (`metadata-form/rudof`) for custom wiring.
-  "rudof/index": r("src/core/rudof/index.ts"),
+  "rudof/index": r("src/engine/index.ts"),
 };
 
 // Anything that must NOT be bundled into the library output.

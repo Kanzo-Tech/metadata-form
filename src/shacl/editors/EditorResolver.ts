@@ -1,7 +1,7 @@
 import { Editors } from "../vocab/shacl-ui.js";
-import { NS } from "../rdf/factory.js";
-import type { EditorId } from "../schema/FormModel.js";
-import type { PropertyShapeIR } from "../shape/ShapeIR.js";
+import { NS } from "../../rdf/factory.js";
+import type { EditorId } from "../../model/FormModel.js";
+import type { PropertyShapeIR } from "../../model/ShapeIR.js";
 
 const XSD = NS.xsd;
 const RDF_LANGSTRING = `${NS.rdf}langString`;

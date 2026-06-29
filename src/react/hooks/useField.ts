@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import type { Term } from "@rdfjs/types";
 import { useFocusNode, useFormContext } from "../form/context.js";
-import { fieldKey } from "../../core/validation/mapResults.js";
-import type { FieldModel } from "../../core/schema/FormModel.js";
-import type { FieldError } from "../../core/schema/validation.js";
+import { fieldKey } from "../../validation/mapResults.js";
+import type { FieldModel } from "../../model/FormModel.js";
+import type { FieldError } from "../../model/validation.js";
 
 export interface UseFieldResult {
   errors: FieldError[];
