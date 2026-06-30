@@ -63,7 +63,6 @@
     "@codemirror/commands": "^6.10.3",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.43.1",
-    "@rdfjs/dataset": "^2.0.2",
     "@rdfjs/namespace": "^2.0.1",
     "downshift": "^9.3.6",
     "jsonld": "^8.3.2",

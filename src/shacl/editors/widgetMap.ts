@@ -1,5 +1,6 @@
 import { NS } from "../../rdf/factory.js";
 import { Editors } from "../vocab/shacl-ui.js";
+import { SH_IRI } from "../vocab/shacl.js";
 import type { FieldModel } from "../../model/FormModel.js";
 
 /**
@@ -21,7 +22,6 @@ export type WidgetKind =
 
 const XSD = NS.xsd;
 const RDF_LANGSTRING = `${NS.rdf}langString`;
-const SH_IRI = `${NS.sh}IRI`;
 
 export const NUMERIC = new Set(
   ["integer", "int", "long", "short", "byte", "decimal", "float", "double",

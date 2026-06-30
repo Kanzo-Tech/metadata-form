@@ -4,7 +4,7 @@ import { blankNode, namedNode, quad, rdf } from "../rdf/factory.js";
 import { pickByLanguage } from "../rdf/terms.js";
 import { toTerm } from "../rdf/termValue.js";
 import { pathKey } from "../engine/pathKey.js";
-import { Sh } from "./vocab/shacl.js";
+import { SH_IRI } from "./vocab/shacl.js";
 import {
   createEditorResolver,
   deriveContext,
@@ -182,7 +182,7 @@ function buildInverseField(ps: PropertyShapeIR, predicate: NamedNode, ctx: Field
     maxCount: undefined,
     order: ps.presentation.order ?? Number.MAX_SAFE_INTEGER,
     groupId: ps.presentation.groupId ?? DEFAULT_GROUP,
-    constraints: { nodeKind: Sh.IRI },
+    constraints: { nodeKind: SH_IRI },
     readOnly: true,
     nodeShape: null,
     values,

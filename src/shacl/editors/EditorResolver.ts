@@ -1,4 +1,6 @@
 import { Editors } from "../vocab/shacl-ui.js";
+import { SH_IRI } from "../vocab/shacl.js";
+import { NUMERIC } from "./widgetMap.js";
 import { NS } from "../../rdf/factory.js";
 import type { EditorId } from "../../model/FormModel.js";
 import type { PropertyShapeIR } from "../../model/ShapeIR.js";
@@ -6,14 +8,6 @@ import type { PropertyShapeIR } from "../../model/ShapeIR.js";
 const XSD = NS.xsd;
 const RDF_LANGSTRING = `${NS.rdf}langString`;
 const RDF_HTML = `${NS.rdf}HTML`;
-const SH_IRI = `${NS.sh}IRI`;
-
-const NUMERIC = new Set([
-  "integer", "decimal", "float", "double",
-  "long", "int", "short", "byte",
-  "nonNegativeInteger", "positiveInteger", "nonPositiveInteger", "negativeInteger",
-  "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte",
-].map((n) => `${XSD}${n}`));
 
 /**
  * Neutral facts a rule sees, derived from a {@link PropertyShapeIR} by
