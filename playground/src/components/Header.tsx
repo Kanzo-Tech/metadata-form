@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Kbd, Link, Text } from "@radix-ui/themes";
+import { Box, Button, Flex, Heading, Kbd, Link, Separator, Text } from "@radix-ui/themes";
 import { CheckIcon, CodeIcon, FileTextIcon, Share1Icon } from "@radix-ui/react-icons";
 import { ValidationSummary } from "metadata-form";
 import { Toggle } from "./Toggle.js";
@@ -49,7 +49,7 @@ export function Header({
         py="1"
         style={{ flexShrink: 0, background: "var(--gray-a2)", borderBottom: PANEL_BORDER }}
       >
-        <Flex align="center" gap="3">
+        <Flex align="center" gap="4">
           <ExamplePickers
             examples={examples}
             shapeId={shapeId}
@@ -58,8 +58,9 @@ export function Header({
             onPickShape={onPickShape}
             onPickData={onPickData}
           />
+          <Separator orientation="vertical" />
           {/* Copy a self-contained permalink (shapes + data compressed into the URL
-              fragment). Explicit-only so edits don't spam history. */}
+              fragment). Picks keep the URL in sync; Share commits the current edits. */}
           <Button size="1" variant="ghost" color="gray" onClick={onShare}>
             {shared ? <CheckIcon /> : <Share1Icon />}
             {shared ? "Copied!" : "Share"}

@@ -35,9 +35,10 @@ function ThemedApp() {
   // The assistance seam is wired only when an API key is present.
   const assist = useMemo<FormAssist | undefined>(() => (apiKey ? makeAssist(apiKey) : undefined), [apiKey]);
 
-  // Permalink: hydrate the workspace from location.hash on load; Share writes it back.
-  const { initial, share, shared } = useUrlState();
-  const workspace = useWorkspace(initial);
+  // Permalink: the URL fragment is the source of truth. Hydrate from it on load,
+  // keep it in sync on example/data picks, and copy it on Share.
+  const { initial, writeUrl, share, shared } = useUrlState();
+  const workspace = useWorkspace(initial, writeUrl);
   const { shapeText, dataText, setShapeText, setDataText, applied, shape, options } = workspace;
 
   const isNarrow = useMediaQuery(NARROW);
