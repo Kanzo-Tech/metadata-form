@@ -166,15 +166,23 @@ function buildField(
 function buildInverseField(ps: PropertyShapeIR, predicate: NamedNode, ctx: FieldCtx): FieldModel {
   const id = `${ctx.focusNode.value}|^${predicate.value}`;
   const label = pickByLanguage(ps.presentation.names, ctx.locale)?.value ?? `← ${localName(predicate.value)}`;
-  const description = pickByLanguage(ps.presentation.descriptions, ctx.locale)?.value;
-  const slots = ctx.values.get(`${ctx.focusNode.value}|^${predicate.value}`) ?? [];
-  const values: ValueSlot[] = slots.map((s, i) => ({ id: `${id}#${i}`, value: s.value }));
+  return buildReadOnlyField(ps, ctx, { id, label, path: predicate, constraints: { nodeKind: SH_IRI } });
+}
 
+/** A read-only IRI field whose values rudof projects over the graph (inverse and
+ * complex paths share this shape). Keyed by `id`; never written back. */
+function buildReadOnlyField(
+  ps: PropertyShapeIR,
+  ctx: FieldCtx,
+  opts: { id: string; label: string; path: NamedNode; constraints: FieldConstraints },
+): FieldModel {
+  const description = pickByLanguage(ps.presentation.descriptions, ctx.locale)?.value;
+  const slots = ctx.values.get(opts.id) ?? [];
   return {
-    id,
-    path: predicate,
+    id: opts.id,
+    path: opts.path,
     pathKind: "complex",
-    label,
+    label: opts.label,
     description,
     editorId: Editors.IRI,
     required: false,
@@ -183,44 +191,21 @@ function buildInverseField(ps: PropertyShapeIR, predicate: NamedNode, ctx: Field
     maxCount: undefined,
     order: ps.presentation.order ?? Number.MAX_SAFE_INTEGER,
     groupId: ps.presentation.groupId ?? DEFAULT_GROUP,
-    constraints: { nodeKind: SH_IRI },
+    constraints: opts.constraints,
     readOnly: true,
     nodeShape: null,
-    values,
+    values: slots.map((s, i) => ({ id: `${opts.id}#${i}`, value: s.value })),
   };
 }
 
 /** Read-only field for an arbitrary complex path (sequence / alternative /
- * quantified / nested inverse): the engine projects its values over the single
- * graph, keyed by the path's canonical `pathKey` (emitted by rudof). Rendered. */
+ * quantified / nested inverse): rudof projects its values, keyed by the path's
+ * canonical `pathKey`. The synthetic `namedNode(key)` path is never written back. */
 function buildComplexField(ps: PropertyShapeIR, ctx: FieldCtx): FieldModel {
   const key = ps.pathKey;
   const id = `${ctx.focusNode.value}|${key}`;
   const label = pickByLanguage(ps.presentation.names, ctx.locale)?.value ?? key;
-  const description = pickByLanguage(ps.presentation.descriptions, ctx.locale)?.value;
-  const slots = ctx.values.get(id) ?? [];
-  const values: ValueSlot[] = slots.map((s, i) => ({ id: `${id}#${i}`, value: s.value }));
-
-  return {
-    id,
-    // A synthetic predicate carrying the canonical path string; the field is
-    // read-only, so it is never written back through this term.
-    path: namedNode(key),
-    pathKind: "complex",
-    label,
-    description,
-    editorId: Editors.IRI,
-    required: false,
-    repeatable: true,
-    minCount: 0,
-    maxCount: undefined,
-    order: ps.presentation.order ?? Number.MAX_SAFE_INTEGER,
-    groupId: ps.presentation.groupId ?? DEFAULT_GROUP,
-    constraints: {},
-    readOnly: true,
-    nodeShape: null,
-    values,
-  };
+  return buildReadOnlyField(ps, ctx, { id, label, path: namedNode(key), constraints: {} });
 }
 
 function projectValues(

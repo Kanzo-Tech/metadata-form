@@ -1,14 +1,16 @@
 {
   "name": "metadata-form",
   "version": "0.1.0",
-  "description": "Auto-generate editable React forms from SHACL/DASH shapes (extensible to ShEx). Output RDF metadata as Turtle and JSON-LD.",
+  "description": "Auto-generate editable React forms from SHACL shapes, powered by the rudof engine (WebAssembly). Edit an RDF graph and serialize to Turtle and JSON-LD.",
   "type": "module",
   "license": "MIT",
   "keywords": [
     "rdf",
     "shacl",
-    "dash",
+    "shacl-ui",
     "shex",
+    "rudof",
+    "wasm",
     "form",
     "react",
     "dcat",
@@ -19,7 +21,8 @@
   ],
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -38,31 +41,37 @@
     }
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --config playground/vite.config.ts",
     "build": "vite build",
-    "preview": "vite preview",
+    "build:playground": "vite build --config playground/vite.config.ts",
+    "preview": "vite preview --config playground/vite.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p playground/tsconfig.json",
     "lint": "eslint .",
     "build:wasm": "bash ../rudof-fork/rudof_wasm/build.sh"
   },
   "peerDependencies": {
-    "@radix-ui/themes": ">=3",
     "@radix-ui/react-icons": ">=1.3",
+    "@radix-ui/themes": ">=3",
+    "ai": ">=5",
     "react": ">=18",
     "react-dom": ">=18",
-    "ai": ">=5",
     "zod": ">=3.23"
   },
   "peerDependenciesMeta": {
-    "ai": { "optional": true },
-    "zod": { "optional": true }
+    "ai": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@codemirror/commands": "^6.10.3",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.43.1",
+    "@kanzo-tech/rudof-wasm": "^0.3.4",
     "downshift": "^9.3.6"
   },
   "devDependencies": {
@@ -84,6 +93,7 @@
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^26.0.0",
+    "lz-string": "^1.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.7.3",

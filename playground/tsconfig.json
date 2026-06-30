@@ -8,10 +8,10 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "metadata-form/ai": ["./src/ai/index.ts"],
-      "metadata-form": ["./src/index.ts"],
-      "@/*": ["./src/*"],
-      "@examples/*": ["./playground/examples/*"]
+      "metadata-form/ai": ["../src/ai/index.ts"],
+      "metadata-form": ["../src/index.ts"],
+      "@/*": ["../src/*"],
+      "@examples/*": ["./examples/*"]
     },
     "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
@@ -27,13 +27,5 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
   },
-  "//": "The playground app is its own project (playground/tsconfig.json). This (lib + tests) keeps only the shared example fixtures the tests import via @examples, plus their ?raw ambient.",
-  "include": [
-    "src",
-    "test",
-    "playground/examples",
-    "playground/raw.d.ts",
-    "vite.config.ts",
-    "vitest.config.ts"
-  ]
+  "include": [".", "vite.config.ts"]
 }

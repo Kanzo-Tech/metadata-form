@@ -4,36 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>metadata-form playground</title>
-    <style>
-      /* Radix <Theme> sets min-height:100vh on its root; the browser's default
-         8px body margin then pushes the page past the viewport → a vertical
-         scrollbar even when content is short. Resetting the margin fixes it.
-         (The off-canvas Preferences panel is clipped by its own fixed wrapper,
-         so no global overflow rule is needed for it.) */
-      body { margin: 0; }
-
-      /* IDE-style panel divider (playground ResizeHandle): the hairline thickens
-         and picks up the accent colour on hover/drag. */
-      .mf-resize-handle > span { transition: background 120ms, width 120ms; }
-      .mf-resize-handle:hover > span,
-      .mf-resize-handle:active > span { width: 2px; background: var(--accent-9); }
-
-      /* Narrow viewports: the full-screen aside slides in/out from its own edge. */
-      @keyframes mf-aside-in-left { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-      @keyframes mf-aside-in-right { from { transform: translateX(100%); } to { transform: translateX(0); } }
-      @keyframes mf-aside-out-left { from { transform: translateX(0); } to { transform: translateX(-100%); } }
-      @keyframes mf-aside-out-right { from { transform: translateX(0); } to { transform: translateX(100%); } }
-      .mf-aside-in-left { animation: mf-aside-in-left 180ms ease-out; }
-      .mf-aside-in-right { animation: mf-aside-in-right 180ms ease-out; }
-      .mf-aside-out-left { animation: mf-aside-out-left 160ms ease-in forwards; }
-      .mf-aside-out-right { animation: mf-aside-out-right 160ms ease-in forwards; }
-      @media (prefers-reduced-motion: reduce) {
-        .mf-aside-in-left, .mf-aside-in-right, .mf-aside-out-left, .mf-aside-out-right { animation: none; }
-      }
-    </style>
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./main.tsx"></script>
+    <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
