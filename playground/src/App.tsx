@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Box, Card, Flex, Text, Theme } from "@radix-ui/themes";
 import { FormAssistant, MetadataForm, useMetadataForm, type FormAssist } from "metadata-form";
 import { Preferences, usePreferences } from "./Preferences.js";
@@ -6,7 +6,9 @@ import { Header } from "./components/Header.js";
 import { AsideSection } from "./components/Aside.js";
 import { CodePanel, CodeEditor } from "./components/CodePanel.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
-import { useAsidePresence } from "./hooks/useAsidePresence.js";
+import { usePanels } from "./hooks/usePanels.js";
+import { useHotkey } from "./hooks/useHotkey.js";
+import { useFormOutputs } from "./hooks/useFormOutputs.js";
 import { useUrlState } from "./hooks/useUrlState.js";
 import { useWorkspace } from "./state/useWorkspace.js";
 import { makeAssist } from "./lib/assist.js";
@@ -43,51 +45,14 @@ function ThemedApp() {
 
   const isNarrow = useMediaQuery(NARROW);
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  // Everything starts collapsed — the form is the only panel shown by default.
-  const [showSource, setShowSource] = useState(false);
-  const [showOutput, setShowOutput] = useState(false);
-  const [sourceW, setSourceW] = useState(DEFAULT_SOURCE_W);
-  const [outputW, setOutputW] = useState(DEFAULT_OUTPUT_W);
-
-  // Crossing into a narrow viewport collapses everything to form-only.
-  useEffect(() => {
-    if (isNarrow) {
-      setShowSource(false);
-      setShowOutput(false);
-    }
-  }, [isNarrow]);
-
-  // On narrow viewports only one panel is active at a time, so opening one closes the other.
-  const toggleSource = useCallback(() => {
-    const opening = !showSource;
-    setShowSource(opening);
-    if (opening && isNarrow) setShowOutput(false);
-  }, [showSource, isNarrow]);
-  const toggleOutput = useCallback(() => {
-    const opening = !showOutput;
-    setShowOutput(opening);
-    if (opening && isNarrow) setShowSource(false);
-  }, [showOutput, isNarrow]);
-
-  // Asides slide in/out on narrow viewports; presence keeps them mounted until the
-  // exit finishes. Wide viewport or reduced motion → no animation, instant mount/unmount.
-  const animate = isNarrow && !reduceMotion;
-  const sourcePresence = useAsidePresence(showSource, animate);
-  const outputPresence = useAsidePresence(showOutput, animate);
+  const { source, output } = usePanels({
+    narrow: isNarrow,
+    animate: isNarrow && !reduceMotion,
+    defaults: { source: DEFAULT_SOURCE_W, output: DEFAULT_OUTPUT_W },
+  });
 
   // Keyboard toggles (S / O). Preferences owns the "," shortcut.
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-      const el = document.activeElement as HTMLElement | null;
-      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
-      const k = e.key.toUpperCase();
-      if (k === "S") toggleSource();
-      else if (k === "O") toggleOutput();
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [toggleSource, toggleOutput]);
+  useHotkey(useMemo(() => ({ S: source.toggle, O: output.toggle }), [source.toggle, output.toggle]));
 
   const form = useMetadataForm({
     shapes: applied.shapes,
@@ -99,17 +64,7 @@ function ThemedApp() {
     assist,
   });
 
-  const [turtleOut, setTurtleOut] = useState("");
-  const [jsonldOut, setJsonldOut] = useState("");
-  useEffect(() => {
-    let active = true;
-    if (!form.ready) return;
-    form.toTurtle().then((t) => active && setTurtleOut(t));
-    form.toJsonLd().then((j) => active && setJsonldOut(JSON.stringify(j, null, 2)));
-    return () => {
-      active = false;
-    };
-  }, [form]);
+  const outputs = useFormOutputs(form);
 
   // Panel content defined once and reused by the docked aside (wide) and the drawer (narrow).
   const sourcePanel = (
@@ -131,8 +86,8 @@ function ThemedApp() {
   const outputPanel = (
     <CodePanel
       tabs={[
-        { value: "turtle", label: "Turtle", node: <CodeEditor value={turtleOut} lang="turtle" readOnly dark={dark} /> },
-        { value: "jsonld", label: "JSON-LD", node: <CodeEditor value={jsonldOut} lang="json" readOnly dark={dark} /> },
+        { value: "turtle", label: "Turtle", node: <CodeEditor value={outputs.turtle} lang="turtle" readOnly dark={dark} /> },
+        { value: "jsonld", label: "JSON-LD", node: <CodeEditor value={outputs.jsonld} lang="json" readOnly dark={dark} /> },
       ]}
     />
   );
@@ -163,10 +118,10 @@ function ThemedApp() {
             share({ ...workspace.permalink, dataText });
           }}
           shared={shared}
-          showSource={showSource}
-          toggleSource={toggleSource}
-          showOutput={showOutput}
-          toggleOutput={toggleOutput}
+          showSource={source.show}
+          toggleSource={source.toggle}
+          showOutput={output.show}
+          toggleOutput={output.toggle}
           form={form}
         />
 
@@ -176,9 +131,9 @@ function ThemedApp() {
           <AsideSection
             side="left"
             narrow={isNarrow}
-            presence={sourcePresence}
-            width={sourceW}
-            onResize={setSourceW}
+            presence={source.presence}
+            width={source.width}
+            onResize={source.setWidth}
             defaultWidth={DEFAULT_SOURCE_W}
           >
             {sourcePanel}
@@ -199,9 +154,9 @@ function ThemedApp() {
           <AsideSection
             side="right"
             narrow={isNarrow}
-            presence={outputPresence}
-            width={outputW}
-            onResize={setOutputW}
+            presence={output.presence}
+            width={output.width}
+            onResize={output.setWidth}
             defaultWidth={DEFAULT_OUTPUT_W}
           >
             {outputPanel}
