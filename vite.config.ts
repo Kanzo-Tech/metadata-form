@@ -22,7 +22,7 @@ const external = [
   "react-dom",
   "react/jsx-runtime",
   // The rudof WASM module — provided by `npm run build:wasm`, never bundled.
-  "@kanzo/rudof-wasm",
+  "@kanzo-tech/rudof-wasm",
   "@radix-ui/themes",
   // The /ai adapter's deps — kept external (optional peer deps).
   "ai",
@@ -46,12 +46,16 @@ export default defineConfig(({ command }) => {
     ].filter(Boolean),
     // In dev/preview the playground is the app root.
     root: isLibBuild ? undefined : r("playground"),
-    // The dev root is `playground/`, but the alias below resolves the wasm to the
-    // sibling rudof-fork checkout and the lib sources live one level up in `src/`.
-    // Both are outside the dev root, so allow them through Vite's fs sandbox.
-    server: isLibBuild
-      ? undefined
-      : { fs: { allow: [r("."), r("../rudof-fork")] } },
+    // Keep the wasm-pack `--target web` package out of Vite's dep pre-bundle:
+    // its init does `fetch(new URL('rudof_wasm_bg.wasm', import.meta.url))`, and
+    // pre-bundling rewrites that URL into `.vite/deps/` where the .wasm isn't
+    // copied → the dev server returns index.html (HTML) → "expected magic word".
+    // Excluding it makes Vite serve the package verbatim from node_modules.
+    optimizeDeps: { exclude: ["@kanzo-tech/rudof-wasm"] },
+    // The dev root is `playground/`, but the lib sources live one level up in
+    // `src/` (outside the dev root), so allow the repo root through Vite's fs
+    // sandbox. The wasm now resolves from node_modules like any other dep.
+    server: isLibBuild ? undefined : { fs: { allow: [r(".")] } },
     build: isLibBuild
       ? {
           lib: {
@@ -87,12 +91,6 @@ export default defineConfig(({ command }) => {
         "metadata-form/ai": r("src/ai/index.ts"),
         "metadata-form": r("src/index.ts"),
         "@": r("src"),
-        // In dev/preview the playground must actually load the wasm: resolve it to
-        // the built pkg (rudof fork sibling checkout). In lib build it stays
-        // external (see `external` above) so consumers provide it themselves.
-        ...(isLibBuild
-          ? {}
-          : { "@kanzo/rudof-wasm": r("../rudof-fork/rudof_wasm/pkg/rudof_wasm.js") }),
       },
     },
   };

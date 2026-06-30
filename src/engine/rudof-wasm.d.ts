@@ -1,11 +1,11 @@
 /**
- * Ambient typing for the `@kanzo/rudof-wasm` package — the `wasm-bindgen --target web`
+ * Ambient typing for the `@kanzo-tech/rudof-wasm` package — the `wasm-bindgen --target web`
  * output of the generic `rudof_wasm` crate in the rudof fork (built via
  * `npm run build:wasm`). Declared here so the loader type-checks without the
  * generated package present; the real import is externalized at build and
  * resolved by the consumer.
  */
-declare module "@kanzo/rudof-wasm" {
+declare module "@kanzo-tech/rudof-wasm" {
   /** Async init: instantiates the wasm module (default export of the web build). */
   export default function init(input?: unknown): Promise<unknown>;
 

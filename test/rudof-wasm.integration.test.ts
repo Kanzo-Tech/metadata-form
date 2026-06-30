@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { readFileSync, existsSync } from "node:fs";
-import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
 import { namedNode, literal } from "@/engine/factory.js";
@@ -19,11 +19,10 @@ import { healthDcatApShapes, healthDcatApRootShape, healthDcatApSampleData } fro
  * the wasm `Session` satisfies the `RudofModule`/`RudofSession` ABI through the
  * TS `RudofEngine` — the same assertions as the fake test, but on the real crate.
  *
- * Skipped automatically if the pkg hasn't been built yet (no fork `rudof_wasm/pkg`).
+ * Runs against the published @kanzo-tech/rudof-wasm package (a declared dependency).
  */
-const wasmDir = resolve(process.cwd(), "../rudof-fork/rudof_wasm/pkg") + "/";
-const built = existsSync(wasmDir + "rudof_wasm.js") && existsSync(wasmDir + "rudof_wasm_bg.wasm");
-const d = built ? describe : describe.skip;
+const require = createRequire(import.meta.url);
+const wasmDir = dirname(require.resolve("@kanzo-tech/rudof-wasm"));
 
 const EX = "http://example.org/";
 const SHAPE = `${EX}PersonShape`;
@@ -46,13 +45,13 @@ const dataTtl = `
 const valuesFor = (form: ProjectedForm, key: string) =>
   form.properties.find((p) => p.pathKey === key)?.values.map((v) => v.value.value) ?? [];
 
-d("RudofEngine over the REAL wasm", () => {
+describe("RudofEngine over the REAL wasm", () => {
   let engine: RudofEngine;
   let wasmModule: RudofModule;
 
   beforeAll(async () => {
-    const mod = (await import(/* @vite-ignore */ pathToFileURL(wasmDir + "rudof_wasm.js").href)) as typeof import("@kanzo/rudof-wasm");
-    await mod.default({ module_or_path: readFileSync(wasmDir + "rudof_wasm_bg.wasm") } as never);
+    const mod = await import("@kanzo-tech/rudof-wasm");
+    await mod.default({ module_or_path: readFileSync(join(wasmDir, "rudof_wasm_bg.wasm")) } as never);
     wasmModule = { newSession: () => new mod.Session() as unknown as RudofSession };
     engine = new RudofEngine(async () => wasmModule);
     await engine.ready();
