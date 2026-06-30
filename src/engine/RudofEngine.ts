@@ -1,7 +1,5 @@
-import { Store } from "n3";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode, quad, rdf } from "./factory.js";
-import { toTurtle } from "./serialize.js";
 import { toTerm, toTermValue } from "./termValue.js";
 import { freshFocusNode, resolveRootShapeFromTypes } from "../form/buildFormModel.js";
 import { projectTreeSync, type ProjectedValues } from "./projectTree.js";
@@ -117,10 +115,11 @@ export class RudofGraphBackend implements GraphBackend {
  * one session, with no per-edit reload. Lazy, memoized init via the injected
  * {@link RudofLoader}, the only seam that touches wasm (tests swap the loader).
  *
- * Lifecycle: `parseShapes` (loads + retains the shapes), then `createGraph` (loads
+ * Lifecycle: `loadShapes` (loads + retains the shapes), then `createGraph` (loads
  * the initial data once, resolves + seeds the focus, returns the live editable
  * {@link GraphSession}); `projectValues` re-derives field values on every edit and
- * `validateFocus` validates the live graph in place.
+ * `validateFocus` validates the live graph in place. `serialize` emits the live
+ * graph (rudof owns all RDF I/O — there is no n3/jsonld here).
  */
 export class RudofEngine {
   private session?: RudofSession;
@@ -140,21 +139,14 @@ export class RudofEngine {
     return this.session;
   }
 
-  /** Parse a shapes document (Turtle string or n3 Store) into the agnostic
-   *  {@link ShapeModel} and retain it in the session. */
-  async parseShapes(input: string | Store): Promise<ShapeModel> {
-    const text =
-      typeof input === "string" ? input : await toTurtle(input.getQuads(null, null, null, null) as never);
-    return this.loadShapes(text);
-  }
-
-  /** Parse a shapes document into the agnostic {@link ShapeModel} and retain it. */
+  /** Parse a shapes document (Turtle / JSON-LD / N-Triples by media type) into the
+   *  agnostic {@link ShapeModel} and retain it in the session. */
   async loadShapes(text: string, mediaType = TURTLE): Promise<ShapeModel> {
     await this.ready();
     return shapeModelFromJson(this.s.loadShapes(text, mediaType));
   }
 
-  /** Parse a data document; returns the live editable graph backend. */
+  /** Parse a data document into the session graph; returns the live backend. */
   async loadData(text: string, mediaType = TURTLE): Promise<GraphBackend> {
     await this.ready();
     this.s.loadData(text, mediaType);
@@ -168,22 +160,34 @@ export class RudofEngine {
     return new RudofGraphBackend(this.s);
   }
 
+  /** Serialize the live data graph to the given RDF media type (Turtle /
+   *  JSON-LD / N-Triples). Prefixes parsed from the input are retained + emitted. */
+  async serialize(mediaType: string): Promise<string> {
+    await this.ready();
+    return this.s.serialize(mediaType);
+  }
+
   /**
-   * Load `initialData` into a fresh session graph ONCE, resolve + seed the focus
-   * node into it, and return the live editable {@link GraphSession} — the single
-   * source of truth the form edits, projects and validates against (no per-edit
-   * reload).
+   * Load the initial data into a fresh session graph ONCE, resolve + seed the
+   * focus node into it, and return the live editable {@link GraphSession} — the
+   * single source of truth the form edits, projects and validates against (no
+   * per-edit reload). `data` is either a document string (rudof parses it by
+   * `mediaType`) or a quad list (re-added as-is, preserving blank-node labels —
+   * used by `reset` to reload a captured baseline).
    */
   async createGraph(
     shapes: ShapeModel,
-    initialData: Quad[],
+    data?: string | Quad[],
+    mediaType = TURTLE,
     focusNode?: Term,
     rootShape?: NamedNode,
   ): Promise<GraphSession> {
     const backend = await this.newGraph();
-    // Add quads directly (not loadData(turtle)) so blank-node labels — including
-    // a blank focus node — survive into the session unchanged.
-    for (const q of initialData) backend.add(q.subject as Term, q.predicate as Term, q.object as Term);
+    if (typeof data === "string") {
+      this.s.loadData(data, mediaType);
+    } else if (data) {
+      for (const q of data) backend.add(q.subject as Term, q.predicate as Term, q.object as Term);
+    }
 
     const focus = focusNode ?? inferFocusFromBackend(shapes, backend, rootShape) ?? freshFocusNode();
     const shape = resolveRootShapeFromTypes(shapes, typesOf(backend, focus), rootShape);

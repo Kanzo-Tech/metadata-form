@@ -63,10 +63,7 @@
     "@codemirror/commands": "^6.10.3",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.43.1",
-    "@rdfjs/namespace": "^2.0.1",
-    "downshift": "^9.3.6",
-    "jsonld": "^8.3.2",
-    "n3": "^1.17.4"
+    "downshift": "^9.3.6"
   },
   "devDependencies": {
     "@ai-sdk/anthropic": "^3.0.86",
@@ -79,9 +76,6 @@
     "@rdfjs/types": "^1.1.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
-    "@types/jsonld": "^1.5.15",
-    "@types/n3": "^1.21.1",
-    "@types/rdfjs__namespace": "^2.0.10",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@uiw/react-codemirror": "^4.25.10",

@@ -21,12 +21,8 @@ const external = [
   "react",
   "react-dom",
   "react/jsx-runtime",
-  "n3",
-  "grapoi",
-  "jsonld",
   // The rudof WASM module — provided by `npm run build:wasm`, never bundled.
   "rudof-wasm",
-  "@rdfjs/namespace",
   "@radix-ui/themes",
   // The /ai adapter's deps — kept external (optional peer deps).
   "ai",

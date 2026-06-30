@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { Store } from "n3";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode } from "../../engine/factory.js";
-import { collectPrefixes, toStore, type RdfInput } from "../../engine/parse.js";
-import { toJsonLd, toTurtle } from "../../engine/serialize.js";
-import type { JsonLdOptions, SerializeOptions } from "../../engine/serialize.js";
 import { mapResults } from "../../form/validation.js";
 import type { FormModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
@@ -17,10 +13,10 @@ import type { FormAssist } from "../widgets/widgets.js";
 import { computeFormReport, type FormReport } from "../validation/useFormReport.js";
 
 export interface UseMetadataFormOptions {
-  /** The SHACL shape (Turtle / JSON-LD string, n3 Store, or quads). */
-  shapes: RdfInput;
-  /** Optional pre-filled data graph. */
-  data?: RdfInput;
+  /** The SHACL shapes document — a Turtle or JSON-LD string (rudof parses it). */
+  shapes: string;
+  /** Optional pre-filled data graph — a Turtle or JSON-LD string. */
+  data?: string;
   /** The rudof-over-WASM engine; defaults to a fresh `createRudofEngine()`. Pass a
    *  shared engine (or one with a test loader) to control the wasm session. */
   engine?: RudofEngine;
@@ -30,10 +26,6 @@ export interface UseMetadataFormOptions {
   rootShape?: string;
   /** UI locale for label/description language selection. */
   locale?: string;
-  /** Turtle prefixes override (defaults to the prefixes parsed from the inputs). */
-  prefixes?: Record<string, string>;
-  /** JSON-LD context override (defaults to the parsed prefixes). */
-  jsonLdContext?: Record<string, unknown>;
   validateOn?: "change" | "manual" | "off";
   validationDebounceMs?: number;
   /** The single assistance seam (reference search · suggestions · completion).
@@ -60,8 +52,8 @@ export interface MetadataFormController {
   isValid: boolean;
   /** Single derived view of form state (validation + completion + health). */
   report: FormReport;
-  toTurtle(opts?: SerializeOptions): Promise<string>;
-  toJsonLd(opts?: JsonLdOptions): Promise<object>;
+  toTurtle(): Promise<string>;
+  toJsonLd(): Promise<object>;
   validate(): Promise<FieldError[]>;
   reset(): void;
   /** Observe graph changes (autosave, external sync). Returns an unsubscribe. */
@@ -87,10 +79,15 @@ interface Prepared {
   focusNode: Term;
   /** The resolved root node-shape id — drives projection + scoped validation. */
   rootShapeId: string;
-  prefixes: Record<string, string>;
 }
 
 const NOOP_UNSUB = () => () => {};
+
+/** Turtle vs JSON-LD by a cheap leading-char sniff (rudof parses by media type). */
+function detectMediaType(text: string): string {
+  const t = text.trimStart();
+  return t.startsWith("{") || t.startsWith("[") ? "application/ld+json" : "text/turtle";
+}
 
 export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormController {
   const {
@@ -100,8 +97,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     focusNode,
     rootShape,
     locale = "en",
-    prefixes,
-    jsonLdContext,
     validateOn = "change",
     validationDebounceMs = 300,
     assist,
@@ -125,20 +120,15 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     setError(undefined);
     setErrors(new Map());
     (async () => {
-      const shapeModel = await engine.parseShapes(
-        typeof shapes === "string" || shapes instanceof Store ? shapes : await toStore(shapes),
-      );
-      const derivedPrefixes = {
-        ...collectPrefixes(shapes),
-        ...(data ? collectPrefixes(data) : {}),
-      };
+      // rudof parses both documents (Turtle / JSON-LD by media type) — no n3.
+      const shapeModel = await engine.loadShapes(shapes, detectMediaType(shapes));
       const root = rootShape ? (namedNode(rootShape) as NamedNode) : undefined;
       // Load the initial data into the engine session ONCE, seed the focus into it,
       // and build GraphState over that live session — the single source of truth.
-      const initialData = data ? ((await toStore(data)).getQuads(null, null, null, null) as Quad[]) : [];
       const session = await engine.createGraph(
         shapeModel,
-        initialData,
+        data,
+        data ? detectMediaType(data) : undefined,
         focusNode ? namedNode(focusNode) : undefined,
         root,
       );
@@ -151,7 +141,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
         initialQuads: graph.allQuads(),
         focusNode: session.focusNode,
         rootShapeId: session.rootShapeId,
-        prefixes: derivedPrefixes,
       });
     })().catch((e) => active && setError(e instanceof Error ? e : new Error(String(e))));
     return () => {
@@ -214,16 +203,12 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     [graph, model, version],
   );
 
-  const serializePrefixes = useMemo(
-    () => ({ ...prepared?.prefixes, ...prefixes }),
-    [prepared, prefixes],
-  );
-
   const reset = useCallback(() => {
     if (!prepared) return;
-    // Reset the session too: reload the captured baseline into a fresh session graph.
+    // Reset the session too: reload the captured baseline quads into a fresh
+    // session graph (the quad path re-adds them as-is, preserving blank labels).
     void engine
-      .createGraph(prepared.shapes, prepared.initialQuads, prepared.focusNode, namedNode(prepared.rootShapeId) as NamedNode)
+      .createGraph(prepared.shapes, prepared.initialQuads, undefined, prepared.focusNode, namedNode(prepared.rootShapeId) as NamedNode)
       .then((session) => {
         setPrepared((p) => (p ? { ...p, graph: new GraphState(session.backend) } : p));
         setErrors(new Map());
@@ -250,9 +235,9 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       report,
       locale,
       graph,
-      toTurtle: (opts) => toTurtle(getQuads(), { prefixes: serializePrefixes, ...opts }),
-      toJsonLd: (opts) =>
-        toJsonLd(getQuads(), { context: jsonLdContext ?? serializePrefixes, ...opts }),
+      // rudof serializes the live graph (prefixes retained from the input).
+      toTurtle: () => engine.serialize("text/turtle"),
+      toJsonLd: async () => JSON.parse(await engine.serialize("application/ld+json")),
       validate,
       reset,
       subscribe,
@@ -261,6 +246,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       _graph: graph,
       _revealTarget: revealTarget,
     }),
-    [model, error, getQuads, errors, isValid, report, locale, graph, serializePrefixes, jsonLdContext, validate, reset, subscribe, assist, revealField, revealTarget],
+    [model, error, getQuads, errors, isValid, report, locale, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
   );
 }

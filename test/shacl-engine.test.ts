@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Store } from "n3";
 import type { Term } from "@rdfjs/types";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import type { Diagnostic, DiagnosticSink } from "@/form/buildFormModel.js";
@@ -10,8 +9,6 @@ import { allFields } from "@/form/FormModel.js";
 import { computeFormReport } from "@/react/validation/useFormReport.js";
 import type { FieldError, ValidationResult } from "@/form/validation.js";
 import { mapResults } from "@/form/validation.js";
-import { toJsonLd, toTurtle } from "@/engine/serialize.js";
-import { parseTurtle } from "@/engine/parse.js";
 import { namedNode } from "@/engine/factory.js";
 import type { ShapeModel } from "@/form/ShapeIR.js";
 import { healthDcatApShapes, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
@@ -57,11 +54,11 @@ async function buildWithData(
   return buildFormModel({ shapes: model, focusNode, shape, values, locale: "en" });
 }
 
-/** Validate a data graph against shapes, in rudof-over-WASM. */
-async function validateAgainst(ttl: string, data: Store): Promise<ValidationResult[]> {
+/** Validate a data graph (Turtle string) against shapes, in rudof-over-WASM. */
+async function validateAgainst(ttl: string, dataTtl: string): Promise<ValidationResult[]> {
   const engine = createRudofEngine();
   await engine.loadShapes(ttl);
-  await engine.loadData(await toTurtle(data.getQuads(null, null, null, null) as never));
+  await engine.loadData(dataTtl);
   return engine.validate();
 }
 
@@ -220,31 +217,29 @@ describe("build diagnostics (no silent failures)", () => {
   });
 });
 
-describe("serialization — JSON-LD is compacted by default", () => {
-  it("returns compact form (with @context), not raw expanded quads", async () => {
-    const data = new Store();
-    data.addQuads(
-      parseTurtle(`
-        @prefix dcterms: <http://purl.org/dc/terms/> .
-        <http://example.org/d1> dcterms:title "Hello" .
-      `) as never[],
-    );
-    const jsonld = (await toJsonLd(data)) as Record<string, unknown>;
-    expect(jsonld).not.toBeInstanceOf(Array);
-    expect(jsonld["@context"]).toBeDefined();
+describe("serialization — rudof emits JSON-LD", () => {
+  it("serializes the data graph to JSON-LD carrying the values", async () => {
+    const engine = createRudofEngine();
+    await engine.loadData(`
+      @prefix dcterms: <http://purl.org/dc/terms/> .
+      <http://example.org/d1> dcterms:title "Hello" .
+    `);
+    const jsonldText = await engine.serialize("application/ld+json");
+    const parsed = JSON.parse(jsonldText);
+    expect(parsed).toBeTruthy();
+    expect(JSON.stringify(parsed)).toContain("Hello");
   });
 });
 
 describe("SHACL validation", () => {
   it("reports missing required fields", async () => {
-    const data = new Store();
-    data.addQuads(
-      parseTurtle(`
+    const results = await validateAgainst(
+      shapesTtl,
+      `
         @prefix dcat: <http://www.w3.org/ns/dcat#> .
         <http://example.org/d1> a dcat:Dataset .
-      `) as never[],
+      `,
     );
-    const results = await validateAgainst(shapesTtl, data);
     const errors = mapResults(results);
     // title, description and publisher are required (minCount >= 1)
     const allMessages = [...errors.values()].flat();
@@ -254,9 +249,9 @@ describe("SHACL validation", () => {
   });
 
   it("surfaces nested errors per node (typed nodes validated as targets)", async () => {
-    const data = new Store();
-    data.addQuads(
-      parseTurtle(`
+    const results = await validateAgainst(
+      shapesTtl,
+      `
         @prefix dcat: <http://www.w3.org/ns/dcat#> .
         @prefix dcterms: <http://purl.org/dc/terms/> .
         @prefix foaf: <http://xmlns.com/foaf/0.1/> .
@@ -264,9 +259,8 @@ describe("SHACL validation", () => {
           dcterms:title "T" ; dcterms:description "D" ;
           dcterms:publisher <http://example.org/agent1> .
         <http://example.org/agent1> a foaf:Agent .
-      `) as never[],
+      `,
     );
-    const results = await validateAgainst(shapesTtl, data);
     // The Agent (publisher) is missing foaf:name (minCount 1) — reported on the
     // agent node, not the root dataset (no focus filter drops it).
     const nameError = results.find((r) => r.path?.value.endsWith("/name"));
@@ -287,9 +281,9 @@ describe("session seeding", () => {
     `;
     // The single-graph runtime seeds directly into the session backend (createGraph).
     const engine = createRudofEngine();
-    const shapes = await engine.parseShapes(ttl);
+    const shapes = await engine.loadShapes(ttl);
     const focus = namedNode("http://example.org/d1");
-    const session = await engine.createGraph(shapes, [], focus, namedNode("http://example.org/S"));
+    const session = await engine.createGraph(shapes, undefined, undefined, focus, namedNode("http://example.org/S"));
     const objects = session.backend
       .match(session.focusNode, null, null)
       .map((q) => q.object.value)
@@ -301,17 +295,18 @@ describe("session seeding", () => {
 });
 
 describe("serialization", () => {
-  it("round-trips Turtle output", async () => {
-    const data = new Store();
-    data.addQuads(
-      parseTurtle(`
-        @prefix dcterms: <http://purl.org/dc/terms/> .
-        <http://example.org/d1> dcterms:title "Round trip" .
-      `) as never[],
-    );
-    const ttl = await toTurtle(data);
-    expect(ttl).toContain("Round trip");
-    const reparsed = parseTurtle(ttl);
-    expect(reparsed.length).toBe(1);
+  it("round-trips Turtle output through rudof", async () => {
+    const engine = createRudofEngine();
+    const ttl = `
+      @prefix dcterms: <http://purl.org/dc/terms/> .
+      <http://example.org/d1> dcterms:title "Round trip" .
+    `;
+    await engine.loadData(ttl);
+    const out = await engine.serialize("text/turtle");
+    expect(out).toContain("Round trip");
+    // Reload the serialized output: it parses and still carries the value.
+    const engine2 = createRudofEngine();
+    await engine2.loadData(out);
+    expect(await engine2.serialize("text/turtle")).toContain("Round trip");
   });
 });

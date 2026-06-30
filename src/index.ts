@@ -104,7 +104,6 @@ export type {
 // the `metadata-form/rudof` subpath for power-user wiring (shared engine, custom
 // projection), so the main entry stays UI-focused.
 
-// RDF utilities
-export { toStore, toStoreSync, parseTurtle, parseJsonLd } from "./engine/parse.js";
-export { toTurtle, toJsonLd, toNQuads } from "./engine/serialize.js";
+// RDF term factory (namedNode/literal/blankNode/quad + the NS base IRIs). All RDF
+// parsing & serialization lives in rudof now — use the engine session for I/O.
 export * as ns from "./engine/factory.js";
