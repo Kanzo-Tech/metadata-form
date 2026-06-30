@@ -38,12 +38,13 @@
     }
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --config playground/vite.config.ts",
     "build": "vite build",
-    "preview": "vite preview",
+    "build:playground": "vite build --config playground/vite.config.ts",
+    "preview": "vite preview --config playground/vite.config.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p playground/tsconfig.json",
     "lint": "eslint .",
     "build:wasm": "bash ../rudof-fork/rudof_wasm/build.sh"
   },
