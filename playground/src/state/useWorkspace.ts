@@ -1,51 +1,47 @@
 import { useMemo, useState } from "react";
-import { EXAMPLES } from "@examples/index.js";
+import { EXAMPLES } from "../presets.js";
 import { useDebounced } from "../hooks/useDebounced.js";
 import type { PermalinkOptions, PermalinkState } from "../lib/permalink.js";
 
-/** The playground's editable source: which example is selected, the live shape/data
- *  Turtle, and the debounced `applied` snapshot fed to the form (no Apply button).
+/** The playground's editable source: the selected example/data preset, the live
+ *  shape/data Turtle, and the debounced `applied` snapshot fed to the form.
  *
- *  State flows through one model ({@link PermalinkState}): both a decoded permalink
- *  (`initial`) and an example selection hydrate the same fields. Discrete picks call
- *  `onPick` to keep the URL in sync (the URL is the source of truth); free-text edits
- *  do not — those are committed only by an explicit Share. */
+ *  Everything flows through one model ({@link PermalinkState}). A decoded permalink
+ *  (`initial`) and a preset pick are the same thing — both `applyPreset`. Discrete
+ *  picks call `onPick` to sync the URL (the URL is the source of truth); free-text
+ *  edits don't — those are committed only by an explicit Share. */
 export function useWorkspace(initial: PermalinkState | null, onPick: (state: PermalinkState) => void) {
-  const seedEx = EXAMPLES.find((e) => e.id === initial?.exampleId) ?? EXAMPLES[0];
+  const seed = initial ?? EXAMPLES[0].presets[0].state;
+  const seedShape = EXAMPLES.find((e) => e.id === seed.exampleId) ?? EXAMPLES[0];
+  // Match the data preset by content (a shared link's data is usually custom → first).
+  const seedPreset = seedShape.presets.find((p) => p.state.dataText === seed.dataText) ?? seedShape.presets[0];
 
-  const [shapeId, setShapeId] = useState(seedEx.id);
-  const [dataId, setDataId] = useState(seedEx.data[0].id);
-  const [shapeText, setShapeText] = useState(initial?.shapesText ?? seedEx.shapes);
-  const [dataText, setDataText] = useState(initial?.dataText ?? seedEx.data[0].ttl);
+  const [shapeId, setShapeId] = useState(seedShape.id);
+  const [presetId, setPresetId] = useState(seedPreset.id);
+  const [shapeText, setShapeText] = useState(seed.shapesText);
+  const [dataText, setDataText] = useState(seed.dataText);
   // The form knobs (no UI to change them yet — restored from a permalink if present).
-  const [options] = useState<PermalinkOptions>(initial?.options ?? { validateOn: "change" });
+  const [options] = useState<PermalinkOptions>(seed.options);
 
   const shape = useMemo(() => EXAMPLES.find((e) => e.id === shapeId)!, [shapeId]);
 
-  const state = (over: Partial<PermalinkState>): PermalinkState => ({
-    v: 1,
-    exampleId: shapeId,
-    shapesText: shapeText,
-    dataText,
-    options,
-    ...over,
-  });
+  // Apply a preset's full state (preset pick = navigating to its permalink) and sync
+  // the URL. The single place example selection and URL hydration converge.
+  const applyPreset = (presetId: string, state: PermalinkState) => {
+    setShapeId(state.exampleId);
+    setPresetId(presetId);
+    setShapeText(state.shapesText);
+    setDataText(state.dataText);
+    onPick(state);
+  };
 
   const pickShape = (id: string) => {
     const ex = EXAMPLES.find((e) => e.id === id);
-    if (!ex) return;
-    setShapeId(id);
-    setShapeText(ex.shapes);
-    setDataId(ex.data[0].id);
-    setDataText(ex.data[0].ttl);
-    onPick(state({ exampleId: id, shapesText: ex.shapes, dataText: ex.data[0].ttl }));
+    if (ex) applyPreset(ex.presets[0].id, ex.presets[0].state);
   };
-  const pickData = (id: string) => {
-    const d = shape.data.find((x) => x.id === id);
-    if (!d) return;
-    setDataId(id);
-    setDataText(d.ttl);
-    onPick(state({ dataText: d.ttl }));
+  const pickPreset = (id: string) => {
+    const p = shape.presets.find((x) => x.id === id);
+    if (p) applyPreset(p.id, p.state);
   };
 
   // Live, debounced — apply edits 350ms after typing stops. Memoize the snapshot so
@@ -53,22 +49,21 @@ export function useWorkspace(initial: PermalinkState | null, onPick: (state: Per
   const pending = useMemo(() => ({ shapes: shapeText, data: dataText }), [shapeText, dataText]);
   const applied = useDebounced(pending, 350);
 
-  // The current state: what an example pick syncs to the URL, and the base Share
-  // captures (the Share handler swaps in the form's live data). Read only at
-  // click time, so no memo is needed.
-  const permalink = state({});
+  // The current state: the base Share captures (the Share handler swaps in the
+  // form's live data). Read only at click time, so no memo is needed.
+  const permalink: PermalinkState = { v: 1, exampleId: shapeId, shapesText: shapeText, dataText, options };
 
   return {
     examples: EXAMPLES,
     shapeId,
-    dataId,
+    presetId,
     shape,
     shapeText,
     dataText,
     setShapeText,
     setDataText,
     pickShape,
-    pickData,
+    pickPreset,
     applied,
     options,
     permalink,

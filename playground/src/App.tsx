@@ -1,8 +1,12 @@
 import { useMemo } from "react";
-import { Box, Card, Flex, Text, Theme } from "@radix-ui/themes";
+import { Box, Card, Flex, Separator, Text, Theme } from "@radix-ui/themes";
+import { CodeIcon, FileTextIcon } from "@radix-ui/react-icons";
 import { FormAssistant, MetadataForm, useMetadataForm, type FormAssist } from "metadata-form";
 import { Preferences, usePreferences } from "./Preferences.js";
 import { Header } from "./components/Header.js";
+import { ExamplePickers } from "./components/ExamplePickers.js";
+import { ShareButton } from "./components/ShareButton.js";
+import { Toggle } from "./components/Toggle.js";
 import { AsideSection } from "./components/Aside.js";
 import { CodePanel, CodeEditor } from "./components/CodePanel.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
@@ -105,24 +109,39 @@ function ThemedApp() {
           regions (source aside | form main | output aside) each scroll on their own. */}
       <Flex direction="column" style={{ height: "100vh", overflow: "hidden" }}>
         <Header
-          examples={workspace.examples}
-          shapeId={workspace.shapeId}
-          dataOptions={shape.data}
-          dataId={workspace.dataId}
-          onPickShape={workspace.pickShape}
-          onPickData={workspace.pickData}
-          onShare={async () => {
-            // Capture the form's LIVE graph (its serialization), not the stale
-            // source-panel text — so a permalink reproduces what you built.
-            const dataText = form.ready ? await form.toTurtle() : workspace.dataText;
-            share({ ...workspace.permalink, dataText });
-          }}
-          shared={shared}
-          showSource={source.show}
-          toggleSource={source.toggle}
-          showOutput={output.show}
-          toggleOutput={output.toggle}
           form={form}
+          pickers={
+            <Flex align="center" gap="4">
+              <ExamplePickers
+                examples={workspace.examples}
+                shapeId={workspace.shapeId}
+                presets={shape.presets}
+                presetId={workspace.presetId}
+                onPickShape={workspace.pickShape}
+                onPickPreset={workspace.pickPreset}
+              />
+              <Separator orientation="vertical" />
+              <ShareButton
+                shared={shared}
+                onShare={async () => {
+                  // Capture the form's LIVE graph (its serialization), not the stale
+                  // source-panel text — so a permalink reproduces what you built.
+                  const dataText = form.ready ? await form.toTurtle() : workspace.dataText;
+                  share({ ...workspace.permalink, dataText });
+                }}
+              />
+            </Flex>
+          }
+          actions={
+            <>
+              <Toggle on={source.show} onClick={source.toggle} icon={<FileTextIcon />} kbd="S">
+                Source
+              </Toggle>
+              <Toggle on={output.show} onClick={output.toggle} icon={<CodeIcon />} kbd="O">
+                Output
+              </Toggle>
+            </>
+          }
         />
 
         {/* Workspace — wide: docked Source | Form | Output (draggable asides). Narrow: the

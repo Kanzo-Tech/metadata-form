@@ -1,45 +1,22 @@
-import { Box, Button, Flex, Heading, Kbd, Link, Separator, Text } from "@radix-ui/themes";
-import { CheckIcon, CodeIcon, FileTextIcon, Share1Icon } from "@radix-ui/react-icons";
+import { Box, Flex, Heading, Kbd, Link, Text } from "@radix-ui/themes";
 import { ValidationSummary } from "metadata-form";
-import { Toggle } from "./Toggle.js";
-import { ExamplePickers } from "./ExamplePickers.js";
 import { PANEL_BORDER } from "./panel.js";
-import type { ShapeExample } from "@examples/index.js";
 
-/** The app chrome: a low-key utility strip (example pickers + attribution) over the
- *  title bar (heading + Source/Output toggles + the canonical validation summary). */
+/** The app chrome: a low-key utility strip (example pickers + Share + attribution)
+ *  over the title bar (heading + view toggles + the canonical validation summary).
+ *  Pure layout — the caller passes the picker cluster and the toggles as slots. */
 export function Header({
-  examples,
-  shapeId,
-  dataOptions,
-  dataId,
-  onPickShape,
-  onPickData,
-  onShare,
-  shared,
-  showSource,
-  toggleSource,
-  showOutput,
-  toggleOutput,
+  pickers,
+  actions,
   form,
 }: {
-  examples: ShapeExample[];
-  shapeId: string;
-  dataOptions: ShapeExample["data"];
-  dataId: string;
-  onPickShape: (id: string) => void;
-  onPickData: (id: string) => void;
-  onShare: () => void;
-  shared: boolean;
-  showSource: boolean;
-  toggleSource: () => void;
-  showOutput: boolean;
-  toggleOutput: () => void;
+  pickers: React.ReactNode;
+  actions: React.ReactNode;
   form: React.ComponentProps<typeof ValidationSummary>["form"];
 }) {
   return (
     <>
-      {/* Utility strip — example pickers, deliberately low-key (top-right, like a
+      {/* Utility strip — example pickers + Share, deliberately low-key (like a
           language switcher) so they read as context, not primary controls. */}
       <Flex
         align="center"
@@ -49,23 +26,7 @@ export function Header({
         py="1"
         style={{ flexShrink: 0, background: "var(--gray-a2)", borderBottom: PANEL_BORDER }}
       >
-        <Flex align="center" gap="4">
-          <ExamplePickers
-            examples={examples}
-            shapeId={shapeId}
-            dataOptions={dataOptions}
-            dataId={dataId}
-            onPickShape={onPickShape}
-            onPickData={onPickData}
-          />
-          <Separator orientation="vertical" />
-          {/* Copy a self-contained permalink (shapes + data compressed into the URL
-              fragment). Picks keep the URL in sync; Share commits the current edits. */}
-          <Button size="1" variant="ghost" color="gray" onClick={onShare}>
-            {shared ? <CheckIcon /> : <Share1Icon />}
-            {shared ? "Copied!" : "Share"}
-          </Button>
-        </Flex>
+        {pickers}
         <Text size="1" color="gray">
           Made with ❤️ at{" "}
           <Link href="https://kanzo.tech" target="_blank" rel="noreferrer" size="1" color="gray" highContrast>
@@ -85,12 +46,7 @@ export function Header({
 
         <Box flexGrow="1" />
 
-        <Toggle on={showSource} onClick={toggleSource} icon={<FileTextIcon />} kbd="S">
-          Source
-        </Toggle>
-        <Toggle on={showOutput} onClick={toggleOutput} icon={<CodeIcon />} kbd="O">
-          Output
-        </Toggle>
+        {actions}
         {/* The canonical validation summary — same in every layout (per-section
             badges in tabs/steps are wayfinding dots, not a competing counter). */}
         <ValidationSummary form={form} />
