@@ -1,4 +1,4 @@
-import type { NamedNode, Term } from "@rdfjs/types";
+import type { Term } from "@rdfjs/types";
 
 export type Severity = "violation" | "warning" | "info";
 
@@ -22,20 +22,4 @@ export interface FieldError {
   message: string;
   severity: Severity;
   constraint?: string;
-}
-
-export interface Validator {
-  /**
-   * Validate a data graph. `focusNode` optionally scopes validation to one
-   * subject. Returns a flat list of agnostic results.
-   */
-  validate(input: ValidatorInput): Promise<ValidationResult[]> | ValidationResult[];
-}
-
-export interface ValidatorInput {
-  /** When set, validate just this focus node against its resolved root shape
-   *  (scoped revalidation) instead of every target of every shape. */
-  focusNode?: Term;
-  /** Explicit root shape; otherwise resolved from the focus node's type. */
-  rootShape?: NamedNode;
 }

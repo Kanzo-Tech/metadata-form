@@ -18,12 +18,26 @@ import type {
   GroupModel,
   ValueSlot,
 } from "../model/FormModel.js";
-import type { DiagnosticSink, ProjectedValues } from "../model/SchemaAdapter.js";
+import type { ProjectedValues } from "../engine/projectTree.js";
 import type {
   NodeShapeIR,
   PropertyShapeIR,
   ShapeModel,
 } from "../model/ShapeIR.js";
+
+/** A non-fatal issue surfaced while building the form (instead of failing
+ * silently) — e.g. a property dropped for an unsupported path, or a `sh:node`
+ * pointing at a missing shape. Opt-in via `onDiagnostic`. */
+export interface Diagnostic {
+  level: "warning" | "info";
+  /** Stable code for filtering/i18n. */
+  code: "unsupported-path" | "missing-shape" | string;
+  message: string;
+  /** The shape/path/node the diagnostic concerns, if any. */
+  detail?: string;
+}
+
+export type DiagnosticSink = (diagnostic: Diagnostic) => void;
 
 export interface BuildArgs {
   shapes: ShapeModel;

@@ -48,14 +48,7 @@ export { FieldRenderer } from "./react/form/FieldRenderer.js";
 export { useField } from "./react/hooks/useField.js";
 export { useFormContext, useFocusNode } from "./react/form/context.js";
 
-// Schema-agnostic core (the seam that keeps the UI independent of SHACL/ShEx)
-export type {
-  SchemaAdapter,
-  ParsedSchema,
-  BuildFormModelArgs,
-  Diagnostic,
-  DiagnosticSink,
-} from "./model/SchemaAdapter.js";
+// Schema-agnostic form model
 export type {
   FormModel,
   GroupModel,
@@ -67,11 +60,12 @@ export type {
 } from "./model/FormModel.js";
 export { allFields } from "./model/FormModel.js";
 export type {
-  Validator,
   ValidationResult,
   FieldError,
   Severity,
 } from "./model/validation.js";
+// Non-fatal build diagnostics (dropped paths, missing shapes).
+export type { Diagnostic, DiagnosticSink } from "./shacl/buildFormModel.js";
 
 // Editors (SHACL-UI editor ids + rule-based resolution)
 export { Editors, type KnownEditorId } from "./shacl/vocab/shacl-ui.js";
@@ -105,10 +99,10 @@ export type {
   ProjectedValue,
 } from "./model/ShapeIR.js";
 
-// The default SHACL adapter (rudof-over-WASM). The engine internals it is built
-// on — RudofEngine, createRudofEngine, projectTree, rehydrate, the wasm ABI types,
-// RudofGraphBackend — live on the `metadata-form/rudof` subpath for power-users.
-export { createRudofShaclAdapter } from "./shacl/adapter.js";
+// The default engine is rudof-over-WASM. Its internals — RudofEngine,
+// createRudofEngine, projectTree, the wasm ABI types, RudofGraphBackend — live on
+// the `metadata-form/rudof` subpath for power-user wiring (shared engine, custom
+// projection), so the main entry stays UI-focused.
 
 // RDF utilities
 export { toStore, toStoreSync, parseTurtle, parseJsonLd } from "./rdf/parse.js";

@@ -2,17 +2,15 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { Store } from "n3";
 import type { Term } from "@rdfjs/types";
 import { buildFormModel } from "@/shacl/buildFormModel.js";
+import type { Diagnostic, DiagnosticSink } from "@/shacl/buildFormModel.js";
 import { createRudofEngine } from "@/engine/index.js";
-import { createRudofShaclAdapter } from "@/shacl/adapter.js";
 import { projectTree } from "@/engine/projectTree.js";
 import { Editors } from "@/shacl/vocab/shacl-ui.js";
 import { allFields } from "@/model/FormModel.js";
 import { computeFormReport } from "@/react/validation/useFormReport.js";
-import type { DiagnosticSink } from "@/model/SchemaAdapter.js";
 import type { FieldError, ValidationResult } from "@/model/validation.js";
 import { mapResults } from "@/validation/mapResults.js";
 import { toJsonLd, toTurtle } from "@/rdf/serialize.js";
-import type { Diagnostic } from "@/model/SchemaAdapter.js";
 import { parseTurtle } from "@/rdf/parse.js";
 import { namedNode } from "@/rdf/factory.js";
 import type { ShapeModel } from "@/model/ShapeIR.js";
@@ -55,7 +53,7 @@ async function buildWithData(
   const model = await engine.loadShapes(sTtl);
   await engine.loadData(dataTtl);
   const shape = model.nodeShapes.get(rootIri)!;
-  const values = await projectTree(engine, model, rootIri, focusNode);
+  const values = await projectTree((f, s) => engine.projectForm(f, s), model, rootIri, focusNode);
   return buildFormModel({ shapes: model, focusNode, shape, values, locale: "en" });
 }
 
@@ -288,10 +286,10 @@ describe("session seeding", () => {
         sh:property [ sh:path ex:kind ; sh:hasValue ex:Dataset ] .
     `;
     // The single-graph runtime seeds directly into the session backend (createGraph).
-    const adapter = createRudofShaclAdapter();
-    const schema = await adapter.parseSchema(ttl);
+    const engine = createRudofEngine();
+    const shapes = await engine.parseShapes(ttl);
     const focus = namedNode("http://example.org/d1");
-    const session = await adapter.createGraph(schema, [], focus, namedNode("http://example.org/S"));
+    const session = await engine.createGraph(shapes, [], focus, namedNode("http://example.org/S"));
     const objects = session.backend
       .match(session.focusNode, null, null)
       .map((q) => q.object.value)

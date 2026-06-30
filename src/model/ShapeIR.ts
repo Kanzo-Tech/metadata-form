@@ -1,9 +1,8 @@
 /**
  * Vocabulary-agnostic intermediate representation (IR) of a shapes graph.
  *
- * This is the single input to form-building. A SchemaAdapter (rudof's SHACL AST
- * today, ShEx later) maps its native representation into this IR; nothing
- * downstream depends on the shape language.
+ * This is the single input to form-building. The rudof engine maps its native
+ * SHACL AST into this IR; nothing downstream depends on the shape language.
  *
  * Terms are plain JSON-ish records (NOT @rdfjs/types) so a WASM/JSON AST can
  * produce the exact same IR with zero RDF/JS coupling.

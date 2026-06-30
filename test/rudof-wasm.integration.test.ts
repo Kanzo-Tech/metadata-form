@@ -4,7 +4,6 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
-import { createRudofShaclAdapter } from "@/shacl/adapter.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
 import { namedNode, literal } from "@/rdf/factory.js";
 import { buildFormModel } from "@/shacl/buildFormModel.js";
@@ -177,7 +176,7 @@ d("RudofEngine over the REAL wasm", () => {
     const model = await engine.loadShapes(healthDcatApShapes);
     await engine.loadData(healthDcatApSampleData);
     const dataset = namedNode("http://example.org/dataset/covid-registry");
-    const values = await projectTree(engine, model, healthDcatApRootShape, dataset);
+    const values = await projectTree((f, s) => engine.projectForm(f, s), model, healthDcatApRootShape, dataset);
 
     // Data store is EMPTY — all values come from rudof's projection.
     const form = buildFormModel({
@@ -199,13 +198,15 @@ d("RudofEngine over the REAL wasm", () => {
     expect(nestedName?.values[0]?.value?.value).toBeTruthy();
   });
 
-  it("drives useMetadataForm live via the rudof-backed SchemaAdapter (real wasm)", async () => {
-    const adapter = createRudofShaclAdapter(new RudofEngine(async () => wasmModule));
+  it("drives useMetadataForm live via the rudof engine (real wasm)", async () => {
+    // Hoist the engine so it's a stable reference across renders (an inline
+    // `new RudofEngine` would re-fire the parse effect on every render → loop).
+    const liveEngine = new RudofEngine(async () => wasmModule);
     const { result } = renderHook(() =>
       useMetadataForm({
         shapes: healthDcatApShapes,
         data: healthDcatApSampleData,
-        adapter,
+        engine: liveEngine,
         rootShape: healthDcatApRootShape,
         locale: "en",
         validateOn: "off",
@@ -229,7 +230,7 @@ d("RudofEngine over the REAL wasm", () => {
     const namePred = namedNode(`${EX}name`);
 
     const rebuild = async () => {
-      const values = await projectTree(engine, model, SHAPE, alice);
+      const values = await projectTree((f, s) => engine.projectForm(f, s), model, SHAPE, alice);
       return buildFormModel({ shapes: model, focusNode: alice, shape, values });
     };
     const nameValues = (form: { groups: { fields: { path: { value: string }; values: { value: { value: string } | null }[] }[] }[] }) =>

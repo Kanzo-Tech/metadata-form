@@ -7,10 +7,12 @@ import { toJsonLd, toTurtle } from "../../rdf/serialize.js";
 import type { JsonLdOptions, SerializeOptions } from "../../rdf/serialize.js";
 import { mapResults } from "../../validation/mapResults.js";
 import type { FormModel } from "../../model/FormModel.js";
-import type { FieldError, Validator } from "../../model/validation.js";
-import type { DiagnosticSink, ParsedSchema, SchemaAdapter } from "../../model/SchemaAdapter.js";
+import type { FieldError } from "../../model/validation.js";
+import type { ShapeModel } from "../../model/ShapeIR.js";
 import { GraphState } from "../../state/GraphState.js";
-import { createRudofShaclAdapter } from "../../shacl/adapter.js";
+import { createRudofEngine } from "../../engine/index.js";
+import type { RudofEngine } from "../../engine/RudofEngine.js";
+import { buildFormModel, type DiagnosticSink } from "../../shacl/buildFormModel.js";
 import type { FormAssist } from "../widgets/widgets.js";
 import { computeFormReport, type FormReport } from "../validation/useFormReport.js";
 
@@ -19,8 +21,9 @@ export interface UseMetadataFormOptions {
   shapes: RdfInput;
   /** Optional pre-filled data graph. */
   data?: RdfInput;
-  /** Shape-language adapter; defaults to SHACL. */
-  adapter?: SchemaAdapter;
+  /** The rudof-over-WASM engine; defaults to a fresh `createRudofEngine()`. Pass a
+   *  shared engine (or one with a test loader) to control the wasm session. */
+  engine?: RudofEngine;
   /** Subject to edit; inferred from data or created fresh when omitted. */
   focusNode?: string;
   /** Explicit root shape IRI. */
@@ -78,8 +81,7 @@ export interface MetadataFormController {
 }
 
 interface Prepared {
-  schema: ParsedSchema;
-  validator: Validator;
+  shapes: ShapeModel;
   graph: GraphState;
   initialQuads: Quad[];
   focusNode: Term;
@@ -94,7 +96,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const {
     shapes,
     data,
-    adapter: providedAdapter,
+    engine: providedEngine,
     focusNode,
     rootShape,
     locale = "en",
@@ -106,7 +108,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     onDiagnostic,
   } = options;
 
-  const adapter = useMemo(() => providedAdapter ?? createRudofShaclAdapter(), [providedAdapter]);
+  const engine = useMemo(() => providedEngine ?? createRudofEngine(), [providedEngine]);
 
   const [prepared, setPrepared] = useState<Prepared | null>(null);
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -123,7 +125,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     setError(undefined);
     setErrors(new Map());
     (async () => {
-      const schema = await adapter.parseSchema(
+      const shapeModel = await engine.parseShapes(
         typeof shapes === "string" || shapes instanceof Store ? shapes : await toStore(shapes),
       );
       const derivedPrefixes = {
@@ -134,8 +136,8 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       // Load the initial data into the engine session ONCE, seed the focus into it,
       // and build GraphState over that live session — the single source of truth.
       const initialData = data ? ((await toStore(data)).getQuads(null, null, null, null) as Quad[]) : [];
-      const session = await adapter.createGraph(
-        schema,
+      const session = await engine.createGraph(
+        shapeModel,
         initialData,
         focusNode ? namedNode(focusNode) : undefined,
         root,
@@ -143,8 +145,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       const graph = new GraphState(session.backend);
       if (!active) return;
       setPrepared({
-        schema,
-        validator: adapter.createValidator(schema),
+        shapes: shapeModel,
         graph,
         // Reset baseline = the seeded session graph (focus type + sh:hasValue seeds).
         initialQuads: graph.allQuads(),
@@ -156,7 +157,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     return () => {
       active = false;
     };
-  }, [adapter, shapes, data, focusNode, rootShape]);
+  }, [engine, shapes, data, focusNode, rootShape]);
 
   const graph = prepared?.graph;
 
@@ -171,18 +172,18 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     if (!prepared) return undefined;
     // Single graph: re-derive field values from the engine session (sync, after
     // ready()) on every edit, then build the model over them — no n3 read path.
-    const values = adapter.projectValues(prepared.schema, prepared.focusNode, prepared.rootShapeId);
-    return adapter.buildFormModel({
-      schema: prepared.schema,
+    const values = engine.projectValues(prepared.shapes, prepared.focusNode, prepared.rootShapeId);
+    return buildFormModel({
+      shapes: prepared.shapes,
       focusNode: prepared.focusNode,
-      rootShape: namedNode(prepared.rootShapeId) as NamedNode,
+      shape: prepared.shapes.nodeShapes.get(prepared.rootShapeId)!,
       locale,
       onDiagnostic,
       values,
     });
     // `version` re-projects field values from the graph after each edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [adapter, prepared, version, locale, onDiagnostic]);
+  }, [engine, prepared, version, locale, onDiagnostic]);
 
   // Debounced live validation.
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -191,16 +192,13 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
       // Validate the live session in place (no reload) — scoped to the focus.
-      const results = await prepared.validator.validate({
-        focusNode: prepared.focusNode,
-        rootShape: namedNode(prepared.rootShapeId) as NamedNode,
-      });
+      const results = await engine.validateFocus(prepared.focusNode, prepared.rootShapeId);
       setErrors(mapResults(results));
     }, validationDebounceMs);
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [prepared, version, validateOn, validationDebounceMs]);
+  }, [engine, prepared, version, validateOn, validationDebounceMs]);
 
   const isValid = useMemo(() => {
     for (const list of errors.values()) {
@@ -224,24 +222,21 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const reset = useCallback(() => {
     if (!prepared) return;
     // Reset the session too: reload the captured baseline into a fresh session graph.
-    void adapter
-      .createGraph(prepared.schema, prepared.initialQuads, prepared.focusNode, namedNode(prepared.rootShapeId) as NamedNode)
+    void engine
+      .createGraph(prepared.shapes, prepared.initialQuads, prepared.focusNode, namedNode(prepared.rootShapeId) as NamedNode)
       .then((session) => {
         setPrepared((p) => (p ? { ...p, graph: new GraphState(session.backend) } : p));
         setErrors(new Map());
       });
-  }, [adapter, prepared]);
+  }, [engine, prepared]);
 
   const validate = useCallback(async () => {
     if (!prepared) return [];
-    const results = await prepared.validator.validate({
-      focusNode: prepared.focusNode,
-      rootShape: namedNode(prepared.rootShapeId) as NamedNode,
-    });
+    const results = await engine.validateFocus(prepared.focusNode, prepared.rootShapeId);
     const map = mapResults(results);
     setErrors(map);
     return [...map.values()].flat();
-  }, [prepared]);
+  }, [engine, prepared]);
 
   return useMemo<MetadataFormController>(
     () => ({
