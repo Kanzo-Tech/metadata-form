@@ -124,13 +124,13 @@ export function createRudofShaclAdapter(engine: RdfEngine = createRudofEngine())
     buildFormModel(args: BuildFormModelArgs): FormModel {
       if (!isRudof(args.schema)) throw new Error("rudof adapter received a non-SHACL schema");
       const focusNode = args.focusNode ?? freshFocusNode();
-      const shape = resolveRootShape(args.schema.shapes, args.data, focusNode, args.rootShape);
+      // The hook always passes an explicit rootShape; resolve from it (no n3 read).
+      const shape = resolveRootShapeFromTypes(args.schema.shapes, [], args.rootShape);
       if (!shape) {
         throw new Error("Could not resolve a root node shape. Pass `rootShape` explicitly.");
       }
       return buildForm({
         shapes: args.schema.shapes,
-        data: args.data,
         focusNode,
         shape,
         locale: args.locale,

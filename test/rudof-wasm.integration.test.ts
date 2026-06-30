@@ -3,7 +3,6 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { Store } from "n3";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { createRudofShaclAdapter } from "@/shacl/adapter.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
@@ -135,7 +134,6 @@ d("RudofEngine over the REAL wasm", () => {
     const shape = model.nodeShapes.get(healthDcatApRootShape)!;
     const form = buildFormModel({
       shapes: model,
-      data: new Store(),
       focusNode: namedNode("http://example.org/d1"),
       shape,
       locale: "en",
@@ -184,7 +182,6 @@ d("RudofEngine over the REAL wasm", () => {
     // Data store is EMPTY — all values come from rudof's projection.
     const form = buildFormModel({
       shapes: model,
-      data: new Store(),
       focusNode: dataset,
       shape: model.nodeShapes.get(healthDcatApRootShape)!,
       locale: "en",
@@ -233,7 +230,7 @@ d("RudofEngine over the REAL wasm", () => {
 
     const rebuild = async () => {
       const values = await projectTree(engine, model, SHAPE, alice);
-      return buildFormModel({ shapes: model, data: new Store(), focusNode: alice, shape, values });
+      return buildFormModel({ shapes: model, focusNode: alice, shape, values });
     };
     const nameValues = (form: { groups: { fields: { path: { value: string }; values: { value: { value: string } | null }[] }[] }[] }) =>
       allFields(form as never).find((f) => f.path.value === `${EX}name`)?.values.map((v) => v.value?.value) ?? [];
@@ -260,7 +257,7 @@ d("RudofEngine over the REAL wasm", () => {
 
     // Fully synchronous: projectTreeSync → buildFormModel, no await.
     const values = projectTreeSync((f, s) => engine.projectFormSync(f, s), model, SHAPE, alice);
-    const form = buildFormModel({ shapes: model, data: new Store(), focusNode: alice, shape, values });
+    const form = buildFormModel({ shapes: model, focusNode: alice, shape, values });
     expect(allFields(form).find((f) => f.path.value === `${EX}name`)?.values[0]?.value?.value).toBe("Alice");
   });
 });

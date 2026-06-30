@@ -90,11 +90,6 @@ interface Prepared {
 
 const NOOP_UNSUB = () => () => {};
 
-/** Shared empty n3 store: the single-graph path projects values from the engine
- *  session, so `buildFormModel` never reads a data store — but its `data` arg is
- *  still required by the (ShEx-agnostic) contract. */
-const EMPTY_DATA = new Store();
-
 export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormController {
   const {
     shapes,
@@ -179,7 +174,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     const values = adapter.projectValues(prepared.schema, prepared.focusNode, prepared.rootShapeId);
     return adapter.buildFormModel({
       schema: prepared.schema,
-      data: EMPTY_DATA,
       focusNode: prepared.focusNode,
       rootShape: namedNode(prepared.rootShapeId) as NamedNode,
       locale,

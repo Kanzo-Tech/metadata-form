@@ -41,10 +41,6 @@ export type DiagnosticSink = (diagnostic: Diagnostic) => void;
 
 export interface BuildFormModelArgs {
   schema: ParsedSchema;
-  /** The data graph being edited (may be empty for a blank form). Unused when
-   *  `values` is supplied (the single-graph path projects values from the
-   *  engine session instead of reading this store). */
-  data: Store;
   /** Subject to edit; created fresh if absent. */
   focusNode?: Term;
   /** Explicit root shape to use; otherwise inferred from targets. */
@@ -53,8 +49,8 @@ export interface BuildFormModelArgs {
   locale?: string;
   /** Receives non-fatal issues instead of dropping them silently. */
   onDiagnostic?: DiagnosticSink;
-  /** Pre-projected field values (the single-graph path). When present, values
-   *  come from here rather than being read from `data`. */
+  /** Pre-projected field values (the single-graph path); the sole value source.
+   *  Defaults to empty, in which case fields get empty value slots. */
   values?: ProjectedValues;
 }
 

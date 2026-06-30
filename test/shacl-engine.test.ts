@@ -6,6 +6,7 @@ import {
   seedFocusNode,
 } from "@/shacl/buildFormModel.js";
 import { createRudofEngine } from "@/engine/index.js";
+import { projectTree } from "@/engine/projectTree.js";
 import { Editors } from "@/shacl/vocab/shacl-ui.js";
 import { allFields } from "@/model/FormModel.js";
 import { computeFormReport } from "@/react/validation/useFormReport.js";
@@ -28,16 +29,36 @@ function parseShapes(ttl: string): Promise<ShapeModel> {
   return Promise.resolve(createRudofEngine().loadShapes(ttl));
 }
 
+/** Build a structure-only FormModel (no data → empty value slots). The single-graph
+ *  path projects values from an engine session; tests that assert values use
+ *  {@link buildWithData} instead. */
 function buildFrom(
   shapes: ShapeModel,
-  data: Store,
   focusNode: Term,
   rootIri: string,
   onDiagnostic?: DiagnosticSink,
 ) {
   const shape = shapes.nodeShapes.get(rootIri);
   if (!shape) throw new Error(`No node shape ${rootIri}`);
-  return buildFormModel({ shapes, data, focusNode, shape, locale: "en", onDiagnostic });
+  return buildFormModel({ shapes, focusNode, shape, locale: "en", onDiagnostic });
+}
+
+/** Build a FormModel whose values come from a real rudof session: load shapes AND
+ *  data into ONE session, project the focus's value tree, then build over it — the
+ *  single-graph projection path (mirrors `test/rudof-wasm.integration.test.ts`). */
+async function buildWithData(
+  dataTtl: string,
+  opts: { shapesTtl?: string; rootIri?: string; focusNode?: Term } = {},
+) {
+  const sTtl = opts.shapesTtl ?? shapesTtl;
+  const rootIri = opts.rootIri ?? rootShape.value;
+  const focusNode = opts.focusNode ?? namedNode("http://example.org/d1");
+  const engine = createRudofEngine();
+  const model = await engine.loadShapes(sTtl);
+  await engine.loadData(dataTtl);
+  const shape = model.nodeShapes.get(rootIri)!;
+  const values = await projectTree(engine, model, rootIri, focusNode);
+  return buildFormModel({ shapes: model, focusNode, shape, values, locale: "en" });
 }
 
 /** Validate a data graph against shapes, in rudof-over-WASM. */
@@ -53,13 +74,13 @@ beforeAll(async () => {
   shapes = await parseShapes(shapesTtl);
 });
 
-function build(dataStore: Store, focusNode = namedNode("http://example.org/d1")) {
-  return { model: buildFrom(shapes, dataStore, focusNode, rootShape.value) };
+function build(focusNode = namedNode("http://example.org/d1")) {
+  return { model: buildFrom(shapes, focusNode, rootShape.value) };
 }
 
 describe("SHACL → FormModel", () => {
   it("builds ordered groups and fields from the profile", () => {
-    const { model } = build(new Store());
+    const { model } = build();
     const groupLabels = model.groups.map((g) => g.label);
     expect(groupLabels).toEqual(["General", "Provenance", "Health-specific", "Distributions"]);
 
@@ -71,7 +92,7 @@ describe("SHACL → FormModel", () => {
   });
 
   it("selects SHACL-UI editors via the resolver rules", () => {
-    const { model } = build(new Store());
+    const { model } = build();
     const fields = allFields(model);
     const byPath = (suffix: string) => fields.find((f) => f.path.value.endsWith(suffix));
 
@@ -82,53 +103,39 @@ describe("SHACL → FormModel", () => {
     expect(byPath("numberOfRecords")?.editorId).toBe(Editors.NumberField);
   });
 
-  it("projects existing values from the data graph", () => {
-    const data = new Store();
-    data.addQuads(
-      parseTurtle(`
-        @prefix dcterms: <http://purl.org/dc/terms/> .
-        <http://example.org/d1> dcterms:title "Hello" .
-      `) as never[],
-    );
-    const { model } = build(data);
+  it("projects existing values from the data graph", async () => {
+    const model = await buildWithData(`
+      @prefix dcterms: <http://purl.org/dc/terms/> .
+      <http://example.org/d1> dcterms:title "Hello" .
+    `);
     const title = allFields(model).find((f) => f.path.value.endsWith("/title"));
     expect(title?.values.map((v) => v.value?.value)).toEqual(["Hello"]);
   });
 
-  it("marks multi-value properties repeatable and projects all values", () => {
-    const data = new Store();
-    data.addQuads(
-      parseTurtle(`
-        @prefix dcat: <http://www.w3.org/ns/dcat#> .
-        <http://example.org/d1> dcat:keyword "a", "b", "c" .
-      `) as never[],
-    );
-    const { model } = build(data);
+  it("marks multi-value properties repeatable and projects all values", async () => {
+    const model = await buildWithData(`
+      @prefix dcat: <http://www.w3.org/ns/dcat#> .
+      <http://example.org/d1> dcat:keyword "a", "b", "c" .
+    `);
     const keyword = allFields(model).find((f) => f.path.value.endsWith("keyword"));
     expect(keyword?.repeatable).toBe(true);
     expect(keyword?.values.map((v) => v.value?.value).sort()).toEqual(["a", "b", "c"]);
   });
 
   it("renders sh:inversePath as a read-only field with the inverse subjects", async () => {
-    const shape = `
+    const inverseShapes = `
       @prefix sh: <http://www.w3.org/ns/shacl#> .
       @prefix ex: <http://example.org/> .
       ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
         sh:property [ sh:path [ sh:inversePath ex:parent ] ; sh:name "Children" ] .
     `;
-    const data = new Store();
-    data.addQuads(
-      parseTurtle(`
+    const model = await buildWithData(
+      `
         @prefix ex: <http://example.org/> .
         ex:c1 ex:parent ex:d1 .
         ex:c2 ex:parent ex:d1 .
-      `) as never[],
-    );
-    const model = buildFrom(
-      await parseShapes(shape),
-      data,
-      namedNode("http://example.org/d1"),
-      "http://example.org/S",
+      `,
+      { shapesTtl: inverseShapes, rootIri: "http://example.org/S" },
     );
     const children = allFields(model).find((f) => f.label === "Children");
     expect(children?.readOnly).toBe(true);
@@ -138,17 +145,34 @@ describe("SHACL → FormModel", () => {
     ]);
   });
 
-  it("builds nested sub-forms for sh:node properties", () => {
-    const data = new Store();
-    data.addQuads(
-      parseTurtle(`
-        @prefix dcterms: <http://purl.org/dc/terms/> .
-        @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-        <http://example.org/d1> dcterms:publisher <http://example.org/agent1> .
-        <http://example.org/agent1> foaf:name "ACME" .
-      `) as never[],
+  it("renders a complex path (sequence) as a read-only field with projected values", async () => {
+    const sequenceShapes = `
+      @prefix sh: <http://www.w3.org/ns/shacl#> .
+      @prefix ex: <http://example.org/> .
+      ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
+        sh:property [ sh:path ( ex:a ex:b ) ] .
+    `;
+    const model = await buildWithData(
+      `
+        @prefix ex: <http://example.org/> .
+        ex:d1 ex:a ex:x .
+        ex:x  ex:b "deep" .
+      `,
+      { shapesTtl: sequenceShapes, rootIri: "http://example.org/S" },
     );
-    const { model } = build(data);
+    const field = allFields(model).find((f) => f.pathKind === "complex");
+    expect(field).toBeDefined();
+    expect(field?.readOnly).toBe(true);
+    expect(field?.values.map((v) => v.value?.value)).toEqual(["deep"]);
+  });
+
+  it("builds nested sub-forms for sh:node properties", async () => {
+    const model = await buildWithData(`
+      @prefix dcterms: <http://purl.org/dc/terms/> .
+      @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+      <http://example.org/d1> dcterms:publisher <http://example.org/agent1> .
+      <http://example.org/agent1> foaf:name "ACME" .
+    `);
     const publisher = allFields(model).find((f) => f.path.value.endsWith("/publisher"));
     const nested = publisher?.values[0]?.nested;
     expect(nested).toBeDefined();
@@ -159,7 +183,7 @@ describe("SHACL → FormModel", () => {
 
 describe("computeFormReport (single derived state)", () => {
   it("derives issues (rows + per-group), completion and health from one source", () => {
-    const { model } = build(new Store());
+    const { model } = build();
     const title = allFields(model).find((f) => f.path.value.endsWith("/title"))!;
     const errors = new Map<string, FieldError[]>([
       [title.id, [{ message: "Required", severity: "violation" } as FieldError]],
@@ -180,18 +204,6 @@ describe("computeFormReport (single derived state)", () => {
 });
 
 describe("build diagnostics (no silent failures)", () => {
-  async function diagnosticsFor(shape: string): Promise<Diagnostic[]> {
-    const diags: Diagnostic[] = [];
-    buildFrom(
-      await parseShapes(shape),
-      new Store(),
-      namedNode("http://example.org/d1"),
-      "http://example.org/S",
-      (d) => diags.push(d),
-    );
-    return diags;
-  }
-
   it("resolves a sh:node to an undefined shape leniently (rudof stubs it as empty)", async () => {
     // rudof's parser registers a referenced-but-undefined shape as an empty node
     // shape, so the build resolves it (empty sub-form) rather than crashing. The
@@ -205,20 +217,10 @@ describe("build diagnostics (no silent failures)", () => {
     `);
     expect(shapes.nodeShapes.get("http://example.org/Missing")?.properties).toEqual([]);
     const diags: Diagnostic[] = [];
-    buildFrom(shapes, new Store(), namedNode("http://example.org/d1"), "http://example.org/S", (d) =>
+    buildFrom(shapes, namedNode("http://example.org/d1"), "http://example.org/S", (d) =>
       diags.push(d),
     );
     expect(diags.some((d) => d.code === "missing-shape")).toBe(false);
-  });
-
-  it("defers a complex path (sequence): captured in the IR, projection deferred to rudof", async () => {
-    const diags = await diagnosticsFor(`
-      @prefix sh: <http://www.w3.org/ns/shacl#> .
-      @prefix ex: <http://example.org/> .
-      ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
-        sh:property [ sh:path ( ex:a ex:b ) ] .
-    `);
-    expect(diags.some((d) => d.code === "deferred-path")).toBe(true);
   });
 });
 

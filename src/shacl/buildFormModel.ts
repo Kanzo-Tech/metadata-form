@@ -3,6 +3,7 @@ import type { NamedNode, Term } from "@rdfjs/types";
 import { blankNode, namedNode, quad, rdf } from "../rdf/factory.js";
 import { pickByLanguage } from "../rdf/terms.js";
 import { toTerm } from "../rdf/termValue.js";
+import { pathKey } from "../engine/pathKey.js";
 import { Sh } from "./vocab/shacl.js";
 import {
   createEditorResolver,
@@ -25,47 +26,52 @@ import type {
   ShapeModel,
 } from "../model/ShapeIR.js";
 
-/** Objects of `subject predicate ?o` in the n3 data store. */
-function objects(store: Store, subject: Term, predicate: NamedNode): Term[] {
-  return store.getQuads(subject, predicate, null, null).map((q) => q.object as Term);
-}
-
 export interface BuildArgs {
   shapes: ShapeModel;
-  data: Store;
   focusNode: Term;
   shape: NodeShapeIR;
   locale?: string;
   onDiagnostic?: DiagnosticSink;
   /** Editor resolver; defaults to the SHACL-UI rule set. */
   resolver?: EditorResolver;
-  /** Optional pre-projected values; when absent, values are read from `data` (n3). */
+  /** Pre-projected field values, keyed by `${focusNode}|${pathKey}` (the
+   *  single-graph projection). The sole value source; defaults to empty (so
+   *  structure-only callers get empty slots). */
   values?: ProjectedValues;
 }
+
+/** Inner build args: the editor resolver and projected values are always
+ *  resolved (defaulted) before recursion. */
+type InnerArgs = Omit<BuildArgs, "resolver" | "values"> & {
+  resolver: EditorResolver;
+  values: ProjectedValues;
+};
 
 const DEFAULT_GROUP = "__default__";
 
 /** Build a FormModel for a focus node against a node shape (recursive). */
 export function buildFormModel(args: BuildArgs): FormModel {
-  return buildInner({ ...args, resolver: args.resolver ?? createEditorResolver() }, new Set());
+  return buildInner(
+    { ...args, resolver: args.resolver ?? createEditorResolver(), values: args.values ?? new Map() },
+    new Set(),
+  );
 }
 
 interface FieldCtx {
   shapes: ShapeModel;
-  data: Store;
   focusNode: Term;
   locale?: string;
   onDiagnostic?: DiagnosticSink;
   resolver: EditorResolver;
-  values?: ProjectedValues;
+  values: ProjectedValues;
 }
 
-function buildInner(args: Required<Pick<BuildArgs, "resolver">> & BuildArgs, visited: Set<string>): FormModel {
-  const { shapes, data, focusNode, shape, locale, onDiagnostic, resolver, values } = args;
+function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
+  const { shapes, focusNode, shape, locale, onDiagnostic, resolver, values } = args;
   const guardKey = `${shape.id}::${focusNode.value}`;
   const cyclic = visited.has(guardKey);
   const nextVisited = new Set(visited).add(guardKey);
-  const ctx: FieldCtx = { shapes, data, focusNode, locale, onDiagnostic, resolver, values };
+  const ctx: FieldCtx = { shapes, focusNode, locale, onDiagnostic, resolver, values };
 
   const fields: FieldModel[] = [];
   for (const ps of shape.properties) {
@@ -75,15 +81,10 @@ function buildInner(args: Required<Pick<BuildArgs, "resolver">> & BuildArgs, vis
     } else if (path.kind === "inverse" && path.of.kind === "predicate") {
       fields.push(buildInverseField(ps, namedNode(path.of.iri), ctx));
     } else {
-      // Complex path captured losslessly in the IR, but value projection over an
-      // arbitrary path is delegated to the rudof engine (Phase 2). The n3
-      // transition reader cannot evaluate it, so it is surfaced, not rendered.
-      onDiagnostic?.({
-        level: "info",
-        code: "deferred-path",
-        message: "Complex path not yet projected by the n3 transition engine (rudof projects it).",
-        detail: shape.id,
-      });
+      // Complex path (sequence / alternative / quantified / nested inverse): the
+      // engine projects its values over the single graph, so render them as a
+      // read-only field keyed by the path's canonical key.
+      fields.push(buildComplexField(ps, ctx));
     }
   }
 
@@ -165,9 +166,7 @@ function buildInverseField(ps: PropertyShapeIR, predicate: NamedNode, ctx: Field
   const id = `${ctx.focusNode.value}|^${predicate.value}`;
   const label = pickByLanguage(ps.presentation.names, ctx.locale)?.value ?? `← ${localName(predicate.value)}`;
   const description = pickByLanguage(ps.presentation.descriptions, ctx.locale)?.value;
-  const slots = ctx.values
-    ? (ctx.values.get(`${ctx.focusNode.value}|^${predicate.value}`) ?? [])
-    : ctx.data.getQuads(null, predicate, ctx.focusNode, null).map((q) => ({ value: q.subject as Term }));
+  const slots = ctx.values.get(`${ctx.focusNode.value}|^${predicate.value}`) ?? [];
   const values: ValueSlot[] = slots.map((s, i) => ({ id: `${id}#${i}`, value: s.value }));
 
   return {
@@ -190,6 +189,39 @@ function buildInverseField(ps: PropertyShapeIR, predicate: NamedNode, ctx: Field
   };
 }
 
+/** Read-only field for an arbitrary complex path (sequence / alternative /
+ * quantified / nested inverse): the engine projects its values over the single
+ * graph, keyed by the path's canonical {@link pathKey}. Rendered, not deferred. */
+function buildComplexField(ps: PropertyShapeIR, ctx: FieldCtx): FieldModel {
+  const key = pathKey(ps.path);
+  const id = `${ctx.focusNode.value}|${key}`;
+  const label = pickByLanguage(ps.presentation.names, ctx.locale)?.value ?? key;
+  const description = pickByLanguage(ps.presentation.descriptions, ctx.locale)?.value;
+  const slots = ctx.values.get(id) ?? [];
+  const values: ValueSlot[] = slots.map((s, i) => ({ id: `${id}#${i}`, value: s.value }));
+
+  return {
+    id,
+    // A synthetic predicate carrying the canonical path string; the field is
+    // read-only, so it is never written back through this term.
+    path: namedNode(key),
+    pathKind: "complex",
+    label,
+    description,
+    editorId: Editors.IRI,
+    required: false,
+    repeatable: true,
+    minCount: 0,
+    maxCount: undefined,
+    order: ps.presentation.order ?? Number.MAX_SAFE_INTEGER,
+    groupId: ps.presentation.groupId ?? DEFAULT_GROUP,
+    constraints: {},
+    readOnly: true,
+    nodeShape: null,
+    values,
+  };
+}
+
 function projectValues(
   ps: PropertyShapeIR,
   path: NamedNode,
@@ -200,16 +232,14 @@ function projectValues(
   cyclic: boolean,
 ): ValueSlot[] {
   const isNested = (editor === Editors.Details || !!ps.node) && !cyclic;
-  const slots = ctx.values
-    ? (ctx.values.get(`${ctx.focusNode.value}|${path.value}`) ?? [])
-    : objects(ctx.data, ctx.focusNode, path).map((value) => ({ value, nestedFocus: value }));
+  const slots = ctx.values.get(`${ctx.focusNode.value}|${path.value}`) ?? [];
 
   return slots.map((s, i) => {
     const slot: ValueSlot = { id: `${ctx.focusNode.value}|${path.value}#${i}`, value: s.value };
     const sub = s.nestedFocus;
     if (isNested && nestedShape && sub && (sub.termType === "NamedNode" || sub.termType === "BlankNode")) {
       slot.nested = buildInner(
-        { shapes: ctx.shapes, data: ctx.data, focusNode: sub, shape: nestedShape, locale: ctx.locale, resolver: ctx.resolver, values: ctx.values },
+        { shapes: ctx.shapes, focusNode: sub, shape: nestedShape, locale: ctx.locale, resolver: ctx.resolver, values: ctx.values },
         visited,
       );
     }
