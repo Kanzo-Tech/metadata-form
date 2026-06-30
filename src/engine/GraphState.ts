@@ -114,5 +114,3 @@ export class GraphState {
     return this.backend.match(null, null, null);
   }
 }
-
-export { nextBlankId };

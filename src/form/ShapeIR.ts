@@ -60,16 +60,19 @@ export interface LogicalConstraints {
   not?: PropertyShapeIR;
 }
 
-/** Presentation hints — vocabulary-agnostic; populated from SHACL-UI (or legacy). */
+/** Presentation hints — vocabulary-agnostic; emitted by rudof from the SHACL-UI
+ *  (`shui`) annotations. */
 export interface PresentationHints {
   names: LangString[];
   descriptions: LangString[];
   order?: number;
   groupId?: string;
-  /** Canonical (alias-folded) SHACL-UI editor IRI, if the shape stated one. */
+  /** The SHACL-UI editor IRI rudof resolved for this property — an explicit
+   *  `shui:editor` if stated, otherwise a datatype/nodeKind default. The UI maps
+   *  this IRI to a widget. Effectively always present (optional for hand-built IRs). */
   editor?: string;
+  /** The SHACL-UI viewer IRI, when stated (read-only display hint). */
   viewer?: string;
-  singleLine?: boolean;
 }
 
 /**

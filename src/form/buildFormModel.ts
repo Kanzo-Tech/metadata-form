@@ -285,7 +285,7 @@ function orderCompare(a: FieldModel, b: FieldModel): number {
   return a.label.localeCompare(b.label);
 }
 
-export function localName(iri: string): string {
+function localName(iri: string): string {
   const m = iri.match(/[#/]([^#/]+)$/);
   return m ? m[1] : iri;
 }
