@@ -3,7 +3,7 @@ import type {
   ProjectedForm,
   PropertyGroupIR,
   TermValue,
-} from "../model/ShapeIR.js";
+} from "../form/ShapeIR.js";
 
 /**
  * The ABI contract for the `rudof_wasm` crate (rudof fork) — exactly what the

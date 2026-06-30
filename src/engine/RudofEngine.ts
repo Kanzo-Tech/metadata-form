@@ -1,13 +1,13 @@
 import { Store } from "n3";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
-import { namedNode, quad, rdf } from "../rdf/factory.js";
-import { toTurtle } from "../rdf/serialize.js";
-import { toTerm, toTermValue } from "../rdf/termValue.js";
-import { freshFocusNode, resolveRootShapeFromTypes } from "../shacl/buildFormModel.js";
+import { namedNode, quad, rdf } from "./factory.js";
+import { toTurtle } from "./serialize.js";
+import { toTerm, toTermValue } from "./termValue.js";
+import { freshFocusNode, resolveRootShapeFromTypes } from "../form/buildFormModel.js";
 import { projectTreeSync, type ProjectedValues } from "./projectTree.js";
-import type { NodeShapeIR, ProjectedForm, ShapeModel } from "../model/ShapeIR.js";
-import type { GraphBackend } from "./ports/GraphBackend.js";
-import type { Severity, ValidationResult } from "../model/validation.js";
+import type { NodeShapeIR, ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
+import type { GraphBackend } from "./GraphBackend.js";
+import type { Severity, ValidationResult } from "../form/validation.js";
 import type { RudofLoader, RudofResult, RudofSession, ShapeModelJson } from "./abi.js";
 
 const TURTLE = "text/turtle";

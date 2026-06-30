@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Store } from "n3";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
-import { namedNode } from "../../rdf/factory.js";
-import { collectPrefixes, toStore, type RdfInput } from "../../rdf/parse.js";
-import { toJsonLd, toTurtle } from "../../rdf/serialize.js";
-import type { JsonLdOptions, SerializeOptions } from "../../rdf/serialize.js";
-import { mapResults } from "../../validation/mapResults.js";
-import type { FormModel } from "../../model/FormModel.js";
-import type { FieldError } from "../../model/validation.js";
-import type { ShapeModel } from "../../model/ShapeIR.js";
-import { GraphState } from "../../state/GraphState.js";
+import { namedNode } from "../../engine/factory.js";
+import { collectPrefixes, toStore, type RdfInput } from "../../engine/parse.js";
+import { toJsonLd, toTurtle } from "../../engine/serialize.js";
+import type { JsonLdOptions, SerializeOptions } from "../../engine/serialize.js";
+import { mapResults } from "../../form/validation.js";
+import type { FormModel } from "../../form/FormModel.js";
+import type { FieldError } from "../../form/validation.js";
+import type { ShapeModel } from "../../form/ShapeIR.js";
+import { GraphState } from "../../engine/GraphState.js";
 import { createRudofEngine } from "../../engine/index.js";
 import type { RudofEngine } from "../../engine/RudofEngine.js";
-import { buildFormModel, type DiagnosticSink } from "../../shacl/buildFormModel.js";
+import { buildFormModel, type DiagnosticSink } from "../../form/buildFormModel.js";
 import type { FormAssist } from "../widgets/widgets.js";
 import { computeFormReport, type FormReport } from "../validation/useFormReport.js";
 

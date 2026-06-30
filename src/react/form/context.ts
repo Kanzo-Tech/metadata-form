@@ -1,8 +1,8 @@
 import { createContext, useContext } from "react";
 import type { Term } from "@rdfjs/types";
-import type { GraphState } from "../../state/GraphState.js";
-import type { FormModel } from "../../model/FormModel.js";
-import type { FieldError } from "../../model/validation.js";
+import type { GraphState } from "../../engine/GraphState.js";
+import type { FormModel } from "../../form/FormModel.js";
+import type { FieldError } from "../../form/validation.js";
 import type { FormAssist, WidgetRegistry } from "../widgets/widgets.js";
 import type { FormReport } from "../validation/useFormReport.js";
 

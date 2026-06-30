@@ -5,13 +5,13 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
-import { namedNode, literal } from "@/rdf/factory.js";
-import { buildFormModel } from "@/shacl/buildFormModel.js";
+import { namedNode, literal } from "@/engine/factory.js";
+import { buildFormModel } from "@/form/buildFormModel.js";
 import { projectTree, projectTreeSync } from "@/engine/projectTree.js";
-import { allFields } from "@/model/FormModel.js";
-import { Editors } from "@/shacl/vocab/shacl-ui.js";
+import { allFields } from "@/form/FormModel.js";
+import { Editors } from "@/form/vocab/shacl-ui.js";
 import type { RudofModule, RudofSession } from "@/engine/abi.js";
-import type { ProjectedForm } from "@/model/ShapeIR.js";
+import type { ProjectedForm } from "@/form/ShapeIR.js";
 import { healthDcatApShapes, healthDcatApRootShape, healthDcatApSampleData } from "@examples/health-dcat-ap/index.js";
 
 /**

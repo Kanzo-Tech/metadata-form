@@ -1,5 +1,5 @@
 import { Box, Flex, Grid } from "@radix-ui/themes";
-import type { FieldModel, GroupModel } from "../../model/FormModel.js";
+import type { FieldModel, GroupModel } from "../../form/FormModel.js";
 import type { GridLayout } from "../form/context.js";
 import { FieldRenderer } from "../form/FieldRenderer.js";
 

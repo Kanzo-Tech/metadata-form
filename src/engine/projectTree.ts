@@ -1,7 +1,7 @@
 import type { Term } from "@rdfjs/types";
-import { toTerm } from "../rdf/termValue.js";
+import { toTerm } from "./termValue.js";
 import { pathKey } from "./pathKey.js";
-import type { ProjectedForm, ShapeModel } from "../model/ShapeIR.js";
+import type { ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
 
 /** One projected value occurrence: the value term, plus the sub-focus to recurse
  *  into for nested (sh:node) properties. */

@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import type { Term } from "@rdfjs/types";
-import { literal, namedNode, NS } from "../../rdf/factory.js";
-import { NUMERIC, resolveWidgetKind, type WidgetKind } from "../../shacl/editors/widgetMap.js";
-import type { FieldModel } from "../../model/FormModel.js";
-import type { GraphState } from "../../state/GraphState.js";
+import { literal, namedNode, NS } from "../../engine/factory.js";
+import { NUMERIC, resolveWidgetKind, type WidgetKind } from "../../form/editors.js";
+import type { FieldModel } from "../../form/FormModel.js";
+import type { GraphState } from "../../engine/GraphState.js";
 
 /**
  * The presentation contract. Widgets are *dumb*: they render an input for a
@@ -11,7 +11,7 @@ import type { GraphState } from "../../state/GraphState.js";
  * this one binding layer, so a theme is just a set of widgets — no duplication.
  *
  * {@link WidgetKind} and the editor-IRI → kind mapping live in core
- * (`editors/widgetMap`); re-exported here for the widget authors' convenience.
+ * (`editors`); re-exported here for the widget authors' convenience.
  */
 export type { WidgetKind };
 

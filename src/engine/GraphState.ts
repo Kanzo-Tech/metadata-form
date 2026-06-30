@@ -1,6 +1,6 @@
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
-import { blankNode, namedNode, rdf } from "../rdf/factory.js";
-import type { GraphBackend } from "../engine/ports/GraphBackend.js";
+import { blankNode, namedNode, rdf } from "./factory.js";
+import type { GraphBackend } from "./GraphBackend.js";
 
 const RDF_TYPE = namedNode(rdf("type").value);
 

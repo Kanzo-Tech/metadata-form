@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { FormModel } from "../../model/FormModel.js";
+import type { FormModel } from "../../form/FormModel.js";
 import { NodeContext, useFormContext } from "./context.js";
 import { LayoutBody } from "../layout/index.js";
 import { scrollToField } from "../utils/scrollToField.js";

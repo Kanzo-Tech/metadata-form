@@ -1,4 +1,4 @@
-import { NS } from "../../rdf/factory.js";
+import { NS } from "../../engine/factory.js";
 
 /**
  * The single SHACL Core IRI constant the form layer still needs: the `sh:IRI`

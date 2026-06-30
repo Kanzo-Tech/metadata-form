@@ -1,14 +1,14 @@
 import type { NamedNode, Term } from "@rdfjs/types";
-import { blankNode, namedNode } from "../rdf/factory.js";
-import { pickByLanguage } from "../rdf/terms.js";
-import { toTerm } from "../rdf/termValue.js";
+import { blankNode, namedNode } from "../engine/factory.js";
+import { pickByLanguage } from "../engine/terms.js";
+import { toTerm } from "../engine/termValue.js";
 import { pathKey } from "../engine/pathKey.js";
 import { SH_IRI } from "./vocab/shacl.js";
 import {
   createEditorResolver,
   deriveContext,
   type EditorResolver,
-} from "./editors/EditorResolver.js";
+} from "./editors.js";
 import { Editors } from "./vocab/shacl-ui.js";
 import type {
   FieldConstraints,
@@ -17,13 +17,13 @@ import type {
   FormModel,
   GroupModel,
   ValueSlot,
-} from "../model/FormModel.js";
+} from "../form/FormModel.js";
 import type { ProjectedValues } from "../engine/projectTree.js";
 import type {
   NodeShapeIR,
   PropertyShapeIR,
   ShapeModel,
-} from "../model/ShapeIR.js";
+} from "../form/ShapeIR.js";
 
 /** A non-fatal issue surfaced while building the form (instead of failing
  * silently) — e.g. a property dropped for an unsupported path, or a `sh:node`

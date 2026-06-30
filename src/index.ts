@@ -57,18 +57,18 @@ export type {
   FieldConstraints,
   FieldOption,
   EditorId,
-} from "./model/FormModel.js";
-export { allFields } from "./model/FormModel.js";
+} from "./form/FormModel.js";
+export { allFields } from "./form/FormModel.js";
 export type {
   ValidationResult,
   FieldError,
   Severity,
-} from "./model/validation.js";
+} from "./form/validation.js";
 // Non-fatal build diagnostics (dropped paths, missing shapes).
-export type { Diagnostic, DiagnosticSink } from "./shacl/buildFormModel.js";
+export type { Diagnostic, DiagnosticSink } from "./form/buildFormModel.js";
 
 // Editors (SHACL-UI editor ids + rule-based resolution)
-export { Editors, type KnownEditorId } from "./shacl/vocab/shacl-ui.js";
+export { Editors, type KnownEditorId } from "./form/vocab/shacl-ui.js";
 export {
   createEditorResolver,
   defaultEditorRules,
@@ -76,12 +76,12 @@ export {
   type EditorResolver,
   type EditorRule,
   type ResolutionContext,
-} from "./shacl/editors/EditorResolver.js";
+} from "./form/editors.js";
 export {
   resolveWidgetKind,
   defaultWidgetKindMap,
   type WidgetKindMap,
-} from "./shacl/editors/widgetMap.js";
+} from "./form/editors.js";
 
 // Shape IR (vocabulary-agnostic parsing seam)
 export type {
@@ -97,7 +97,7 @@ export type {
   ProjectedForm,
   ProjectedProperty,
   ProjectedValue,
-} from "./model/ShapeIR.js";
+} from "./form/ShapeIR.js";
 
 // The default engine is rudof-over-WASM. Its internals — RudofEngine,
 // createRudofEngine, projectTree, the wasm ABI types, RudofGraphBackend — live on
@@ -105,6 +105,6 @@ export type {
 // projection), so the main entry stays UI-focused.
 
 // RDF utilities
-export { toStore, toStoreSync, parseTurtle, parseJsonLd } from "./rdf/parse.js";
-export { toTurtle, toJsonLd, toNQuads } from "./rdf/serialize.js";
-export * as ns from "./rdf/factory.js";
+export { toStore, toStoreSync, parseTurtle, parseJsonLd } from "./engine/parse.js";
+export { toTurtle, toJsonLd, toNQuads } from "./engine/serialize.js";
+export * as ns from "./engine/factory.js";
