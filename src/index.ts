@@ -67,16 +67,9 @@ export type {
 // Non-fatal build diagnostics (dropped paths, missing shapes).
 export type { Diagnostic, DiagnosticSink } from "./form/buildFormModel.js";
 
-// Editors (SHACL-UI editor ids + rule-based resolution)
+// Editors — the SHACL-UI editor IRIs rudof emits + the editor-IRI → widget-kind
+// map (the one UI-specific mapping; editor *selection* lives in rudof).
 export { Editors, type KnownEditorId } from "./form/vocab/shacl-ui.js";
-export {
-  createEditorResolver,
-  defaultEditorRules,
-  deriveContext,
-  type EditorResolver,
-  type EditorRule,
-  type ResolutionContext,
-} from "./form/editors.js";
 export {
   resolveWidgetKind,
   defaultWidgetKindMap,

@@ -2,13 +2,7 @@ import type { NamedNode, Term } from "@rdfjs/types";
 import { blankNode, namedNode } from "../engine/factory.js";
 import { pickByLanguage } from "../engine/terms.js";
 import { toTerm } from "../engine/termValue.js";
-import { pathKey } from "../engine/pathKey.js";
 import { SH_IRI } from "./vocab/shacl.js";
-import {
-  createEditorResolver,
-  deriveContext,
-  type EditorResolver,
-} from "./editors.js";
 import { Editors } from "./vocab/shacl-ui.js";
 import type {
   FieldConstraints,
@@ -45,18 +39,14 @@ export interface BuildArgs {
   shape: NodeShapeIR;
   locale?: string;
   onDiagnostic?: DiagnosticSink;
-  /** Editor resolver; defaults to the SHACL-UI rule set. */
-  resolver?: EditorResolver;
   /** Pre-projected field values, keyed by `${focusNode}|${pathKey}` (the
    *  single-graph projection). The sole value source; defaults to empty (so
    *  structure-only callers get empty slots). */
   values?: ProjectedValues;
 }
 
-/** Inner build args: the editor resolver and projected values are always
- *  resolved (defaulted) before recursion. */
-type InnerArgs = Omit<BuildArgs, "resolver" | "values"> & {
-  resolver: EditorResolver;
+/** Inner build args: projected values are always resolved (defaulted) before recursion. */
+type InnerArgs = Omit<BuildArgs, "values"> & {
   values: ProjectedValues;
 };
 
@@ -64,10 +54,7 @@ const DEFAULT_GROUP = "__default__";
 
 /** Build a FormModel for a focus node against a node shape (recursive). */
 export function buildFormModel(args: BuildArgs): FormModel {
-  return buildInner(
-    { ...args, resolver: args.resolver ?? createEditorResolver(), values: args.values ?? new Map() },
-    new Set(),
-  );
+  return buildInner({ ...args, values: args.values ?? new Map() }, new Set());
 }
 
 interface FieldCtx {
@@ -75,16 +62,15 @@ interface FieldCtx {
   focusNode: Term;
   locale?: string;
   onDiagnostic?: DiagnosticSink;
-  resolver: EditorResolver;
   values: ProjectedValues;
 }
 
 function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
-  const { shapes, focusNode, shape, locale, onDiagnostic, resolver, values } = args;
+  const { shapes, focusNode, shape, locale, onDiagnostic, values } = args;
   const guardKey = `${shape.id}::${focusNode.value}`;
   const cyclic = visited.has(guardKey);
   const nextVisited = new Set(visited).add(guardKey);
-  const ctx: FieldCtx = { shapes, focusNode, locale, onDiagnostic, resolver, values };
+  const ctx: FieldCtx = { shapes, focusNode, locale, onDiagnostic, values };
 
   const fields: FieldModel[] = [];
   for (const ps of shape.properties) {
@@ -134,7 +120,9 @@ function buildField(
     uniqueLang: v.uniqueLang,
   };
 
-  const editorId = ctx.resolver.resolve(deriveContext(ps));
+  // rudof resolves the editor (explicit shui:editor else a datatype default) and
+  // always emits it; the UI only maps the IRI → widget.
+  const editorId = ps.presentation.editor ?? Editors.TextField;
 
   const minCount = ps.cardinality.min ?? 0;
   const maxCount = ps.cardinality.max;
@@ -204,9 +192,9 @@ function buildInverseField(ps: PropertyShapeIR, predicate: NamedNode, ctx: Field
 
 /** Read-only field for an arbitrary complex path (sequence / alternative /
  * quantified / nested inverse): the engine projects its values over the single
- * graph, keyed by the path's canonical {@link pathKey}. Rendered, not deferred. */
+ * graph, keyed by the path's canonical `pathKey` (emitted by rudof). Rendered. */
 function buildComplexField(ps: PropertyShapeIR, ctx: FieldCtx): FieldModel {
-  const key = pathKey(ps.path);
+  const key = ps.pathKey;
   const id = `${ctx.focusNode.value}|${key}`;
   const label = pickByLanguage(ps.presentation.names, ctx.locale)?.value ?? key;
   const description = pickByLanguage(ps.presentation.descriptions, ctx.locale)?.value;
@@ -252,7 +240,7 @@ function projectValues(
     const sub = s.nestedFocus;
     if (isNested && nestedShape && sub && (sub.termType === "NamedNode" || sub.termType === "BlankNode")) {
       slot.nested = buildInner(
-        { shapes: ctx.shapes, focusNode: sub, shape: nestedShape, locale: ctx.locale, resolver: ctx.resolver, values: ctx.values },
+        { shapes: ctx.shapes, focusNode: sub, shape: nestedShape, locale: ctx.locale, values: ctx.values },
         visited,
       );
     }

@@ -1,6 +1,5 @@
 import type { Term } from "@rdfjs/types";
 import { toTerm } from "./termValue.js";
-import { pathKey } from "./pathKey.js";
 import type { ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
 
 /** One projected value occurrence: the value term, plus the sub-focus to recurse
@@ -66,7 +65,7 @@ function recurseSync(
       `${focus.value}|${prop.pathKey}`,
       prop.values.map((v) => ({ value: toTerm(v.value), nestedFocus: v.nested ? toTerm(v.nested) : undefined })),
     );
-    const ps = node.properties.find((p) => pathKey(p.path) === prop.pathKey);
+    const ps = node.properties.find((p) => p.pathKey === prop.pathKey);
     if (ps?.node) {
       for (const v of prop.values) {
         if (v.nested) recurseSync(project, shapes, ps.node, toTerm(v.nested), map, visited);
@@ -98,7 +97,7 @@ async function recurse(
     );
 
     // Recurse into nested node shapes for their sub-focuses.
-    const ps = node.properties.find((p) => pathKey(p.path) === prop.pathKey);
+    const ps = node.properties.find((p) => p.pathKey === prop.pathKey);
     if (ps?.node) {
       for (const v of prop.values) {
         if (v.nested) await recurse(project, shapes, ps.node, toTerm(v.nested), map, visited);

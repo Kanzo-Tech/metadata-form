@@ -87,6 +87,9 @@ export interface PropertyShapeIR {
   /** Shape id (IRI or blank-node id), when addressable. */
   id?: string;
   path: PathExpr;
+  /** Canonical SPARQL-ish path key (`(a/b)`, `^p`) emitted by rudof — matches the
+   *  projected {@link ProjectedProperty.pathKey}, so values align without re-derivation. */
+  pathKey: string;
   cardinality: Cardinality;
   value: ValueConstraints;
   logical: LogicalConstraints;
