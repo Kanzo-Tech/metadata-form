@@ -1,11 +1,9 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { Store } from "n3";
 import type { Term } from "@rdfjs/types";
-import {
-  buildFormModel,
-  seedFocusNode,
-} from "@/shacl/buildFormModel.js";
+import { buildFormModel } from "@/shacl/buildFormModel.js";
 import { createRudofEngine } from "@/engine/index.js";
+import { createRudofShaclAdapter } from "@/shacl/adapter.js";
 import { projectTree } from "@/engine/projectTree.js";
 import { Editors } from "@/shacl/vocab/shacl-ui.js";
 import { allFields } from "@/model/FormModel.js";
@@ -279,8 +277,8 @@ describe("SHACL validation", () => {
   });
 });
 
-describe("seedFocusNode", () => {
-  it("seeds sh:defaultValue / sh:hasValue into an empty focus node", async () => {
+describe("session seeding", () => {
+  it("seeds sh:defaultValue / sh:hasValue + targetClass type into a new focus node", async () => {
     const ttl = `
       @prefix sh: <http://www.w3.org/ns/shacl#> .
       @prefix ex: <http://example.org/> .
@@ -289,11 +287,13 @@ describe("seedFocusNode", () => {
         sh:property [ sh:path ex:status ; sh:defaultValue "draft" ] ;
         sh:property [ sh:path ex:kind ; sh:hasValue ex:Dataset ] .
     `;
-    const store = new Store();
+    // The single-graph runtime seeds directly into the session backend (createGraph).
+    const adapter = createRudofShaclAdapter();
+    const schema = await adapter.parseSchema(ttl);
     const focus = namedNode("http://example.org/d1");
-    seedFocusNode(await parseShapes(ttl), store, focus, namedNode("http://example.org/S"));
-    const objects = store
-      .getQuads(focus, null, null, null)
+    const session = await adapter.createGraph(schema, [], focus, namedNode("http://example.org/S"));
+    const objects = session.backend
+      .match(session.focusNode, null, null)
       .map((q) => q.object.value)
       .sort();
     expect(objects).toContain("draft");

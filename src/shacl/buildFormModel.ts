@@ -1,6 +1,5 @@
-import type { Store } from "n3";
 import type { NamedNode, Term } from "@rdfjs/types";
-import { blankNode, namedNode, quad, rdf } from "../rdf/factory.js";
+import { blankNode, namedNode } from "../rdf/factory.js";
 import { pickByLanguage } from "../rdf/terms.js";
 import { toTerm } from "../rdf/termValue.js";
 import { pathKey } from "../engine/pathKey.js";
@@ -294,23 +293,9 @@ export function freshFocusNode(): Term {
   return blankNode();
 }
 
-const RDF_TYPE = namedNode(rdf("type").value);
-
-/** Resolve the root node shape: explicit > focus-node's rdf:type vs target class
- *  > first shape with a target class > first shape. */
-export function resolveRootShape(
-  shapes: ShapeModel,
-  data: Store,
-  focusNode: Term,
-  rootShape?: NamedNode,
-): NodeShapeIR | undefined {
-  const types = data.getQuads(focusNode, RDF_TYPE, null, null).map((q) => q.object.value);
-  return resolveRootShapeFromTypes(shapes, types, rootShape);
-}
-
-/** {@link resolveRootShape} over a pre-read list of the focus node's rdf:type
- *  values — so the single-graph path can resolve from the engine session backend
- *  without an n3 `Store`. */
+/** Resolve the root node shape from the focus node's rdf:type values (read from
+ *  the engine session backend): explicit > rdf:type vs target class > first shape
+ *  with a target class > first shape. */
 export function resolveRootShapeFromTypes(
   shapes: ShapeModel,
   types: string[],
@@ -342,36 +327,6 @@ function collectNodeRefs(properties: PropertyShapeIR[], out: Set<string>): void 
     const { or, and, xone, not } = ps.logical;
     for (const branch of [...(or ?? []), ...(and ?? []), ...(xone ?? []), ...(not ? [not] : [])]) {
       collectNodeRefs([branch], out);
-    }
-  }
-}
-
-/** Stamp the focus node with the root shape's target class (so it's targeted and
- *  the output declares its type) plus any sh:hasValue / sh:defaultValue seeds, so
- *  a new instance is complete. Mutates `store`. */
-export function seedFocusNode(
-  shapes: ShapeModel,
-  store: Store,
-  focusNode: Term,
-  rootShape?: NamedNode,
-): void {
-  const shape = resolveRootShape(shapes, store, focusNode, rootShape);
-  if (!shape) return;
-
-  if (shape.instanceClass) {
-    const cls = namedNode(shape.instanceClass);
-    if (store.getQuads(focusNode, RDF_TYPE, cls, null).length === 0) {
-      store.addQuad(quad(focusNode as never, RDF_TYPE as never, cls as never));
-    }
-  }
-
-  for (const ps of shape.properties) {
-    if (ps.path.kind !== "predicate" || !ps.path.iri) continue;
-    const seed = ps.value.hasValue ?? ps.value.defaultValue;
-    if (!seed) continue;
-    const predicate = namedNode(ps.path.iri);
-    if (store.getQuads(focusNode, predicate, null, null).length === 0) {
-      store.addQuad(quad(focusNode as never, predicate as never, toTerm(seed) as never));
     }
   }
 }

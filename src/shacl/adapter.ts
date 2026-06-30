@@ -6,7 +6,6 @@ import { toTerm } from "../rdf/termValue.js";
 import {
   buildFormModel as buildForm,
   freshFocusNode,
-  resolveRootShape,
   resolveRootShapeFromTypes,
 } from "./buildFormModel.js";
 import type {
@@ -25,8 +24,6 @@ import { projectTreeSync } from "../engine/projectTree.js";
 import { createRudofEngine } from "../engine/index.js";
 
 const RDF_TYPE = namedNode(rdf("type").value);
-
-const EMPTY_DATA = new Store();
 
 export interface RudofParsedSchema extends ParsedSchema {
   language: "shacl";
@@ -152,7 +149,8 @@ export function createRudofShaclAdapter(engine: RdfEngine = createRudofEngine())
         // when known; fall back to whole-graph validation otherwise.
         async validate({ focusNode, rootShape }) {
           if (focusNode) {
-            const shape = resolveRootShape(schema.shapes, EMPTY_DATA, focusNode, rootShape);
+            // The hook passes an explicit rootShape; resolve from it (no graph read).
+            const shape = resolveRootShapeFromTypes(schema.shapes, [], rootShape);
             if (shape) return engine.validateFocus(focusNode, shape.id);
           }
           return engine.validate();
