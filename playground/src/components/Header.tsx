@@ -79,7 +79,7 @@ export function Header({
         <Flex direction="column" mr="2">
           <Heading size="4">metadata-form</Heading>
           <Text size="1" color="gray">
-            SHACL/DASH shapes → editable RDF form → Turtle &amp; JSON-LD
+            SHACL shapes → editable RDF form → Turtle &amp; JSON-LD
           </Text>
         </Flex>
 

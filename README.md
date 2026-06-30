@@ -1,23 +1,32 @@
 # metadata-form
 
-Auto-generate editable **React** forms from **SHACL/DASH** shapes (and, in the
-future, ShEx). Pass a SHACL shape (the "model") and an optional RDF data graph;
-get a form that edits the graph and serializes back to **Turtle** and
-**JSON-LD**.
+Auto-generate editable **React** forms from **SHACL** shapes. Pass a SHACL shape
+(the "model") and an optional RDF data graph; get a form that edits the graph and
+serializes back to **Turtle** and **JSON-LD**.
 
-- 🧩 **Schema-agnostic core** — a `SchemaAdapter` seam isolates the shape
-  language. SHACL ships today; ShEx can be added without touching the UI.
-- 🧱 **DASH editors** — `dash:editor` selection with a datatype / nodeKind /
-  `sh:in` / `sh:class` / `sh:node` fallback.
+The shape engine is [**rudof**](https://github.com/rudof-project/rudof) — a Rust
+SHACL/ShEx stack — compiled to **WebAssembly**. rudof owns the RDF: it parses the
+shapes, validates, projects the form's values out of the data graph, and
+serializes the result. metadata-form is the React layer on top: it maps each
+field's **SHACL-UI editor** to a widget and renders the form.
+
+- 🦀 **rudof-over-WASM engine** — parsing, **real SHACL validation**, value
+  projection, and serialization all run in the rudof wasm module. No JS RDF
+  reimplementation; one graph, one source of truth.
+- 🎛️ **SHACL-UI editors** — the field's editor comes from the
+  [SHACL-UI](https://www.w3.org/TR/shacl12-ui/) `shui:editor` term, with a
+  datatype / `nodeKind` / `sh:in` / `sh:class` / `sh:node` fallback.
 - 🎨 **Radix-native + overridable** — renders with
   [@radix-ui/themes](https://www.radix-ui.com/themes); swap any input by
   overriding its widget.
-- ✅ **Live SHACL validation** — per-field errors via `rdf-validate-shacl`, plus
-  a ready-made `<ValidationSummary>` pill.
+- ✅ **Live validation** — per-field errors from rudof's SHACL validator, plus a
+  ready-made `<ValidationSummary>` pill.
 - 🤖 **Optional AI assist** — one `assist` seam: streaming inline ghost-text
   completion (a CodeMirror editor; Tab/Esc) and live value suggestions, with a
   one-line [Vercel AI SDK](https://sdk.vercel.ai) adapter. The core imports no LLM SDK.
-- 📦 **Bundled example shapes** (e.g. **HealthDCAT-AP**) for demos.
+- 📦 **Bundled example shapes** (e.g. **HealthDCAT-AP**) in the playground.
+- 🧩 **ShEx-ready** — the engine seam is shape-language-agnostic; ShEx can be
+  added without touching the UI.
 
 ## Install
 
@@ -28,6 +37,27 @@ npm install metadata-form react react-dom @radix-ui/themes @radix-ui/react-icons
 ESM-only. The UI is built on [@radix-ui/themes](https://www.radix-ui.com/themes)
 (icons from [@radix-ui/react-icons](https://www.radix-ui.com/icons)): render forms
 inside a `<Theme>` and import its stylesheet.
+
+### The wasm engine
+
+metadata-form depends on **[`@kanzo-tech/rudof-wasm`](https://www.npmjs.com/package/@kanzo-tech/rudof-wasm)**
+(installed automatically) — the rudof engine as a `wasm-bindgen` `--target web`
+module. The `.wasm` binary loads lazily the first time a form mounts, so importing
+the library never pulls it until you use it.
+
+Your **bundler serves the `.wasm`**. With Vite, keep it out of the dependency
+pre-bundle so the binary is served verbatim (otherwise the dev server returns HTML
+and you get `WebAssembly.instantiate: expected magic word`):
+
+```ts
+// vite.config.ts
+export default defineConfig({
+  optimizeDeps: { exclude: ["@kanzo-tech/rudof-wasm"] },
+});
+```
+
+Most app bundlers (webpack 5, Next.js, etc.) handle the `new URL(..., import.meta.url)`
+wasm asset out of the box. Static hosts serve `.wasm` as `application/wasm` by default.
 
 ## The contract
 
@@ -57,15 +87,15 @@ export function App({ shape, graph }: { shape: string; graph?: string }) {
 }
 ```
 
-The controller is the single handle for everything:
+Shapes and data are **strings** — Turtle or JSON-LD; rudof parses both. The
+controller is the single handle for everything:
 
 | | |
 |---|---|
 | `form.quads` | live data graph (re-derived on each edit) |
-| `form.toTurtle()` / `form.toJsonLd()` | serialized output |
+| `form.toTurtle()` / `form.toJsonLd()` | serialized output (via rudof) |
 | `form.isValid` / `form.errors` | live SHACL validation |
 | `form.validate()` / `form.reset()` | imperative actions |
-| `form.graph` | the underlying mutable, observable graph |
 | `form.report` | derived form state — `{progress, issues, pending, nextField, health}` |
 | `form.subscribe(cb)` | observe changes (autosave, external sync) |
 
@@ -163,6 +193,28 @@ Shapes are just SHACL/Turtle strings — bring your own. The **playground** ship
 HealthDCAT-AP demo (`playground/examples/health-dcat-ap/*.ttl`) you can copy; the
 library itself ships no shapes (its job is shape→form, not shipping vocabularies).
 
+## SHACL-UI editors (`shui:`)
+
+A field's input is chosen from the [SHACL-UI](https://www.w3.org/TR/shacl12-ui/)
+vocabulary. Annotate a property shape with `shui:editor` to pick one explicitly:
+
+```turtle
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+@prefix ex:   <http://example.org/> .
+
+ex:DatasetShape a sh:NodeShape ;
+  sh:property [ sh:path ex:description ; shui:editor shui:TextAreaEditor ] ;
+  sh:property [ sh:path ex:publisher   ; sh:node ex:AgentShape ; shui:editor shui:DetailsEditor ] .
+```
+
+When `shui:editor` is absent, rudof resolves an editor from the field's
+constraints — `sh:datatype`, `sh:nodeKind`, `sh:in`, `sh:class`, `sh:node`. The
+known editor IRIs (`shui:TextFieldEditor`, `TextAreaEditor`, `NumberFieldEditor`,
+`DatePickerEditor`, `BooleanEditor`, `EnumSelectEditor`, `DetailsEditor`, …) each
+map to a React widget; metadata-form's job is exactly this editor-IRI → widget
+binding, so a new editor is a widget, not an engine change.
+
 ## Theming
 
 The UI renders with [@radix-ui/themes](https://www.radix-ui.com/themes). Control
@@ -194,23 +246,23 @@ const widgets: WidgetRegistry = {
 
 ```mermaid
 flowchart LR
-  shape["SHACL / DASH shape"]
+  shape["SHACL shape<br/>(+ SHACL-UI editors)"]
   data[("RDF data graph<br/>(optional)")]
 
-  subgraph core["Core — agnostic · no React, no LLM"]
+  subgraph engine["rudof engine · WebAssembly"]
     direction TB
-    adapter["SchemaAdapter<br/>SHACL · ShEx (next)"]
-    model["FormModel<br/>groups · fields · editorId · values"]
-    validator["Validator<br/>per-field errors"]
-    adapter --> model --> validator
+    parse["parse → ShapeModel IR<br/>groups · fields · editor IRIs · paths"]
+    validate["SHACL validation<br/>per-field errors"]
+    project["project values<br/>from the data graph"]
+    serialize["serialize<br/>Turtle · JSON-LD"]
   end
 
-  subgraph ui["React layer"]
+  subgraph ui["React layer · metadata-form"]
     direction TB
     controller["useMetadataForm<br/>controller + observable graph"]
     form["MetadataForm → FieldRenderer"]
     binding["binding layer<br/>RDF ⇄ primitive"]
-    widgets["dumb widgets · by WidgetKind"]
+    widgets["dumb widgets · editor IRI → WidgetKind"]
     controller --> form --> widgets
     widgets <--> binding
   end
@@ -222,31 +274,53 @@ flowchart LR
     ai -. provides .-> seam
   end
 
-  shape --> adapter
-  data --> controller
-  model --> controller
-  validator --> controller
-  binding --> controller
-  seam -. streams .-> widgets
+  shape --> parse
+  data --> project
+  parse --> controller
+  validate --> controller
+  project --> controller
+  binding --> serialize
   controller --> out["Turtle · JSON-LD · live quads"]
+  seam -. streams .-> widgets
 ```
 
-Everything left of the React layer is **agnostic**: the React layer, the
-validation display and serialization depend only on `SchemaAdapter` / `FormModel`,
-never on SHACL — and nothing in the core imports an LLM SDK (the `assist` seam is
-fed entirely by the consumer). Adding **ShEx** means implementing one
-`SchemaAdapter` in `src/core/adapters/shex/`; the UI doesn't change. Example shapes
-are plain strings, not a special input type — see the playground's
-`playground/examples/health-dcat-ap/` (incl. `SOURCE.md`).
+rudof (left) owns every RDF concern — parsing, validation, projection,
+serialization, and SHACL-UI editor resolution — over a **single** wasm graph. The
+React layer is shape-language-agnostic: it consumes the `ShapeModel` IR and binds
+editor IRIs to widgets, and nothing in it imports an LLM SDK (the `assist` seam is
+fed entirely by the consumer). Adding **ShEx** is an engine-side change behind the
+same IR; the UI doesn't move.
+
+### `metadata-form/rudof` — direct engine access
+
+Power-user wiring lives at the `./rudof` subpath: a shared `RudofEngine`, custom
+projection, or a raw graph session, without going through the hook.
+
+```ts
+import { createRudofEngine, projectTree } from "metadata-form/rudof";
+
+const engine = createRudofEngine();
+const model = await engine.loadShapes(shapesTurtle);
+await engine.loadData(dataTurtle);
+```
 
 ## Develop
 
 ```sh
-npm run dev        # playground at http://localhost:5173
-npm test           # vitest
-npm run typecheck
-npm run build      # ESM + types into dist/
+npm run dev          # standalone playground (Vite) — http://localhost:5173
+npm test             # vitest
+npm run typecheck    # library + playground projects
+npm run build        # ESM + types into dist/ (library only)
+npm run build:playground   # the standalone playground app
 ```
+
+The playground is its own app under `playground/` with its own Vite/TS config; the
+library build (`npm run build`) is decoupled from it.
+
+**Contributors — building the wasm.** `@kanzo-tech/rudof-wasm` is published from the
+[rudof fork](https://github.com/Kanzo-Tech/rudof); `npm run build:wasm` rebuilds it
+locally from a sibling `../rudof-fork` checkout (wasm-pack `--target web`) when you
+need to test an unpublished engine change.
 
 ## License
 

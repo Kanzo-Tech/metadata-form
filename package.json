@@ -1,14 +1,16 @@
 {
   "name": "metadata-form",
   "version": "0.1.0",
-  "description": "Auto-generate editable React forms from SHACL/DASH shapes (extensible to ShEx). Output RDF metadata as Turtle and JSON-LD.",
+  "description": "Auto-generate editable React forms from SHACL shapes, powered by the rudof engine (WebAssembly). Edit an RDF graph and serialize to Turtle and JSON-LD.",
   "type": "module",
   "license": "MIT",
   "keywords": [
     "rdf",
     "shacl",
-    "dash",
+    "shacl-ui",
     "shex",
+    "rudof",
+    "wasm",
     "form",
     "react",
     "dcat",
@@ -19,7 +21,8 @@
   ],
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

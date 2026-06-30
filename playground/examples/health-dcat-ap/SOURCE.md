@@ -2,7 +2,7 @@
 
 `shapes.ttl` in this folder is a **curated demo subset** of the HealthDCAT-AP /
 Health-RI metadata model, authored for this library to exercise the form engine
-end-to-end (DASH editors, property groups, nested node shapes, enumerations,
+end-to-end (SHACL-UI editors, property groups, nested node shapes, enumerations,
 multi-value and live SHACL validation).
 
 It is **not** the complete official specification. It models the core
@@ -23,15 +23,15 @@ It is **not** the complete official specification. It models the core
 
 ## Replacing with the official shapes
 
-The official shapes use cross-file `sh:node` references and do not carry DASH
+The official shapes use cross-file `sh:node` references and do not carry SHACL-UI
 editor hints or `sh:group` sections. To use them:
 
 1. Concatenate the relevant `*.ttl` pieces into a single graph.
-2. Optionally add `sh:group` / `dash:editor` annotations for nicer layout.
+2. Optionally add `sh:group` / `shui:editor` annotations for nicer layout.
 3. Pass that Turtle as `shapes` with the correct `rootShape`.
 
-The editor engine still works without DASH hints — it falls back to the
-datatype/nodeKind-based selection in `src/core/editors/selectEditor.ts`.
+The editor engine still works without `shui:editor` hints — rudof falls back to
+datatype/`nodeKind`-based selection.
 
 ## License
 
