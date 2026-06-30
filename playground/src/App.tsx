@@ -7,6 +7,7 @@ import { AsideSection } from "./components/Aside.js";
 import { CodePanel, CodeEditor } from "./components/CodePanel.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
 import { useAsidePresence } from "./hooks/useAsidePresence.js";
+import { useUrlState } from "./hooks/useUrlState.js";
 import { useWorkspace } from "./state/useWorkspace.js";
 import { makeAssist } from "./lib/assist.js";
 import "@radix-ui/themes/styles.css";
@@ -34,8 +35,10 @@ function ThemedApp() {
   // The assistance seam is wired only when an API key is present.
   const assist = useMemo<FormAssist | undefined>(() => (apiKey ? makeAssist(apiKey) : undefined), [apiKey]);
 
-  const workspace = useWorkspace();
-  const { shapeText, dataText, setShapeText, setDataText, applied, shape } = workspace;
+  // Permalink: hydrate the workspace from location.hash on load; Share writes it back.
+  const { initial, share, shared } = useUrlState();
+  const workspace = useWorkspace(initial);
+  const { shapeText, dataText, setShapeText, setDataText, applied, shape, options } = workspace;
 
   const isNarrow = useMediaQuery(NARROW);
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
@@ -88,7 +91,10 @@ function ThemedApp() {
   const form = useMetadataForm({
     shapes: applied.shapes,
     data: applied.data || undefined,
-    validateOn: "change",
+    validateOn: options.validateOn ?? "change",
+    focusNode: options.focusNode,
+    rootShape: options.rootShape,
+    locale: options.locale,
     assist,
   });
 
@@ -149,6 +155,8 @@ function ThemedApp() {
           dataId={workspace.dataId}
           onPickShape={workspace.pickShape}
           onPickData={workspace.pickData}
+          onShare={() => share(workspace.permalink)}
+          shared={shared}
           showSource={showSource}
           toggleSource={toggleSource}
           showOutput={showOutput}

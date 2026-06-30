@@ -1,5 +1,5 @@
-import { Box, Flex, Heading, Kbd, Link, Text } from "@radix-ui/themes";
-import { CodeIcon, FileTextIcon } from "@radix-ui/react-icons";
+import { Box, Button, Flex, Heading, Kbd, Link, Text } from "@radix-ui/themes";
+import { CheckIcon, CodeIcon, FileTextIcon, Share1Icon } from "@radix-ui/react-icons";
 import { ValidationSummary } from "metadata-form";
 import { Toggle } from "./Toggle.js";
 import { ExamplePickers } from "./ExamplePickers.js";
@@ -15,6 +15,8 @@ export function Header({
   dataId,
   onPickShape,
   onPickData,
+  onShare,
+  shared,
   showSource,
   toggleSource,
   showOutput,
@@ -27,6 +29,8 @@ export function Header({
   dataId: string;
   onPickShape: (id: string) => void;
   onPickData: (id: string) => void;
+  onShare: () => void;
+  shared: boolean;
   showSource: boolean;
   toggleSource: () => void;
   showOutput: boolean;
@@ -45,14 +49,22 @@ export function Header({
         py="1"
         style={{ flexShrink: 0, background: "var(--gray-a2)", borderBottom: PANEL_BORDER }}
       >
-        <ExamplePickers
-          examples={examples}
-          shapeId={shapeId}
-          dataOptions={dataOptions}
-          dataId={dataId}
-          onPickShape={onPickShape}
-          onPickData={onPickData}
-        />
+        <Flex align="center" gap="3">
+          <ExamplePickers
+            examples={examples}
+            shapeId={shapeId}
+            dataOptions={dataOptions}
+            dataId={dataId}
+            onPickShape={onPickShape}
+            onPickData={onPickData}
+          />
+          {/* Copy a self-contained permalink (shapes + data compressed into the URL
+              fragment). Explicit-only so edits don't spam history. */}
+          <Button size="1" variant="ghost" color="gray" onClick={onShare}>
+            {shared ? <CheckIcon /> : <Share1Icon />}
+            {shared ? "Copied!" : "Share"}
+          </Button>
+        </Flex>
         <Text size="1" color="gray">
           Made with ❤️ at{" "}
           <Link href="https://kanzo.tech" target="_blank" rel="noreferrer" size="1" color="gray" highContrast>

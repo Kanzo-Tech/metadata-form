@@ -1,14 +1,20 @@
 import { useMemo, useState } from "react";
 import { EXAMPLES } from "@examples/index.js";
 import { useDebounced } from "../hooks/useDebounced.js";
+import type { PermalinkOptions, PermalinkState } from "../lib/permalink.js";
 
 /** The playground's editable source: which example is selected, the live shape/data
- *  Turtle, and the debounced `applied` snapshot fed to the form (no Apply button). */
-export function useWorkspace() {
-  const [shapeId, setShapeId] = useState(EXAMPLES[0].id);
-  const [dataId, setDataId] = useState(EXAMPLES[0].data[0].id);
-  const [shapeText, setShapeText] = useState(EXAMPLES[0].shapes);
-  const [dataText, setDataText] = useState(EXAMPLES[0].data[0].ttl);
+ *  Turtle, and the debounced `applied` snapshot fed to the form (no Apply button).
+ *  When `initial` is provided (a decoded permalink) the workspace hydrates from it. */
+export function useWorkspace(initial?: PermalinkState | null) {
+  const seedEx = EXAMPLES.find((e) => e.id === initial?.exampleId) ?? EXAMPLES[0];
+
+  const [shapeId, setShapeId] = useState(seedEx.id);
+  const [dataId, setDataId] = useState(seedEx.data[0].id);
+  const [shapeText, setShapeText] = useState(initial?.shapesText ?? seedEx.shapes);
+  const [dataText, setDataText] = useState(initial?.dataText ?? seedEx.data[0].ttl);
+  // The form knobs (no UI to change them yet — restored from a permalink if present).
+  const [options] = useState<PermalinkOptions>(initial?.options ?? { validateOn: "change" });
 
   const shape = useMemo(() => EXAMPLES.find((e) => e.id === shapeId)!, [shapeId]);
 
@@ -32,6 +38,12 @@ export function useWorkspace() {
   const pending = useMemo(() => ({ shapes: shapeText, data: dataText }), [shapeText, dataText]);
   const applied = useDebounced(pending, 350);
 
+  // The exact state a Share permalink captures.
+  const permalink = useMemo<PermalinkState>(
+    () => ({ v: 1, exampleId: shapeId, shapesText: shapeText, dataText, options }),
+    [shapeId, shapeText, dataText, options],
+  );
+
   return {
     examples: EXAMPLES,
     shapeId,
@@ -44,5 +56,7 @@ export function useWorkspace() {
     pickShape,
     pickData,
     applied,
+    options,
+    permalink,
   };
 }
