@@ -9,7 +9,7 @@ import { resolve } from "node:path";
 // Guarded: a checkout without a built pkg still runs the wasm-free tests.
 const wasmPath = resolve(process.cwd(), "../rudof-fork/rudof_wasm/pkg/rudof_wasm_bg.wasm");
 if (existsSync(wasmPath)) {
-  const rudofWasm = await import("rudof-wasm");
+  const rudofWasm = await import("@kanzo/rudof-wasm");
   await (rudofWasm as { default: (i: unknown) => Promise<unknown> }).default({
     module_or_path: readFileSync(wasmPath),
   });

@@ -14,7 +14,7 @@ export default defineConfig({
       // in tests. Built from the rudof fork (sibling checkout). The rudof
       // integration test injects its own engine and never actually calls the
       // loader, so this module is loaded but not executed.
-      "rudof-wasm": r("../rudof-fork/rudof_wasm/pkg/rudof_wasm.js"),
+      "@kanzo/rudof-wasm": r("../rudof-fork/rudof_wasm/pkg/rudof_wasm.js"),
     },
   },
   test: {

@@ -22,7 +22,7 @@ const external = [
   "react-dom",
   "react/jsx-runtime",
   // The rudof WASM module — provided by `npm run build:wasm`, never bundled.
-  "rudof-wasm",
+  "@kanzo/rudof-wasm",
   "@radix-ui/themes",
   // The /ai adapter's deps — kept external (optional peer deps).
   "ai",
@@ -92,7 +92,7 @@ export default defineConfig(({ command }) => {
         // external (see `external` above) so consumers provide it themselves.
         ...(isLibBuild
           ? {}
-          : { "rudof-wasm": r("../rudof-fork/rudof_wasm/pkg/rudof_wasm.js") }),
+          : { "@kanzo/rudof-wasm": r("../rudof-fork/rudof_wasm/pkg/rudof_wasm.js") }),
       },
     },
   };

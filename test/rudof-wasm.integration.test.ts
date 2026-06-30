@@ -51,7 +51,7 @@ d("RudofEngine over the REAL wasm", () => {
   let wasmModule: RudofModule;
 
   beforeAll(async () => {
-    const mod = (await import(/* @vite-ignore */ pathToFileURL(wasmDir + "rudof_wasm.js").href)) as typeof import("rudof-wasm");
+    const mod = (await import(/* @vite-ignore */ pathToFileURL(wasmDir + "rudof_wasm.js").href)) as typeof import("@kanzo/rudof-wasm");
     await mod.default({ module_or_path: readFileSync(wasmDir + "rudof_wasm_bg.wasm") } as never);
     wasmModule = { newSession: () => new mod.Session() as unknown as RudofSession };
     engine = new RudofEngine(async () => wasmModule);
