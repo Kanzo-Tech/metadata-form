@@ -1,26 +1,19 @@
 import type { ReactNode } from "react";
 import type { Term } from "@rdfjs/types";
-import { literal, namedNode, NS } from "../../core/rdf/factory.js";
-import { Editors } from "../../core/editors/ids.js";
-import type { FieldModel } from "../../core/schema/FormModel.js";
-import type { GraphState } from "../../core/state/GraphState.js";
+import { literal, namedNode, NS } from "../../engine/factory.js";
+import { NUMERIC, resolveWidgetKind, type WidgetKind } from "../../form/editors.js";
+import type { FieldModel } from "../../form/FormModel.js";
+import type { GraphState } from "../../engine/GraphState.js";
 
 /**
  * The presentation contract. Widgets are *dumb*: they render an input for a
  * primitive value and never touch RDF. All term ⇄ primitive conversion lives in
  * this one binding layer, so a theme is just a set of widgets — no duplication.
+ *
+ * {@link WidgetKind} and the editor-IRI → kind mapping live in core
+ * (`editors`); re-exported here for the widget authors' convenience.
  */
-export type WidgetKind =
-  | "text"
-  | "number"
-  | "date"
-  | "datetime"
-  | "url"
-  | "textarea"
-  | "boolean"
-  | "select"
-  | "reference"
-  | "lang";
+export type { WidgetKind };
 
 export interface WidgetOption {
   value: string;
@@ -117,11 +110,6 @@ export interface FormAssist {
 const XSD = NS.xsd;
 const RDF_LANGSTRING = `${NS.rdf}langString`;
 const SH_IRI = `${NS.sh}IRI`;
-const NUMERIC = new Set(
-  ["integer", "int", "long", "short", "byte", "decimal", "float", "double",
-   "nonNegativeInteger", "positiveInteger", "negativeInteger", "nonPositiveInteger",
-   "unsignedInt", "unsignedLong", "unsignedShort", "unsignedByte"].map((t) => `${XSD}${t}`),
-);
 const INTEGRAL = new Set(
   ["integer", "int", "long", "short", "byte", "nonNegativeInteger", "positiveInteger",
    "negativeInteger", "nonPositiveInteger", "unsignedInt", "unsignedLong", "unsignedShort",
@@ -130,34 +118,7 @@ const INTEGRAL = new Set(
 
 /** Map a field (its selected editor + datatype) to a presentational widget kind. */
 export function widgetKind(field: FieldModel): WidgetKind {
-  switch (field.editorId) {
-    case Editors.TextArea:
-    case Editors.RichText:
-      return "textarea";
-    case Editors.TextFieldWithLang:
-    case Editors.TextAreaWithLang:
-      return "lang";
-    case Editors.DatePicker:
-      return "date";
-    case Editors.DateTimePicker:
-      return "datetime";
-    case Editors.BooleanSelect:
-      return "boolean";
-    case Editors.EnumSelect:
-      return "select";
-    case Editors.InstancesSelect:
-    case Editors.AutoComplete:
-      return "reference";
-    case Editors.URI:
-      return "url";
-    default: {
-      const dt = field.constraints.datatype;
-      if (dt === RDF_LANGSTRING) return "lang";
-      if (dt && NUMERIC.has(dt)) return "number";
-      if (field.constraints.nodeKind === SH_IRI || dt === `${XSD}anyURI`) return "url";
-      return "text";
-    }
-  }
+  return resolveWidgetKind(field);
 }
 
 export function stepFor(field: FieldModel): string | undefined {

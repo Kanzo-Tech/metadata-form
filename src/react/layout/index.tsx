@@ -1,4 +1,4 @@
-import type { FormModel } from "../../core/schema/FormModel.js";
+import type { FormModel } from "../../form/FormModel.js";
 import type { FormLayout, GridLayout } from "../form/context.js";
 import type { GroupIssues } from "../validation/useFormReport.js";
 import { SequentialLayout } from "./SequentialLayout.js";

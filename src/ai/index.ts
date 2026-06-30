@@ -1,7 +1,7 @@
 import { streamText, streamObject, type LanguageModel } from "ai";
 import { z } from "zod";
-import type { FieldModel } from "../core/schema/FormModel.js";
-import type { GraphState } from "../core/state/GraphState.js";
+import type { FieldModel } from "../form/FormModel.js";
+import type { GraphState } from "../engine/GraphState.js";
 import type { FieldSuggestion, FormAssist } from "../react/widgets/widgets.js";
 
 /**
@@ -34,9 +34,7 @@ const SUGGESTION = z.object({
 
 /** Best-effort dataset title from the graph, for a touch of context in prompts. */
 function datasetTitle(graph: GraphState): string | undefined {
-  return graph.store
-    .getQuads(null, null, null, null)
-    .find((q) => q.predicate.value.endsWith("title"))?.object.value;
+  return graph.allQuads().find((q) => q.predicate.value.endsWith("title"))?.object.value;
 }
 
 function defaultSuggestPrompt(field: FieldModel, graph: GraphState, locale: string): string {

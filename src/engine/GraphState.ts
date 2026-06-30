@@ -1,6 +1,6 @@
-import { Store } from "n3";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
-import { blankNode, namedNode, quad, rdf } from "../rdf/factory.js";
+import { blankNode, namedNode, rdf } from "./factory.js";
+import type { GraphBackend } from "./GraphBackend.js";
 
 const RDF_TYPE = namedNode(rdf("type").value);
 
@@ -13,22 +13,17 @@ function nextBlankId(): string {
 }
 
 /**
- * Holds the editable data graph — the single source of truth. Form fields are
- * projections of this graph. Mutations bump a version and notify subscribers
- * (consumed via useSyncExternalStore in the React layer).
+ * Holds the editable data graph — the single source of truth. The graph itself
+ * lives in the engine session behind a {@link GraphBackend} (rudof-over-WASM by
+ * default); this class adds React change tracking (version + subscribe) over it.
+ * Form fields are projections of this graph. Mutations route to the backend and
+ * bump a version, notifying subscribers (consumed via useSyncExternalStore).
  */
 export class GraphState {
-  private _store: Store;
   private version = 0;
   private listeners = new Set<Listener>();
 
-  constructor(store?: Store) {
-    this._store = store ?? new Store();
-  }
-
-  get store(): Store {
-    return this._store;
-  }
+  constructor(private readonly backend: GraphBackend) {}
 
   getVersion = (): number => this.version;
 
@@ -46,12 +41,12 @@ export class GraphState {
   setValue(focus: Term, predicate: NamedNode, oldValue: Term | null, newValue: Term | null): void {
     if (oldValue && newValue && oldValue.equals(newValue)) return;
     if (oldValue) this.removeSubgraph(focus, predicate, oldValue);
-    if (newValue) this._store.addQuad(quad(focus as never, predicate as never, newValue as never));
+    if (newValue) this.backend.add(focus, predicate, newValue);
     this.bump();
   }
 
   addValue(focus: Term, predicate: NamedNode, value: Term): void {
-    this._store.addQuad(quad(focus as never, predicate as never, value as never));
+    this.backend.add(focus, predicate, value);
     this.bump();
   }
 
@@ -66,9 +61,9 @@ export class GraphState {
    */
   createNested(focus: Term, predicate: NamedNode, typeIri?: string): Term {
     const node = blankNode(nextBlankId());
-    this._store.addQuad(quad(focus as never, predicate as never, node as never));
+    this.backend.add(focus, predicate, node);
     if (typeIri) {
-      this._store.addQuad(quad(node as never, RDF_TYPE as never, namedNode(typeIri) as never));
+      this.backend.add(node, RDF_TYPE, namedNode(typeIri));
     }
     this.bump();
     return node;
@@ -76,10 +71,10 @@ export class GraphState {
 
   /** Remove a value and, if it is a blank node, its reachable subgraph. */
   private removeSubgraph(focus: Term, predicate: NamedNode, value: Term): void {
-    this._store.removeQuad(quad(focus as never, predicate as never, value as never));
+    this.backend.remove(focus, predicate, value);
     if (value.termType === "BlankNode") {
       // Only prune if no other statement still references this blank node.
-      const stillReferenced = this._store.getQuads(null, null, value, null).length > 0;
+      const stillReferenced = this.backend.match(null, null, value).length > 0;
       if (!stillReferenced) this.pruneNode(value, new Set());
     }
   }
@@ -87,12 +82,12 @@ export class GraphState {
   private pruneNode(node: Term, visited: Set<string>): void {
     if (visited.has(node.value)) return;
     visited.add(node.value);
-    const outgoing = this._store.getQuads(node, null, null, null) as Quad[];
+    const outgoing = this.backend.match(node, null, null);
     for (const q of outgoing) {
-      this._store.removeQuad(q as never);
+      this.backend.remove(q.subject as Term, q.predicate as Term, q.object as Term);
       if (q.object.termType === "BlankNode") {
-        const refs = this._store.getQuads(null, null, q.object, null).length;
-        if (refs === 0) this.pruneNode(q.object, visited);
+        const refs = this.backend.match(null, null, q.object as Term).length;
+        if (refs === 0) this.pruneNode(q.object as Term, visited);
       }
     }
   }
@@ -104,10 +99,10 @@ export class GraphState {
     const walk = (node: Term) => {
       if (seen.has(node.value)) return;
       seen.add(node.value);
-      for (const q of this._store.getQuads(node, null, null, null) as Quad[]) {
+      for (const q of this.backend.match(node, null, null)) {
         out.push(q);
         if (q.object.termType === "BlankNode" || q.object.termType === "NamedNode") {
-          walk(q.object);
+          walk(q.object as Term);
         }
       }
     };
@@ -116,8 +111,6 @@ export class GraphState {
   }
 
   allQuads(): Quad[] {
-    return this._store.getQuads(null, null, null, null) as Quad[];
+    return this.backend.match(null, null, null);
   }
 }
-
-export { nextBlankId };

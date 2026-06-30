@@ -48,14 +48,7 @@ export { FieldRenderer } from "./react/form/FieldRenderer.js";
 export { useField } from "./react/hooks/useField.js";
 export { useFormContext, useFocusNode } from "./react/form/context.js";
 
-// Schema-agnostic core (the seam that keeps the UI independent of SHACL/ShEx)
-export type {
-  SchemaAdapter,
-  ParsedSchema,
-  BuildFormModelArgs,
-  Diagnostic,
-  DiagnosticSink,
-} from "./core/schema/SchemaAdapter.js";
+// Schema-agnostic form model
 export type {
   FormModel,
   GroupModel,
@@ -64,25 +57,46 @@ export type {
   FieldConstraints,
   FieldOption,
   EditorId,
-} from "./core/schema/FormModel.js";
-export { allFields } from "./core/schema/FormModel.js";
+} from "./form/FormModel.js";
+export { allFields } from "./form/FormModel.js";
 export type {
-  Validator,
   ValidationResult,
   FieldError,
   Severity,
-} from "./core/schema/validation.js";
+} from "./form/validation.js";
+// Non-fatal build diagnostics (dropped paths, missing shapes).
+export type { Diagnostic, DiagnosticSink } from "./form/buildFormModel.js";
 
-// Editors (DASH editor ids + selection)
-export { Editors } from "./core/editors/ids.js";
-export { selectEditor, type EditorMatchInput } from "./core/editors/selectEditor.js";
+// Editors — the SHACL-UI editor IRIs rudof emits + the editor-IRI → widget-kind
+// map (the one UI-specific mapping; editor *selection* lives in rudof).
+export { Editors, type KnownEditorId } from "./form/vocab/shacl-ui.js";
+export {
+  resolveWidgetKind,
+  defaultWidgetKindMap,
+  type WidgetKindMap,
+} from "./form/editors.js";
 
-// SHACL adapter (default)
-export { shaclAdapter } from "./core/adapters/shacl/index.js";
-export type { ShaclParsedSchema } from "./core/adapters/shacl/index.js";
+// Shape IR (vocabulary-agnostic parsing seam)
+export type {
+  ShapeModel,
+  NodeShapeIR,
+  PropertyShapeIR,
+  PathExpr,
+  ValueConstraints,
+  PresentationHints,
+  ComponentIR,
+  TermValue,
+  LangString,
+  ProjectedForm,
+  ProjectedProperty,
+  ProjectedValue,
+} from "./form/ShapeIR.js";
 
-// RDF utilities
-export { toStore, toStoreSync, parseTurtle, parseJsonLd } from "./core/rdf/parse.js";
-export { toTurtle, toJsonLd, toNQuads } from "./core/rdf/serialize.js";
-export { GraphState } from "./core/state/GraphState.js";
-export * as ns from "./core/rdf/factory.js";
+// The default engine is rudof-over-WASM. Its internals — RudofEngine,
+// createRudofEngine, projectTree, the wasm ABI types, RudofGraphBackend — live on
+// the `metadata-form/rudof` subpath for power-user wiring (shared engine, custom
+// projection), so the main entry stays UI-focused.
+
+// RDF term factory (namedNode/literal/blankNode/quad + the NS base IRIs). All RDF
+// parsing & serialization lives in rudof now — use the engine session for I/O.
+export * as ns from "./engine/factory.js";

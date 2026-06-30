@@ -1,5 +1,5 @@
 import { Badge, Flex, HoverCard, Link, ScrollArea, Text } from "@radix-ui/themes";
-import type { Severity } from "../../core/schema/validation.js";
+import type { Severity } from "../../form/validation.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 
 const MSG_COLOR: Record<Severity, "red" | "amber" | "blue"> = {

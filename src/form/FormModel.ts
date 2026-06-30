@@ -1,12 +1,12 @@
 import type { NamedNode, Term } from "@rdfjs/types";
 
 /**
- * Schema-agnostic representation of a form. Produced by a {@link SchemaAdapter}
- * (SHACL today, ShEx in the future) and consumed by the React layer, the
- * validation-display layer and the serializer — none of which know SHACL.
+ * Schema-agnostic representation of a form. Produced by `buildFormModel` from the
+ * shape IR and consumed by the React layer, the validation-display layer and the
+ * serializer — none of which know SHACL.
  */
 
-/** Editor identifiers are plain strings (e.g. DASH editor IRIs). */
+/** Editor identifiers are plain strings (SHACL-UI editor IRIs). */
 export type EditorId = string;
 
 /** A choosable option for enum-like editors (sh:in, instances of a class). */

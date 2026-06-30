@@ -10,6 +10,10 @@ const entries = {
   index: r("src/index.ts"),
   // Optional adapter subpath — Vercel AI SDK lives here, never in the core.
   "ai/index": r("src/ai/index.ts"),
+  // Direct rudof-engine access subpath (`metadata-form/rudof`) for custom wiring.
+  // Emitted under dist/engine/ so the JS bundle and the dts (which mirrors the
+  // src tree) share a path; package.json maps `./rudof` → dist/engine/index.*.
+  "engine/index": r("src/engine/index.ts"),
 };
 
 // Anything that must NOT be bundled into the library output.
@@ -17,11 +21,8 @@ const external = [
   "react",
   "react-dom",
   "react/jsx-runtime",
-  "n3",
-  "grapoi",
-  "jsonld",
-  "rdf-validate-shacl",
-  "@rdfjs/namespace",
+  // The rudof WASM module — provided by `npm run build:wasm`, never bundled.
+  "rudof-wasm",
   "@radix-ui/themes",
   // The /ai adapter's deps — kept external (optional peer deps).
   "ai",
@@ -45,6 +46,12 @@ export default defineConfig(({ command }) => {
     ].filter(Boolean),
     // In dev/preview the playground is the app root.
     root: isLibBuild ? undefined : r("playground"),
+    // The dev root is `playground/`, but the alias below resolves the wasm to the
+    // sibling rudof-fork checkout and the lib sources live one level up in `src/`.
+    // Both are outside the dev root, so allow them through Vite's fs sandbox.
+    server: isLibBuild
+      ? undefined
+      : { fs: { allow: [r("."), r("../rudof-fork")] } },
     build: isLibBuild
       ? {
           lib: {
@@ -80,6 +87,12 @@ export default defineConfig(({ command }) => {
         "metadata-form/ai": r("src/ai/index.ts"),
         "metadata-form": r("src/index.ts"),
         "@": r("src"),
+        // In dev/preview the playground must actually load the wasm: resolve it to
+        // the built pkg (rudof fork sibling checkout). In lib build it stays
+        // external (see `external` above) so consumers provide it themselves.
+        ...(isLibBuild
+          ? {}
+          : { "rudof-wasm": r("../rudof-fork/rudof_wasm/pkg/rudof_wasm.js") }),
       },
     },
   };
