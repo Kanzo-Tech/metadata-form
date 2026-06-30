@@ -25,6 +25,7 @@ export default defineConfig({
       "metadata-form/ai": lib("src/ai/index.ts"),
       "metadata-form": lib("src/index.ts"),
       "@": lib("src"),
+      "@examples": resolve(root, "examples"),
     },
   },
 });
