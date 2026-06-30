@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Box, Tabs } from "@radix-ui/themes";
 import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
@@ -5,7 +6,11 @@ import { StreamLanguage } from "@codemirror/language";
 import { turtle } from "@codemirror/legacy-modes/mode/turtle";
 import { EditorView } from "@codemirror/view";
 
+// Module-level so each is a single stable instance — passing fresh
+// extensions/setup per render makes @uiw/react-codemirror reconfigure the
+// editor on every keystroke.
 const turtleLang = StreamLanguage.define(turtle);
+const jsonLang = json();
 const cmFont = EditorView.theme({
   "&": { fontSize: "12px" },
   ".cm-content": { fontFamily: "var(--code-font-family, ui-monospace, monospace)" },
@@ -44,16 +49,22 @@ export function CodeEditor(props: {
   readOnly?: boolean;
   dark?: boolean;
 }) {
+  const { lang, readOnly } = props;
+  const extensions = useMemo(() => [lang === "json" ? jsonLang : turtleLang, cmFont], [lang]);
+  const basicSetup = useMemo(
+    () => ({ lineNumbers: true, foldGutter: false, highlightActiveLine: !readOnly }),
+    [readOnly],
+  );
   return (
     <CodeMirror
       value={props.value}
       height="100%"
       style={{ height: "100%" }}
       theme={props.dark ? "dark" : "light"}
-      editable={!props.readOnly}
-      readOnly={props.readOnly}
-      extensions={[props.lang === "json" ? json() : turtleLang, cmFont]}
-      basicSetup={{ lineNumbers: true, foldGutter: false, highlightActiveLine: !props.readOnly }}
+      editable={!readOnly}
+      readOnly={readOnly}
+      extensions={extensions}
+      basicSetup={basicSetup}
       onChange={props.onChange}
     />
   );

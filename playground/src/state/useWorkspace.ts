@@ -53,11 +53,10 @@ export function useWorkspace(initial: PermalinkState | null, onPick: (state: Per
   const pending = useMemo(() => ({ shapes: shapeText, data: dataText }), [shapeText, dataText]);
   const applied = useDebounced(pending, 350);
 
-  // The exact state a Share permalink captures (current edits included).
-  const permalink = useMemo<PermalinkState>(
-    () => ({ v: 1, exampleId: shapeId, shapesText: shapeText, dataText, options }),
-    [shapeId, shapeText, dataText, options],
-  );
+  // The current state: what an example pick syncs to the URL, and the base Share
+  // captures (the Share handler swaps in the form's live data). Read only at
+  // click time, so no memo is needed.
+  const permalink = state({});
 
   return {
     examples: EXAMPLES,

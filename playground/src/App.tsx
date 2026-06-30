@@ -156,7 +156,12 @@ function ThemedApp() {
           dataId={workspace.dataId}
           onPickShape={workspace.pickShape}
           onPickData={workspace.pickData}
-          onShare={() => share(workspace.permalink)}
+          onShare={async () => {
+            // Capture the form's LIVE graph (its serialization), not the stale
+            // source-panel text — so a permalink reproduces what you built.
+            const dataText = form.ready ? await form.toTurtle() : workspace.dataText;
+            share({ ...workspace.permalink, dataText });
+          }}
           shared={shared}
           showSource={showSource}
           toggleSource={toggleSource}
