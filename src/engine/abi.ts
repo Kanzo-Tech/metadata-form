@@ -66,6 +66,9 @@ export interface RudofSession {
     object: TermValue | null,
   ): RudofQuad[];
   serialize(mediaType: string): string;
+  /** Serialize only the subgraph reachable from `focus` (the focus-scoped form
+   *  output), vs whole-graph {@link serialize}. */
+  serializeFocus(focus: TermValue, mediaType: string): string;
 
   /** Evaluate every property path of `shapeId` for `focus` against the graph. */
   projectForm(focus: TermValue, shapeId: string): ProjectedForm;

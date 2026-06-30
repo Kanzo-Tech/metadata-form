@@ -235,9 +235,10 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       report,
       locale,
       graph,
-      // rudof serializes the live graph (prefixes retained from the input).
-      toTurtle: () => engine.serialize("text/turtle"),
-      toJsonLd: async () => JSON.parse(await engine.serialize("application/ld+json")),
+      // rudof serializes just the focus's subgraph (one record), prefixes retained.
+      toTurtle: () => (model ? engine.serializeFocus(model.focusNode, "text/turtle") : Promise.resolve("")),
+      toJsonLd: async () =>
+        model ? JSON.parse(await engine.serializeFocus(model.focusNode, "application/ld+json")) : {},
       validate,
       reset,
       subscribe,

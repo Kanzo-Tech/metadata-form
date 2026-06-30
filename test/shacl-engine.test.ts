@@ -295,6 +295,20 @@ describe("session seeding", () => {
 });
 
 describe("serialization", () => {
+  it("serializeFocus emits only the focus's subgraph, not unrelated subjects", async () => {
+    const engine = createRudofEngine();
+    await engine.loadData(`
+      @prefix ex: <http://example.org/> .
+      ex:d1 ex:title "Mine" ; ex:pub ex:p1 .
+      ex:p1 ex:name "ACME" .
+      ex:other ex:title "Unrelated" .
+    `);
+    const ttl = await engine.serializeFocus(namedNode("http://example.org/d1"), "text/turtle");
+    expect(ttl).toContain("Mine"); // the focus record
+    expect(ttl).toContain("ACME"); // its nested resource (reachable)
+    expect(ttl).not.toContain("Unrelated"); // a different subject — excluded
+  });
+
   it("round-trips Turtle output through rudof", async () => {
     const engine = createRudofEngine();
     const ttl = `

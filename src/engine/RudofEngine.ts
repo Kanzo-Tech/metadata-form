@@ -167,6 +167,13 @@ export class RudofEngine {
     return this.s.serialize(mediaType);
   }
 
+  /** Serialize only the subgraph reachable from `focus` — the focus-scoped form
+   *  output (one record), vs the whole-graph {@link serialize}. */
+  async serializeFocus(focus: Term, mediaType: string): Promise<string> {
+    await this.ready();
+    return this.s.serializeFocus(toTermValue(focus), mediaType);
+  }
+
   /**
    * Load the initial data into a fresh session graph ONCE, resolve + seed the
    * focus node into it, and return the live editable {@link GraphSession} — the
