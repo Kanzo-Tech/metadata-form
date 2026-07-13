@@ -2,9 +2,7 @@ name: Deploy playground
 
 # Builds the standalone playground and publishes it to GitHub Pages at
 # https://kanzo-tech.github.io/metadata-form/. The `--base` is applied only here
-# (CI), so `npm run dev` stays at the root path locally.
-#
-# One-time setup: repo Settings → Pages → Source = "GitHub Actions".
+# (CI), so `npm run dev` stays at the root path locally
 
 on:
   push:
