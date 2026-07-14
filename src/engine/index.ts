@@ -16,6 +16,7 @@ export {
   type AsyncProjector,
   type ProjectedSlot,
   type ProjectedValues,
+  type ProjectedTree,
 } from "./projectTree.js";
 export type {
   RudofModule,

@@ -38,6 +38,8 @@ export interface FieldConstraints {
   hasValue?: Term;
   /** Only one literal per language allowed (sh:uniqueLang). */
   uniqueLang?: boolean;
+  /** Allowed language tags (sh:languageIn) — constrains a `lang` field's picker. */
+  languageIn?: string[];
 }
 
 /** A single value occurrence of a field. */
@@ -69,6 +71,11 @@ export interface FieldModel {
   constraints: FieldConstraints;
   /** Read-only field: shown disabled, no add/remove (e.g. complex sh:path). */
   readOnly?: boolean;
+  /** Present when this field comes from a SHACL 1.2 conditional branch
+   *  (`sh:then`/`sh:else`). It is only in the model when its branch is active for
+   *  the current focus, so it needs no per-render gate; carried for validation
+   *  routing and inspection. */
+  guard?: { conditionId: string; branch: "then" | "else" };
   /** Shape reference for nested node shapes (sh:node), if any. */
   nodeShape?: NamedNode | null;
   /** rdf:type to stamp on freshly created nested resources, if known. */

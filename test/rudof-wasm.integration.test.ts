@@ -175,7 +175,7 @@ describe("RudofEngine over the REAL wasm", () => {
     const model = await engine.loadShapes(healthDcatApShapes);
     await engine.loadData(healthDcatApSampleData);
     const dataset = namedNode("http://example.org/dataset/covid-registry");
-    const values = await projectTree((f, s) => engine.projectForm(f, s), model, healthDcatApRootShape, dataset);
+    const { values, satisfied } = await projectTree((f, s) => engine.projectForm(f, s), model, healthDcatApRootShape, dataset);
 
     // Data store is EMPTY — all values come from rudof's projection.
     const form = buildFormModel({
@@ -184,6 +184,7 @@ describe("RudofEngine over the REAL wasm", () => {
       shape: model.nodeShapes.get(healthDcatApRootShape)!,
       locale: "en",
       values,
+      satisfied,
     });
 
     const fields = allFields(form);
@@ -229,8 +230,8 @@ describe("RudofEngine over the REAL wasm", () => {
     const namePred = namedNode(`${EX}name`);
 
     const rebuild = async () => {
-      const values = await projectTree((f, s) => engine.projectForm(f, s), model, SHAPE, alice);
-      return buildFormModel({ shapes: model, focusNode: alice, shape, values });
+      const { values, satisfied } = await projectTree((f, s) => engine.projectForm(f, s), model, SHAPE, alice);
+      return buildFormModel({ shapes: model, focusNode: alice, shape, values, satisfied });
     };
     const nameValues = (form: { groups: { fields: { path: { value: string }; values: { value: { value: string } | null }[] }[] }[] }) =>
       allFields(form as never).find((f) => f.path.value === `${EX}name`)?.values.map((v) => v.value?.value) ?? [];
@@ -256,8 +257,8 @@ describe("RudofEngine over the REAL wasm", () => {
     graph.add(alice, namedNode(`${EX}name`), literal("Alice"));
 
     // Fully synchronous: projectTreeSync → buildFormModel, no await.
-    const values = projectTreeSync((f, s) => engine.projectFormSync(f, s), model, SHAPE, alice);
-    const form = buildFormModel({ shapes: model, focusNode: alice, shape, values });
+    const { values, satisfied } = projectTreeSync((f, s) => engine.projectFormSync(f, s), model, SHAPE, alice);
+    const form = buildFormModel({ shapes: model, focusNode: alice, shape, values, satisfied });
     expect(allFields(form).find((f) => f.path.value === `${EX}name`)?.values[0]?.value?.value).toBe("Alice");
   });
 });

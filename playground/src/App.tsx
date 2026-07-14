@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box, Card, Flex, Separator, Text, Theme } from "@radix-ui/themes";
 import { CodeIcon, FileTextIcon } from "@radix-ui/react-icons";
 import { FormAssistant, MetadataForm, useMetadataForm, type FormAssist } from "metadata-form";
 import { Preferences, usePreferences } from "./Preferences.js";
 import { Header } from "./components/Header.js";
 import { ExamplePickers } from "./components/ExamplePickers.js";
+import { LocaleSelect } from "./components/LocaleSelect.js";
 import { ShareButton } from "./components/ShareButton.js";
 import { Toggle } from "./components/Toggle.js";
 import { AsideSection } from "./components/Aside.js";
@@ -33,9 +34,13 @@ export function App() {
   );
 }
 
+/** A consistent short vertical divider between header control groups. */
+function HeaderDivider() {
+  return <Separator orientation="vertical" style={{ height: 18, alignSelf: "center" }} />;
+}
+
 function ThemedApp() {
   const { prefs, update } = usePreferences();
-  const dark = prefs.theme.appearance === "dark";
   const apiKey = prefs.ai.claudeKey;
 
   // The assistance seam is wired only when an API key is present.
@@ -46,6 +51,40 @@ function ThemedApp() {
   const { initial, writeUrl, share, shared } = useUrlState();
   const workspace = useWorkspace(initial, writeUrl);
   const { shapeText, dataText, setShapeText, setDataText, applied, shape, options } = workspace;
+  // A bundled example may carry its own identity (logo bar + accent); when present
+  // it overrides the user's accent so the playground wears that product's brand.
+  const branding = shape.branding;
+  // The example's brand may prefer an appearance; it wins while active (reverts on
+  // switch). Drives both the Radix theme and the code editors.
+  const appearance = branding?.appearance ?? prefs.theme.appearance;
+  const dark = appearance === "dark";
+  // UI-language selector: the shape's label languages, defaulting to the first.
+  // Reset when the example changes so we land on its default language.
+  const localeOptions = shape.uiLocales ?? [];
+  const [uiLocale, setUiLocale] = useState<string | undefined>(undefined);
+  useEffect(() => setUiLocale(undefined), [workspace.shapeId]);
+  const locale = uiLocale ?? localeOptions[0] ?? options.locale;
+
+  // Branded examples take over the browser tab: title + favicon (the brand mark),
+  // restored to the playground defaults when a plain example is active.
+  useEffect(() => {
+    document.title = branding?.docTitle ?? "metadata-form playground";
+  }, [branding?.docTitle]);
+  useEffect(() => {
+    const id = "mf-brand-favicon";
+    let link = document.getElementById(id) as HTMLLinkElement | null;
+    if (branding?.faviconUrl) {
+      if (!link) {
+        link = document.createElement("link");
+        link.id = id;
+        link.rel = "icon";
+        document.head.appendChild(link);
+      }
+      link.href = branding.faviconUrl;
+    } else {
+      link?.remove();
+    }
+  }, [branding?.faviconUrl]);
 
   const isNarrow = useMediaQuery(NARROW);
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
@@ -64,7 +103,7 @@ function ThemedApp() {
     validateOn: options.validateOn ?? "change",
     focusNode: options.focusNode,
     rootShape: options.rootShape,
-    locale: options.locale,
+    locale,
     assist,
   });
 
@@ -98,9 +137,9 @@ function ThemedApp() {
 
   return (
     <Theme
-      appearance={prefs.theme.appearance}
-      accentColor={prefs.theme.accentColor as never}
-      grayColor={prefs.theme.grayColor as never}
+      appearance={appearance}
+      accentColor={(branding?.accentColor ?? prefs.theme.accentColor) as never}
+      grayColor={(branding?.grayColor ?? prefs.theme.grayColor) as never}
       panelBackground={prefs.theme.panelBackground as never}
       radius={prefs.theme.radius}
       scaling={prefs.theme.scaling as never}
@@ -108,8 +147,12 @@ function ThemedApp() {
       {/* IDE-style shell: a fixed top bar over a full-height workspace whose three
           regions (source aside | form main | output aside) each scroll on their own. */}
       <Flex direction="column" style={{ height: "100vh", overflow: "hidden" }}>
+        {/* Brand-tinted top edge — a thin line of the brand accent (adapts to light/dark). */}
+        {branding?.tint && <Box style={{ height: 3, flexShrink: 0, background: "var(--accent-9)" }} />}
         <Header
           form={form}
+          branding={branding}
+          tint={!!branding?.tint}
           pickers={
             <Flex align="center" gap="4">
               <ExamplePickers
@@ -120,7 +163,13 @@ function ThemedApp() {
                 onPickShape={workspace.pickShape}
                 onPickPreset={workspace.pickPreset}
               />
-              <Separator orientation="vertical" />
+              {localeOptions.length > 1 && locale && (
+                <>
+                  <HeaderDivider />
+                  <LocaleSelect value={locale} locales={localeOptions} onChange={setUiLocale} />
+                </>
+              )}
+              <HeaderDivider />
               <ShareButton
                 shared={shared}
                 onShare={async () => {

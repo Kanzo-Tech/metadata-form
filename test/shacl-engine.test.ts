@@ -50,8 +50,8 @@ async function buildWithData(
   const model = await engine.loadShapes(sTtl);
   await engine.loadData(dataTtl);
   const shape = model.nodeShapes.get(rootIri)!;
-  const values = await projectTree((f, s) => engine.projectForm(f, s), model, rootIri, focusNode);
-  return buildFormModel({ shapes: model, focusNode, shape, values, locale: "en" });
+  const { values, satisfied } = await projectTree((f, s) => engine.projectForm(f, s), model, rootIri, focusNode);
+  return buildFormModel({ shapes: model, focusNode, shape, values, satisfied, locale: "en" });
 }
 
 /** Validate a data graph (Turtle string) against shapes, in rudof-over-WASM. */

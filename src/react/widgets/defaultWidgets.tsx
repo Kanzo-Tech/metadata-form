@@ -3,6 +3,7 @@ import { Select, TextArea, TextField } from "@radix-ui/themes";
 import type { Widget, WidgetProps, WidgetRegistry } from "./widgets.js";
 import { makeDateField } from "./DateField.js";
 import { Combobox } from "../fieldassist/SuggestionBox.js";
+import { LanguagePicker } from "./LanguagePicker.js";
 import { GhostEditor } from "./GhostEditor.js";
 
 /**
@@ -69,39 +70,30 @@ function textField(type: string): Widget {
   };
 }
 
-const COMMON_LANGS = ["en", "es", "fr", "de", "it", "pt", "nl", "ca", "gl", "eu"];
-
-/** rdf:langString: a single field — text with the language selector glued inside
- * its right edge (separated by a border), via Radix's TextField.Slot. */
+/** rdf:langString: one full-width field — the multilingual value text with the
+ * searchable language picker glued inside its right edge (a bordered slot, no
+ * gap). The picker shows endonyms + typeahead and honours sh:languageIn. */
 const LangField: Widget = (p) => {
   const text = useCommit(p.value, (v) => p.onChange(v, p.language || ""));
-  const lang = p.language ?? "";
   return (
     <TextField.Root
-      style={{ flex: 1 }}
+      style={{ flex: 1, width: "100%" }}
       value={text.local}
       disabled={p.disabled}
       color={p.invalid ? "red" : undefined}
       onChange={(e) => text.change(e.target.value)}
       onBlur={text.flush}
     >
-      <TextField.Slot side="right" style={{ borderLeft: "1px solid var(--gray-a6)", paddingLeft: 0 }}>
-        <Select.Root
-          value={lang || NONE}
-          disabled={p.disabled}
-          onValueChange={(v) => p.onChange(text.local || null, v === NONE ? "" : v)}
-        >
-          <Select.Trigger variant="ghost" placeholder="lang" />
-          <Select.Content position="popper">
-            <Select.Item value={NONE}>—</Select.Item>
-            {COMMON_LANGS.map((t) => (
-              <Select.Item key={t} value={t}>
-                {t}
-              </Select.Item>
-            ))}
-            {lang && !COMMON_LANGS.includes(lang) && <Select.Item value={lang}>{lang}</Select.Item>}
-          </Select.Content>
-        </Select.Root>
+      <TextField.Slot side="right" style={{ borderLeft: "1px solid var(--gray-a6)", padding: 0 }}>
+        <LanguagePicker
+          value={p.language ?? ""}
+          onChange={(tag) => p.onChange(text.local || null, tag)}
+          allowed={p.languageIn}
+          // A language tags a value — meaningless with no text, so disable it until
+          // something is typed.
+          disabled={p.disabled || !text.local}
+          invalid={p.invalid}
+        />
       </TextField.Slot>
     </TextField.Root>
   );

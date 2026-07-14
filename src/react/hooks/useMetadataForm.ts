@@ -161,7 +161,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     if (!prepared) return undefined;
     // Single graph: re-derive field values from the engine session (sync, after
     // ready()) on every edit, then build the model over them — no n3 read path.
-    const values = engine.projectValues(prepared.shapes, prepared.focusNode, prepared.rootShapeId);
+    const { values, satisfied } = engine.projectValues(prepared.shapes, prepared.focusNode, prepared.rootShapeId);
     return buildFormModel({
       shapes: prepared.shapes,
       focusNode: prepared.focusNode,
@@ -169,6 +169,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       locale,
       onDiagnostic,
       values,
+      satisfied,
     });
     // `version` re-projects field values from the graph after each edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,0 +1,584 @@
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix evds: <https://dataspace.evidenze.example/ns#> .
+@prefix evds-sh: <https://dataspace.evidenze.example/shapes#> .
+@prefix evds-voc: <https://dataspace.evidenze.example/voc#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+#################################################################
+# Evidenze Data Space Dataset Onboarding Shapes v2.0
+# Pure SHACL 1.2 + SHACL-UI (shui:) — no DASH.
+# Demonstrates SHACL 1.2 conditional rendering: a sh:if/sh:then on the
+# root node shape reveals (and requires) a field only when a selector
+# value is chosen.
+#################################################################
+
+evds-sh:ShapeGraph
+    a owl:Ontology ;
+    rdfs:label "Evidenze Data Space Dataset Onboarding Shapes v2.0"@es ;
+    dct:description "Perfil de captura de metadatos para datasets publicables en Evidenze Data Space, en SHACL 1.2 + SHACL-UI."@es ;
+    dct:issued "2026-07-14"^^xsd:date ;
+    dct:conformsTo <https://dataspace.evidenze.example/profile/dataset-onboarding/v2.0> .
+
+#################################################################
+# Minimal Evidenze extension vocabulary declarations
+#################################################################
+
+evds:DatasetField a rdfs:Class ;
+    rdfs:label "Campo del dataset"@es ;
+    rdfs:comment "Descripción funcional y técnica de un campo, atributo o columna del dataset."@es .
+
+evds:participantDID a rdf:Property ; rdfs:label "DID del participante"@es, "DID del participant"@ca .
+evds:dataspaceRole a rdf:Property ; rdfs:label "Rol en Evidenze Data Space"@es, "Rol a Evidenze Data Space"@ca .
+evds:organisationalUnit a rdf:Property ; rdfs:label "Unidad organizativa"@es, "Unitat organitzativa"@ca .
+evds:validationStatus a rdf:Property ; rdfs:label "Estado de validación"@es .
+evds:environmentZone a rdf:Property ; rdfs:label "Entorno"@es, "Entorn"@ca .
+evds:accessJustification a rdf:Property ; rdfs:label "Justificación de acceso restringido"@es, "Justificació d'accés restringit"@ca .
+evds:datasetField a rdf:Property ; rdfs:label "Campo del dataset"@es .
+evds:fieldName a rdf:Property ; rdfs:label "Nombre del campo"@es, "Nom del camp"@ca .
+evds:fieldDescription a rdf:Property ; rdfs:label "Descripción del campo"@es, "Descripció del camp"@ca .
+evds:fieldPhysicalName a rdf:Property ; rdfs:label "Nombre físico del campo"@es .
+evds:fieldDatatype a rdf:Property ; rdfs:label "Tipo de dato del campo"@es .
+evds:fieldPosition a rdf:Property ; rdfs:label "Posición del campo"@es .
+evds:isPrimaryKey a rdf:Property ; rdfs:label "Clave primaria"@es, "Clau primària"@ca .
+evds:isNullable a rdf:Property ; rdfs:label "Puede ser nulo"@es, "Pot ser nul"@ca .
+
+#################################################################
+# Simple local controlled values
+#################################################################
+
+evds-voc:provider a skos:Concept ; skos:prefLabel "Proveedor de datos"@es .
+evds-voc:consumer a skos:Concept ; skos:prefLabel "Consumidor de datos"@es .
+evds-voc:provider-consumer a skos:Concept ; skos:prefLabel "Proveedor y consumidor de datos"@es .
+evds-voc:operator a skos:Concept ; skos:prefLabel "Operador del espacio de datos"@es .
+
+evds-voc:draft a skos:Concept ; skos:prefLabel "Borrador"@es .
+evds-voc:pending-review a skos:Concept ; skos:prefLabel "Pendiente de revisión"@es .
+evds-voc:validated a skos:Concept ; skos:prefLabel "Validado"@es .
+evds-voc:rejected a skos:Concept ; skos:prefLabel "Rechazado"@es .
+
+evds-voc:development a skos:Concept ; skos:prefLabel "Desarrollo"@es .
+evds-voc:preproduction a skos:Concept ; skos:prefLabel "Preproducción"@es .
+evds-voc:production a skos:Concept ; skos:prefLabel "Producción"@es .
+
+#################################################################
+# Wizard groups
+#################################################################
+
+evds-sh:basicInfoGroup a sh:PropertyGroup ; rdfs:label "1. Información básica"@es, "1. Informació bàsica"@ca ; sh:order 1 .
+evds-sh:classificationGroup a sh:PropertyGroup ; rdfs:label "2. Clasificación"@es, "2. Classificació"@ca ; sh:order 2 .
+evds-sh:organisationContactGroup a sh:PropertyGroup ; rdfs:label "3. Organización y contacto"@es, "3. Organització i contacte"@ca ; sh:order 3 .
+evds-sh:accessGroup a sh:PropertyGroup ; rdfs:label "4. Acceso al dataset"@es, "4. Accés al dataset"@ca ; sh:order 4 .
+evds-sh:evidenzeGroup a sh:PropertyGroup ; rdfs:label "5. Evidenze Data Space"@es ; sh:order 5 .
+evds-sh:datasetStructureGroup a sh:PropertyGroup ; rdfs:label "6. Estructura del dataset"@es, "6. Estructura del dataset"@ca ; sh:order 6 .
+
+evds-sh:publisherDetailsGroup a sh:PropertyGroup ; rdfs:label "Datos de la organización"@es, "Dades de l'organització"@ca ; sh:order 1 .
+evds-sh:contactDetailsGroup a sh:PropertyGroup ; rdfs:label "Datos de contacto"@es, "Dades de contacte"@ca ; sh:order 1 .
+evds-sh:distributionDetailsGroup a sh:PropertyGroup ; rdfs:label "Datos de acceso"@es, "Dades d'accés"@ca ; sh:order 1 .
+evds-sh:fieldDetailsGroup a sh:PropertyGroup ; rdfs:label "Información del campo"@es, "Informació del camp"@ca ; sh:order 1 .
+
+#################################################################
+# Root dataset onboarding shape
+#################################################################
+
+evds-sh:DatasetOnboardingShape
+    a sh:NodeShape ;
+    rdfs:label "Formulario de publicación de dataset en Evidenze Data Space"@es ;
+    sh:targetClass dcat:Dataset ;
+    sh:property
+        evds-sh:dataset-title,
+        evds-sh:dataset-description,
+        evds-sh:dataset-identifier,
+        evds-sh:dataset-landingPage,
+        evds-sh:dataset-theme,
+        evds-sh:dataset-keyword,
+        evds-sh:dataset-language,
+        evds-sh:dataset-publisher,
+        evds-sh:dataset-contactPoint,
+        evds-sh:dataset-accessRights,
+        evds-sh:dataset-distribution,
+        evds-sh:dataset-participantDID,
+        evds-sh:dataset-dataspaceRole,
+        evds-sh:dataset-organisationalUnit,
+        evds-sh:dataset-environmentZone,
+        evds-sh:dataset-field ;
+    # SHACL 1.2 conditional: if access is RESTRICTED, reveal & require a
+    # justification. Driven by the accessRights selector — rudof evaluates the
+    # condition and the form shows the sh:then field live.
+    sh:if evds-sh:RestrictedAccessCondition ;
+    sh:then evds-sh:RestrictedAccessRequirements .
+
+#################################################################
+# Conditional: restricted-access justification
+#################################################################
+
+evds-sh:RestrictedAccessCondition
+    a sh:NodeShape ;
+    sh:property [
+        sh:path dct:accessRights ;
+        sh:hasValue <http://publications.europa.eu/resource/authority/access-right/RESTRICTED> ;
+    ] .
+
+evds-sh:RestrictedAccessRequirements
+    a sh:NodeShape ;
+    sh:property evds-sh:dataset-accessJustification .
+
+evds-sh:dataset-accessJustification
+    a sh:PropertyShape ;
+    sh:path evds:accessJustification ;
+    sh:name "Justificación de acceso restringido"@es, "Justificació d'accés restringit"@ca ;
+    sh:description "Motivo por el que el dataset no es de acceso público. Obligatorio cuando el nivel de acceso es «Restringido»."@es, "Motiu pel qual el dataset no és d'accés públic. Obligatori quan el nivell d'accés és «Restringit»."@ca ;
+    sh:group evds-sh:accessGroup ;
+    sh:order 3 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    shui:editor shui:TextAreaEditor .
+
+#################################################################
+# 1. Basic information
+#################################################################
+
+evds-sh:dataset-title
+    a sh:PropertyShape ;
+    sh:path dct:title ;
+    sh:name "Título del dataset"@es, "Títol del dataset"@ca ;
+    sh:description "Nombre claro y representativo del dataset, orientado a facilitar su identificación por parte de otros participantes del espacio de datos."@es, "Nom clar i representatiu del dataset, orientat a facilitar-ne la identificació per part d'altres participants de l'espai de dades."@ca ;
+    sh:group evds-sh:basicInfoGroup ;
+    sh:order 1 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 .
+
+evds-sh:dataset-description
+    a sh:PropertyShape ;
+    sh:path dct:description ;
+    sh:name "Descripción"@es, "Descripció"@ca ;
+    sh:description "Descripción sintética del contenido del dataset, su alcance y su utilidad prevista dentro del espacio de datos."@es, "Descripció sintètica del contingut del dataset, el seu abast i la seva utilitat prevista dins de l'espai de dades."@ca ;
+    sh:group evds-sh:basicInfoGroup ;
+    sh:order 2 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    shui:editor shui:TextAreaEditor .
+
+evds-sh:dataset-identifier
+    a sh:PropertyShape ;
+    sh:path dct:identifier ;
+    sh:name "Identificador del dataset"@es ;
+    sh:description "Código o identificador estable utilizado para referenciar el dataset dentro de la organización o del espacio de datos."@es, "Codi o identificador estable utilitzat per referenciar el dataset dins de l'organització o de l'espai de dades."@ca ;
+    sh:group evds-sh:basicInfoGroup ;
+    sh:order 3 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:maxCount 1 .
+
+evds-sh:dataset-landingPage
+    a sh:PropertyShape ;
+    sh:path dcat:landingPage ;
+    sh:name "Página informativa del dataset"@es, "Pàgina informativa del dataset"@ca ;
+    sh:description "Página web con información general sobre el dataset o sobre el procedimiento de consulta asociado. Debe ser una URL accesible para los usuarios autorizados."@es, "Pàgina web amb informació general sobre el dataset o sobre el procediment de consulta associat. Ha de ser una URL accessible per als usuaris autoritzats."@ca ;
+    sh:group evds-sh:basicInfoGroup ;
+    sh:order 4 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+#################################################################
+# 2. Classification
+#################################################################
+
+evds-sh:dataset-theme
+    a sh:PropertyShape ;
+    sh:path dcat:theme ;
+    sh:name "Tema"@es ;
+    sh:description "Área temática principal a la que pertenece el dataset. Permite clasificar el recurso y facilitar su descubrimiento."@es, "Àrea temàtica principal a la qual pertany el dataset. Permet classificar el recurs i facilitar-ne el descobriment."@ca ;
+    sh:group evds-sh:classificationGroup ;
+    sh:order 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:in (
+        <http://publications.europa.eu/resource/authority/data-theme/HEAL>
+        <http://publications.europa.eu/resource/authority/data-theme/TECH>
+        <http://publications.europa.eu/resource/authority/data-theme/SOCI>
+        <http://publications.europa.eu/resource/authority/data-theme/GOVE>
+        <http://publications.europa.eu/resource/authority/data-theme/EDUC>
+    ) .
+
+evds-sh:dataset-keyword
+    a sh:PropertyShape ;
+    sh:path dcat:keyword ;
+    sh:name "Palabras clave"@es, "Paraules clau"@ca ;
+    sh:description "Términos relevantes para facilitar la búsqueda y recuperación del dataset dentro del catálogo."@es, "Termes rellevants per facilitar la cerca i recuperació del dataset dins del catàleg."@ca ;
+    sh:group evds-sh:classificationGroup ;
+    sh:order 2 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal .
+
+evds-sh:dataset-language
+    a sh:PropertyShape ;
+    sh:path dct:language ;
+    sh:name "Idioma"@es ;
+    sh:description "Idioma principal utilizado en la descripción del dataset."@es, "Idioma principal utilitzat en la descripció del dataset."@ca ;
+    sh:group evds-sh:classificationGroup ;
+    sh:order 3 ;
+    sh:nodeKind sh:IRI ;
+    sh:in (
+        <http://publications.europa.eu/resource/authority/language/SPA>
+        <http://publications.europa.eu/resource/authority/language/ENG>
+        <http://publications.europa.eu/resource/authority/language/CAT>
+        <http://publications.europa.eu/resource/authority/language/EUS>
+        <http://publications.europa.eu/resource/authority/language/GLG>
+    ) .
+
+#################################################################
+# 3. Organisation and contact
+#################################################################
+
+evds-sh:dataset-publisher
+    a sh:PropertyShape ;
+    sh:path dct:publisher ;
+    sh:name "Organización publicadora"@es, "Organització publicadora"@ca ;
+    sh:description "Entidad responsable de publicar o mantener la descripción del dataset dentro del espacio de datos."@es, "Entitat responsable de publicar o mantenir la descripció del dataset dins de l'espai de dades."@ca ;
+    sh:group evds-sh:organisationContactGroup ;
+    sh:order 1 ;
+    sh:class foaf:Agent ;
+    sh:node evds-sh:PublisherShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+evds-sh:dataset-contactPoint
+    a sh:PropertyShape ;
+    sh:path dcat:contactPoint ;
+    sh:name "Punto de contacto"@es, "Punt de contacte"@ca ;
+    sh:description "Persona, buzón o unidad funcional habilitada para atender consultas relacionadas con el dataset."@es, "Persona, bústia o unitat funcional habilitada per atendre consultes relacionades amb el dataset."@ca ;
+    sh:group evds-sh:organisationContactGroup ;
+    sh:order 2 ;
+    sh:class vcard:Kind ;
+    sh:node evds-sh:ContactPointShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+#################################################################
+# 4. Access
+#################################################################
+
+evds-sh:dataset-accessRights
+    a sh:PropertyShape ;
+    sh:path dct:accessRights ;
+    sh:name "Derechos de acceso"@es, "Drets d'accés"@ca ;
+    sh:description "Nivel general de acceso aplicable al dataset: público, restringido o no público."@es, "Nivell general d'accés aplicable al dataset: públic, restringit o no públic."@ca ;
+    sh:group evds-sh:accessGroup ;
+    sh:order 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:in (
+        <http://publications.europa.eu/resource/authority/access-right/PUBLIC>
+        <http://publications.europa.eu/resource/authority/access-right/RESTRICTED>
+        <http://publications.europa.eu/resource/authority/access-right/NON_PUBLIC>
+    ) .
+
+evds-sh:dataset-distribution
+    a sh:PropertyShape ;
+    sh:path dcat:distribution ;
+    sh:name "Distribución"@es, "Distribució"@ca ;
+    sh:description "Datos básicos sobre la forma de acceso al dataset, incluyendo la URL de acceso y, cuando proceda, el formato y la licencia aplicables."@es, "Dades bàsiques sobre la forma d'accés al dataset, incloent-hi la URL d'accés i, quan escaigui, el format i la llicència aplicables."@ca ;
+    sh:group evds-sh:accessGroup ;
+    sh:order 2 ;
+    sh:class dcat:Distribution ;
+    sh:node evds-sh:DistributionShape ;
+    sh:minCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+#################################################################
+# 5. Evidenze Data Space
+#################################################################
+
+evds-sh:dataset-participantDID
+    a sh:PropertyShape ;
+    sh:path evds:participantDID ;
+    sh:name "DID del participante"@es, "DID del participant"@ca ;
+    sh:description "Identificador descentralizado del participante que registra o aporta el dataset. Debe seguir el formato did:web:organizacion.example.org."@es, "Identificador descentralitzat del participant que registra o aporta el dataset. Ha de seguir el format did:web:organitzacio.example.org."@ca ;
+    sh:group evds-sh:evidenzeGroup ;
+    sh:order 1 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:pattern "^did:web:.+" ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+evds-sh:dataset-dataspaceRole
+    a sh:PropertyShape ;
+    sh:path evds:dataspaceRole ;
+    sh:name "Rol en Evidenze Data Space"@es, "Rol a Evidenze Data Space"@ca ;
+    sh:description "Rol principal de la entidad participante en relación con el dataset que se está registrando."@es, "Rol principal de l'entitat participant en relació amb el dataset que s'està registrant."@ca ;
+    sh:group evds-sh:evidenzeGroup ;
+    sh:order 2 ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:in ( evds-voc:provider evds-voc:consumer evds-voc:provider-consumer evds-voc:operator ) .
+
+evds-sh:dataset-organisationalUnit
+    a sh:PropertyShape ;
+    sh:path evds:organisationalUnit ;
+    sh:name "Unidad organizativa"@es, "Unitat organitzativa"@ca ;
+    sh:description "Área, departamento o unidad responsable de la gestión operativa del dataset dentro de la entidad participante."@es, "Àrea, departament o unitat responsable de la gestió operativa del dataset dins de l'entitat participant."@ca ;
+    sh:group evds-sh:evidenzeGroup ;
+    sh:order 3 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:maxCount 1 .
+
+evds-sh:dataset-environmentZone
+    a sh:PropertyShape ;
+    sh:path evds:environmentZone ;
+    sh:name "Entorno"@es, "Entorn"@ca ;
+    sh:description "Entorno en el que se está preparando, revisando o publicando el registro del dataset."@es, "Entorn en què s'està preparant, revisant o publicant el registre del dataset."@ca ;
+    sh:group evds-sh:evidenzeGroup ;
+    sh:order 4 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 ;
+    sh:in ( evds-voc:development evds-voc:preproduction evds-voc:production ) .
+
+#################################################################
+# 6. Dataset structure
+#################################################################
+
+evds-sh:dataset-field
+    a sh:PropertyShape ;
+    sh:path evds:datasetField ;
+    sh:name "Campos del dataset"@es, "Camps del dataset"@ca ;
+    sh:description "Campos, atributos o columnas que componen el dataset."@es, "Camps, atributs o columnes que componen el dataset."@ca ;
+    sh:group evds-sh:datasetStructureGroup ;
+    sh:order 1 ;
+    sh:class evds:DatasetField ;
+    sh:node evds-sh:DatasetFieldShape ;
+    shui:editor shui:DetailsEditor .
+
+#################################################################
+# Nested shapes
+#################################################################
+
+evds-sh:PublisherShape
+    a sh:NodeShape ;
+    rdfs:label "Organización publicadora"@es, "Organització publicadora"@ca ;
+    sh:targetClass foaf:Agent ;
+    sh:property evds-sh:publisher-name, evds-sh:publisher-homepage .
+
+evds-sh:publisher-name
+    a sh:PropertyShape ;
+    sh:path foaf:name ;
+    sh:name "Nombre de la organización"@es, "Nom de l'organització"@ca ;
+    sh:group evds-sh:publisherDetailsGroup ;
+    sh:order 1 ;
+    sh:description "Denominación oficial o nombre habitual de la entidad publicadora."@es, "Denominació oficial o nom habitual de l'entitat publicadora."@ca ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+evds-sh:publisher-homepage
+    a sh:PropertyShape ;
+    sh:path foaf:homepage ;
+    sh:name "Sitio web de la organización"@es, "Lloc web de l'organització"@ca ;
+    sh:group evds-sh:publisherDetailsGroup ;
+    sh:order 2 ;
+    sh:description "Página web institucional de la entidad publicadora, si se desea incluir una referencia adicional."@es, "Pàgina web institucional de l'entitat publicadora, si es vol incloure una referència addicional."@ca ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+evds-sh:ContactPointShape
+    a sh:NodeShape ;
+    rdfs:label "Punto de contacto"@es, "Punt de contacte"@ca ;
+    sh:targetClass vcard:Kind ;
+    sh:property evds-sh:contact-name, evds-sh:contact-email, evds-sh:contact-url .
+
+evds-sh:contact-name
+    a sh:PropertyShape ;
+    sh:path vcard:fn ;
+    sh:name "Nombre del contacto"@es, "Nom del contacte"@ca ;
+    sh:group evds-sh:contactDetailsGroup ;
+    sh:order 1 ;
+    sh:description "Nombre de la persona, buzón o unidad funcional designada como punto de contacto."@es, "Nom de la persona, bústia o unitat funcional designada com a punt de contacte."@ca ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+evds-sh:contact-email
+    a sh:PropertyShape ;
+    sh:path vcard:hasEmail ;
+    sh:name "Correo electrónico"@es, "Correu electrònic"@ca ;
+    sh:group evds-sh:contactDetailsGroup ;
+    sh:order 2 ;
+    sh:description "Correo electrónico habilitado para consultas relacionadas con el dataset."@es, "Correu electrònic habilitat per a consultes relacionades amb el dataset."@ca ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+evds-sh:contact-url
+    a sh:PropertyShape ;
+    sh:path vcard:hasURL ;
+    sh:name "URL de contacto"@es, "URL de contacte"@ca ;
+    sh:group evds-sh:contactDetailsGroup ;
+    sh:order 3 ;
+    sh:description "Página web o formulario habilitado para consultas relacionadas con el dataset."@es, "Pàgina web o formulari habilitat per a consultes relacionades amb el dataset."@ca ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+evds-sh:DistributionShape
+    a sh:NodeShape ;
+    rdfs:label "Distribución"@es, "Distribució"@ca ;
+    sh:targetClass dcat:Distribution ;
+    sh:property
+        evds-sh:distribution-accessURL,
+        evds-sh:distribution-format,
+        evds-sh:distribution-license .
+
+evds-sh:distribution-accessURL
+    a sh:PropertyShape ;
+    sh:path dcat:accessURL ;
+    sh:name "URL de acceso"@es, "URL d'accés"@ca ;
+    sh:group evds-sh:distributionDetailsGroup ;
+    sh:order 1 ;
+    sh:description "Dirección web desde la que puede consultarse el dataset o iniciarse el procedimiento de acceso correspondiente."@es, "Adreça web des de la qual es pot consultar el dataset o iniciar el procediment d'accés corresponent."@ca ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 .
+
+evds-sh:distribution-format
+    a sh:PropertyShape ;
+    sh:path dct:format ;
+    sh:name "Formato"@es, "Format"@ca ;
+    sh:group evds-sh:distributionDetailsGroup ;
+    sh:order 2 ;
+    sh:description "Formato principal en el que se pone a disposición esta distribución del dataset."@es, "Format principal en què es posa a disposició aquesta distribució del dataset."@ca ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 ;
+    sh:in (
+        <http://publications.europa.eu/resource/authority/file-type/CSV>
+        <http://publications.europa.eu/resource/authority/file-type/JSON>
+        <http://publications.europa.eu/resource/authority/file-type/XML>
+        <http://publications.europa.eu/resource/authority/file-type/XLSX>
+        <http://publications.europa.eu/resource/authority/file-type/PARQUET>
+        <http://publications.europa.eu/resource/authority/file-type/API>
+    ) .
+
+evds-sh:distribution-license
+    a sh:PropertyShape ;
+    sh:path dct:license ;
+    sh:name "Licencia"@es, "Llicència"@ca ;
+    sh:group evds-sh:distributionDetailsGroup ;
+    sh:order 3 ;
+    sh:description "Licencia o condiciones generales de uso aplicables a la distribución."@es, "Llicència o condicions generals d'ús aplicables a la distribució."@ca ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 ;
+    sh:in (
+        <http://publications.europa.eu/resource/authority/licence/CC_BY_4_0>
+        <http://publications.europa.eu/resource/authority/licence/CC0>
+        <http://publications.europa.eu/resource/authority/licence/ODC_BY>
+        <http://publications.europa.eu/resource/authority/licence/OTHER>
+    ) .
+
+evds-sh:DatasetFieldShape
+    a sh:NodeShape ;
+    rdfs:label "Campo del dataset"@es ;
+    sh:targetClass evds:DatasetField ;
+    sh:property
+        evds-sh:field-name,
+        evds-sh:field-description,
+        evds-sh:field-physicalName,
+        evds-sh:field-datatype,
+        evds-sh:field-primaryKey,
+        evds-sh:field-nullable,
+        evds-sh:field-position .
+
+evds-sh:field-name
+    a sh:PropertyShape ;
+    sh:path evds:fieldName ;
+    sh:name "Nombre del campo"@es, "Nom del camp"@ca ;
+    sh:group evds-sh:fieldDetailsGroup ;
+    sh:order 1 ;
+    sh:description "Nombre lógico o funcional del campo dentro del dataset."@es, "Nom lògic o funcional del camp dins del dataset."@ca ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+evds-sh:field-description
+    a sh:PropertyShape ;
+    sh:path evds:fieldDescription ;
+    sh:name "Descripción del campo"@es, "Descripció del camp"@ca ;
+    sh:group evds-sh:fieldDetailsGroup ;
+    sh:order 2 ;
+    sh:description "Descripción breve del significado del campo y de la información que contiene."@es, "Descripció breu del significat del camp i de la informació que conté."@ca ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:maxCount 1 ;
+    shui:editor shui:TextAreaEditor .
+
+evds-sh:field-physicalName
+    a sh:PropertyShape ;
+    sh:path evds:fieldPhysicalName ;
+    sh:name "Nombre físico"@es, "Nom físic"@ca ;
+    sh:group evds-sh:fieldDetailsGroup ;
+    sh:order 3 ;
+    sh:description "Nombre técnico del campo en la fuente original, tabla, fichero o sistema de origen."@es, "Nom tècnic del camp a la font original, taula, fitxer o sistema d'origen."@ca ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:maxCount 1 .
+
+evds-sh:field-datatype
+    a sh:PropertyShape ;
+    sh:path evds:fieldDatatype ;
+    sh:name "Tipo de dato"@es, "Tipus de dada"@ca ;
+    sh:group evds-sh:fieldDetailsGroup ;
+    sh:order 4 ;
+    sh:description "Tipo de dato principal asociado al campo."@es, "Tipus de dada principal associat al camp."@ca ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:maxCount 1 ;
+    sh:in ( "string" "integer" "decimal" "boolean" "date" "dateTime" "code" "uri" ) .
+
+evds-sh:field-primaryKey
+    a sh:PropertyShape ;
+    sh:path evds:isPrimaryKey ;
+    sh:name "Clave primaria"@es, "Clau primària"@ca ;
+    sh:group evds-sh:fieldDetailsGroup ;
+    sh:order 5 ;
+    sh:description "Indica si el campo actúa como identificador principal del registro en la fuente de datos."@es, "Indica si el camp actua com a identificador principal del registre a la font de dades."@ca ;
+    sh:datatype xsd:boolean ;
+    sh:nodeKind sh:Literal ;
+    sh:maxCount 1 .
+
+evds-sh:field-nullable
+    a sh:PropertyShape ;
+    sh:path evds:isNullable ;
+    sh:name "Puede ser nulo"@es, "Pot ser nul"@ca ;
+    sh:group evds-sh:fieldDetailsGroup ;
+    sh:order 6 ;
+    sh:description "Indica si el campo puede quedar vacío o sin informar en algunos registros."@es, "Indica si el camp pot quedar buit o sense informar en alguns registres."@ca ;
+    sh:datatype xsd:boolean ;
+    sh:nodeKind sh:Literal ;
+    sh:maxCount 1 .
+
+evds-sh:field-position
+    a sh:PropertyShape ;
+    sh:path evds:fieldPosition ;
+    sh:name "Posición"@es, "Posició"@ca ;
+    sh:group evds-sh:fieldDetailsGroup ;
+    sh:order 7 ;
+    sh:description "Orden del campo dentro de la estructura del dataset, cuando exista una secuencia definida. El valor mínimo permitido es 0."@es, "Ordre del camp dins de l'estructura del dataset, quan hi hagi una seqüència definida. El valor mínim permès és 0."@ca ;
+    sh:datatype xsd:integer ;
+    sh:nodeKind sh:Literal ;
+    sh:minInclusive 0 ;
+    sh:maxCount 1 .

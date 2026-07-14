@@ -29,6 +29,8 @@ export interface WidgetProps {
   options?: WidgetOption[];
   /** Current language tag (for `lang` fields). */
   language?: string;
+  /** Allowed language tags (sh:languageIn) — constrains a `lang` field's picker. */
+  languageIn?: string[];
   /** Async suggestion loader for `reference` fields (from `assist.search`). */
   loadOptions?: (query: string, signal?: AbortSignal) => Promise<WidgetOption[]>;
   /** Streaming inline completion for free text (from `assist.complete`) — ghost

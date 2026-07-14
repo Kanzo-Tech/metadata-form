@@ -1,4 +1,4 @@
-import { Flex, Select as RSelect, Separator } from "@radix-ui/themes";
+import { Flex, Select as RSelect } from "@radix-ui/themes";
 import { Field } from "./Field.js";
 import type { Preset, ShapeExample } from "../presets.js";
 
@@ -34,7 +34,6 @@ export function ExamplePickers({
           </RSelect.Content>
         </RSelect.Root>
       </Field>
-      <Separator orientation="vertical" />
       <Field label="Data" size="1">
         <RSelect.Root size="1" value={presetId} onValueChange={onPickPreset}>
           <RSelect.Trigger variant="ghost" color="gray" />

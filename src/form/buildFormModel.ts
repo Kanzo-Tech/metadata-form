@@ -43,18 +43,26 @@ export interface BuildArgs {
    *  single-graph projection). The sole value source; defaults to empty (so
    *  structure-only callers get empty slots). */
   values?: ProjectedValues;
+  /** Per-focus set of satisfied SHACL-1.2 conditional `conditionId`s (keyed by
+   *  `focus.value`), from the projection. Gates which conditional branch's fields
+   *  are built. Defaults to empty (no conditional is active). */
+  satisfied?: Map<string, Set<string>>;
 }
 
 /** Inner build args: projected values are always resolved (defaulted) before recursion. */
-type InnerArgs = Omit<BuildArgs, "values"> & {
+type InnerArgs = Omit<BuildArgs, "values" | "satisfied"> & {
   values: ProjectedValues;
+  satisfied: Map<string, Set<string>>;
 };
 
 const DEFAULT_GROUP = "__default__";
 
 /** Build a FormModel for a focus node against a node shape (recursive). */
 export function buildFormModel(args: BuildArgs): FormModel {
-  return buildInner({ ...args, values: args.values ?? new Map() }, new Set());
+  return buildInner(
+    { ...args, values: args.values ?? new Map(), satisfied: args.satisfied ?? new Map() },
+    new Set(),
+  );
 }
 
 interface FieldCtx {
@@ -63,20 +71,47 @@ interface FieldCtx {
   locale?: string;
   onDiagnostic?: DiagnosticSink;
   values: ProjectedValues;
+  satisfied: Map<string, Set<string>>;
 }
 
 function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
-  const { shapes, focusNode, shape, locale, onDiagnostic, values } = args;
+  const { shapes, focusNode, shape, locale, onDiagnostic, values, satisfied } = args;
   const guardKey = `${shape.id}::${focusNode.value}`;
   const cyclic = visited.has(guardKey);
   const nextVisited = new Set(visited).add(guardKey);
-  const ctx: FieldCtx = { shapes, focusNode, locale, onDiagnostic, values };
+  const ctx: FieldCtx = { shapes, focusNode, locale, onDiagnostic, values, satisfied };
 
+  const fields = buildFields(shape.properties, ctx, nextVisited, cyclic);
+
+  // SHACL 1.2 conditionals: for each sh:if on this node shape, add the active
+  // branch's fields (then when the focus conforms to the condition, else when it
+  // doesn't). rudof evaluated conformance canonically — we only read `satisfied`.
+  const active = satisfied.get(focusNode.value) ?? EMPTY_SET;
+  for (const cond of shape.conditionals ?? []) {
+    const branch: "then" | "else" = active.has(cond.conditionId) ? "then" : "else";
+    const branchFields = buildFields(cond[branch], ctx, nextVisited, cyclic);
+    for (const f of branchFields) f.guard = { conditionId: cond.conditionId, branch };
+    fields.push(...branchFields);
+  }
+
+  return { focusNode, shape: namedNode(shape.id), groups: groupFields(fields, shapes, locale) };
+}
+
+const EMPTY_SET: ReadonlySet<string> = new Set();
+
+/** Build the field models for a list of property shapes (shared by a node shape's
+ *  own properties and its conditional branches). */
+function buildFields(
+  properties: PropertyShapeIR[],
+  ctx: FieldCtx,
+  visited: Set<string>,
+  cyclic: boolean,
+): FieldModel[] {
   const fields: FieldModel[] = [];
-  for (const ps of shape.properties) {
+  for (const ps of properties) {
     const path = ps.path;
     if (path.kind === "predicate" && path.iri) {
-      fields.push(buildField(ps, namedNode(path.iri), ctx, nextVisited, cyclic));
+      fields.push(buildField(ps, namedNode(path.iri), ctx, visited, cyclic));
     } else if (path.kind === "inverse" && path.of.kind === "predicate") {
       fields.push(buildInverseField(ps, namedNode(path.of.iri), ctx));
     } else {
@@ -86,8 +121,7 @@ function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
       fields.push(buildComplexField(ps, ctx));
     }
   }
-
-  return { focusNode, shape: namedNode(shape.id), groups: groupFields(fields, shapes, locale) };
+  return fields;
 }
 
 function buildField(
@@ -118,6 +152,7 @@ function buildField(
     defaultValue: v.defaultValue ? toTerm(v.defaultValue) : undefined,
     hasValue: v.hasValue ? toTerm(v.hasValue) : undefined,
     uniqueLang: v.uniqueLang,
+    languageIn: v.languageIn,
   };
 
   // rudof resolves the editor (explicit shui:editor else a datatype default) and
@@ -225,7 +260,15 @@ function projectValues(
     const sub = s.nestedFocus;
     if (isNested && nestedShape && sub && (sub.termType === "NamedNode" || sub.termType === "BlankNode")) {
       slot.nested = buildInner(
-        { shapes: ctx.shapes, focusNode: sub, shape: nestedShape, locale: ctx.locale, values: ctx.values },
+        {
+          shapes: ctx.shapes,
+          focusNode: sub,
+          shape: nestedShape,
+          locale: ctx.locale,
+          onDiagnostic: ctx.onDiagnostic,
+          values: ctx.values,
+          satisfied: ctx.satisfied,
+        },
         visited,
       );
     }
@@ -299,7 +342,10 @@ export function resolveRootShapeFromTypes(
   // sh:node. Order-independent, so it's robust to non-deterministic shape order
   // from the parser (e.g. rudof's HashMap-backed AST).
   const nested = new Set<string>();
-  for (const s of shapes.nodeShapes.values()) collectNodeRefs(s.properties, nested);
+  for (const s of shapes.nodeShapes.values()) {
+    collectNodeRefs(s.properties, nested);
+    for (const c of s.conditionals ?? []) collectNodeRefs([...c.then, ...c.else], nested);
+  }
   const targets = [...shapes.nodeShapes.values()].filter((s) => s.targetClasses.length > 0);
   const root = targets.find((s) => !nested.has(s.id)) ?? targets[0];
   if (root) return root;

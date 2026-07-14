@@ -1,18 +1,26 @@
 import { Box, Flex, Heading, Kbd, Link, Text } from "@radix-ui/themes";
 import { ValidationSummary } from "metadata-form";
 import { PANEL_BORDER } from "./panel.js";
+import { BrandLogo } from "./BrandLogo.js";
+import type { ExampleBranding } from "../presets.js";
 
 /** The app chrome: a low-key utility strip (example pickers + Share + attribution)
  *  over the title bar (heading + view toggles + the canonical validation summary).
- *  Pure layout — the caller passes the picker cluster and the toggles as slots. */
+ *  Pure layout — the caller passes the picker cluster and the toggles as slots.
+ *  When the active example carries {@link ExampleBranding}, its wordmark replaces
+ *  the app title so the playground wears that product's identity. */
 export function Header({
   pickers,
   actions,
   form,
+  branding,
+  tint,
 }: {
   pickers: React.ReactNode;
   actions: React.ReactNode;
   form: React.ComponentProps<typeof ValidationSummary>["form"];
+  branding?: ExampleBranding;
+  tint?: boolean;
 }) {
   return (
     <>
@@ -24,7 +32,7 @@ export function Header({
         gap="3"
         px="5"
         py="1"
-        style={{ flexShrink: 0, background: "var(--gray-a2)", borderBottom: PANEL_BORDER }}
+        style={{ flexShrink: 0, background: tint ? "var(--accent-a2)" : "var(--gray-a2)", borderBottom: PANEL_BORDER }}
       >
         {pickers}
         <Text size="1" color="gray">
@@ -37,11 +45,17 @@ export function Header({
 
       {/* Top bar — title + view toggles. */}
       <Flex align="center" gap="3" wrap="wrap" px="5" py="3" style={{ flexShrink: 0, borderBottom: PANEL_BORDER }}>
-        <Flex direction="column" mr="2">
-          <Heading size="4">metadata-form</Heading>
-          <Text size="1" color="gray">
-            SHACL shapes → editable RDF form → Turtle &amp; JSON-LD
-          </Text>
+        <Flex direction="column" mr="2" gap="1">
+          {branding?.logoUrl ? (
+            <BrandLogo url={branding.logoUrl} ratio={branding.logoRatio ?? 4} height={26} label="Evidenze" />
+          ) : (
+            <>
+              <Heading size="4">metadata-form</Heading>
+              <Text size="1" color="gray">
+                SHACL shapes → editable RDF form → Turtle &amp; JSON-LD
+              </Text>
+            </>
+          )}
         </Flex>
 
         <Box flexGrow="1" />

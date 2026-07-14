@@ -2,7 +2,7 @@ import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode, quad, rdf } from "./factory.js";
 import { toTerm, toTermValue } from "./termValue.js";
 import { freshFocusNode, resolveRootShapeFromTypes } from "../form/buildFormModel.js";
-import { projectTreeSync, type ProjectedValues } from "./projectTree.js";
+import { projectTreeSync, type ProjectedTree } from "./projectTree.js";
 import type { NodeShapeIR, ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
 import type { GraphBackend } from "./GraphBackend.js";
 import type { Severity, ValidationResult } from "../form/validation.js";
@@ -196,8 +196,17 @@ export class RudofEngine {
       for (const q of data) backend.add(q.subject as Term, q.predicate as Term, q.object as Term);
     }
 
-    const focus = focusNode ?? inferFocusFromBackend(shapes, backend, rootShape) ?? freshFocusNode();
-    const shape = resolveRootShapeFromTypes(shapes, typesOf(backend, focus), rootShape);
+    // Resolve the ENTRY shape first (the target-class shape not nested via sh:node),
+    // then infer the focus among ITS target classes — otherwise a data graph with
+    // several typed resources (e.g. a dataset plus its nested publisher/contact)
+    // would infer the focus as whichever typed node comes first, landing the form
+    // on a nested shape (its groups) instead of the root.
+    const entryShape = rootShape
+      ? shapes.nodeShapes.get(rootShape.value)
+      : resolveRootShapeFromTypes(shapes, [], undefined);
+    const entryRef = entryShape ? (namedNode(entryShape.id) as NamedNode) : rootShape;
+    const focus = focusNode ?? inferFocusFromBackend(shapes, backend, entryRef) ?? freshFocusNode();
+    const shape = resolveRootShapeFromTypes(shapes, typesOf(backend, focus), rootShape) ?? entryShape;
     if (!shape) {
       throw new Error("Could not resolve a root node shape. Pass `rootShape` explicitly.");
     }
@@ -206,9 +215,10 @@ export class RudofEngine {
   }
 
   /** Project the focus node's value tree (recursively, sync) from the current
-   *  session graph into the {@link ProjectedValues} consumed by `buildFormModel`.
-   *  Called on every edit to re-derive field values from the single graph. */
-  projectValues(shapes: ShapeModel, focusNode: Term, rootShapeId: string): ProjectedValues {
+   *  session graph into the {@link ProjectedTree} (values + satisfied conditionals)
+   *  consumed by `buildFormModel`. Called on every edit to re-derive the form from
+   *  the single graph. */
+  projectValues(shapes: ShapeModel, focusNode: Term, rootShapeId: string): ProjectedTree {
     return projectTreeSync((f, s) => this.projectFormSync(f, s), shapes, rootShapeId, focusNode);
   }
 

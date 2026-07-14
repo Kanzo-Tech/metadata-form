@@ -116,6 +116,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
           kind={kind}
           value={termToPrimitive(slot.value)}
           language={languageOf(slot.value)}
+          languageIn={c.languageIn}
           onChange={(v, language) => setTerm(i, primitiveToTerm(field, kind, v, language))}
           options={options}
           loadOptions={loadOptions}
