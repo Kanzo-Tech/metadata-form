@@ -1,4 +1,4 @@
-import { healthDcatApShapes, healthDcatApSampleData } from "@examples/health-dcat-ap/index.js";
+import { healthDcatApShapes, healthDcatApSampleData, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
 import { evidenzeShapes, evidenzeSampleData, evidenzeLogo, evidenzeIcon, evidenzeRootShape } from "@examples/evidenze-dataspace/index.js";
 import type { PermalinkOptions, PermalinkState } from "./lib/permalink.js";
 
@@ -47,9 +47,9 @@ export interface ShapeExample {
   uiLocales?: string[];
 }
 
-const OPTIONS: PermalinkOptions = { validateOn: "change" };
-// Evidenze declares its root shape explicitly, so focus/root resolution is exact
-// regardless of how many typed resources the data graph carries.
+// Each example declares its root shape explicitly, so focus/root resolution is
+// exact regardless of how many typed resources the data graph carries.
+const HEALTH_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: healthDcatApRootShape };
 const EVIDENZE_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: evidenzeRootShape };
 
 /** Bundled examples as permalink presets: picking one applies its state and syncs
@@ -64,7 +64,7 @@ export const EXAMPLES: ShapeExample[] = [
       {
         id: "empty",
         label: "Empty (new dataset)",
-        state: { v: 1, exampleId: "health-dcat-ap", shapesText: healthDcatApShapes, dataText: "", options: OPTIONS },
+        state: { v: 1, exampleId: "health-dcat-ap", shapesText: healthDcatApShapes, dataText: "", options: HEALTH_OPTIONS },
       },
       {
         id: "covid",
@@ -74,7 +74,7 @@ export const EXAMPLES: ShapeExample[] = [
           exampleId: "health-dcat-ap",
           shapesText: healthDcatApShapes,
           dataText: healthDcatApSampleData,
-          options: OPTIONS,
+          options: HEALTH_OPTIONS,
         },
       },
     ],
