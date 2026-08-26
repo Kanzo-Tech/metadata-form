@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent, waitFor, renderHook, act, within } from "@testing-library/react";
 import { Theme } from "@radix-ui/themes";
-import { EditorView } from "@codemirror/view";
 import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { ValidationSummary } from "@/react/validation/ValidationSummary.js";
 import { FormAssistant } from "@/react/assistant/FormAssistant.js";
@@ -157,24 +156,23 @@ describe("useMetadataForm + <MetadataForm>", () => {
       );
     }
     render(<GhostForm />);
-    // The textarea is now a CodeMirror editor (contentEditable .cm-content, no <textarea>).
-    const content = () => document.querySelector(".cm-content");
-    await waitFor(() => expect(content()?.textContent).toContain("Hello world"));
 
-    const view = EditorView.findFromDOM(document.querySelector(".cm-editor") as HTMLElement)!;
-    // A user edit (append a char, cursor to end) requests a completion (debounced) which
-    // then streams into the ghost decoration.
-    act(() => {
-      const end = view.state.doc.length;
-      view.dispatch({ changes: { from: end, insert: "." }, selection: { anchor: end + 1 } });
-    });
+    // A plain <textarea> again: the ghost is a compound composed over the design
+    // system's Textarea, not an editor with a completion prop, so there is no
+    // CodeMirror document to interrogate — only the value and what is painted.
+    const area = () =>
+      screen.getAllByRole("textbox").find((el) => el.tagName === "TEXTAREA") as HTMLTextAreaElement;
+    await waitFor(() => expect(area()?.value).toContain("Hello world"));
+
+    // A user edit requests a completion (debounced) which then streams into the ghost.
+    fireEvent.change(area(), { target: { value: "Hello world." } });
     await waitFor(() => expect(document.body.textContent ?? "").toContain("the rest"), {
       timeout: 3000,
     });
 
-    // Tab merges the streamed ghost into the document.
-    fireEvent.keyDown(view.contentDOM, { key: "Tab" });
-    await waitFor(() => expect(content()?.textContent).toContain("the rest"));
+    // Tab takes what is on offer, into the field's own value.
+    fireEvent.keyDown(area(), { key: "Tab" });
+    await waitFor(() => expect(area().value).toContain("the rest"));
   });
 
   it("<FormAssistant> reports the count of required-but-empty fields", async () => {

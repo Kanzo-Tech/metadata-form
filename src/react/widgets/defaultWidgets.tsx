@@ -8,12 +8,12 @@ import {
   NativeSelectOption,
   Textarea,
 } from "@kanzo-tech/ui";
+import { CompleteHint, CompleteRoot, CompleteTextarea } from "@kanzo-tech/ai";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import type { Widget, WidgetProps, WidgetRegistry } from "./widgets.js";
 import { makeDateField } from "./DateField.js";
 import { Combobox } from "../fieldassist/SuggestionBox.js";
 import { LanguagePicker } from "./LanguagePicker.js";
-import { GhostEditor } from "./GhostEditor.js";
 import { useFormContext } from "../form/context.js";
 
 /**
@@ -181,18 +181,46 @@ const ReferenceField: Widget = (p) => {
   );
 };
 
+/**
+ * Long free text, with streaming inline completion when the consumer wires
+ * `assist.complete`.
+ *
+ * The ghost is `@kanzo-tech/ai`'s compound composed *over* a plain `Textarea`
+ * rather than an editor with a completion prop — which is why this is six lines
+ * and not a CodeMirror instance. `cleanGhost` inside it also handles the echo
+ * still arriving, not merely a finished one, which is the case that used to paint
+ * the sentence twice.
+ *
+ * `CompleteRoot` owns the field's value while it is mounted, so the debounce
+ * feeds it and the graph commit stays on the same blur as everywhere else.
+ */
 const Area: Widget = (p) => {
   // Hook first (stable order), then branch on whether inline completion is wired.
   const { local, change, flush } = useCommit(p.value, p.onChange);
-  if (p.complete) return <GhostEditor {...p} complete={p.complete} />;
+  const complete = p.complete;
+  if (!complete) {
+    return (
+      <Textarea
+        className="flex-1"
+        value={local}
+        placeholder={p.placeholder}
+        onChange={(e) => change(e.target.value)}
+        onBlur={flush}
+      />
+    );
+  }
   return (
-    <Textarea
+    <CompleteRoot
       className="flex-1"
       value={local}
-      placeholder={p.placeholder}
-      onChange={(e) => change(e.target.value)}
-      onBlur={flush}
-    />
+      onValueChange={change}
+      complete={(req) => complete(req.value, req.signal)}
+    >
+      <CompleteTextarea>
+        <Textarea placeholder={p.placeholder} onBlur={flush} />
+      </CompleteTextarea>
+      <CompleteHint />
+    </CompleteRoot>
   );
 };
 
