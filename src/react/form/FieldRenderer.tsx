@@ -25,7 +25,7 @@ import { useFormContext } from "./context.js";
 import { useField } from "../hooks/useField.js";
 import { NodeForm } from "./NodeForm.js";
 import { SuggestList, SuggestMark, SuggestRoot } from "@kanzo-tech/ai";
-import { ink, row } from "../styles.js";
+import { fieldGap, ink, labelRow } from "../styles.js";
 
 /** Renders a single field: label, help, value rows (multi-value), errors. */
 export function FieldRenderer({ field }: { field: FieldModel }) {
@@ -213,12 +213,13 @@ function FieldShell({
   const rest = errors.filter((e) => e.severity !== "violation");
   return (
     <Field
+      style={{ gap: fieldGap }}
       data-field={field.id}
       required={field.required}
       disabled={field.readOnly ?? false}
       invalid={violations.length > 0}
     >
-      <div style={{ ...row, justifyContent: "space-between" }}>
+      <div style={{ ...labelRow, justifyContent: "space-between" }}>
         <FieldLabel>
           {field.label}
           {field.required && <FieldRequiredIndicator />}

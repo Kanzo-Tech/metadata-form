@@ -29,6 +29,18 @@ export const column: CSSProperties = { display: "flex", flexDirection: "column",
 /** Fills the space a field row gives it, and may shrink below its content. */
 export const grow: CSSProperties = { flex: 1, width: "100%", minWidth: 0 };
 
+/**
+ * The form's vertical rhythm, taken from the design system's own metadata-form
+ * showcase: **tight inside a field, generous between them.** A label, its
+ * description and its control are one thing and read as one; two fields are two
+ * questions and need the air to say so. Ours had them at the same 0.75rem, which
+ * is what made the form look like an undifferentiated list.
+ */
+export const fieldGap = "0.375rem";
+export const betweenFields = "1.25rem";
+/** A label row keeps its height whether or not it carries a trailing control. */
+export const labelRow: CSSProperties = { ...row, minHeight: "1.5rem" };
+
 /** Theme tokens, read straight from the cascade. */
 export const ink = {
   muted: "var(--muted-foreground)",

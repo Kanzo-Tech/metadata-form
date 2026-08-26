@@ -169,7 +169,7 @@ function ThemedApp() {
 
   const formColumn = (
     <ShellMain>
-      <div style={{ margin: "0 auto", width: "100%", maxWidth: "1080px", padding: "1.25rem" }}>
+      <div style={{ margin: "0 auto", width: "100%", maxWidth: "48rem", padding: "2rem 1.5rem" }}>
         {form.error ? (
           <Card>
             <CardContent className="pt-6 text-destructive-foreground">{form.error.message}</CardContent>

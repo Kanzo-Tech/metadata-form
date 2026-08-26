@@ -1,7 +1,7 @@
 import type { FieldModel, GroupModel } from "../../form/FormModel.js";
 import type { GridLayout } from "../form/context.js";
 import { FieldRenderer } from "../form/FieldRenderer.js";
-import { column } from "../styles.js";
+import { betweenFields, column } from "../styles.js";
 
 /**
  * Axis B: lay a group's fields out in N columns; nested fields span the full row.
@@ -15,7 +15,7 @@ export function FieldsGrid({ group, grid }: { group: GroupModel; grid?: GridLayo
   const columns = grid?.groups?.[group.id]?.columns ?? grid?.columns ?? 1;
   if (columns <= 1) {
     return (
-      <div style={{ ...column, gap: "0.75rem" }}>
+      <div style={{ ...column, gap: betweenFields }}>
         {group.fields.map((field) => (
           <FieldRenderer key={field.id} field={field} />
         ))}
@@ -27,7 +27,7 @@ export function FieldsGrid({ group, grid }: { group: GroupModel; grid?: GridLayo
       style={{
         display: "grid",
         alignItems: "start",
-        gap: "0.75rem",
+        gap: betweenFields,
         gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
       }}
     >

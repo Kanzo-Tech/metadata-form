@@ -1,41 +1,38 @@
+import { Badge } from "@kanzo-tech/ui";
 import type { GroupIssues } from "../validation/useFormReport.js";
 
-/** Per-section error indicator (tabs/steps) — **wayfinding only**: a small dot
- * meaning "this section has errors", not a counter. The global `<ValidationSummary>`
- * is the actionable list ("what + jump"); this just answers "where" at a glance
- * (cf. Material UI Stepper's error state). Optionally jumps on click.
+/**
+ * Per-section issue count — **wayfinding**: it says which section is wrong and by
+ * how much, so a reader can pick where to go without opening anything. The global
+ * `<ValidationSummary>` is still the actionable list ("what + jump"); this answers
+ * "where".
  *
- * The colours are the theme's own destructive/warning tokens rather than a picked
- * hue, so the dot follows a re-skin and both themes without being told. */
+ * It was a bare 8px dot, on the argument that a count here would compete with that
+ * summary. It does not: the design system's own metadata-form showcase puts a
+ * counting pill beside every group title, and reading "3" against a section is
+ * strictly more than reading "something". The dot also had to invent its own
+ * geometry, where the pill is the house's `Badge` at its smallest and inherits a
+ * re-skin for free.
+ *
+ * Optionally jumps on click.
+ */
 export function GroupIssuesBadge({ issues, onJump }: { issues?: GroupIssues; onJump?: () => void }) {
   if (!issues || issues.count === 0) return null;
   const label = `${issues.count} issue${issues.count === 1 ? "" : "s"}`;
-  const dot = (
-    <span
-      role="img"
-      aria-label={label}
-      style={{
-        display: "inline-flex",
-        flex: "none",
-        width: "0.5rem",
-        height: "0.5rem",
-        borderRadius: "9999px",
-        background: issues.hasViolation ? "var(--destructive)" : "var(--warning)",
-        cursor: onJump ? "pointer" : undefined,
-      }}
-    />
+  const badge = (
+    <Badge pill size="xs" variant={issues.hasViolation ? "destructive" : "warning"}>
+      {issues.count}
+    </Badge>
   );
-  if (!onJump) return dot;
+  if (!onJump) return <span aria-label={label}>{badge}</span>;
   return (
-    <span
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       aria-label={label}
-      style={{ display: "inline-flex" }}
       onClick={onJump}
-      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onJump()}
+      style={{ display: "inline-flex", background: "none", border: 0, padding: 0, cursor: "pointer" }}
     >
-      {dot}
-    </span>
+      {badge}
+    </button>
   );
 }

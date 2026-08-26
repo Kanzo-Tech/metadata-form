@@ -28,5 +28,5 @@ export function LayoutBody({
     return <TabsLayout model={model} grid={grid} issues={issues} activeGroup={activeGroup} onActiveGroupChange={onActiveGroupChange} />;
   if (mode === "steps")
     return <StepsLayout model={model} grid={grid} issues={issues} activeGroup={activeGroup} onActiveGroupChange={onActiveGroupChange} />;
-  return <SequentialLayout model={model} grid={grid} />;
+  return <SequentialLayout model={model} grid={grid} issues={issues} />;
 }
