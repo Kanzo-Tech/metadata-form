@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useField as useArkField } from "@kanzo-tech/ui";
 import { Box, Button, Flex, Grid, IconButton, Popover, Text, TextField } from "@radix-ui/themes";
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import type { WidgetProps } from "./widgets.js";
@@ -95,6 +96,12 @@ function Calendar({ selected, onPick }: { selected: Ymd | null; onPick: (p: Ymd)
 
 export function makeDateField(withTime: boolean) {
   return function DateField(p: WidgetProps) {
+    // Ark's Field owns these; outside a Field the context is absent and the
+    // widget is simply enabled and valid. Temporary — this file is being
+    // replaced by the design system's own control.
+    const arkField = useArkField();
+    const disabled = arkField?.disabled ?? false;
+    const invalid = arkField?.invalid ?? false;
     const [open, setOpen] = useState(false);
     const { date, time } = parseValue(p.value);
 
@@ -112,13 +119,13 @@ export function makeDateField(withTime: boolean) {
         value={p.value ?? ""}
         placeholder={withTime ? "YYYY-MM-DDTHH:mm" : "YYYY-MM-DD"}
         readOnly
-        disabled={p.disabled}
-        color={p.invalid ? "red" : undefined}
+        disabled={disabled}
+        color={invalid ? "red" : undefined}
       >
         <TextField.Slot side="right">
           <Popover.Root open={open} onOpenChange={setOpen}>
             <Popover.Trigger>
-              <IconButton variant="ghost" color="gray" size="1" disabled={p.disabled} aria-label="Open calendar">
+              <IconButton variant="ghost" color="gray" size="1" disabled={disabled} aria-label="Open calendar">
                 <CalendarIcon />
               </IconButton>
             </Popover.Trigger>

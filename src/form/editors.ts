@@ -7,11 +7,20 @@ const XSD = NS.xsd;
 const RDF_LANGSTRING = `${NS.rdf}langString`;
 
 /**
- * Editor *selection* (datatype/nodeKind/sh:in → editor IRI) now lives in rudof,
- * which emits a `shui:` editor IRI on every property. This module is purely the
- * UI mapping: editor IRI → presentational widget kind (a theme keys its
- * components on these). The numeric xsd set is kept for the datatype fallback.
+ * The RDF-facts side of editor resolution.
+ *
+ * Editor *selection* lives in rudof, which emits a `shui:` editor IRI on every
+ * property — explicit when the profile states one, inferred from the property's
+ * type facts otherwise. A widget registry is therefore keyed by that IRI and
+ * nothing else: the SHACL-UI vocabulary is the taxonomy, and there is no second
+ * one here to keep in step with it.
+ *
+ * What remains is the case rudof cannot cover: an editor IRI the registry has no
+ * widget for — a profile stating a `shui:` term we do not implement, or a custom
+ * one. {@link fallbackEditorId} answers it in the *same* vocabulary, so
+ * resolution is one lookup, a derivation, and the same lookup again.
  */
+
 export const NUMERIC = new Set(
   ["integer", "int", "long", "short", "byte", "decimal", "float", "double",
    "nonNegativeInteger", "positiveInteger", "negativeInteger", "nonPositiveInteger",
@@ -19,53 +28,20 @@ export const NUMERIC = new Set(
 );
 
 /**
- * Presentational widget kinds. The canonical home is core (not React) so the
- * editor-IRI → kind mapping is theme-agnostic and unit-testable. A theme is just
- * a set of widgets keyed by these kinds.
+ * A canonical editor IRI derived from the field's own type facts, for when its
+ * stated editor has no widget. Deliberately conservative — it answers "what can
+ * this value be edited as at all", not "what would be nicest".
  */
-export type WidgetKind =
-  | "text"
-  | "number"
-  | "date"
-  | "datetime"
-  | "url"
-  | "textarea"
-  | "boolean"
-  | "select"
-  | "reference"
-  | "lang";
-
-export type WidgetKindMap = ReadonlyMap<string, WidgetKind>;
-
-/** Canonical SHACL-UI editor IRI → widget kind. Extend by passing a superset map. */
-export const defaultWidgetKindMap: WidgetKindMap = new Map<string, WidgetKind>([
-  [Editors.TextArea, "textarea"],
-  [Editors.RichText, "textarea"],
-  [Editors.TextFieldWithLang, "lang"],
-  [Editors.TextAreaWithLang, "lang"],
-  [Editors.DatePicker, "date"],
-  [Editors.DateTimePicker, "datetime"],
-  [Editors.Boolean, "boolean"],
-  [Editors.EnumSelect, "select"],
-  [Editors.InstancesSelect, "reference"],
-  [Editors.AutoComplete, "reference"],
-  [Editors.SubClass, "reference"],
-  [Editors.IRI, "url"],
-  [Editors.NumberField, "number"],
-]);
-
-/**
- * Resolve a field's widget kind from its editor IRI (map-driven), falling back
- * to its datatype/nodeKind facts. Replaces a hardcoded switch; consumers add a
- * map entry plus a widget-registry entry — no core edit.
- */
-export function resolveWidgetKind(field: FieldModel, map: WidgetKindMap = defaultWidgetKindMap): WidgetKind {
-  const mapped = map.get(field.editorId);
-  if (mapped) return mapped;
-
-  const dt = field.constraints.datatype;
-  if (dt === RDF_LANGSTRING) return "lang";
-  if (dt && NUMERIC.has(dt)) return "number";
-  if (field.constraints.nodeKind === SH_IRI || dt === `${XSD}anyURI`) return "url";
-  return "text";
+export function fallbackEditorId(field: FieldModel): string {
+  const c = field.constraints;
+  if (c.options?.length) return Editors.EnumSelect;
+  const dt = c.datatype;
+  if (dt === RDF_LANGSTRING) return Editors.TextFieldWithLang;
+  if (dt === `${XSD}boolean`) return Editors.Boolean;
+  if (dt === `${XSD}date`) return Editors.DatePicker;
+  if (dt === `${XSD}dateTime`) return Editors.DateTimePicker;
+  if (dt && NUMERIC.has(dt)) return Editors.NumberField;
+  if (c.classIri) return Editors.AutoComplete;
+  if (c.nodeKind === SH_IRI || dt === `${XSD}anyURI`) return Editors.IRI;
+  return Editors.TextField;
 }

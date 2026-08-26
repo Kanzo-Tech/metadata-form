@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Term } from "@rdfjs/types";
 import { literal, namedNode, NS } from "../../engine/factory.js";
-import { NUMERIC, resolveWidgetKind, type WidgetKind } from "../../form/editors.js";
+import { fallbackEditorId, NUMERIC } from "../../form/editors.js";
 import type { FieldModel } from "../../form/FormModel.js";
 import type { GraphState } from "../../engine/GraphState.js";
 
@@ -10,10 +10,18 @@ import type { GraphState } from "../../engine/GraphState.js";
  * primitive value and never touch RDF. All term ⇄ primitive conversion lives in
  * this one binding layer, so a theme is just a set of widgets — no duplication.
  *
- * {@link WidgetKind} and the editor-IRI → kind mapping live in core
- * (`editors`); re-exported here for the widget authors' convenience.
+ * A registry is keyed by the property's **SHACL-UI editor IRI**, which rudof
+ * resolves for every property. There is no intermediate widget taxonomy: both
+ * ends of the mapping are vocabularies someone else maintains — `shui:` on one
+ * side, the component library's own names on the other — and a third invented in
+ * between could only lose information. It did: `InstancesSelectEditor`,
+ * `AutoCompleteEditor` and `SubClassEditor` are three different controls, and
+ * `TextFieldWithLangEditor` and `TextAreaWithLangEditor` differ by exactly the
+ * thing a user notices.
+ *
+ * Keying on the IRI also makes the registry open: a profile with a custom
+ * `shui:editor` is a new entry, not a new case in a union in core.
  */
-export type { WidgetKind };
 
 export interface WidgetOption {
   value: string;
@@ -21,7 +29,6 @@ export interface WidgetOption {
 }
 
 export interface WidgetProps {
-  kind: WidgetKind;
   /** Primitive value: the literal/IRI string, or "true"/"false" for booleans. */
   value: string | null;
   /** Commit a value. `language` applies to `lang` (rdf:langString) fields. */
@@ -38,8 +45,11 @@ export interface WidgetProps {
   complete?: (value: string, signal?: AbortSignal) => AsyncIterable<string>;
   /** The sh:class IRI for `reference` fields. */
   classIri?: string;
-  invalid?: boolean;
-  disabled?: boolean;
+  /** True when the field must hold a value (`sh:minCount` ≥ 1). Presentational
+   *  only — a widget may pick a different control (a switch has no "unset"). The
+   *  *state* props a widget would otherwise thread — invalid, disabled — are NOT
+   *  here: `Field` owns them and Ark propagates them by context to every input
+   *  under it, so the accessible fact and the visible one cannot drift apart. */
   required?: boolean;
   /** Numeric step ("1" for integers, "any" otherwise). */
   step?: string;
@@ -70,7 +80,8 @@ export interface WidgetDef {
   assist?: AssistSupport;
 }
 export type WidgetEntry = Widget | WidgetDef;
-export type WidgetRegistry = Partial<Record<WidgetKind, WidgetEntry>>;
+/** Editor IRI → widget. Keys are `shui:` editor IRIs (see {@link Editors}). */
+export type WidgetRegistry = Readonly<Record<string, WidgetEntry>>;
 
 /** Resolve a registry entry to its render function. */
 export function widgetRender(entry: WidgetEntry): Widget {
@@ -118,9 +129,21 @@ const INTEGRAL = new Set(
    "unsignedByte"].map((t) => `${XSD}${t}`),
 );
 
-/** Map a field (its selected editor + datatype) to a presentational widget kind. */
-export function widgetKind(field: FieldModel): WidgetKind {
-  return resolveWidgetKind(field);
+/**
+ * The widget for a field: its stated editor, else one derived from its own type
+ * facts — the same lookup twice, never a separate taxonomy.
+ *
+ * Returns `undefined` only if the derived fallback is unregistered too, which
+ * means the registry is missing `shui:TextFieldEditor` and every field is broken;
+ * the caller reports that rather than rendering nothing in silence.
+ */
+export function resolveWidget(
+  field: FieldModel,
+  registry: WidgetRegistry,
+  base: WidgetRegistry,
+): WidgetEntry | undefined {
+  const pick = (id: string) => registry[id] ?? base[id];
+  return pick(field.editorId) ?? pick(fallbackEditorId(field));
 }
 
 export function stepFor(field: FieldModel): string | undefined {
@@ -145,35 +168,32 @@ export function languageOf(term: Term | null): string {
   return term && term.termType === "Literal" ? term.language : "";
 }
 
-/** Primitive string from a widget → RDF term (the single binding direction). */
+/**
+ * Primitive string from a widget → RDF term — the single binding direction.
+ *
+ * Driven by the field's **constraints**, not by whatever control rendered it.
+ * Which term a value becomes is a fact about the shape (`sh:datatype`,
+ * `sh:nodeKind`, `sh:in`), and reading it from the shape is what lets two
+ * different editors over the same property agree.
+ */
 export function primitiveToTerm(
   field: FieldModel,
-  kind: WidgetKind,
   raw: string | null,
   language?: string,
 ): Term | null {
   if (raw === null || raw === "") return null;
-  switch (kind) {
-    case "boolean":
-      return literal(raw === "true" ? "true" : "false", namedNode(`${XSD}boolean`));
-    case "url":
-    case "reference":
-      return namedNode(raw);
-    case "lang":
-      return literal(raw, language ?? "");
-    case "number":
-      return literal(raw, namedNode(field.constraints.datatype ?? `${XSD}decimal`));
-    case "select": {
-      const opt = field.constraints.options?.find((o) => o.value.value === raw);
-      if (opt) return opt.value;
-      return field.constraints.nodeKind === SH_IRI ? namedNode(raw) : literal(raw);
-    }
-    default: {
-      const dt = field.constraints.datatype;
-      if (dt && dt !== `${XSD}string` && dt !== RDF_LANGSTRING) {
-        return literal(raw, namedNode(dt));
-      }
-      return literal(raw);
-    }
-  }
+  const c = field.constraints;
+
+  // sh:in first: the enumeration carries the term verbatim, datatype, language
+  // and all, so echoing it back beats reconstructing it.
+  const opt = c.options?.find((o) => o.value.value === raw);
+  if (opt) return opt.value;
+
+  const dt = c.datatype;
+  if (dt === `${XSD}boolean`) return literal(raw === "true" ? "true" : "false", namedNode(`${XSD}boolean`));
+  if (dt === RDF_LANGSTRING) return literal(raw, language ?? "");
+  if (dt && NUMERIC.has(dt)) return literal(raw, namedNode(dt));
+  if (c.nodeKind === SH_IRI || dt === `${XSD}anyURI` || (!dt && c.classIri)) return namedNode(raw);
+  if (dt && dt !== `${XSD}string`) return literal(raw, namedNode(dt));
+  return literal(raw);
 }

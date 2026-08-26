@@ -1,16 +1,30 @@
 import { useState } from "react";
-import { Box, Button, Flex, Text } from "@radix-ui/themes";
-import { PlusIcon } from "@radix-ui/react-icons";
+import {
+  Field,
+  FieldArray,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  FieldRequiredIndicator,
+} from "@kanzo-tech/ui";
 import type { Term } from "@rdfjs/types";
 import type { FieldModel, FormModel, ValueSlot } from "../../form/FormModel.js";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import { defaultWidgets } from "../widgets/defaultWidgets.js";
-import { languageOf, optionsFor, primitiveToTerm, stepFor, termToPrimitive, widgetKind, widgetRender, widgetAssist } from "../widgets/widgets.js";
+import {
+  languageOf,
+  optionsFor,
+  primitiveToTerm,
+  resolveWidget,
+  stepFor,
+  termToPrimitive,
+  widgetAssist,
+  widgetRender,
+} from "../widgets/widgets.js";
 import { useFormContext } from "./context.js";
 import { useField } from "../hooks/useField.js";
 import { NodeForm } from "./NodeForm.js";
 import { SuggestMenu } from "../fieldassist/SuggestionBox.js";
-import { CloseButton } from "./CloseButton.js";
 
 /** Renders a single field: label, help, value rows (multi-value), errors. */
 export function FieldRenderer({ field }: { field: FieldModel }) {
@@ -58,34 +72,49 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
   const canAddMore =
     !field.readOnly && (field.maxCount === undefined || real.length + pending < field.maxCount);
 
+  // The pending row must carry the SAME key it will get once committed
+  // (`buildFormModel` keys real slots `${field.id}#${i}`). If it differed, the
+  // first value commit would change the row's key → React remounts the input →
+  // loses focus/hover/caret. Pending rows occupy indices >= real.length, so there
+  // is no key collision with real slots. `FieldArray` asks for this key for
+  // exactly this reason.
+  const rowKey = (i: number) => real[i]?.id ?? `${field.id}#${i}`;
+
   if (isNested) {
     return (
       <FieldShell field={field} errors={errs}>
-        <Flex direction="column" gap="3">
-          {real.map((slot) => (
-            <Flex gap="2" align="start" key={slot.id}>
-              <Box style={{ flex: 1, minWidth: 0 }}>
-                {slot.nested && <NodeForm model={slot.nested as FormModel} />}
-              </Box>
-              <CloseButton label="Remove" onClick={() => { setTouched(true); ops.removeValue(slot.value as Term); }} />
-            </Flex>
-          ))}
-        </Flex>
-        {canAddMore && <AddButton onClick={() => { setTouched(true); ops.createNested(); }} />}
+        <FieldArray
+          count={real.length}
+          rowKey={rowKey}
+          canAdd={canAddMore}
+          canRemove={!field.readOnly}
+          onAdd={() => { setTouched(true); ops.createNested(); }}
+          onRemove={(i) => { setTouched(true); ops.removeValue(real[i].value as Term); }}
+        >
+          {(i) => {
+            const slot = real[i];
+            return slot?.nested ? <NodeForm model={slot.nested as FormModel} /> : null;
+          }}
+        </FieldArray>
       </FieldShell>
     );
   }
 
-  const kind = widgetKind(field);
-  const entry = widgets[kind] ?? defaultWidgets[kind]!;
+  const entry = resolveWidget(field, widgets, defaultWidgets);
+  if (!entry) {
+    throw new Error(
+      `No widget for editor ${field.editorId} on ${field.id}, and none for the ` +
+        `fallback either — the registry is missing ${Editors.TextField}.`,
+    );
+  }
   const Widget = widgetRender(entry);
   const caps = widgetAssist(entry); // assistance this widget declares it supports
-  const options = kind === "select" ? optionsFor(field) : undefined;
-  const step = stepFor(field);
   const c = field.constraints;
+  const options = optionsFor(field);
+  const step = stepFor(field);
   const classIri = c.classIri;
   const loadOptions =
-    kind === "reference" && assist?.search && classIri
+    assist?.search && classIri
       ? (query: string, signal?: AbortSignal) => assist.search!({ classIri, query, signal })
       : undefined;
   const complete =
@@ -95,46 +124,34 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
 
   const applySuggestion = (raw: string) => {
     setTouched(true);
-    const term = primitiveToTerm(field, kind, raw);
+    const term = primitiveToTerm(field, raw);
     if (!term) return;
     const current = singleValue ? (real[0]?.value ?? null) : null;
     if (current) ops.setValue(current, term);
     else ops.addValue(term);
   };
 
-  const rows = [];
-  for (let i = 0; i < rowCount; i++) {
-    // The empty (pending) row must carry the SAME key it will get once committed
-    // (`buildFormModel` keys real slots `${field.id}#${i}`). If it differed, the
-    // first value commit would change the row's key → React remounts the input →
-    // loses focus/hover/caret. Pending rows occupy indices >= real.length, so
-    // there is no key collision with real slots.
-    const slot: ValueSlot = real[i] ?? { id: `${field.id}#${i}`, value: null };
-    rows.push(
-      <Flex gap="2" align="center" key={slot.id}>
-        <Widget
-          kind={kind}
-          value={termToPrimitive(slot.value)}
-          language={languageOf(slot.value)}
-          languageIn={c.languageIn}
-          onChange={(v, language) => setTerm(i, primitiveToTerm(field, kind, v, language))}
-          options={options}
-          loadOptions={loadOptions}
-          complete={complete}
-          classIri={classIri}
-          invalid={errs.length > 0}
-          required={field.required}
-          disabled={field.readOnly ?? false}
-          step={step}
-          min={c.minInclusive}
-          max={c.maxInclusive}
-          maxLength={c.maxLength}
-          pattern={c.pattern}
-        />
-        {!singleValue && !field.readOnly && <CloseButton label="Remove" onClick={() => removeRow(i)} />}
-      </Flex>,
+  const row = (i: number) => {
+    const slot: ValueSlot = real[i] ?? { id: rowKey(i), value: null };
+    return (
+      <Widget
+        value={termToPrimitive(slot.value)}
+        language={languageOf(slot.value)}
+        languageIn={c.languageIn}
+        onChange={(v, language) => setTerm(i, primitiveToTerm(field, v, language))}
+        options={options}
+        loadOptions={loadOptions}
+        complete={complete}
+        classIri={classIri}
+        required={field.required}
+        step={step}
+        min={c.minInclusive}
+        max={c.maxInclusive}
+        maxLength={c.maxLength}
+        pattern={c.pattern}
+      />
     );
-  }
+  };
 
   return (
     <FieldShell
@@ -150,23 +167,33 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
         ) : undefined
       }
     >
-      <Flex direction="column" gap="2">
-        {rows}
-      </Flex>
-      {!singleValue && canAddMore && <AddButton onClick={() => setPending((n) => n + 1)} />}
+      {singleValue ? (
+        row(0)
+      ) : (
+        <FieldArray
+          count={rowCount}
+          rowKey={rowKey}
+          canAdd={canAddMore}
+          canRemove={!field.readOnly}
+          onAdd={() => setPending((n) => n + 1)}
+          onRemove={removeRow}
+        >
+          {row}
+        </FieldArray>
+      )}
     </FieldShell>
   );
 }
 
-
-function AddButton({ onClick }: { onClick: () => void }) {
-  return (
-    <Button type="button" variant="soft" size="1" onClick={onClick} style={{ alignSelf: "flex-start" }}>
-      <PlusIcon /> Add
-    </Button>
-  );
-}
-
+/**
+ * The field frame. `Field` owns `invalid`/`disabled`/`required` and Ark hands
+ * them to every input beneath by context, so no widget threads them itself.
+ *
+ * Only **violations** set `invalid`: they are what the library models as a
+ * boolean. Warnings and info are real to SHACL but not to `Field`, so they are
+ * rendered as our own nodes rather than pushed through an error channel that
+ * would also paint the input red.
+ */
 function FieldShell({
   field,
   errors,
@@ -178,26 +205,32 @@ function FieldShell({
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const violations = errors.filter((e) => e.severity === "violation");
+  const rest = errors.filter((e) => e.severity !== "violation");
   return (
-    <Flex direction="column" gap="1" data-field={field.id}>
-      <Flex align="center" justify="between" gap="2">
-        <Text as="label" size="2" weight="medium">
+    <Field
+      data-field={field.id}
+      required={field.required}
+      disabled={field.readOnly ?? false}
+      invalid={violations.length > 0}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <FieldLabel>
           {field.label}
-          {field.required && <Text color="red"> *</Text>}
-        </Text>
+          {field.required && <FieldRequiredIndicator />}
+        </FieldLabel>
         {action}
-      </Flex>
-      {field.description && (
-        <Text size="1" color="gray">
-          {field.description}
-        </Text>
-      )}
+      </div>
+      {field.description && <FieldDescription>{field.description}</FieldDescription>}
       {children}
-      {errors.map((e, i) => (
-        <Text key={i} size="1" color={e.severity === "violation" ? "red" : "orange"}>
-          {e.message}
-        </Text>
+      {violations.map((e, i) => (
+        <FieldError key={i}>{e.message}</FieldError>
       ))}
-    </Flex>
+      {rest.map((e, i) => (
+        <p key={i} className="text-warning text-xs" data-severity={e.severity}>
+          {e.message}
+        </p>
+      ))}
+    </Field>
   );
 }

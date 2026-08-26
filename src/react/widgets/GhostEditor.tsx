@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useField as useArkField } from "@kanzo-tech/ui";
 import { Box, Flex, Kbd, Text } from "@radix-ui/themes";
 import { Annotation, Compartment, EditorState, Prec, StateEffect, StateField } from "@codemirror/state";
 import { Decoration, EditorView, WidgetType, keymap, placeholder } from "@codemirror/view";
@@ -114,8 +115,13 @@ const theme = EditorView.theme({
 export function GhostEditor(
   p: WidgetProps & { complete: (value: string, signal?: AbortSignal) => AsyncIterable<string> },
 ) {
+  // Ark's Field owns these — see DateField. Temporary: this file is replaced by
+  // @kanzo-tech/ai's CompleteRoot, whose ghost is composed over a plain Textarea.
+  const arkField = useArkField();
+  const disabled = arkField?.disabled ?? false;
+  const invalid = arkField?.invalid ?? false;
   const container = useRef<HTMLDivElement>(null);
-  const view = useRef<EditorView>();
+  const view = useRef<EditorView | undefined>(undefined);
   const [focused, setFocused] = useState(false);
   const [hasGhost, setHasGhost] = useState(false); // drives the Tab hint below the editor
 
@@ -124,9 +130,9 @@ export function GhostEditor(
   props.current = p;
 
   const dirty = useRef(false);
-  const commitTimer = useRef<ReturnType<typeof setTimeout>>();
-  const askTimer = useRef<ReturnType<typeof setTimeout>>();
-  const stream = useRef<AbortController>();
+  const commitTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const askTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const stream = useRef<AbortController | undefined>(undefined);
   const editable = useRef(new Compartment());
 
   // Same commit policy as `useCommit`: debounce to the graph, null on empty.
@@ -197,8 +203,8 @@ export function GhostEditor(
           updateListener,
           onBlur,
           editable.current.of([
-            EditorView.editable.of(!props.current.disabled),
-            EditorState.readOnly.of(!!props.current.disabled),
+            EditorView.editable.of(!disabled),
+            EditorState.readOnly.of(!!disabled),
           ]),
         ],
       }),
@@ -229,15 +235,15 @@ export function GhostEditor(
   useEffect(() => {
     view.current?.dispatch({
       effects: editable.current.reconfigure([
-        EditorView.editable.of(!p.disabled),
-        EditorState.readOnly.of(!!p.disabled),
+        EditorView.editable.of(!disabled),
+        EditorState.readOnly.of(!!disabled),
       ]),
     });
-  }, [p.disabled]);
+  }, [disabled]);
 
   // Mirror Radix's TextArea chrome: an inset 1px ring (red when invalid), a focus
   // outline, and the surface background — so it reads as the same family of input.
-  const ring = p.invalid ? "var(--red-8)" : "var(--focus-8)";
+  const ring = invalid ? "var(--red-8)" : "var(--focus-8)";
   return (
     <Box style={{ flex: 1, width: "100%" }}>
       <div
@@ -245,8 +251,8 @@ export function GhostEditor(
         style={{
           width: "100%",
           borderRadius: "var(--radius-2)",
-          background: p.disabled ? "var(--gray-a2)" : "var(--color-surface)",
-          boxShadow: `inset 0 0 0 1px ${p.invalid ? "var(--red-a7)" : "var(--gray-a7)"}`,
+          background: disabled ? "var(--gray-a2)" : "var(--color-surface)",
+          boxShadow: `inset 0 0 0 1px ${invalid ? "var(--red-a7)" : "var(--gray-a7)"}`,
           outline: focused ? `2px solid ${ring}` : undefined,
           outlineOffset: "-1px",
           overflow: "hidden",

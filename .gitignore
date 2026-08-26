@@ -4,3 +4,8 @@ dist
 .DS_Store
 coverage
 .vite
+
+# Local kanzo-ui tarballs — regenerate with scripts/link-kanzo-ui.sh.
+# Not committed: they change with every kanzo-ui build, and package.json
+# points at them only until @kanzo-tech/* is published.
+vendor

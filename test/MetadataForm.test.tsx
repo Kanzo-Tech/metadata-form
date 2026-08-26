@@ -6,7 +6,7 @@ import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { ValidationSummary } from "@/react/validation/ValidationSummary.js";
 import { FormAssistant } from "@/react/assistant/FormAssistant.js";
 import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
-import { widgetKind } from "@/react/widgets/widgets.js";
+import { Editors } from "@/form/vocab/shacl-ui.js";
 import { healthDcatApShapes } from "@examples/health-dcat-ap/index.js";
 
 const shapes = healthDcatApShapes;
@@ -277,7 +277,13 @@ describe("useMetadataForm + <MetadataForm>", () => {
     await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
     // A repeatable, empty, text-like field (renders a textbox once a row exists).
-    const TEXTBOX = ["text", "url", "textarea", "reference", "lang"];
+    // Editors that render a role="textbox". Keyed by the SHACL-UI IRI, same as
+    // the widget registry — there is no separate widget taxonomy to ask.
+    const TEXTBOX = new Set<string>([
+      Editors.TextField, Editors.IRI, Editors.TextArea, Editors.RichText,
+      Editors.TextFieldWithLang, Editors.TextAreaWithLang,
+      Editors.AutoComplete, Editors.InstancesSelect, Editors.SubClass,
+    ]);
     const field = formRef!
       .model!.groups.flatMap((g) => g.fields)
       .find(
@@ -286,7 +292,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
           !f.nodeShape &&
           !f.readOnly &&
           f.values.length === 0 &&
-          TEXTBOX.includes(widgetKind(f)),
+          TEXTBOX.has(f.editorId),
       );
     expect(field).toBeTruthy();
 

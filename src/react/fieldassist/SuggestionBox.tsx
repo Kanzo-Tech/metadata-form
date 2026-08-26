@@ -47,8 +47,8 @@ export function Combobox(props: {
   // IRI doesn't rebuild the form model per keystroke — same policy as useCommit.
   const [text, setText] = useState(props.value ?? "");
   const dirty = useRef(false);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
-  const search = useRef<AbortController>(); // aborts the in-flight query when a newer one starts
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const search = useRef<AbortController | undefined>(undefined); // aborts the in-flight query when a newer one starts
   useEffect(() => {
     if (!dirty.current) setText(props.value ?? "");
   }, [props.value]);
@@ -143,7 +143,7 @@ export function SuggestMenu(props: {
   const [error, setError] = useState<string | null>(null);
 
   const started = useRef(false); // fetch once per open-cycle, then cache across reopen
-  const ctrl = useRef<AbortController>();
+  const ctrl = useRef<AbortController | undefined>(undefined);
   const iter = useRef<AsyncIterator<FieldSuggestion> | null>(null);
   const seen = useRef<Set<string>>(new Set()); // existing values + everything already shown
   const shown = useRef(0); // live count of visible rows (drives the fill loop)

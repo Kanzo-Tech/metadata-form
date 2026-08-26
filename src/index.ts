@@ -22,7 +22,7 @@ export type { MascotCharacter, MascotMood } from "./react/assistant/mascot.js";
 // Widgets — the presentation contract (build a theme = a set of these).
 export { defaultWidgets } from "./react/widgets/defaultWidgets.js";
 export {
-  widgetKind,
+  resolveWidget,
   optionsFor,
   stepFor,
   termToPrimitive,
@@ -32,7 +32,6 @@ export {
 } from "./react/widgets/widgets.js";
 export type {
   Widget,
-  WidgetKind,
   WidgetProps,
   WidgetOption,
   WidgetRegistry,
@@ -67,13 +66,16 @@ export type {
 // Non-fatal build diagnostics (dropped paths, missing shapes).
 export type { Diagnostic, DiagnosticSink } from "./form/buildFormModel.js";
 
+// Built-in UI string catalog (en/es/ca) — pass `strings` to useMetadataForm to
+// override the language-picker chrome or the default validation messages.
+export { resolveStrings, DEFAULTS as defaultStrings } from "./i18n/strings.js";
+export type { Strings, DeepPartial } from "./i18n/strings.js";
+
 // Editors — the SHACL-UI editor IRIs rudof emits + the editor-IRI → widget-kind
 // map (the one UI-specific mapping; editor *selection* lives in rudof).
 export { Editors, type KnownEditorId } from "./form/vocab/shacl-ui.js";
 export {
-  resolveWidgetKind,
-  defaultWidgetKindMap,
-  type WidgetKindMap,
+  fallbackEditorId,
 } from "./form/editors.js";
 
 // Shape IR (vocabulary-agnostic parsing seam)
