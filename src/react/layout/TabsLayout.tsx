@@ -1,4 +1,4 @@
-import { Box, Flex, Tabs } from "@radix-ui/themes";
+import { Card, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from "@kanzo-tech/ui";
 import type { FormModel } from "../../form/FormModel.js";
 import type { GridLayout } from "../form/context.js";
 import type { GroupIssues } from "../validation/useFormReport.js";
@@ -23,24 +23,27 @@ export function TabsLayout({
   const groups = model.groups;
   if (groups.length === 0) return null;
   return (
-    <Tabs.Root value={activeGroup ?? groups[0].id} onValueChange={onActiveGroupChange}>
-      <Tabs.List>
+    <Tabs
+      value={activeGroup ?? groups[0].id}
+      onValueChange={(d) => onActiveGroupChange?.(d.value)}
+    >
+      <TabsList className="w-full justify-start">
         {groups.map((group, i) => (
-          <Tabs.Trigger key={group.id} value={group.id}>
-            <Flex align="center" gap="2">
-              {group.label || `Group ${i + 1}`}
-              <GroupIssuesBadge issues={issues.get(group.id)} />
-            </Flex>
-          </Tabs.Trigger>
+          <TabsTrigger key={group.id} value={group.id}>
+            {group.label || `Group ${i + 1}`}
+            <GroupIssuesBadge issues={issues.get(group.id)} />
+          </TabsTrigger>
         ))}
-      </Tabs.List>
+      </TabsList>
       {groups.map((group) => (
-        <Tabs.Content key={group.id} value={group.id}>
-          <Box pt="3">
-            <FieldsGrid group={group} grid={grid} />
-          </Box>
-        </Tabs.Content>
+        <TabsContent key={group.id} value={group.id}>
+          <Card>
+            <CardContent className="pt-6">
+              <FieldsGrid group={group} grid={grid} />
+            </CardContent>
+          </Card>
+        </TabsContent>
       ))}
-    </Tabs.Root>
+    </Tabs>
   );
 }

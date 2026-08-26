@@ -1,4 +1,4 @@
-import { Card, Flex, Heading } from "@radix-ui/themes";
+import { Card, CardContent, CardHeader, CardTitle } from "@kanzo-tech/ui";
 import type { FormModel } from "../../form/FormModel.js";
 import type { GridLayout } from "../form/context.js";
 import { FieldsGrid } from "./FieldsGrid.js";
@@ -6,15 +6,19 @@ import { FieldsGrid } from "./FieldsGrid.js";
 /** Default layout: a Card per property group, stacked. */
 export function SequentialLayout({ model, grid }: { model: FormModel; grid?: GridLayout }) {
   return (
-    <Flex direction="column" gap="4">
+    <div className="flex flex-col gap-4">
       {model.groups.map((group) => (
         <Card key={group.id}>
-          <Flex direction="column" gap="3">
-            {group.label && <Heading size="3">{group.label}</Heading>}
+          {group.label && (
+            <CardHeader>
+              <CardTitle>{group.label}</CardTitle>
+            </CardHeader>
+          )}
+          <CardContent>
             <FieldsGrid group={group} grid={grid} />
-          </Flex>
+          </CardContent>
         </Card>
       ))}
-    </Flex>
+    </div>
   );
 }
