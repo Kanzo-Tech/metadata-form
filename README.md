@@ -215,11 +215,71 @@ ex:DatasetShape a sh:NodeShape ;
 ```
 
 When `shui:editor` is absent, rudof resolves an editor from the field's
-constraints — `sh:datatype`, `sh:nodeKind`, `sh:in`, `sh:class`, `sh:node`. The
-known editor IRIs (`shui:TextFieldEditor`, `TextAreaEditor`, `NumberFieldEditor`,
-`DatePickerEditor`, `BooleanEditor`, `EnumSelectEditor`, `DetailsEditor`, …) each
-map to a React widget; metadata-form's job is exactly this editor-IRI → widget
-binding, so a new editor is a widget, not an engine change.
+constraints — `sh:datatype`, `sh:nodeKind`, `sh:in`, `sh:class`, `sh:node`.
+metadata-form's job is exactly the editor-IRI → widget binding below, so a new
+editor is a widget, not an engine change.
+
+### The mapping
+
+`Repeatable` is the control a field gets when the shape allows more than one value
+(no `sh:maxCount 1`). It is selected by **cardinality, not by a second vocabulary**:
+`sh:maxCount` already states how many answers a property takes, and inventing
+`shui:MultiEnumSelectEditor` would put that fact in a second place that could
+disagree with it. Where the column says *rows*, the single-value control repeats
+inside a `FieldArray` with add/remove.
+
+| `shui:` editor | Picked when | Control | Repeatable |
+| --- | --- | --- | --- |
+| `TextFieldEditor` | anything with no better fact (the fallback) | `Input` | **`TagsInput`** — chips, one control |
+| `TextAreaEditor` | stated | `Textarea`, ghost-text completion when `assist.complete` is wired | rows |
+| `RichTextEditor` | stated | `Textarea` — **the design system ships no rich-text editor**; the profile asked for something we do not have | rows |
+| `TextFieldWithLangEditor` | `sh:datatype rdf:langString` | `InputGroup` + the language picker in its trailing slot | rows |
+| `TextAreaWithLangEditor` | stated | `Textarea` + the language picker under it | rows |
+| `NumberFieldEditor` | numeric `sh:datatype` | `NumberInput` — steppers, scrubber, `tabular-nums`; bounds from `sh:minInclusive`/`sh:maxInclusive` | rows |
+| `BooleanEditor` | `sh:datatype xsd:boolean` | `SegmentGroup` (Yes / No / Not set) — or a `Switch` when `sh:minCount ≥ 1` or `sh:defaultValue` guarantees a value | rows |
+| `EnumSelectEditor` | `sh:in` | ≤ 4 options: `SegmentGroup`. ≤ 15: `NativeSelect`. Beyond that a searchable `Combobox` | **`Combobox multiple`** |
+| `DatePickerEditor` | `sh:datatype xsd:date` | `DatePicker` + calendar | rows |
+| `DateTimePickerEditor` | `sh:datatype xsd:dateTime` | `DatePicker` + a time `Input` | rows |
+| `IRIEditor` | `sh:nodeKind sh:IRI`, or `xsd:anyURI` | `Input type="url"` | rows |
+| `AutoCompleteEditor` | `sh:class` | `Combobox` over `assist.search`, custom IRIs allowed; plain IRI entry with no `assist` | **`Combobox multiple`** (`TagsInput` with no `assist`) |
+| `InstancesSelectEditor` | stated | same body as `AutoCompleteEditor`, its own registry entry | as above |
+| `SubClassEditor` | stated | same body as `AutoCompleteEditor`, its own registry entry — **see the gap below** | as above |
+| `DetailsEditor` | `sh:node` | a nested `<NodeForm>` inside a `FieldArray` | rows |
+| `BlankNodeEditor` | stated | the same nested sub-form: whether the resource gets an IRI is the graph's business, not the form's | rows |
+
+An explicit `shui:editor` always wins, including over the repeatable form — so
+overriding one field is one registry entry, never a fork of the selection rules.
+
+### What this does not render
+
+Honest gaps, not oversights. Every one of these is still **validated** — the engine
+sees the whole shape; it is the *input* that cannot express the constraint.
+
+- **`sh:minExclusive` / `sh:maxExclusive`** — `NumberInput`'s bounds are inclusive,
+  and there is no epsilon that is right for both `xsd:integer` and `xsd:double`.
+  Carried on `WidgetProps` for a widget that wants to say so.
+- **`sh:pattern` / `sh:flags`** — deliberately **not** the HTML `pattern`
+  attribute. `sh:pattern` is an unanchored XPath regex and the attribute is
+  implicitly `^(?:…)$`, so `sh:pattern "[0-9]{4}"` would reject `AB1234`, which the
+  shape accepts; `sh:flags` has no representation there at all. Carried as
+  information; the engine enforces the real regex on commit.
+- **`sh:minLength`** — reaches the input's `minLength` attribute, which nothing
+  enforces outside a native form submit. The engine is what rejects a short value.
+- **`sh:uniqueLang`** — a repeatable `rdf:langString` field renders as rows of
+  tagged inputs, and nothing stops two of them carrying `@es`. The violation
+  arrives from the validator after the fact.
+- **`rdf:langString` + repeatable** — no one-control form: chips would hide the
+  text, and a tag per chip has nowhere to live.
+- **`sh:hasValue`** — the required value is neither pre-filled nor pinned; it shows
+  up as a validation message when it is missing.
+- **`sh:qualifiedValueShape`** — no control distinguishes "at least two of these
+  values must match *that* shape" from the rest of the list.
+- **Class hierarchies (`SubClassEditor`)** — a real gap. rudof projects options as
+  a flat `WidgetOption[]`, so nobody — not even a consumer overriding the
+  editor — can reach a `TreeView`: the tree is not in the data to render. Three
+  reference editors sharing one body is honest until the projection carries
+  `subClasses`. Until then, override the entry with your own control if you have a
+  hierarchy to show.
 
 ## Theming
 

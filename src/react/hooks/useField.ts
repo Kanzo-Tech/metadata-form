@@ -9,6 +9,8 @@ export interface UseFieldResult {
   errors: FieldError[];
   setValue: (oldValue: Term | null, newValue: Term | null) => void;
   addValue: (value: Term) => void;
+  /** Replace the field's whole value list (a multi-value control's commit). */
+  setValues: (values: Term[]) => void;
   removeValue: (value: Term) => void;
   createNested: () => Term;
 }
@@ -27,6 +29,10 @@ export function useField(field: FieldModel): UseFieldResult {
     (value: Term) => graph.addValue(focusNode, field.path, value),
     [graph, focusNode, field.path],
   );
+  const setValues = useCallback(
+    (values: Term[]) => graph.setValues(focusNode, field.path, values),
+    [graph, focusNode, field.path],
+  );
   const removeValue = useCallback(
     (value: Term) => graph.removeValue(focusNode, field.path, value),
     [graph, focusNode, field.path],
@@ -40,6 +46,7 @@ export function useField(field: FieldModel): UseFieldResult {
     errors: errors.get(fieldKey(focusNode, field.path)) ?? [],
     setValue,
     addValue,
+    setValues,
     removeValue,
     createNested,
   };

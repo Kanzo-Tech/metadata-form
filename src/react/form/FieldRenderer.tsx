@@ -19,6 +19,7 @@ import {
   stepFor,
   termToPrimitive,
   widgetAssist,
+  widgetMulti,
   widgetRender,
 } from "../widgets/widgets.js";
 import { useFormContext } from "./context.js";
@@ -32,7 +33,13 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
   const { widgets, assist, graph, locale } = useFormContext();
   const ops = useField(field);
 
-  const isNested = field.editorId === Editors.Details || !!field.nodeShape;
+  // `shui:BlankNodeEditor` is `DetailsEditor`'s twin: both say "this value is a
+  // resource with a shape of its own", and the difference — whether it gets an IRI
+  // — is the graph's business, not the form's.
+  const isNested =
+    field.editorId === Editors.Details ||
+    field.editorId === Editors.BlankNode ||
+    !!field.nodeShape;
   const real = field.values;
 
   // Empty UI-only rows for repeatable fields. Start at 0 so a repeatable field
@@ -109,6 +116,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     );
   }
   const Widget = widgetRender(entry);
+  const Multi = widgetMulti(entry); // the same editor as ONE control, if it has one
   const caps = widgetAssist(entry); // assistance this widget declares it supports
   const c = field.constraints;
   const options = optionsFor(field);
@@ -148,13 +156,44 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
         step={step}
         min={c.minInclusive}
         max={c.maxInclusive}
+        minExclusive={c.minExclusive}
+        maxExclusive={c.maxExclusive}
+        minLength={c.minLength}
         maxLength={c.maxLength}
+        // Carried as information, never as an HTML `pattern` attribute: `sh:pattern`
+        // is an unanchored XPath regex and the attribute is implicitly anchored, so
+        // the browser would reject values the shape accepts.
         pattern={c.pattern}
+        flags={c.flags}
+        minCount={field.minCount}
+        maxCount={field.maxCount}
+        repeatable={field.repeatable}
+        defaultValue={termToPrimitive(c.defaultValue ?? null)}
       />
     );
   };
 
-  const rows = singleValue ? (
+  // A repeatable field whose editor knows how to hold a whole list renders as ONE
+  // control. The commit is a whole-list replace, which `GraphState.setValues`
+  // diffs into one change — so a tags input does not bump the graph per tag.
+  const asOne = !singleValue && Multi ? (
+    <Multi
+      values={real.map((s) => termToPrimitive(s.value)).filter((v): v is string => v !== null)}
+      onChange={(vs) => {
+        setTouched(true);
+        ops.setValues(
+          vs.map((v) => primitiveToTerm(field, v)).filter((t): t is Term => t !== null),
+        );
+      }}
+      options={options}
+      loadOptions={loadOptions}
+      classIri={classIri}
+      minCount={field.minCount}
+      maxCount={field.maxCount}
+    />
+  ) : null;
+
+  const rows = asOne ?? (singleValue ? (
     row(0)
   ) : (
     <FieldArray
@@ -167,7 +206,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     >
       {row}
     </FieldArray>
-  );
+  ));
 
   const suggests = assist?.suggest && !field.readOnly && caps.suggest;
   if (!suggests) return <FieldShell field={field} errors={errs}>{rows}</FieldShell>;

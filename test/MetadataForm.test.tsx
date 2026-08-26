@@ -189,6 +189,44 @@ describe("useMetadataForm + <MetadataForm>", () => {
     expect(document.querySelector('[aria-label="Open calendar"]')).toBeInTheDocument();
   });
 
+  it("renders a repeatable string field as ONE tags input, and commits the whole list", async () => {
+    // `dcat:keyword` has no `sh:maxCount`, so it is the cardinality case the multi
+    // widgets exist for: one control holding every value, not N rows each with its
+    // own add/remove. The registry entry is the same `shui:TextFieldEditor`.
+    let form!: ReturnType<typeof useMetadataForm>;
+    function TagForm() {
+      form = useMetadataForm({ shapes, validateOn: "off" });
+      return <MetadataForm form={form} />;
+    }
+    render(<TagForm />);
+    await waitFor(() => expect(screen.getByText("Keywords")).toBeInTheDocument());
+
+    const field = document.querySelector('[data-field$="|http://www.w3.org/ns/dcat#keyword"]');
+    expect(field).not.toBeNull();
+    expect(field!.querySelector('[data-slot="tags-input"]')).not.toBeNull();
+
+    const input = field!.querySelector<HTMLInputElement>('[data-slot="tags-input-input"]')!;
+    // The machine only accepts Enter once it has processed the focus it queued in a
+    // microtask, and it tracks the draft through React's `onInput` — `change` never
+    // reaches it.
+    input.focus();
+    fireEvent.focus(input);
+    for (const tag of ["health", "registry"]) {
+      await act(() => Promise.resolve());
+      fireEvent.input(input, { target: { value: tag } });
+      await act(() => Promise.resolve());
+      fireEvent.keyDown(input, { key: "Enter" });
+    }
+
+    await waitFor(() => {
+      const kws = form.quads
+        .filter((q) => q.predicate.value === "http://www.w3.org/ns/dcat#keyword")
+        .map((q) => q.object.value)
+        .sort();
+      expect(kws).toEqual(["health", "registry"]);
+    });
+  });
+
   it("writes edits into the controller's graph", async () => {
     let latest = 0;
     render(<Form shapes={shapes} onReady={(q) => (latest = q)} />);

@@ -45,6 +45,28 @@ export class GraphState {
     this.bump();
   }
 
+  /**
+   * Replace *every* value of (focus, predicate) with `next`.
+   *
+   * For a control that owns the whole list — a tags input, a multi-select — which
+   * cannot say "the third one changed", only "here is the list now". Diffing rather
+   * than clear-and-refill keeps blank-node subgraphs a survivor still points at, and
+   * the single {@link bump} is the point: a per-value loop would rebuild the form
+   * model and re-enter wasm validation once per tag typed.
+   */
+  setValues(focus: Term, predicate: NamedNode, next: Term[]): void {
+    const current = this.backend
+      .match(focus, predicate, null)
+      .map((q) => q.object as Term);
+    const has = (list: Term[], t: Term) => list.some((x) => x.equals(t));
+    const removed = current.filter((t) => !has(next, t));
+    const added = next.filter((t) => !has(current, t));
+    if (removed.length === 0 && added.length === 0) return;
+    for (const t of removed) this.removeSubgraph(focus, predicate, t);
+    for (const t of added) this.backend.add(focus, predicate, t);
+    this.bump();
+  }
+
   addValue(focus: Term, predicate: NamedNode, value: Term): void {
     this.backend.add(focus, predicate, value);
     this.bump();

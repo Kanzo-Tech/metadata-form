@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import {
   Combobox,
   ComboboxContent,
+  ComboboxControl,
   ComboboxEmpty,
-  ComboboxInput,
+  ComboboxFieldInput,
   ComboboxItem,
   createListCollection,
   useFilter,
@@ -40,6 +41,13 @@ const DEFAULT_STRINGS: PickerStrings = {
  * The list navigation, the roving focus and the popover are the machine's. What is
  * ours is the vocabulary: the endonyms, the curated set, and the BCP-47 shape a
  * typed tag has to satisfy.
+ *
+ * It is composed from `ComboboxControl` + `ComboboxFieldInput` rather than
+ * `ComboboxInput` because it is a **slot inside another field's control**, not a
+ * control of its own: `ComboboxInput` brings an `InputGroup` and a trigger, which
+ * drew a bordered box with a chevron inside the text field's bordered box, and the
+ * `border: 0` overrides that hid it were treating the symptom. `ComboboxControl`
+ * stays because the popover positions against it.
  */
 
 /** A broad default set of language subtags (used when the shape does not pin
@@ -89,6 +97,11 @@ export function LanguagePicker({
   const constrained = !!(allowed && allowed.length);
   const { contains } = useFilter({ sensitivity: "base" });
   const [query, setQuery] = useState("");
+  // The combobox machine takes its input id from the surrounding `Field` when it
+  // finds one — correct for a field's own control, wrong for a second control in
+  // the same field: the text input has already claimed that id, and two elements
+  // shared it. Ours is its own.
+  const inputId = useId();
 
   const items = useMemo<LangItem[]>(() => {
     const codes = constrained ? allowed! : CURATED;
@@ -110,6 +123,7 @@ export function LanguagePicker({
   return (
     <Combobox
       collection={collection}
+      ids={{ input: inputId }}
       value={value ? [value] : []}
       disabled={disabled}
       // A tag the shape did not list is only admissible when the shape listed none.
@@ -122,10 +136,20 @@ export function LanguagePicker({
       }}
       aria-label={strings.label}
     >
-      <ComboboxInput
-        style={{ width: "7rem", border: 0, boxShadow: "none" }}
-        placeholder={constrained ? strings.filterPlaceholder : strings.searchPlaceholder}
-      />
+      <ComboboxControl>
+        <ComboboxFieldInput
+          style={{
+            width: "6rem",
+            minWidth: 0,
+            background: "transparent",
+            border: 0,
+            outline: "none",
+            font: "inherit",
+            color: "inherit",
+          }}
+          placeholder={constrained ? strings.filterPlaceholder : strings.searchPlaceholder}
+        />
+      </ComboboxControl>
       <ComboboxContent>
         <ComboboxEmpty>{strings.noMatches}</ComboboxEmpty>
         {collection.items.map((item) => (

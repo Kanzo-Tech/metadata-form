@@ -53,14 +53,64 @@ export interface WidgetProps {
   required?: boolean;
   /** Numeric step ("1" for integers, "any" otherwise). */
   step?: string;
+  /** `sh:minInclusive` / `sh:maxInclusive` — the bounds a number input can hold. */
   min?: number;
   max?: number;
+  /** `sh:minExclusive` / `sh:maxExclusive`. Carried, not rendered: every numeric
+   *  control here takes inclusive bounds, and there is no epsilon that is right for
+   *  both `xsd:integer` and `xsd:double`. The engine still rejects on commit. */
+  minExclusive?: number;
+  maxExclusive?: number;
+  minLength?: number;
   maxLength?: number;
+  /** The raw `sh:pattern` — an **unanchored XPath regex**, which is not what the
+   *  HTML `pattern` attribute means (that one is implicitly `^(?:…)$`). Passed for a
+   *  widget that wants to show it as a hint; do not hand it to an input. See
+   *  {@link flags}, which the attribute cannot express at all. */
   pattern?: string;
+  /** `sh:flags` for {@link pattern}. */
+  flags?: string;
+  /** `sh:minCount` / `sh:maxCount`, and whether the field holds more than one value. */
+  minCount?: number;
+  maxCount?: number;
+  repeatable?: boolean;
+  /** `sh:defaultValue` as a primitive — a widget may use it to decide whether an
+   *  empty field is genuinely unanswered (a boolean's third state) or just off. */
+  defaultValue?: string | null;
   placeholder?: string;
 }
 
 export type Widget = (props: WidgetProps) => ReactNode;
+
+/**
+ * The contract for a widget that renders **all** of a repeatable field's values as
+ * ONE control — a tags input, a multi-select — instead of N single-value rows in a
+ * `FieldArray`.
+ *
+ * Selection is by **cardinality**, not by a new editor IRI: `sh:maxCount 1` and no
+ * max are the same editor asked for a different number of answers, and inventing
+ * `shui:MultiEnumSelectEditor` would put a fact SHACL already states into a second
+ * vocabulary that could drift from it. An explicit `shui:editor` still wins in
+ * {@link resolveWidget}, so overriding one field remains one registry entry.
+ *
+ * The values are primitives in the same binding as {@link WidgetProps.value}; the
+ * commit is a whole-list replace, which is what a control that owns the list can
+ * honestly report.
+ */
+export interface MultiWidgetProps {
+  /** Every current value, in the order the graph projected them. */
+  values: string[];
+  /** Replace the whole list. Diffed against the graph, one change notification. */
+  onChange: (values: string[]) => void;
+  options?: WidgetOption[];
+  loadOptions?: (query: string, signal?: AbortSignal) => Promise<WidgetOption[]>;
+  classIri?: string;
+  minCount?: number;
+  maxCount?: number;
+  placeholder?: string;
+}
+
+export type MultiWidget = (props: MultiWidgetProps) => ReactNode;
 
 /** Which assistance a widget supports. Declared by the widget itself (a
  * tester-style capability, like JSON Forms pairing a renderer with a tester) so
@@ -74,9 +124,14 @@ export interface AssistSupport {
 }
 
 /** A registry entry: a bare render function, or a render function paired with the
- * assistance it supports. */
+ * assistance it supports and, optionally, the one-control form of the same editor
+ * for a repeatable field. */
 export interface WidgetDef {
   render: Widget;
+  /** Renders every value of a repeatable field as one control. Used only when the
+   *  field actually is repeatable; the single-value `render` stays the answer for
+   *  `sh:maxCount 1`. */
+  multi?: MultiWidget;
   assist?: AssistSupport;
 }
 export type WidgetEntry = Widget | WidgetDef;
@@ -90,6 +145,10 @@ export function widgetRender(entry: WidgetEntry): Widget {
 /** A registry entry's declared assistance (none for a bare function). */
 export function widgetAssist(entry: WidgetEntry): AssistSupport {
   return typeof entry === "function" ? {} : entry.assist ?? {};
+}
+/** The entry's one-control form for a repeatable field, if it declares one. */
+export function widgetMulti(entry: WidgetEntry): MultiWidget | undefined {
+  return typeof entry === "function" ? undefined : entry.multi;
 }
 
 /** A suggested value for a field (e.g. produced by an LLM in the consumer). */

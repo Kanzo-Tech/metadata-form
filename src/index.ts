@@ -31,10 +31,13 @@ export {
   primitiveToTerm,
   widgetRender,
   widgetAssist,
+  widgetMulti,
 } from "./react/widgets/widgets.js";
 export type {
   Widget,
   WidgetProps,
+  MultiWidget,
+  MultiWidgetProps,
   WidgetOption,
   WidgetRegistry,
   WidgetDef,

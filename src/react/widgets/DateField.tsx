@@ -13,6 +13,7 @@ import {
   DatePickerInput,
   Input,
   parseDate,
+  useField,
   type DateValue,
 } from "@kanzo-tech/ui";
 import type { Widget, WidgetProps } from "./widgets.js";
@@ -30,6 +31,13 @@ import { grow, row } from "../styles.js";
  * The picker is date-only, so `xsd:dateTime` is a date plus a time input rather
  * than a second machine. `null` for either half means the value is not a dateTime
  * yet, and midnight is the only defensible completion of a date the user did pick.
+ *
+ * **The one widget here that threads `disabled`/`invalid` by hand.** Ark's date
+ * picker reads no `Field` context (`use-date-picker.js` takes only environment and
+ * locale), so a `Field disabled` left the calendar fully interactive: the input
+ * greyed, the popover still opened, and a click still wrote a value. Its machine
+ * has the props; nothing was handing them over. Read them from the same context
+ * `Field` publishes so the accessible state and the painted one still cannot drift.
  */
 
 const splitIso = (iso: string | null) => {
@@ -51,6 +59,7 @@ function toDateValues(iso: string): DateValue[] {
 export function makeDateField(withTime: boolean) {
   return function DateField(p: WidgetProps) {
     const { date, time } = splitIso(p.value);
+    const field = useField();
 
     const commit = (nextDate: string, nextTime: string) => {
       if (!nextDate) return p.onChange(null);
@@ -64,6 +73,9 @@ export function makeDateField(withTime: boolean) {
           value={toDateValues(date)}
           onValueChange={(d) => commit(d.valueAsString[0] ?? "", time)}
           positioning={{ placement: "bottom-end" }}
+          disabled={field?.disabled}
+          readOnly={field?.readOnly}
+          invalid={field?.invalid}
         >
           <DatePickerInput />
           <DatePickerContent>
