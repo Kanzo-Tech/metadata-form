@@ -16,6 +16,7 @@ import {
   type DateValue,
 } from "@kanzo-tech/ui";
 import type { Widget, WidgetProps } from "./widgets.js";
+import { grow, row } from "../styles.js";
 
 /**
  * `xsd:date` / `xsd:dateTime` over the design system's date picker.
@@ -57,9 +58,9 @@ export function makeDateField(withTime: boolean) {
     };
 
     return (
-      <div className="flex w-full flex-1 items-center gap-2">
+      <div style={{ ...row, ...grow }}>
         <DatePicker
-          className="flex-1"
+          style={{ flex: 1 }}
           value={toDateValues(date)}
           onValueChange={(d) => commit(d.valueAsString[0] ?? "", time)}
           positioning={{ placement: "bottom-end" }}
@@ -82,7 +83,7 @@ export function makeDateField(withTime: boolean) {
         </DatePicker>
         {withTime && (
           <Input
-            className="w-32"
+            style={{ width: "8rem" }}
             type="time"
             value={time}
             onChange={(e) => commit(date, e.target.value)}

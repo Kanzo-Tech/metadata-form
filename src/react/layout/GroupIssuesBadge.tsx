@@ -14,9 +14,15 @@ export function GroupIssuesBadge({ issues, onJump }: { issues?: GroupIssues; onJ
     <span
       role="img"
       aria-label={label}
-      className={`inline-block size-2 flex-none rounded-full ${
-        issues.hasViolation ? "bg-destructive" : "bg-warning"
-      } ${onJump ? "cursor-pointer" : ""}`}
+      style={{
+        display: "inline-flex",
+        flex: "none",
+        width: "0.5rem",
+        height: "0.5rem",
+        borderRadius: "9999px",
+        background: issues.hasViolation ? "var(--destructive)" : "var(--warning)",
+        cursor: onJump ? "pointer" : undefined,
+      }}
     />
   );
   if (!onJump) return dot;
@@ -25,7 +31,7 @@ export function GroupIssuesBadge({ issues, onJump }: { issues?: GroupIssues; onJ
       role="button"
       tabIndex={0}
       aria-label={label}
-      className="inline-flex"
+      style={{ display: "inline-flex" }}
       onClick={onJump}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onJump()}
     >

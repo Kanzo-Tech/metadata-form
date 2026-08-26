@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   KanzoThemeProvider,
-  Separator,
   ShellAside,
   ShellBody,
   ShellHeader,
@@ -11,6 +10,7 @@ import {
   ShellRoot,
 } from "@kanzo-tech/ui";
 import { Code2Icon, FileTextIcon } from "lucide-react";
+import { PaneHeader } from "./components/PaneHeader.js";
 import { FormAssistant, MetadataForm, useMetadataForm, type FormAssist } from "metadata-form";
 import { Preferences, usePreferences } from "./Preferences.js";
 import { Header } from "./components/Header.js";
@@ -50,10 +50,6 @@ export function App() {
   );
 }
 
-/** A consistent short vertical divider between header control groups. */
-function HeaderDivider() {
-  return <Separator orientation="vertical" className="h-4.5 self-center" />;
-}
 
 function ThemedApp() {
   const { prefs, update } = usePreferences();
@@ -122,34 +118,58 @@ function ThemedApp() {
   const outputs = useFormOutputs(form);
 
   // Panel content defined once and reused by the docked aside (wide) and the drawer (narrow).
+  // Each panel carries its own header: what it is, a close, and — for Source — the
+  // pickers, because they replace the document it is showing and a control belongs
+  // against the thing it acts on.
   const sourcePanel = (
-    <CodePanel
-      tabs={[
-        {
-          value: "shape",
-          label: "SHACL shape",
-          node: <CodeEditor value={shapeText} onChange={setShapeText} lang="turtle" />,
-        },
-        {
-          value: "data",
-          label: "Data graph",
-          node: <CodeEditor value={dataText} onChange={setDataText} lang="turtle" />,
-        },
-      ]}
-    />
+    <>
+      <PaneHeader
+        icon={FileTextIcon}
+        title="Source"
+        onClose={source.toggle}
+        actions={
+          <ExamplePickers
+            examples={workspace.examples}
+            shapeId={workspace.shapeId}
+            presets={shape.presets}
+            presetId={workspace.presetId}
+            onPickShape={workspace.pickShape}
+            onPickPreset={workspace.pickPreset}
+          />
+        }
+      />
+      <CodePanel
+        tabs={[
+          {
+            value: "shape",
+            label: "SHACL shape",
+            node: <CodeEditor value={shapeText} onChange={setShapeText} lang="turtle" />,
+          },
+          {
+            value: "data",
+            label: "Data graph",
+            node: <CodeEditor value={dataText} onChange={setDataText} lang="turtle" />,
+          },
+        ]}
+      />
+    </>
   );
+
   const outputPanel = (
-    <CodePanel
-      tabs={[
-        { value: "turtle", label: "Turtle", node: <CodeEditor value={outputs.turtle} lang="turtle" readOnly /> },
-        { value: "jsonld", label: "JSON-LD", node: <CodeEditor value={outputs.jsonld} lang="json" readOnly /> },
-      ]}
-    />
+    <>
+      <PaneHeader icon={Code2Icon} title="Output" onClose={output.toggle} />
+      <CodePanel
+        tabs={[
+          { value: "turtle", label: "Turtle", node: <CodeEditor value={outputs.turtle} lang="turtle" readOnly /> },
+          { value: "jsonld", label: "JSON-LD", node: <CodeEditor value={outputs.jsonld} lang="json" readOnly /> },
+        ]}
+      />
+    </>
   );
 
   const formColumn = (
     <ShellMain>
-      <div className="mx-auto w-full max-w-[1080px] p-5">
+      <div style={{ margin: "0 auto", width: "100%", maxWidth: "1080px", padding: "1.25rem" }}>
         {form.error ? (
           <Card>
             <CardContent className="pt-6 text-destructive-foreground">{form.error.message}</CardContent>
@@ -199,24 +219,11 @@ function ThemedApp() {
         <Header
           form={form}
           branding={branding}
-          tint={!!branding?.tint}
-          pickers={
-            <div className="flex items-center gap-4">
-              <ExamplePickers
-                examples={workspace.examples}
-                shapeId={workspace.shapeId}
-                presets={shape.presets}
-                presetId={workspace.presetId}
-                onPickShape={workspace.pickShape}
-                onPickPreset={workspace.pickPreset}
-              />
+          actions={
+            <>
               {localeOptions.length > 1 && locale && (
-                <>
-                  <HeaderDivider />
-                  <LocaleSelect value={locale} locales={localeOptions} onChange={setUiLocale} />
-                </>
+                <LocaleSelect value={locale} locales={localeOptions} onChange={setUiLocale} />
               )}
-              <HeaderDivider />
               <ShareButton
                 shared={shared}
                 onShare={async () => {
@@ -226,10 +233,6 @@ function ThemedApp() {
                   share({ ...workspace.permalink, dataText });
                 }}
               />
-            </div>
-          }
-          actions={
-            <>
               <Toggle on={source.show} onClick={source.toggle} icon={<FileTextIcon />} kbd="S">
                 Source
               </Toggle>

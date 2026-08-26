@@ -1,74 +1,57 @@
 import { Kbd, Link } from "@kanzo-tech/ui";
+import { ScrollTextIcon } from "lucide-react";
 import { ValidationSummary } from "metadata-form";
-import { PANEL_BORDER } from "./panel.js";
 import { BrandLogo } from "./BrandLogo.js";
 import type { ExampleBranding } from "../presets.js";
 
-/** The app chrome: a low-key utility strip (example pickers + Share + attribution)
- *  over the title bar (heading + view toggles + the canonical validation summary).
- *  Pure layout — the caller passes the picker cluster and the toggles as slots.
- *  When the active example carries {@link ExampleBranding}, its wordmark replaces
- *  the app title so the playground wears that product's identity. */
+/**
+ * The app chrome: **one row**, per the design system's own shell showcases.
+ *
+ * It used to be two — a utility strip carrying the example pickers and the
+ * attribution, over a title bar. The pickers moved into the Source pane's header,
+ * because they replace the document that panel is showing and a control belongs
+ * against the thing it acts on; what is left fits on a line.
+ *
+ * `actions` is the caller's slot for controls that act on the whole page.
+ */
 export function Header({
-  pickers,
   actions,
   form,
   branding,
-  tint,
 }: {
-  pickers: React.ReactNode;
   actions: React.ReactNode;
   form: React.ComponentProps<typeof ValidationSummary>["form"];
   branding?: ExampleBranding;
-  tint?: boolean;
 }) {
   return (
-    <>
-      {/* Utility strip — example pickers + Share, deliberately low-key (like a
-          language switcher) so they read as context, not primary controls. */}
-      <div
-        className={`flex flex-none items-center justify-between gap-3 px-5 py-1 ${
-          tint ? "bg-primary/8" : "bg-muted"
-        }`}
-        style={{ borderBottom: PANEL_BORDER }}
-      >
-        {pickers}
-        <span className="text-muted-foreground text-xs">
+    <div className="flex h-11 items-center gap-2.5 px-3 text-xs">
+      {branding?.logoUrl ? (
+        <BrandLogo url={branding.logoUrl} ratio={branding.logoRatio ?? 4} height={20} label="Evidenze" />
+      ) : (
+        <>
+          <ScrollTextIcon aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
+          <h1 className="shrink-0 font-heading font-medium text-sm">metadata-form</h1>
+          <span className="hidden shrink-0 text-muted-foreground lg:inline">
+            SHACL shapes → editable RDF form → Turtle &amp; JSON-LD
+          </span>
+        </>
+      )}
+
+      <div className="ms-auto flex shrink-0 items-center gap-1.5">
+        {actions}
+        {/* The canonical validation summary — same in every layout (per-section
+            badges in tabs/steps are wayfinding dots, not a competing counter). */}
+        <ValidationSummary form={form} />
+        <span className="hidden text-muted-foreground xl:inline">
+          Preferences <Kbd>P</Kbd>
+        </span>
+        <span className="hidden text-muted-foreground 2xl:inline">
           Made with ❤️ at{" "}
           <Link href="https://kanzo.tech" target="_blank" rel="noreferrer">
             Kanzo
           </Link>
         </span>
       </div>
-
-      {/* Top bar — title + view toggles. */}
-      <div
-        className="flex flex-none flex-wrap items-center gap-3 px-5 py-3"
-        style={{ borderBottom: PANEL_BORDER }}
-      >
-        <div className="me-2 flex flex-col gap-1">
-          {branding?.logoUrl ? (
-            <BrandLogo url={branding.logoUrl} ratio={branding.logoRatio ?? 4} height={26} label="Evidenze" />
-          ) : (
-            <>
-              <h1 className="font-heading font-semibold text-lg">metadata-form</h1>
-              <span className="text-muted-foreground text-xs">
-                SHACL shapes → editable RDF form → Turtle &amp; JSON-LD
-              </span>
-            </>
-          )}
-        </div>
-
-        <div className="flex-1" />
-
-        {actions}
-        {/* The canonical validation summary — same in every layout (per-section
-            badges in tabs/steps are wayfinding dots, not a competing counter). */}
-        <ValidationSummary form={form} />
-        <span className="text-muted-foreground text-xs">
-          Preferences <Kbd>P</Kbd>
-        </span>
-      </div>
-    </>
+    </div>
   );
 }

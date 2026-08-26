@@ -123,7 +123,7 @@ export function LanguagePicker({
       aria-label={strings.label}
     >
       <ComboboxInput
-        className="w-28 border-0 shadow-none"
+        style={{ width: "7rem", border: 0, boxShadow: "none" }}
         placeholder={constrained ? strings.filterPlaceholder : strings.searchPlaceholder}
       />
       <ComboboxContent>

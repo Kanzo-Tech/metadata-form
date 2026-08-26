@@ -1,5 +1,4 @@
 import { NativeSelect, NativeSelectOption } from "@kanzo-tech/ui";
-import { Field } from "./Field.js";
 
 /** The UI-language selector — switches the language of the form's labels and
  *  descriptions (`useMetadataForm({ locale })`). Shown only for examples whose
@@ -17,20 +16,19 @@ export function LocaleSelect({
   onChange: (locale: string) => void;
 }) {
   return (
-    <Field label="Idioma" size="xs">
-      <NativeSelect
-        size="sm"
-        aria-label="Idioma"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {locales.map((l) => (
-          <NativeSelectOption key={l} value={l}>
-            {endonym(l)}
-          </NativeSelectOption>
-        ))}
-      </NativeSelect>
-    </Field>
+    <NativeSelect
+      size="sm"
+      aria-label="Idioma"
+      style={{ height: "1.75rem", width: "7rem" }}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      {locales.map((l) => (
+        <NativeSelectOption key={l} value={l}>
+          {endonym(l)}
+        </NativeSelectOption>
+      ))}
+    </NativeSelect>
   );
 }
 

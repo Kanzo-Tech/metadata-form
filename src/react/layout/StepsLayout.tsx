@@ -18,6 +18,7 @@ import type { GroupIssues } from "../validation/useFormReport.js";
 import { scrollToField } from "../utils/scrollToField.js";
 import { FieldsGrid } from "./FieldsGrid.js";
 import { GroupIssuesBadge } from "./GroupIssuesBadge.js";
+import { row } from "../styles.js";
 
 /**
  * A wizard — one group per step.
@@ -63,7 +64,7 @@ export function StepsLayout({
             <StepsItem index={i} key={group.id}>
               <StepsTrigger>
                 <StepsIndicator>{i + 1}</StepsIndicator>
-                <StepsTitle className="flex items-center gap-1.5">
+                <StepsTitle style={{ ...row, gap: "0.375rem" }}>
                   {group.label || `Step ${i + 1}`}
                   <GroupIssuesBadge
                     issues={gi}
@@ -79,13 +80,13 @@ export function StepsLayout({
       {groups.map((group, i) => (
         <StepsContent index={i} key={group.id}>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent>
               <FieldsGrid group={group} grid={grid} />
             </CardContent>
           </Card>
         </StepsContent>
       ))}
-      <div className="flex justify-between gap-2">
+      <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
         <StepsPrevious />
         <StepsNext />
       </div>

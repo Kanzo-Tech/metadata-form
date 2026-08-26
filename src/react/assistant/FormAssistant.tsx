@@ -3,6 +3,7 @@ import { Button, Card, CardContent } from "@kanzo-tech/ui";
 import { XIcon } from "lucide-react";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { defaultMascot, type MascotCharacter } from "./mascot.js";
+import { column, ink, row } from "../styles.js";
 
 export interface FormAssistantProps {
   form: MetadataFormController;
@@ -37,25 +38,34 @@ export function FormAssistant({ form, character = defaultMascot, corner = "botto
   };
 
   return (
+    // Inline, not utilities: `bottom-6`, `left-6`, `right-6` and `max-w-70` are not
+    // in @kanzo-tech/ui's stylesheet — it ships the utilities ITS components use,
+    // and nothing here generates more. A class that is not in the sheet is a
+    // silent no-op in a consumer's app.
     <div
-      className={`fixed bottom-6 z-50 ${corner === "bottom-left" ? "left-6" : "right-6"}`}
+      style={{
+        position: "fixed",
+        zIndex: 50,
+        bottom: "1.5rem",
+        [corner === "bottom-left" ? "left" : "right"]: "1.5rem",
+      }}
     >
       <Card
-        className={`max-w-70 ${actionable ? "cursor-pointer" : ""}`}
+        style={{ maxWidth: "17.5rem", cursor: actionable ? "pointer" : undefined }}
         role={actionable ? "button" : undefined}
         tabIndex={actionable ? 0 : undefined}
         onClick={actionable ? onActivate : undefined}
         onKeyDown={(e) => actionable && (e.key === "Enter" || e.key === " ") && onActivate()}
       >
-        <CardContent className="flex items-center gap-3">
+        <CardContent style={{ ...row, gap: "0.75rem" }}>
           <Character mood={health.mood} size={44} />
-          <div className="flex min-w-0 flex-col gap-1">
-            <p className="font-medium text-sm">{health.message}</p>
+          <div style={{ ...column, gap: "0.25rem", minWidth: 0 }}>
+            <p style={{ fontWeight: 500, fontSize: "0.875rem" }}>{health.message}</p>
             {actionable ? (
-              <p className="text-muted-foreground text-xs">Next: {nextField!.label} →</p>
+              <p style={{ color: ink.muted, fontSize: "0.75rem" }}>Next: {nextField!.label} →</p>
             ) : (
               progress.total > 0 && (
-                <p className="text-muted-foreground text-xs">
+                <p style={{ color: ink.muted, fontSize: "0.75rem" }}>
                   {progress.filled}/{progress.total} filled
                 </p>
               )

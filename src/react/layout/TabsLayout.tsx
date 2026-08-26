@@ -38,7 +38,7 @@ export function TabsLayout({
       {groups.map((group) => (
         <TabsContent key={group.id} value={group.id}>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent>
               <FieldsGrid group={group} grid={grid} />
             </CardContent>
           </Card>

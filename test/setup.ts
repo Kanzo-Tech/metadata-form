@@ -15,7 +15,7 @@ await (rudofWasm as { default: (i: unknown) => Promise<unknown> }).default({
   module_or_path: readFileSync(wasmPath),
 });
 
-// jsdom polyfills required by @radix-ui/themes / Radix primitives.
+// jsdom polyfills required by Ark UI (the design system's primitives).
 if (!window.matchMedia) {
   window.matchMedia = (query: string) =>
     ({

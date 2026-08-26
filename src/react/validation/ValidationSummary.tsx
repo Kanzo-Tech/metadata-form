@@ -7,15 +7,17 @@ import {
   ScrollArea,
 } from "@kanzo-tech/ui";
 import type { Severity } from "../../form/validation.js";
+import { column, ink, row } from "../styles.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 
 /** Severity is a domain word; on the surface the design system spells the same
  *  three families `destructive` / `warning` / `info`, and `destructive` is what
- *  every other recipe uses for "this went wrong". */
-const MSG_CLASS: Record<Severity, string> = {
-  violation: "text-destructive-foreground",
-  warning: "text-warning-foreground",
-  info: "text-muted-foreground",
+ *  every other recipe uses for "this went wrong". Read as tokens, not classes —
+ *  see `../styles.ts`. */
+const MSG_INK: Record<Severity, string> = {
+  violation: ink.destructive,
+  warning: ink.warning,
+  info: ink.muted,
 };
 
 export interface ValidationSummaryProps {
@@ -40,7 +42,7 @@ export function ValidationSummary({ form, validLabel = "Valid" }: ValidationSumm
 
   if (rows.length === 0) {
     return (
-      <Badge variant="success" className="rounded-full">
+      <Badge variant="success" pill>
         {validLabel}
       </Badge>
     );
@@ -51,27 +53,27 @@ export function ValidationSummary({ form, validLabel = "Valid" }: ValidationSumm
   return (
     <HoverCard openDelay={120}>
       <HoverCardTrigger>
-        <Badge variant={variant} className="cursor-default rounded-full">
+        <Badge variant={variant} pill style={{ cursor: "default" }}>
           {rows.length} issue{rows.length === 1 ? "" : "s"}
         </Badge>
       </HoverCardTrigger>
       {/* An explicit width, not a max: a shrink-to-fit box collapses because the
           scroll area inside it is 100% wide. With room to breathe, each issue
           (field + message) sits on one row. */}
-      <HoverCardContent className="w-[min(480px,92vw)]">
-        <ScrollArea className="max-h-80">
-          <div className="flex flex-col gap-2 pe-2">
-            {rows.map((row, i) => (
-              <div key={`${row.key}-${i}`} className="flex items-baseline justify-between gap-4">
+      <HoverCardContent style={{ width: "min(480px, 92vw)" }}>
+        <ScrollArea style={{ maxHeight: "20rem" }}>
+          <div style={{ ...column, paddingInlineEnd: "0.5rem" }}>
+            {rows.map((r, i) => (
+              <div key={`${r.key}-${i}`} style={{ ...row, alignItems: "baseline", justifyContent: "space-between", gap: "1rem" }}>
                 <Button
                   variant="link"
                   size="sm"
-                  className="h-auto whitespace-nowrap p-0 font-medium"
-                  onClick={() => form.revealField(row.key)}
+                  style={{ height: "auto", padding: 0, whiteSpace: "nowrap", fontWeight: 500 }}
+                  onClick={() => form.revealField(r.key)}
                 >
-                  {row.label}
+                  {r.label}
                 </Button>
-                <span className={`text-end text-xs ${MSG_CLASS[row.severity]}`}>{row.message}</span>
+                <span style={{ textAlign: "end", fontSize: "0.75rem", color: MSG_INK[r.severity] }}>{r.message}</span>
               </div>
             ))}
           </div>

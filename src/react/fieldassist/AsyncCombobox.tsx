@@ -9,6 +9,7 @@ import {
   useListCollection,
 } from "@kanzo-tech/ui";
 import type { WidgetOption } from "../widgets/widgets.js";
+import { grow } from "../styles.js";
 
 /**
  * A combobox over candidates fetched as you type.
@@ -64,7 +65,7 @@ export function AsyncCombobox(props: {
 
   return (
     <Combobox
-      className="w-full flex-1"
+      style={grow}
       collection={collection}
       value={value}
       allowCustomValue={props.allowCustomValue}

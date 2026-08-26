@@ -4,6 +4,7 @@ import { FormContext, type FormContextValue, type FormLayout, type GridLayout } 
 import { NodeForm } from "./NodeForm.js";
 import { defaultWidgets } from "../widgets/defaultWidgets.js";
 import type { WidgetRegistry } from "../widgets/widgets.js";
+import { ink } from "../styles.js";
 
 export interface MetadataFormProps {
   /** A controller from `useMetadataForm`. */
@@ -53,14 +54,14 @@ export function MetadataForm({ form, widgets, layout, grid, className }: Metadat
 
   if (form.error) {
     return (
-      <p className="text-destructive-foreground" role="alert">
+      <p style={{ color: ink.destructive }} role="alert">
         Failed to load form: {form.error.message}
       </p>
     );
   }
   if (!ctx) {
     return (
-      <p className="text-muted-foreground" aria-busy="true">
+      <p style={{ color: ink.muted }} aria-busy="true">
         Loading…
       </p>
     );

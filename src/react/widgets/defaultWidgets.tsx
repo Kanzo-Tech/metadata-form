@@ -10,6 +10,7 @@ import {
 } from "@kanzo-tech/ui";
 import { CompleteHint, CompleteRoot, CompleteTextarea } from "@kanzo-tech/ai";
 import { Editors } from "../../form/vocab/shacl-ui.js";
+import { column, grow } from "../styles.js";
 import type { Widget, WidgetProps, WidgetRegistry } from "./widgets.js";
 import { makeDateField } from "./DateField.js";
 import { AsyncCombobox } from "../fieldassist/AsyncCombobox.js";
@@ -85,7 +86,7 @@ function textField(type: string): Widget {
     const { local, change, flush } = useCommit(p.value, p.onChange);
     return (
       <Input
-        className="w-full flex-1"
+        style={grow}
         type={type}
         step={p.step}
         min={p.min}
@@ -123,7 +124,7 @@ function LangSlot(p: WidgetProps & { text: string }) {
 const LangField: Widget = (p) => {
   const text = useCommit(p.value, (v) => p.onChange(v, p.language || ""));
   return (
-    <InputGroup className="w-full flex-1">
+    <InputGroup style={grow}>
       <InputGroupInput
         value={text.local}
         onChange={(e) => text.change(e.target.value)}
@@ -141,13 +142,13 @@ const LangField: Widget = (p) => {
 const LangArea: Widget = (p) => {
   const text = useCommit(p.value, (v) => p.onChange(v, p.language || ""));
   return (
-    <div className="flex w-full flex-1 flex-col gap-1">
+    <div style={{ ...column, ...grow, gap: "0.25rem" }}>
       <Textarea
         value={text.local}
         onChange={(e) => text.change(e.target.value)}
         onBlur={text.flush}
       />
-      <div className="self-end">
+      <div style={{ marginInlineStart: "auto", width: "fit-content" }}>
         <LangSlot {...p} text={text.local} />
       </div>
     </div>
@@ -204,7 +205,7 @@ const Area: Widget = (p) => {
   if (!complete) {
     return (
       <Textarea
-        className="flex-1"
+        style={{ flex: 1 }}
         value={local}
         placeholder={p.placeholder}
         onChange={(e) => change(e.target.value)}
@@ -214,6 +215,8 @@ const Area: Widget = (p) => {
   }
   return (
     <CompleteRoot
+      // `className`, not `style`: CompleteRoot takes no style prop. `flex-1` is a
+      // class the design system's own sheet ships, which the guard test checks.
       className="flex-1"
       value={local}
       onValueChange={change}
@@ -252,7 +255,7 @@ function makeSelect(choices: (p: WidgetProps) => { value: string; label: string 
     }
     return (
       <NativeSelect
-        className="w-full flex-1"
+        style={grow}
         value={p.value || NONE}
         onChange={(e) => p.onChange(e.target.value === NONE ? null : e.target.value)}
       >

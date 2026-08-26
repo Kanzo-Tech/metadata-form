@@ -1,10 +1,14 @@
 import { NativeSelect, NativeSelectOption } from "@kanzo-tech/ui";
-import { Field } from "./Field.js";
 import type { Preset, ShapeExample } from "../presets.js";
 
-/** The Shape / Data example pickers (utility strip) — a selector over permalink
- *  presets. Deliberately low-key so they read as context, not primary controls.
- *  Picking either applies that preset's state. */
+/**
+ * The Shape / Data pickers, shown inside the Source pane's own header — they
+ * replace the document that panel is showing, and a control belongs against the
+ * thing it acts on rather than in the page header beside Share.
+ *
+ * No visible labels: at this size the pane header is a 36px strip and two words
+ * would take the room the values need. The accessible names carry them.
+ */
 export function ExamplePickers({
   examples,
   shapeId,
@@ -21,35 +25,33 @@ export function ExamplePickers({
   onPickPreset: (id: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-4">
-      <Field label="Shape" size="xs">
-        <NativeSelect
-          size="sm"
-          aria-label="Shape"
-          value={shapeId}
-          onChange={(e) => onPickShape(e.target.value)}
-        >
-          {examples.map((e) => (
-            <NativeSelectOption key={e.id} value={e.id}>
-              {e.label}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-      </Field>
-      <Field label="Data" size="xs">
-        <NativeSelect
-          size="sm"
-          aria-label="Data"
-          value={presetId}
-          onChange={(e) => onPickPreset(e.target.value)}
-        >
-          {presets.map((p) => (
-            <NativeSelectOption key={p.id} value={p.id}>
-              {p.label}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-      </Field>
+    <div className="flex min-w-0 items-center gap-1.5">
+      <NativeSelect
+        size="sm"
+        aria-label="Shape"
+        style={{ height: "1.5rem", width: "9rem", minWidth: 0 }}
+        value={shapeId}
+        onChange={(e) => onPickShape(e.target.value)}
+      >
+        {examples.map((e) => (
+          <NativeSelectOption key={e.id} value={e.id}>
+            {e.label}
+          </NativeSelectOption>
+        ))}
+      </NativeSelect>
+      <NativeSelect
+        size="sm"
+        aria-label="Data"
+        style={{ height: "1.5rem", width: "9rem", minWidth: 0 }}
+        value={presetId}
+        onChange={(e) => onPickPreset(e.target.value)}
+      >
+        {presets.map((p) => (
+          <NativeSelectOption key={p.id} value={p.id}>
+            {p.label}
+          </NativeSelectOption>
+        ))}
+      </NativeSelect>
     </div>
   );
 }

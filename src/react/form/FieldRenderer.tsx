@@ -25,6 +25,7 @@ import { useFormContext } from "./context.js";
 import { useField } from "../hooks/useField.js";
 import { NodeForm } from "./NodeForm.js";
 import { SuggestList, SuggestMark, SuggestRoot } from "@kanzo-tech/ai";
+import { ink, row } from "../styles.js";
 
 /** Renders a single field: label, help, value rows (multi-value), errors. */
 export function FieldRenderer({ field }: { field: FieldModel }) {
@@ -217,7 +218,7 @@ function FieldShell({
       disabled={field.readOnly ?? false}
       invalid={violations.length > 0}
     >
-      <div className="flex items-center justify-between gap-2">
+      <div style={{ ...row, justifyContent: "space-between" }}>
         <FieldLabel>
           {field.label}
           {field.required && <FieldRequiredIndicator />}
@@ -230,7 +231,7 @@ function FieldShell({
         <FieldError key={i}>{e.message}</FieldError>
       ))}
       {rest.map((e, i) => (
-        <p key={i} className="text-warning text-xs" data-severity={e.severity}>
+        <p key={i} style={{ color: ink.warning, fontSize: "0.75rem" }} data-severity={e.severity}>
           {e.message}
         </p>
       ))}
