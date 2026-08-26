@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Text } from "@radix-ui/themes";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { FormContext, type FormContextValue, type FormLayout, type GridLayout } from "./context.js";
 import { NodeForm } from "./NodeForm.js";
@@ -19,11 +18,15 @@ export interface MetadataFormProps {
 }
 
 /**
- * The form component. Renders a controller as the editable form UI. Requires a
- * `<Theme>` ancestor from @radix-ui/themes (and its stylesheet).
+ * The form component. Renders a controller as the editable form UI.
  *
  *   const form = useMetadataForm({ shapes, data });
- *   <Theme><MetadataForm form={form} /></Theme>
+ *   <MetadataForm form={form} />
+ *
+ * Requires `@kanzo-tech/ui/styles.css`, and the theme attributes on `<html>` —
+ * `KanzoThemeProvider` puts them there. Not a wrapper element: Ark's overlays
+ * portal to `document.body`, outside anything this component could wrap, and
+ * density sets the root font-size the whole `rem` scale resolves against.
  */
 export function MetadataForm({ form, widgets, layout, grid, className }: MetadataFormProps) {
   const registry = useMemo<WidgetRegistry>(
@@ -50,16 +53,16 @@ export function MetadataForm({ form, widgets, layout, grid, className }: Metadat
 
   if (form.error) {
     return (
-      <Text color="red" role="alert">
+      <p className="text-destructive-foreground" role="alert">
         Failed to load form: {form.error.message}
-      </Text>
+      </p>
     );
   }
   if (!ctx) {
     return (
-      <Text color="gray" aria-busy="true">
+      <p className="text-muted-foreground" aria-busy="true">
         Loading…
-      </Text>
+      </p>
     );
   }
 

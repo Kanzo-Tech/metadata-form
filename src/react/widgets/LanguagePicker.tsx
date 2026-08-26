@@ -1,6 +1,13 @@
 import { useMemo, useState } from "react";
-import { Box, Flex, Popover, Text, TextField } from "@radix-ui/themes";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  createListCollection,
+  useFilter,
+} from "@kanzo-tech/ui";
 import type { Strings } from "../../i18n/strings.js";
 
 /** UI chrome, injectable for i18n. English defaults keep the widget usable
@@ -16,16 +23,23 @@ const DEFAULT_STRINGS: PickerStrings = {
 
 /**
  * A compact, searchable language-tag picker for `rdf:langString` values, designed
- * to sit glued inside a text field's right slot (no visible gap). Big step up from
- * a bare 2-letter `<Select>`:
- *  - the dropdown shows each language's ENDONYM (its name in its own language) +
- *    the tag, so you read "Español · es", not "es";
- *  - typeahead over both the name and the tag (a long list stays usable);
+ * to sit glued inside a text field's trailing slot. Better than a bare 2-letter
+ * `<select>`:
+ *  - each row shows the language's ENDONYM (its name in its own language) plus the
+ *    tag, so you read "Español · es", not "es";
+ *  - typeahead over both the name and the tag, so a long list stays usable;
  *  - honours `sh:languageIn` — when the shape constrains the languages the list is
- *    exactly those (and free entry is disabled); otherwise a broad curated list
- *    plus free BCP-47 entry.
- * Kept dumb: reads/writes a plain tag string; the binding layer stamps it on the
- * literal.
+ *    exactly those and free entry is off; otherwise a curated list plus free
+ *    BCP-47 entry.
+ *
+ * That last line is the open/closed distinction the combobox makes with one prop,
+ * and it is the same one `AsyncCombobox` draws for references: a constrained field
+ * is a closed set and reverting an unmatched input is correct; an unconstrained one
+ * is a suggestion list and a valid tag nobody listed must stand.
+ *
+ * The list navigation, the roving focus and the popover are the machine's. What is
+ * ours is the vocabulary: the endonyms, the curated set, and the BCP-47 shape a
+ * typed tag has to satisfy.
  */
 
 /** A broad default set of language subtags (used when the shape does not pin
@@ -62,7 +76,6 @@ export function LanguagePicker({
   onChange,
   allowed,
   disabled,
-  invalid,
   strings = DEFAULT_STRINGS,
 }: {
   value: string;
@@ -70,110 +83,57 @@ export function LanguagePicker({
   /** `sh:languageIn` — when non-empty, constrains the list and disables free entry. */
   allowed?: string[];
   disabled?: boolean;
-  invalid?: boolean;
   /** Localized UI chrome; defaults to English when rendered standalone. */
   strings?: PickerStrings;
 }) {
   const constrained = !!(allowed && allowed.length);
-  const [open, setOpen] = useState(false);
+  const { contains } = useFilter({ sensitivity: "base" });
   const [query, setQuery] = useState("");
-  const [active, setActive] = useState(0);
 
   const items = useMemo<LangItem[]>(() => {
     const codes = constrained ? allowed! : CURATED;
     return codes.map((code) => ({ code, name: endonym(code) }));
   }, [constrained, allowed]);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((i) => i.code.toLowerCase().includes(q) || i.name.toLowerCase().includes(q));
-  }, [items, query]);
-
-  const pick = (tag: string) => {
-    onChange(tag);
-    setOpen(false);
-    setQuery("");
-  };
-
-  const commitTyped = () => {
-    const t = query.trim();
-    if (!constrained && t && BCP47.test(t)) return pick(t.toLowerCase());
-    if (filtered[active]) return pick(filtered[active].code);
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, filtered.length - 1)); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
-    else if (e.key === "Enter") { e.preventDefault(); commitTyped(); }
-  };
+  // Filtering is ours to own by design — the machine never mutates a collection.
+  // Both the tag and the endonym match, so "spa", "es" and "Español" all find it.
+  const collection = useMemo(() => {
+    const q = query.trim();
+    const shown = q ? items.filter((i) => contains(i.code, q) || contains(i.name, q)) : items;
+    return createListCollection({
+      items: shown,
+      itemToValue: (i) => i.code,
+      itemToString: (i) => `${i.name} · ${i.code}`,
+    });
+  }, [items, query, contains]);
 
   return (
-    <Popover.Root open={open} onOpenChange={(o) => { setOpen(o); if (o) { setQuery(""); setActive(0); } }}>
-      <Popover.Trigger disabled={disabled}>
-        <button
-          type="button"
-          disabled={disabled}
-          aria-label={strings.label}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 4,
-            height: "100%",
-            padding: "0 8px",
-            margin: 0,
-            border: "none",
-            background: "transparent",
-            font: "inherit",
-            fontSize: "var(--font-size-1)",
-            lineHeight: 1,
-            cursor: disabled ? "default" : "pointer",
-            color: invalid ? "var(--red-11)" : value ? "var(--gray-12)" : "var(--gray-a9)",
-            opacity: disabled ? 0.5 : 1,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {value || strings.label}
-          <ChevronDownIcon aria-hidden style={{ opacity: 0.6, flexShrink: 0 }} />
-        </button>
-      </Popover.Trigger>
-      <Popover.Content size="1" style={{ width: 240, padding: "var(--space-1)" }} onOpenAutoFocus={(e) => e.preventDefault()}>
-        <TextField.Root
-          autoFocus
-          size="1"
-          placeholder={constrained ? strings.filterPlaceholder : strings.searchPlaceholder}
-          value={query}
-          onChange={(e) => { setQuery(e.target.value); setActive(0); }}
-          onKeyDown={onKeyDown}
-        />
-        <Box mt="1" style={{ maxHeight: 240, overflowY: "auto" }}>
-          <Flex direction="column">
-            {filtered.map((item, index) => (
-              <Flex
-                key={item.code}
-                align="baseline"
-                gap="2"
-                onMouseEnter={() => setActive(index)}
-                onClick={() => pick(item.code)}
-                style={{
-                  padding: "var(--space-1) var(--space-2)",
-                  borderRadius: "var(--radius-2)",
-                  cursor: "pointer",
-                  background: active === index ? "var(--accent-a3)" : value === item.code ? "var(--accent-a2)" : "transparent",
-                }}
-              >
-                <Text size="2" style={{ flex: 1, minWidth: 0 }}>{item.name}</Text>
-                <Text size="1" color="gray">{item.code}</Text>
-              </Flex>
-            ))}
-            {filtered.length === 0 && (
-              <Text size="1" color="gray" style={{ padding: "var(--space-1) var(--space-2)" }}>
-                {constrained ? strings.noMatches : strings.enterToUse}
-              </Text>
-            )}
-          </Flex>
-        </Box>
-      </Popover.Content>
-    </Popover.Root>
+    <Combobox
+      collection={collection}
+      value={value ? [value] : []}
+      disabled={disabled}
+      // A tag the shape did not list is only admissible when the shape listed none.
+      allowCustomValue={!constrained}
+      onValueChange={(d) => d.value[0] && onChange(d.value[0])}
+      onInputValueChange={(d) => {
+        setQuery(d.inputValue);
+        const t = d.inputValue.trim();
+        if (!constrained && t && BCP47.test(t)) onChange(t.toLowerCase());
+      }}
+      aria-label={strings.label}
+    >
+      <ComboboxInput
+        className="w-28 border-0 shadow-none"
+        placeholder={constrained ? strings.filterPlaceholder : strings.searchPlaceholder}
+      />
+      <ComboboxContent>
+        <ComboboxEmpty>{strings.noMatches}</ComboboxEmpty>
+        {collection.items.map((item) => (
+          <ComboboxItem key={item.code} item={item}>
+            {item.name} · {item.code}
+          </ComboboxItem>
+        ))}
+      </ComboboxContent>
+    </Combobox>
   );
 }

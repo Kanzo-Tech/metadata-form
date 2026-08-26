@@ -1,5 +1,7 @@
-// Public entry. The UI is built on @radix-ui/themes — render inside a <Theme>
-// and import "@radix-ui/themes/styles.css".
+// Public entry. The UI is built on @kanzo-tech/ui — import
+// "@kanzo-tech/ui/styles.css" and put the theme attributes on <html> (see
+// KanzoThemeProvider). There is no wrapper component to render inside: Ark's
+// overlays portal to document.body, so a wrapper could not reach them.
 
 // React layer — the single, unified API: useMetadataForm() + <MetadataForm>.
 export { useMetadataForm } from "./react/hooks/useMetadataForm.js";
