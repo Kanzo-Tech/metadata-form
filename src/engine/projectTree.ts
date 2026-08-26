@@ -13,12 +13,28 @@ export interface ProjectedSlot {
  *  for `buildFormModel`, projected recursively up front so the build stays sync. */
 export type ProjectedValues = Map<string, ProjectedSlot[]>;
 
+/** One node of the projected tree: a focus and the node shape it was projected
+ *  against. The pair `validateFocus` needs — see {@link ProjectedTree.nodes}. */
+export interface ProjectedNode {
+  focus: Term;
+  shapeId: string;
+}
+
 /** The whole projected tree: field values plus, per focus, the set of SHACL-1.2
  *  conditional `conditionId`s the focus conforms to (keyed by `focus.value`). Both
  *  are produced in one recursive pass so `buildFormModel` reads them synchronously. */
 export interface ProjectedTree {
   values: ProjectedValues;
   satisfied: Map<string, Set<string>>;
+  /**
+   * Every `(focus, shapeId)` the walk visited, root first — the `visited` guard
+   * set, kept as terms instead of thrown away. `RudofEngine.validateTree` replays
+   * it: rudof's `sh:node` handler computes the inner results and keeps only a
+   * boolean, and a nested shape without `sh:targetClass` is reached by no target,
+   * so a required field inside a `sh:node` is reported by neither `validateFocus`
+   * on the root nor whole-graph `validate()`. Validating each pair recovers it.
+   */
+  nodes: ProjectedNode[];
 }
 
 /** A synchronous projector: `(focus, shapeId) => ProjectedForm` (e.g.
@@ -41,7 +57,7 @@ export async function projectTree(
   shapeId: string,
   focus: Term,
 ): Promise<ProjectedTree> {
-  const tree: ProjectedTree = { values: new Map(), satisfied: new Map() };
+  const tree: ProjectedTree = { values: new Map(), satisfied: new Map(), nodes: [] };
   await recurse(project, shapes, shapeId, focus, tree, new Set());
   return tree;
 }
@@ -49,7 +65,7 @@ export async function projectTree(
 /** Synchronous {@link projectTree}, driving a {@link SyncProjector}. Lets the
  *  React per-edit rebuild project the whole tree without an await. */
 export function projectTreeSync(project: SyncProjector, shapes: ShapeModel, shapeId: string, focus: Term): ProjectedTree {
-  const tree: ProjectedTree = { values: new Map(), satisfied: new Map() };
+  const tree: ProjectedTree = { values: new Map(), satisfied: new Map(), nodes: [] };
   recurseSync(project, shapes, shapeId, focus, tree, new Set());
   return tree;
 }
@@ -75,6 +91,7 @@ function recurseSync(
   visited.add(guard);
   const node = shapes.nodeShapes.get(shapeId);
   if (!node) return;
+  tree.nodes.push({ focus, shapeId });
   const form = project(focus, shapeId);
   tree.satisfied.set(focus.value, new Set(form.satisfied ?? []));
   const propShapes = projectedPropertyShapes(node);
@@ -106,6 +123,7 @@ async function recurse(
 
   const node = shapes.nodeShapes.get(shapeId);
   if (!node) return;
+  tree.nodes.push({ focus, shapeId });
 
   const form = await project(focus, shapeId);
   tree.satisfied.set(focus.value, new Set(form.satisfied ?? []));

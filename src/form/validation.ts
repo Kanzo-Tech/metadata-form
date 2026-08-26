@@ -30,6 +30,9 @@ export interface FieldError {
   message: string;
   severity: Severity;
   constraint?: string;
+  /** The offending value (`sh:value`). For a `sh:node` rollup this IS the nested
+   *  focus node, which is how `computeFormReport` recognises and drops it. */
+  value?: Term;
 }
 
 /** Key matching FieldModel.id: `${focusNode}|${path}`. */
@@ -55,6 +58,8 @@ function authorMessage(messages: LangString[], locale: string | undefined): stri
   return exact ?? base;
 }
 
+const SHACL_NS = "http://www.w3.org/ns/shacl#";
+
 /**
  * Resolve a result to one displayable, localized string. Priority:
  *  1. the shape author's `sh:message` matched to `locale` (multilingual SHACL);
@@ -62,14 +67,22 @@ function authorMessage(messages: LangString[], locale: string | undefined): stri
  *  3. any remaining message (e.g. an untagged ShEx message), else the fallback.
  *
  * Step 2 keeps parity with the old English `FRIENDLY` table: an untagged author
- * message on a *known* constraint still yields the catalog wording (no regression),
- * while ShEx/unknown-constraint messages fall through to step 3 — engine-neutral.
+ * message on a *known* constraint still yields the catalog wording (no regression).
+ *
+ * A `sh:` constraint STOPS at step 2 — catalog wording or `_fallback`, never the
+ * engine's own text. rudof's shape-based components (`sh:node`, `sh:not`, `sh:or`,
+ * …) render their message by `Display`ing the internal shape, so falling through
+ * put an AST dump ("Node(NodeShape Targets: … Property Shapes: [22, 13])") in front
+ * of a person. Step 3 is reached only for `constraint === undefined` or a non-`sh:`
+ * IRI: that is the ShEx seam, where the engine's message is all there is.
  */
 function friendly(result: ValidationResult, locale: string | undefined, strings: Strings): string {
   const authored = authorMessage(result.messages, locale);
   if (authored) return authored;
-  if (result.constraint && strings.validationDefaults[result.constraint]) {
-    return strings.validationDefaults[result.constraint];
+  if (result.constraint) {
+    const known = strings.validationDefaults[result.constraint];
+    if (known) return known;
+    if (result.constraint.startsWith(SHACL_NS)) return strings.validationDefaults._fallback;
   }
   const msg = pickByLanguage(result.messages, locale)?.value?.trim();
   return msg && msg !== "Invalid value" ? msg : strings.validationDefaults._fallback;
@@ -90,7 +103,12 @@ export function mapResults(
     if (!r.focusNode) continue;
     const key = r.path ? fieldKey(r.focusNode, r.path) : `${r.focusNode.value}|`;
     const list = map.get(key) ?? [];
-    list.push({ message: friendly(r, locale, strings), severity: r.severity, constraint: r.constraint });
+    list.push({
+      message: friendly(r, locale, strings),
+      severity: r.severity,
+      constraint: r.constraint,
+      value: r.value,
+    });
     map.set(key, list);
   }
   return map;

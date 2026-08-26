@@ -7,6 +7,7 @@ import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
 import { namedNode, literal } from "@/engine/factory.js";
 import { mapResults } from "@/form/validation.js";
+import { computeFormReport } from "@/react/validation/useFormReport.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import { projectTree, projectTreeSync } from "@/engine/projectTree.js";
 import { allFields } from "@/form/FormModel.js";
@@ -288,5 +289,49 @@ describe("RudofEngine over the REAL wasm", () => {
     const { values, satisfied } = projectTreeSync((f, s) => engine.projectFormSync(f, s), model, SHAPE, alice);
     const form = buildFormModel({ shapes: model, focusNode: alice, shape, values, satisfied });
     expect(allFields(form).find((f) => f.path.value === `${EX}name`)?.values[0]?.value?.value).toBe("Alice");
+  });
+
+  it("validateTree recovers a violation inside an untargeted sh:node shape, and D7 drops the rollup", async () => {
+    // The Evidenze shapes deliberately give nested shapes no sh:targetClass, so
+    // nothing targets ex:AgentShape: whole-graph validate() reaches it by no
+    // target, and rudof's sh:node handler keeps only a boolean. Both paths lose
+    // "Name is required" — validateTree is the only one that finds it.
+    const nestedShapes = `
+      @prefix sh:  <http://www.w3.org/ns/shacl#> .
+      @prefix ex:  <${EX}> .
+      @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      ex:DatasetShape a sh:NodeShape ; sh:targetClass ex:Dataset ;
+        sh:property [ sh:path ex:publisher ; sh:name "Publisher"@en ; sh:node ex:AgentShape ; sh:minCount 1 ] .
+      ex:AgentShape a sh:NodeShape ;
+        sh:property [ sh:path ex:name ; sh:name "Name"@en ; sh:datatype xsd:string ; sh:minCount 1 ] .
+    `;
+    const model = await engine.loadShapes(nestedShapes);
+    await engine.loadData(`@prefix ex: <${EX}> . ex:d1 a ex:Dataset ; ex:publisher [ a ex:Agent ] .`);
+    const d1 = namedNode(`${EX}d1`);
+
+    const whole = await engine.validate();
+    expect(whole).toHaveLength(1);
+    expect(whole[0].constraint).toBe("http://www.w3.org/ns/shacl#NodeConstraintComponent");
+
+    const tree = projectTreeSync((f, s) => engine.projectFormSync(f, s), model, `${EX}DatasetShape`, d1);
+    expect(tree.nodes.map((n) => n.shapeId)).toEqual([`${EX}DatasetShape`, `${EX}AgentShape`]);
+
+    const results = await engine.validateTree(tree.nodes);
+    const inner = results.find((r) => r.constraint?.endsWith("MinCountConstraintComponent"));
+    expect(inner?.path?.value).toBe(`${EX}name`);
+
+    // D7: the report keeps the actionable inner row and drops the outer rollup.
+    const form = buildFormModel({
+      shapes: model,
+      focusNode: d1,
+      shape: model.nodeShapes.get(`${EX}DatasetShape`)!,
+      locale: "en",
+      values: tree.values,
+      satisfied: tree.satisfied,
+    });
+    const report = computeFormReport(form, mapResults(results, "en"));
+    expect(report.issues.rows.map((r) => r.message)).toEqual(["This field is required"]);
+    expect(report.issues.rows[0].label).toBe("Publisher › Name");
+    expect(report.issues.rows[0].constraint).toBe("http://www.w3.org/ns/shacl#MinCountConstraintComponent");
   });
 });

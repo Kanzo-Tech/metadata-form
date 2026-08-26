@@ -165,12 +165,15 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const getVersion = useCallback(() => (graph ? graph.getVersion() : 0), [graph]);
   const version = useSyncExternalStore(subscribe, getVersion, getVersion);
 
-  const model = useMemo<FormModel | undefined>(() => {
+  // The model and the tree's `(focus, shapeId)` nodes come out of the SAME
+  // projection: validation needs the nodes the model was built from, and a second
+  // `projectValues` call for them would re-enter wasm over the whole tree.
+  const projected = useMemo(() => {
     if (!prepared) return undefined;
     // Single graph: re-derive field values from the engine session (sync, after
     // ready()) on every edit, then build the model over them — no n3 read path.
-    const { values, satisfied } = engine.projectValues(prepared.shapes, prepared.focusNode, prepared.rootShapeId);
-    return buildFormModel({
+    const { values, satisfied, nodes } = engine.projectValues(prepared.shapes, prepared.focusNode, prepared.rootShapeId);
+    const model = buildFormModel({
       shapes: prepared.shapes,
       focusNode: prepared.focusNode,
       shape: prepared.shapes.nodeShapes.get(prepared.rootShapeId)!,
@@ -179,9 +182,12 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       values,
       satisfied,
     });
+    return { model, nodes };
     // `version` re-projects field values from the graph after each edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine, prepared, version, locale, onDiagnostic]);
+
+  const model: FormModel | undefined = projected?.model;
 
   // Debounced live validation.
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -189,14 +195,15 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     if (!prepared || validateOn !== "change") return;
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
-      // Validate the live session in place (no reload) — scoped to the focus.
-      const results = await engine.validateFocus(prepared.focusNode, prepared.rootShapeId);
+      // Validate the live session in place (no reload) — every node of the
+      // projected tree, not only the root: see `RudofEngine.validateTree`.
+      const results = await engine.validateTree(projected?.nodes ?? []);
       setErrors(mapResults(results, locale, strings));
     }, validationDebounceMs);
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [engine, prepared, version, validateOn, validationDebounceMs, locale, strings]);
+  }, [engine, prepared, projected, version, validateOn, validationDebounceMs, locale, strings]);
 
   const isValid = useMemo(() => {
     for (const list of errors.values()) {
@@ -226,11 +233,11 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
 
   const validate = useCallback(async () => {
     if (!prepared) return [];
-    const results = await engine.validateFocus(prepared.focusNode, prepared.rootShapeId);
+    const results = await engine.validateTree(projected?.nodes ?? []);
     const map = mapResults(results, locale, strings);
     setErrors(map);
     return [...map.values()].flat();
-  }, [engine, prepared, locale, strings]);
+  }, [engine, prepared, projected, locale, strings]);
 
   return useMemo<MetadataFormController>(
     () => ({

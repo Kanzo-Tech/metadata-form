@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import type { Term } from "@rdfjs/types";
 import type { FieldModel, FormModel } from "../../form/FormModel.js";
 import type { FieldError, Severity } from "../../form/validation.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
@@ -19,6 +20,11 @@ export interface IssueRow {
   label: string;
   message: string;
   severity: Severity;
+  /** Constraint-component IRI, for a surface that wants to name the rule. */
+  constraint?: string;
+  /** The offending value (`sh:value`), unformatted — a literal and an IRI are
+   *  worth showing differently, so the term is kept rather than a string. */
+  value?: Term;
 }
 
 export interface GroupIssues {
@@ -84,12 +90,36 @@ const EMPTY: FormReport = {
   health: { mood: "idle", message: "" },
 };
 
+const SH_NODE = "http://www.w3.org/ns/shacl#NodeConstraintComponent";
+
+/**
+ * D7. Once every node of the tree is validated, a `sh:node` violation reports
+ * TWICE: the outer rollup on the containing property ("some details in this
+ * section are incomplete") and the inner cause on the nested field ("this field
+ * is required"). Drop the rollup whenever its value term — the nested focus —
+ * reported something of its own; keep it when nothing nested did, because then
+ * the rollup is the only thing standing between the reader and silence.
+ */
+function withoutNodeRollups(errors: Map<string, FieldError[]>): Map<string, FieldError[]> {
+  const reported = new Set<string>();
+  for (const [key, errs] of errors) {
+    if (errs.length > 0) reported.add(key.split("|")[0]);
+  }
+  const out = new Map<string, FieldError[]>();
+  for (const [key, errs] of errors) {
+    const kept = errs.filter((e) => !(e.constraint === SH_NODE && e.value && reported.has(e.value.value)));
+    if (kept.length > 0) out.set(key, kept);
+  }
+  return out;
+}
+
 /** Pure selector: derive the full report from a form model + its error map. */
 export function computeFormReport(
   model: FormModel | undefined,
-  errors: Map<string, FieldError[]>,
+  allErrors: Map<string, FieldError[]>,
 ): FormReport {
   if (!model) return EMPTY;
+  const errors = withoutNodeRollups(allErrors);
 
   const labels = new Map<string, string>();
   const groupFieldIds = new Map<string, string[]>();
@@ -119,9 +149,20 @@ export function computeFormReport(
   const byField = new Map<string, { label: string; errors: FieldError[] }>();
   for (const [key, errs] of errors) {
     if (errs.length === 0) continue;
-    const label = labels.get(key) ?? key.split("|").pop() ?? key;
+    // `??` is not enough: a node-level key ends in "|", so `.pop()` is "" — a row
+    // with a blank label whose click jumps nowhere. Fall through empties to the key.
+    const label = labels.get(key) || key.split("|").filter(Boolean).pop() || key;
     byField.set(key, { label, errors: errs });
-    for (const err of errs) rows.push({ key, label, message: err.message, severity: err.severity });
+    for (const err of errs) {
+      rows.push({
+        key,
+        label,
+        message: err.message,
+        severity: err.severity,
+        constraint: err.constraint,
+        value: err.value,
+      });
+    }
   }
 
   const byGroup = new Map<string, GroupIssues>();

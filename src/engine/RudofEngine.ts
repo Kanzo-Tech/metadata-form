@@ -2,7 +2,7 @@ import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode, quad, rdf } from "./factory.js";
 import { toTerm, toTermValue } from "./termValue.js";
 import { freshFocusNode, resolveRootShapeFromTypes } from "../form/buildFormModel.js";
-import { projectTreeSync, type ProjectedTree } from "./projectTree.js";
+import { projectTreeSync, type ProjectedNode, type ProjectedTree } from "./projectTree.js";
 import type { NodeShapeIR, ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
 import type { GraphBackend } from "./GraphBackend.js";
 import type { Severity, ValidationResult } from "../form/validation.js";
@@ -234,6 +234,28 @@ export class RudofEngine {
   async validateFocus(focus: Term, shapeId: string): Promise<ValidationResult[]> {
     await this.ready();
     return this.s.validateFocus(toTermValue(focus), shapeId).results.map(toValidationResult);
+  }
+
+  /**
+   * Validate every `(focus, shapeId)` of a projected tree — the whole form, not
+   * just its root. Needed because a `sh:node` violation reports as ONE rollup
+   * result on the outer property, carrying a boolean and never the inner results;
+   * and a nested shape that declares no `sh:targetClass` (the Evidenze shapes
+   * deliberately do not) is reached by no target, so whole-graph `validate()`
+   * does not recover them either. Re-entering per node is how "Name is required"
+   * inside a nested publisher reaches the report at all.
+   *
+   * Duplicates are possible in principle (the outer rollup plus the inner cause);
+   * `computeFormReport` is where the rollup is dropped, since only there is it
+   * known whether anything nested actually reported.
+   */
+  async validateTree(nodes: readonly ProjectedNode[]): Promise<ValidationResult[]> {
+    await this.ready();
+    const out: ValidationResult[] = [];
+    for (const { focus, shapeId } of nodes) {
+      out.push(...this.s.validateFocus(toTermValue(focus), shapeId).results.map(toValidationResult));
+    }
+    return out;
   }
 
   /** Evaluate every property path of a shape for a focus node against the graph. */

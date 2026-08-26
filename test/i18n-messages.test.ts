@@ -69,6 +69,45 @@ describe("localized validation messages (sh:message + fallback catalog)", () => 
     expect(messageFor(shex, "es")).toBe("does not satisfy the shape");
   });
 
+  it("never lets a sh: constraint fall through to the engine's own text", () => {
+    // Verbatim shape of what rudof emits for sh:node: it renders the message by
+    // Display-ing the internal IRShape, so the report used to hand a person an AST
+    // dump. A sh: constraint must resolve to the catalog (or _fallback), never this.
+    const astDump: ValidationResult = {
+      focusNode: focus,
+      path,
+      severity: "violation",
+      constraint: `${SH}NodeConstraintComponent`,
+      messages: [
+        {
+          value:
+            "Shape _:db9dc3bc6e05eb3301a1c103c00c6311: Node(NodeShape\n Targets: - targetClass(ex:Dataset)\n Property Shapes: [22, 13, 23]\n) constraint not satisfied for _:mf1",
+          language: "",
+        },
+      ],
+    };
+    for (const locale of ["en", "es", "ca"]) {
+      const message = messageFor(astDump, locale);
+      expect(message).not.toContain("NodeShape");
+      expect(message).not.toContain("\n");
+      expect(message).toBe(resolveStrings(locale).validationDefaults[`${SH}NodeConstraintComponent`]);
+    }
+    expect(messageFor(astDump, "en")).toBe("Some details in this section are incomplete");
+    expect(messageFor(astDump, "es")).toBe("Faltan datos en esta sección");
+    expect(messageFor(astDump, "ca")).toBe("Falten dades en aquesta secció");
+  });
+
+  it("falls back rather than echoing the engine for a sh: constraint with no catalog entry", () => {
+    const unknownShacl: ValidationResult = {
+      focusNode: focus,
+      path,
+      severity: "violation",
+      constraint: `${SH}SomeFutureConstraintComponent`,
+      messages: [{ value: "IRShape { id: _:b0, … } not satisfied", language: "" }],
+    };
+    expect(messageFor(unknownShacl, "es")).toBe("Valor no válido");
+  });
+
   it("uses the localized generic fallback when nothing else matches", () => {
     const empty: ValidationResult = {
       focusNode: focus,
