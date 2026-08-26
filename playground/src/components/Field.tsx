@@ -1,21 +1,19 @@
-import { Flex, Text } from "@radix-ui/themes";
-
 /** Inline label + control, used by the example pickers in the utility strip. */
 export function Field({
   label,
   children,
-  size = "2",
+  size = "sm",
 }: {
   label: string;
   children: React.ReactNode;
-  size?: "1" | "2";
+  size?: "xs" | "sm";
 }) {
   return (
-    <Flex align="center" gap="2">
-      <Text size={size} color="gray" mr="2">
+    <div className="flex items-center gap-2">
+      <span className={`me-2 text-muted-foreground ${size === "xs" ? "text-xs" : "text-sm"}`}>
         {label}
-      </Text>
+      </span>
       {children}
-    </Flex>
+    </div>
   );
 }

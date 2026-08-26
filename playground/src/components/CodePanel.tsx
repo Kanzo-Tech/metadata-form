@@ -1,71 +1,66 @@
 import { useMemo } from "react";
-import { Box, Tabs } from "@radix-ui/themes";
-import CodeMirror from "@uiw/react-codemirror";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@kanzo-tech/ui";
+import { CodeEditor as KanzoCodeEditor } from "@kanzo-tech/ui/editor";
 import { json } from "@codemirror/lang-json";
 import { StreamLanguage } from "@codemirror/language";
 import { turtle } from "@codemirror/legacy-modes/mode/turtle";
-import { EditorView } from "@codemirror/view";
 
-// Module-level so each is a single stable instance — passing fresh
-// extensions/setup per render makes @uiw/react-codemirror reconfigure the
-// editor on every keystroke.
+// Module-level so each is a single stable instance — a fresh extension array per
+// render reconfigures the editor on every keystroke.
 const turtleLang = StreamLanguage.define(turtle);
 const jsonLang = json();
-const cmFont = EditorView.theme({
-  "&": { fontSize: "12px" },
-  ".cm-content": { fontFamily: "var(--code-font-family, ui-monospace, monospace)" },
-});
 
 /** Tabs of code editors that fill the height of their docked aside (Source / Output). */
 export function CodePanel({ tabs }: { tabs: { value: string; label: string; node: React.ReactNode }[] }) {
   return (
-    <Tabs.Root
-      defaultValue={tabs[0].value}
-      style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
-    >
-      <Tabs.List style={{ flexShrink: 0 }}>
+    <Tabs defaultValue={tabs[0].value} className="flex min-h-0 flex-1 flex-col">
+      <TabsList className="flex-none">
         {tabs.map((t) => (
-          <Tabs.Trigger key={t.value} value={t.value}>
+          <TabsTrigger key={t.value} value={t.value}>
             {t.label}
-          </Tabs.Trigger>
+          </TabsTrigger>
         ))}
-      </Tabs.List>
-      <Box style={{ flex: 1, minHeight: 0 }}>
+      </TabsList>
+      <div className="min-h-0 flex-1">
         {tabs.map((t) => (
-          <Tabs.Content key={t.value} value={t.value} style={{ height: "100%" }}>
+          <TabsContent key={t.value} value={t.value} className="h-full">
             {t.node}
-          </Tabs.Content>
+          </TabsContent>
         ))}
-      </Box>
-    </Tabs.Root>
+      </div>
+    </Tabs>
   );
 }
 
-/** One cohesive code editor for every panel: same font, syntax highlighting. */
+/**
+ * One cohesive code editor for every panel.
+ *
+ * The design system's, from the `/editor` subpath — so CodeMirror stays off the
+ * base bundle for anyone who does not open a code panel. It carries the Kanzo
+ * token theme itself, which is why there is no `dark` prop any more: the editor
+ * reads the same theme as everything else instead of being told which one is on.
+ *
+ * `wrap={false}` for Turtle on purpose, and the component's own docs say why: a
+ * predicate list read against its indentation stops being a list once every third
+ * line reflows.
+ */
 export function CodeEditor(props: {
   value: string;
   onChange?: (v: string) => void;
   lang: "turtle" | "json";
   readOnly?: boolean;
-  dark?: boolean;
 }) {
   const { lang, readOnly } = props;
-  const extensions = useMemo(() => [lang === "json" ? jsonLang : turtleLang, cmFont], [lang]);
-  const basicSetup = useMemo(
-    () => ({ lineNumbers: true, foldGutter: false, highlightActiveLine: !readOnly }),
-    [readOnly],
-  );
+  const extensions = useMemo(() => (lang === "json" ? jsonLang : turtleLang), [lang]);
   return (
-    <CodeMirror
+    <KanzoCodeEditor
       value={props.value}
-      height="100%"
-      style={{ height: "100%" }}
-      theme={props.dark ? "dark" : "light"}
-      editable={!readOnly}
-      readOnly={readOnly}
-      extensions={extensions}
-      basicSetup={basicSetup}
       onChange={props.onChange}
+      extensions={extensions}
+      readOnly={readOnly}
+      lineNumbers
+      wrap={false}
+      maxHeight="100%"
     />
   );
 }

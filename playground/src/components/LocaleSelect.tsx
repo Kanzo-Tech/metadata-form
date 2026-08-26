@@ -1,10 +1,12 @@
-import { Select as RSelect } from "@radix-ui/themes";
+import { NativeSelect, NativeSelectOption } from "@kanzo-tech/ui";
 import { Field } from "./Field.js";
 
 /** The UI-language selector — switches the language of the form's labels and
  *  descriptions (`useMetadataForm({ locale })`). Shown only for examples whose
- *  shape provides labels in more than one language. Matches the ghost look of the
- *  example pickers so it reads as context. */
+ *  shape provides labels in more than one language.
+ *
+ *  A native select: a handful of languages, flat, no icons — so the platform's own
+ *  keyboard and mobile picker are worth more than a styled listbox. */
 export function LocaleSelect({
   value,
   locales,
@@ -15,17 +17,19 @@ export function LocaleSelect({
   onChange: (locale: string) => void;
 }) {
   return (
-    <Field label="Idioma" size="1">
-      <RSelect.Root size="1" value={value} onValueChange={onChange}>
-        <RSelect.Trigger variant="ghost" color="gray" />
-        <RSelect.Content>
-          {locales.map((l) => (
-            <RSelect.Item key={l} value={l}>
-              {endonym(l)}
-            </RSelect.Item>
-          ))}
-        </RSelect.Content>
-      </RSelect.Root>
+    <Field label="Idioma" size="xs">
+      <NativeSelect
+        size="sm"
+        aria-label="Idioma"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {locales.map((l) => (
+          <NativeSelectOption key={l} value={l}>
+            {endonym(l)}
+          </NativeSelectOption>
+        ))}
+      </NativeSelect>
     </Field>
   );
 }

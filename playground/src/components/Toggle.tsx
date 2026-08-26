@@ -1,4 +1,4 @@
-import { Button, Kbd } from "@radix-ui/themes";
+import { Button, Kbd } from "@kanzo-tech/ui";
 
 /** A view toggle button with a keyboard-shortcut hint (Source / Output). */
 export function Toggle(props: {
@@ -9,10 +9,10 @@ export function Toggle(props: {
   children: React.ReactNode;
 }) {
   return (
-    <Button variant="soft" color={props.on ? undefined : "gray"} onClick={props.onClick}>
+    <Button variant={props.on ? "secondary" : "ghost"} onClick={props.onClick}>
       {props.icon}
       {props.children}
-      <Kbd size="1">{props.kbd}</Kbd>
+      <Kbd>{props.kbd}</Kbd>
     </Button>
   );
 }

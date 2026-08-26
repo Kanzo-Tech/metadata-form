@@ -1,12 +1,12 @@
-import { Button } from "@radix-ui/themes";
-import { CheckIcon, Share1Icon } from "@radix-ui/react-icons";
+import { Button } from "@kanzo-tech/ui";
+import { CheckIcon, Share2Icon } from "lucide-react";
 
 /** Copy a self-contained permalink (shapes + the form's live data, compressed into
  *  the URL fragment). Picks keep the URL in sync; Share commits the current edits. */
 export function ShareButton({ onShare, shared }: { onShare: () => void; shared: boolean }) {
   return (
-    <Button size="1" variant="ghost" color="gray" onClick={onShare}>
-      {shared ? <CheckIcon /> : <Share1Icon />}
+    <Button size="sm" variant="ghost" onClick={onShare}>
+      {shared ? <CheckIcon /> : <Share2Icon />}
       {shared ? "Copied!" : "Share"}
     </Button>
   );
