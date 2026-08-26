@@ -1,0 +1,400 @@
+{
+  "generated": "2026-08-26",
+  "results": [
+    {
+      "id": "health-ri-core",
+      "label": "Health-RI Core (HealthDCAT-AP)",
+      "note": "Per-class shapes with cross-file sh:node references. DASH-annotated.",
+      "files": 14,
+      "turtleLines": 1819,
+      "parsed": true,
+      "source": {
+        "shuiEditor": 0,
+        "dashEditor": 141,
+        "shGroup": 0,
+        "shName": 143,
+        "langTags": {
+          "en": 321
+        }
+      },
+      "ir": {
+        "nodeShapes": 14,
+        "propertyShapes": 143,
+        "groups": 0,
+        "pathKinds": {
+          "predicate": 143
+        },
+        "components": {
+          "editor": 141,
+          "nodeKind": 112,
+          "path": 143,
+          "viewer": 141,
+          "name": 143,
+          "maxCount": 67,
+          "description": 123,
+          "minCount": 44,
+          "uniqueLang": 13,
+          "datatype": 20,
+          "pattern": 13,
+          "in": 2,
+          "node": 23,
+          "class": 1,
+          "minExclusive": 1,
+          "defaultValue": 2
+        },
+        "editors": {
+          "IRIEditor": 74,
+          "TextFieldEditor": 27,
+          "DateTimePickerEditor": 11,
+          "EnumSelectEditor": 2,
+          "DetailsEditor": 23,
+          "AutoCompleteEditor": 1,
+          "NumberFieldEditor": 5
+        },
+        "conditionals": 0
+      },
+      "form": {
+        "shapesBuilt": 14,
+        "shapesFailed": [],
+        "fields": 143,
+        "widgetKinds": {
+          "reference": 1,
+          "url": 74,
+          "number": 5,
+          "text": 50,
+          "datetime": 11,
+          "select": 2
+        },
+        "plainTextFallback": 50,
+        "complexPathFields": 0,
+        "diagnostics": {},
+        "diagnosticSamples": []
+      }
+    },
+    {
+      "id": "health-ri-fdp",
+      "label": "Health-RI FAIR Data Point",
+      "note": "NOT an independent profile. It declares the same shape IRIs (hri:AgentShape, hri:CatalogShape, …) as PiecesShape, and its 178 sh:path lines collapse to the same 137 distinct (shape, path) pairs — each FDP file is self-contained and redefines the shared shapes, so concatenation merges them by identity. Reported for the record; excluded from the headline table so it cannot inflate n.",
+      "variantOf": "health-ri-core",
+      "files": 6,
+      "turtleLines": 2077,
+      "parsed": true,
+      "source": {
+        "shuiEditor": 0,
+        "dashEditor": 182,
+        "shGroup": 0,
+        "shName": 184,
+        "langTags": {
+          "en": 440
+        }
+      },
+      "ir": {
+        "nodeShapes": 14,
+        "propertyShapes": 143,
+        "groups": 0,
+        "pathKinds": {
+          "predicate": 143
+        },
+        "components": {
+          "path": 143,
+          "minCount": 44,
+          "description": 123,
+          "viewer": 141,
+          "maxCount": 67,
+          "nodeKind": 112,
+          "name": 143,
+          "editor": 141,
+          "datatype": 20,
+          "pattern": 13,
+          "node": 23,
+          "minExclusive": 1,
+          "uniqueLang": 13,
+          "class": 1,
+          "in": 2,
+          "defaultValue": 2
+        },
+        "editors": {
+          "TextFieldEditor": 27,
+          "IRIEditor": 74,
+          "DateTimePickerEditor": 11,
+          "DetailsEditor": 23,
+          "NumberFieldEditor": 5,
+          "AutoCompleteEditor": 1,
+          "EnumSelectEditor": 2
+        },
+        "conditionals": 0
+      },
+      "form": {
+        "shapesBuilt": 14,
+        "shapesFailed": [],
+        "fields": 143,
+        "widgetKinds": {
+          "url": 74,
+          "text": 50,
+          "reference": 1,
+          "number": 5,
+          "datetime": 11,
+          "select": 2
+        },
+        "plainTextFallback": 50,
+        "complexPathFields": 0,
+        "diagnostics": {},
+        "diagnosticSamples": []
+      }
+    },
+    {
+      "id": "health-ri-modules",
+      "label": "Health-RI domain modules (health, imaging, omics)",
+      "note": "Small; expected to be mostly rules rather than form-bearing shapes.",
+      "files": 5,
+      "turtleLines": 147,
+      "parsed": true,
+      "source": {
+        "shuiEditor": 0,
+        "dashEditor": 0,
+        "shGroup": 0,
+        "shName": 1,
+        "langTags": {
+          "en": 15
+        }
+      },
+      "ir": {
+        "nodeShapes": 1,
+        "propertyShapes": 6,
+        "groups": 0,
+        "pathKinds": {
+          "predicate": 6
+        },
+        "components": {
+          "path": 6,
+          "class": 2,
+          "minCount": 6,
+          "datatype": 4
+        },
+        "editors": {
+          "AutoCompleteEditor": 2,
+          "TextFieldEditor": 3,
+          "NumberFieldEditor": 1
+        },
+        "conditionals": 0
+      },
+      "form": {
+        "shapesBuilt": 1,
+        "shapesFailed": [],
+        "fields": 6,
+        "widgetKinds": {
+          "text": 3,
+          "reference": 2,
+          "number": 1
+        },
+        "plainTextFallback": 3,
+        "complexPathFields": 0,
+        "diagnostics": {},
+        "diagnosticSamples": []
+      }
+    },
+    {
+      "id": "dcat-ap",
+      "label": "DCAT-AP (as vendored by Health-RI)",
+      "note": "Prefer the upstream SEMIC release once vendored; this is a copy.",
+      "files": 1,
+      "turtleLines": 698,
+      "parsed": true,
+      "source": {
+        "shuiEditor": 0,
+        "dashEditor": 0,
+        "shGroup": 0,
+        "shName": 14,
+        "langTags": {
+          "en": 16
+        }
+      },
+      "ir": {
+        "nodeShapes": 21,
+        "propertyShapes": 109,
+        "groups": 0,
+        "pathKinds": {
+          "predicate": 109
+        },
+        "components": {
+          "severity": 109,
+          "nodeKind": 27,
+          "path": 109,
+          "maxCount": 47,
+          "node": 6,
+          "class": 63,
+          "shape": 5,
+          "minCount": 18,
+          "hasValue": 1,
+          "dateTime": 1,
+          "datatype": 5
+        },
+        "editors": {
+          "TextFieldEditor": 37,
+          "DetailsEditor": 6,
+          "AutoCompleteEditor": 63,
+          "NumberFieldEditor": 3
+        },
+        "conditionals": 0
+      },
+      "form": {
+        "shapesBuilt": 21,
+        "shapesFailed": [],
+        "fields": 109,
+        "widgetKinds": {
+          "reference": 63,
+          "text": 43,
+          "number": 3
+        },
+        "plainTextFallback": 43,
+        "complexPathFields": 0,
+        "diagnostics": {},
+        "diagnosticSamples": []
+      }
+    },
+    {
+      "id": "evidenze-health",
+      "label": "Evidenze HealthDCAT-AP R7 onboarding (ours)",
+      "note": "Pure SHACL 1.2 + SHACL-UI. The deployment.",
+      "files": 1,
+      "turtleLines": 793,
+      "parsed": true,
+      "source": {
+        "shuiEditor": 11,
+        "dashEditor": 0,
+        "shGroup": 47,
+        "shName": 47,
+        "langTags": {
+          "es": 106,
+          "ca": 82
+        }
+      },
+      "ir": {
+        "nodeShapes": 10,
+        "propertyShapes": 48,
+        "groups": 13,
+        "pathKinds": {
+          "predicate": 48
+        },
+        "components": {
+          "path": 48,
+          "group": 47,
+          "nodeKind": 39,
+          "maxCount": 25,
+          "type": 47,
+          "name": 47,
+          "order": 47,
+          "minCount": 25,
+          "datatype": 16,
+          "in": 15,
+          "description": 23,
+          "node": 8,
+          "class": 8,
+          "message": 7,
+          "pattern": 1,
+          "hasValue": 1
+        },
+        "editors": {
+          "IRIEditor": 9,
+          "TextFieldWithLangEditor": 7,
+          "EnumSelectEditor": 15,
+          "TextFieldEditor": 8,
+          "DetailsEditor": 8,
+          "BooleanEditor": 1
+        },
+        "conditionals": 1
+      },
+      "form": {
+        "shapesBuilt": 10,
+        "shapesFailed": [],
+        "fields": 48,
+        "widgetKinds": {
+          "text": 16,
+          "lang": 7,
+          "select": 15,
+          "url": 9,
+          "boolean": 1
+        },
+        "plainTextFallback": 16,
+        "complexPathFields": 0,
+        "diagnostics": {},
+        "diagnosticSamples": []
+      }
+    },
+    {
+      "id": "evidenze-dataspace",
+      "label": "Evidenze data space onboarding (ours)",
+      "note": "Pure SHACL 1.2 + SHACL-UI.",
+      "files": 1,
+      "turtleLines": 590,
+      "parsed": true,
+      "source": {
+        "shuiEditor": 7,
+        "dashEditor": 0,
+        "shGroup": 32,
+        "shName": 32,
+        "langTags": {
+          "es": 113,
+          "ca": 87
+        }
+      },
+      "ir": {
+        "nodeShapes": 7,
+        "propertyShapes": 33,
+        "groups": 10,
+        "pathKinds": {
+          "predicate": 33
+        },
+        "components": {
+          "name": 32,
+          "order": 32,
+          "type": 32,
+          "nodeKind": 28,
+          "maxCount": 23,
+          "group": 32,
+          "path": 33,
+          "description": 32,
+          "minCount": 14,
+          "datatype": 16,
+          "hasValue": 1,
+          "minInclusive": 1,
+          "message": 5,
+          "editor": 7,
+          "in": 8,
+          "pattern": 1,
+          "node": 4,
+          "class": 4
+        },
+        "editors": {
+          "IRIEditor": 5,
+          "TextFieldEditor": 8,
+          "BooleanEditor": 2,
+          "NumberFieldEditor": 1,
+          "TextAreaEditor": 3,
+          "EnumSelectEditor": 8,
+          "DetailsEditor": 4,
+          "TextFieldWithLangEditor": 2
+        },
+        "conditionals": 1
+      },
+      "form": {
+        "shapesBuilt": 7,
+        "shapesFailed": [],
+        "fields": 33,
+        "widgetKinds": {
+          "text": 12,
+          "url": 5,
+          "textarea": 3,
+          "select": 8,
+          "boolean": 2,
+          "number": 1,
+          "lang": 2
+        },
+        "plainTextFallback": 12,
+        "complexPathFields": 0,
+        "diagnostics": {},
+        "diagnosticSamples": []
+      }
+    }
+  ]
+}

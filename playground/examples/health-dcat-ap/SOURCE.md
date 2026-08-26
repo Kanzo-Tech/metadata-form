@@ -23,15 +23,20 @@ It is **not** the complete official specification. It models the core
 
 ## Replacing with the official shapes
 
-The official shapes use cross-file `sh:node` references and do not carry SHACL-UI
-editor hints or `sh:group` sections. To use them:
+The official shapes use cross-file `sh:node` references. They **are** fully
+UI-annotated, but in **DASH** (`dash:editor` / `dash:viewer`) rather than SHACL-UI:
+as of commit `acec1359` (2026-08-25), 141 of 143 property shapes in
+`Core/PiecesShape` carry a `dash:editor`, and `shui:editor` appears nowhere. They
+carry no `sh:group` sections. To use them:
 
 1. Concatenate the relevant `*.ttl` pieces into a single graph.
 2. Optionally add `sh:group` / `shui:editor` annotations for nicer layout.
 3. Pass that Turtle as `shapes` with the correct `rootShape`.
 
 The editor engine still works without `shui:editor` hints — rudof falls back to
-datatype/`nodeKind`-based selection.
+datatype/`nodeKind`-based selection. Note that it reads only `shui:editor`, so the
+official profile's `dash:editor` annotations are currently ignored and every editor
+is inferred from type facts.
 
 ## License
 
