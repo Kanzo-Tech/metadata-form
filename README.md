@@ -16,9 +16,9 @@ field's **SHACL-UI editor** to a widget and renders the form.
 - 🎛️ **SHACL-UI editors** — the field's editor comes from the
   [SHACL-UI](https://www.w3.org/TR/shacl12-ui/) `shui:editor` term, with a
   datatype / `nodeKind` / `sh:in` / `sh:class` / `sh:node` fallback.
-- 🎨 **Radix-native + overridable** — renders with
-  [@radix-ui/themes](https://www.radix-ui.com/themes); swap any input by
-  overriding its widget.
+- 🎨 **Kanzo-native + overridable** — renders with
+  [@kanzo-tech/ui](https://github.com/Kanzo-Tech/kanzo-ui) over
+  [Ark UI](https://ark-ui.com); swap any input by overriding its widget.
 - ✅ **Live validation** — per-field errors from rudof's SHACL validator, plus a
   ready-made `<ValidationSummary>` pill.
 - 🤖 **Optional AI assist** — one `assist` seam: streaming inline ghost-text
@@ -31,12 +31,17 @@ field's **SHACL-UI editor** to a widget and renders the form.
 ## Install
 
 ```sh
-npm install metadata-form react react-dom @radix-ui/themes @radix-ui/react-icons
+npm install metadata-form react react-dom @kanzo-tech/ui lucide-react
 ```
 
-ESM-only. The UI is built on [@radix-ui/themes](https://www.radix-ui.com/themes)
-(icons from [@radix-ui/react-icons](https://www.radix-ui.com/icons)): render forms
-inside a `<Theme>` and import its stylesheet.
+ESM-only, React 19+. The UI is built on **@kanzo-tech/ui** (icons from
+[lucide](https://lucide.dev)): import its stylesheet and put the theme attributes
+on `<html>` with `KanzoThemeProvider`. There is **no wrapper component to render
+inside** — Ark's overlays portal to `document.body`, outside anything a wrapper
+could reach, and density sets the root font-size the whole `rem` scale resolves
+against.
+
+`@kanzo-tech/ai` is an optional peer, needed only if you wire the `assist` seam.
 
 ### The wasm engine
 
@@ -69,20 +74,20 @@ reactively, so there is no `onChange`:
 
 ```tsx
 import { useMetadataForm, MetadataForm, ValidationSummary } from "metadata-form";
-import { Theme } from "@radix-ui/themes";
-import "@radix-ui/themes/styles.css";
+import { KanzoThemeProvider } from "@kanzo-tech/ui";
+import "@kanzo-tech/ui/styles.css";
 
 export function App({ shape, graph }: { shape: string; graph?: string }) {
   const form = useMetadataForm({ shapes: shape, data: graph });
 
   return (
-    <Theme>
+    <KanzoThemeProvider>
       <ValidationSummary form={form} />
       <MetadataForm form={form} />
       <button disabled={!form.isValid} onClick={async () => console.log(await form.toTurtle())}>
         Save
       </button>
-    </Theme>
+    </KanzoThemeProvider>
   );
 }
 ```
@@ -141,7 +146,8 @@ assist={{
 ```
 
 The callbacks run in the consumer, so the core imports **no LLM SDK** and stays
-portable. The `search` combobox (downshift) and the `suggest` popover (Radix) are accessible.
+portable. The reference combobox and the ✨ suggestion strip are the design
+system's own accessible components.
 
 ### The assistant (`<FormAssistant>` + a swappable mascot)
 
@@ -152,10 +158,10 @@ small, non-intrusive corner companion that renders that state through a mascot a
 on click, gently guides to the next pending field (scroll + focus, never an overlay):
 
 ```tsx
-<Theme>
+<>
   <MetadataForm form={form} />
   <FormAssistant form={form} />
-</Theme>
+</>
 ```
 
 The mascot is a **swappable `character`** (same idea as a widget). The default is
@@ -217,26 +223,33 @@ binding, so a new editor is a widget, not an engine change.
 
 ## Theming
 
-The UI renders with [@radix-ui/themes](https://www.radix-ui.com/themes). Control
-the look with Radix's `<Theme>` (appearance, `accentColor`, `radius`, scaling):
-
-```tsx
-<Theme appearance="dark" accentColor="indigo" radius="large">
-  <MetadataForm form={form} />
-</Theme>
-```
+The look is the design system's, applied as `data-*` attributes on `<html>` by
+`KanzoThemeProvider` and controlled by the user through its own `Preferences`
+panel (appearance, theme, density, radius, fonts). Drop
+`<PreferencesRoot><PreferencesTrigger/><PreferencesPanel/></PreferencesRoot>`
+anywhere in your app and the form follows.
 
 All RDF ⇄ value conversion lives in one binding layer; the inputs are **dumb
-widgets** keyed by `WidgetKind`
-(`text | number | date | datetime | url | textarea | boolean | select |
-reference | lang`) that receive a primitive `value: string | null` + `onChange`
-and never touch RDF. Override any widget per form:
+widgets** that receive a primitive `value: string | null` + `onChange` and never
+touch RDF.
+
+A registry is keyed by the property's **SHACL-UI editor IRI** — the one rudof
+resolves for every property, explicitly from the shape or inferred from its type
+facts. There is no intermediate widget taxonomy: both ends of the mapping are
+vocabularies somebody else maintains, and a third invented in between could only
+lose information. Keying on the IRI also makes the registry open — a profile with
+a custom `shui:editor` is one more entry rather than a new case in core.
+
+Override any widget per form:
 
 ```tsx
-import type { WidgetRegistry } from "metadata-form";
+import { Editors, type WidgetRegistry } from "metadata-form";
 
 const widgets: WidgetRegistry = {
-  date: (p) => <MyDatePicker value={p.value} onChange={p.onChange} />,
+  [Editors.DatePicker]: (p) => <MyDatePicker value={p.value} onChange={p.onChange} />,
+  // A class hierarchy asked for a tree, and now it can have one without
+  // touching plain autocomplete.
+  [Editors.SubClass]: (p) => <MyClassTree value={p.value} onChange={p.onChange} />,
 };
 
 <MetadataForm form={form} widgets={widgets} />;
@@ -262,7 +275,7 @@ flowchart LR
     controller["useMetadataForm<br/>controller + observable graph"]
     form["MetadataForm → FieldRenderer"]
     binding["binding layer<br/>RDF ⇄ primitive"]
-    widgets["dumb widgets · editor IRI → WidgetKind"]
+    widgets["dumb widgets · keyed by editor IRI"]
     controller --> form --> widgets
     widgets <--> binding
   end

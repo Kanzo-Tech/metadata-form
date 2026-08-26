@@ -12,13 +12,29 @@ export interface ExampleBranding {
   logoUrl?: string;
   /** Intrinsic width/height ratio of the wordmark, for crisp sizing. */
   logoRatio?: number;
-  /** Radix accent color name closest to the brand (adapts to light/dark). */
-  accentColor?: string;
-  /** Radix gray color name. */
-  grayColor?: string;
-  /** Preferred appearance for this example (the brand's default look). The example
-   *  wins while active and reverts when you switch away — same as the accent. */
-  appearance?: "light" | "dark";
+  /**
+   * A published theme name from `@kanzo-tech/theme` (e.g. `"night"`, `"nord"`,
+   * `"kanzo-dark"`). The example wears it while active and it reverts when you
+   * switch away.
+   *
+   * This replaced a Radix `accentColor` + `grayColor` + `appearance` triple. A
+   * brand is not a hue plus a mode here: it is a theme, a flat block of CSS that
+   * travels in the page under its own `[data-theme]`, so naming one is the whole
+   * of it and the light/dark sides come with it.
+   *
+   * **Declared but not yet applied, deliberately.** `ThemePrefs.theme` is a map
+   * per appearance side, not a string, and the only way to set it is through the
+   * provider's preference store — which is what the user chose in the Preferences
+   * panel, and is persisted. Wiring this naively means opening an example silently
+   * rewrites somebody's saved theme, and reverting on switch cannot recover a
+   * choice made *while* an example was active.
+   *
+   * The open question is whose choice wins, and it is a product decision rather
+   * than a mechanical one: either a brand is a non-persisting overlay the provider
+   * would have to support, or an example may not override a stated preference at
+   * all. Left unwired until that is answered.
+   */
+  theme?: string;
   /** Browser-tab title while this example is active. */
   docTitle?: string;
   /** Bundled asset URL for the browser-tab favicon (the brand mark). */
@@ -58,9 +74,7 @@ const EVIDENZE_HEALTH_OPTIONS: PermalinkOptions = { validateOn: "change", rootSh
 const EVIDENZE_BRANDING: ExampleBranding = {
   logoUrl: evidenzeLogo,
   logoRatio: 677 / 115,
-  accentColor: "indigo",
-  grayColor: "slate",
-  appearance: "dark",
+  theme: "night",
   docTitle: "Evidenze · Dataset Onboarding",
   faviconUrl: evidenzeIcon,
   tint: true,

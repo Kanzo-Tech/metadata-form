@@ -70,14 +70,11 @@ function ThemedApp() {
   // A bundled example may carry its own identity (logo bar + accent); when present
   // it overrides the user's accent so the playground wears that product's brand.
   const branding = shape.branding;
-  // A brand's Radix accent/gray names are NOT carried over: they were that
-  // library's palette vocabulary and have no counterpart here. A brand is a
-  // published theme in this system, so the right shape is `branding.theme` naming
-  // one — a change to the examples, not to this file.
-  //
-  // `branding.appearance` is likewise unused now. It existed to tell the code
-  // editors which CodeMirror theme to wear, and the design system's editor reads
-  // the page's theme itself.
+  // `branding.theme` names a published theme but is NOT applied — see the field's
+  // own comment for why (it would overwrite the user's persisted choice). What did
+  // change is that nothing here has to be told which look is on any more: the
+  // theme is on <html>, so the code editors read it themselves rather than taking
+  // a `dark` prop computed up here.
   // UI-language selector: the shape's label languages, defaulting to the first.
   // Reset when the example changes so we land on its default language.
   const localeOptions = shape.uiLocales ?? [];

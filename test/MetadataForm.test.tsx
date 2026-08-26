@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent, waitFor, renderHook, act, within } from "@testing-library/react";
-import { Theme } from "@radix-ui/themes";
 import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { ValidationSummary } from "@/react/validation/ValidationSummary.js";
 import { FormAssistant } from "@/react/assistant/FormAssistant.js";
@@ -10,14 +9,12 @@ import { healthDcatApShapes } from "@examples/health-dcat-ap/index.js";
 
 const shapes = healthDcatApShapes;
 
-/** Test helper: the unified usage (hook + component) inside a Radix <Theme>. */
+/** Test helper: the unified usage (hook + component) inside a Radix . */
 function Form(props: UseMetadataFormOptions & { onReady?: (q: number) => void }) {
   const form = useMetadataForm({ validateOn: "off", ...props });
   props.onReady?.(form.quads.length);
   return (
-    <Theme>
-      <MetadataForm form={form} />
-    </Theme>
+    <MetadataForm form={form} />
   );
 }
 
@@ -33,9 +30,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
     function TabsForm() {
       const form = useMetadataForm({ shapes, validateOn: "off" });
       return (
-        <Theme>
-          <MetadataForm form={form} layout="tabs" />
-        </Theme>
+        <MetadataForm form={form} layout="tabs" />
       );
     }
     render(<TabsForm />);
@@ -50,9 +45,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
       const form = useMetadataForm({ shapes, validateOn: "off" });
       formRef = form;
       return (
-        <Theme>
-          <MetadataForm form={form} layout="tabs" />
-        </Theme>
+        <MetadataForm form={form} layout="tabs" />
       );
     }
     render(<TabsForm />);
@@ -79,9 +72,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
         assist: { suggest: async function* ({ field }) { yield { value: `Suggested ${field.label}` }; } },
       });
       return (
-        <Theme>
-          <MetadataForm form={form} />
-        </Theme>
+        <MetadataForm form={form} />
       );
     }
     render(<AssistForm />);
@@ -117,9 +108,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
         },
       });
       return (
-        <Theme>
-          <MetadataForm form={form} />
-        </Theme>
+        <MetadataForm form={form} />
       );
     }
     render(<AssistForm />);
@@ -157,9 +146,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
         assist: { complete: async function* () { yield "the"; yield " rest"; } },
       });
       return (
-        <Theme>
-          <MetadataForm form={form} />
-        </Theme>
+        <MetadataForm form={form} />
       );
     }
     render(<GhostForm />);
@@ -186,10 +173,10 @@ describe("useMetadataForm + <MetadataForm>", () => {
     function Guided() {
       const form = useMetadataForm({ shapes, validateOn: "off" });
       return (
-        <Theme>
+        <>
           <MetadataForm form={form} />
           <FormAssistant form={form} />
-        </Theme>
+        </>
       );
     }
     render(<Guided />);
@@ -242,10 +229,10 @@ describe("useMetadataForm + <MetadataForm>", () => {
     function Live() {
       const form = useMetadataForm({ shapes, data, focusNode: "http://example.org/d1", validateOn: "change" });
       return (
-        <Theme>
+        <>
           <MetadataForm form={form} />
           <ValidationSummary form={form} />
-        </Theme>
+        </>
       );
     }
     render(<Live />);
@@ -273,9 +260,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
       const form = useMetadataForm({ shapes, validateOn: "off" });
       formRef = form;
       return (
-        <Theme>
-          <MetadataForm form={form} />
-        </Theme>
+        <MetadataForm form={form} />
       );
     }
     render(<F />);
@@ -342,9 +327,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
     function Summary() {
       const form = useMetadataForm({ shapes, validateOn: "change" });
       return (
-        <Theme>
-          <ValidationSummary form={form} />
-        </Theme>
+        <ValidationSummary form={form} />
       );
     }
     render(<Summary />);

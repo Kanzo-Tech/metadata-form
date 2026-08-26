@@ -52,12 +52,18 @@
     "build:wasm": "bash ../rudof-fork/rudof_wasm/build.sh"
   },
   "peerDependencies": {
+    "@kanzo-tech/ai": ">=0",
+    "@kanzo-tech/ui": ">=0",
     "ai": ">=5",
+    "lucide-react": ">=1",
     "react": ">=19",
     "react-dom": ">=19",
     "zod": ">=3.23"
   },
   "peerDependenciesMeta": {
+    "@kanzo-tech/ai": {
+      "optional": true
+    },
     "ai": {
       "optional": true
     },
@@ -66,11 +72,7 @@
     }
   },
   "dependencies": {
-    "@kanzo-tech/ai": "file:vendor/kanzo-tech-ai-0.0.0.tgz",
-    "@kanzo-tech/rudof-wasm": "^0.3.4",
-    "@kanzo-tech/theme": "file:vendor/kanzo-tech-theme-0.0.0.tgz",
-    "@kanzo-tech/ui": "file:vendor/kanzo-tech-ui-0.0.0.tgz",
-    "lucide-react": "^1.34.0"
+    "@kanzo-tech/rudof-wasm": "^0.3.4"
   },
   "devDependencies": {
     "@ai-sdk/anthropic": "^3.0.86",
@@ -83,6 +85,9 @@
     "@codemirror/state": "^6.7.1",
     "@codemirror/view": "^6.43.9",
     "@eslint/js": "^9.39.4",
+    "@kanzo-tech/ai": "file:vendor/kanzo-tech-ai-0.0.0.tgz",
+    "@kanzo-tech/theme": "file:vendor/kanzo-tech-theme-0.0.0.tgz",
+    "@kanzo-tech/ui": "file:vendor/kanzo-tech-ui-0.0.0.tgz",
     "@lezer/highlight": "^1.2.3",
     "@rdfjs/types": "^1.1.2",
     "@testing-library/dom": "^10.4.1",
@@ -95,6 +100,7 @@
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^26.0.0",
+    "lucide-react": "^1.34.0",
     "lz-string": "^1.5.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
