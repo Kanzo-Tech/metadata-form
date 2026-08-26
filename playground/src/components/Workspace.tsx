@@ -23,6 +23,10 @@ export interface WorkspaceColumn {
  * splitter builds its panel model once — a column appearing or leaving without a
  * new key leaves the model describing a row that is no longer there, and the drag
  * resizes the wrong seam.
+ *
+ * Both verified in the browser at 1500px: three columns with two draggable seams,
+ * then closing Source rebuilds the row as two and the next drag still moves the
+ * seam it is on. The form stops at its own `minSize`.
  */
 export function WorkspaceColumns({
   columns,
