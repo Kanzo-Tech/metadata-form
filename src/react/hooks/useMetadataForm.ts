@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode } from "../../engine/factory.js";
 import { mapResults } from "../../form/validation.js";
+import { resolveStrings, type DeepPartial, type Strings } from "../../i18n/strings.js";
 import type { FormModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
 import type { ShapeModel } from "../../form/ShapeIR.js";
@@ -26,6 +27,9 @@ export interface UseMetadataFormOptions {
   rootShape?: string;
   /** UI locale for label/description language selection. */
   locale?: string;
+  /** Override the built-in UI string catalog (language picker chrome, default
+   *  validation messages). Layered over the locale's built-in table. */
+  strings?: DeepPartial<Strings>;
   validateOn?: "change" | "manual" | "off";
   validationDebounceMs?: number;
   /** The single assistance seam (reference search · suggestions · completion).
@@ -59,6 +63,8 @@ export interface MetadataFormController {
   /** Observe graph changes (autosave, external sync). Returns an unsubscribe. */
   subscribe(listener: () => void): () => void;
   locale: string;
+  /** The resolved UI string catalog for the active locale (+ any override). */
+  strings: Strings;
   /** The underlying editable graph (mutable, observable). */
   graph?: GraphState;
   assist?: FormAssist;
@@ -97,6 +103,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     focusNode,
     rootShape,
     locale = "en",
+    strings: stringsOption,
     validateOn = "change",
     validationDebounceMs = 300,
     assist,
@@ -104,6 +111,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   } = options;
 
   const engine = useMemo(() => providedEngine ?? createRudofEngine(), [providedEngine]);
+  const strings = useMemo(() => resolveStrings(locale, stringsOption), [locale, stringsOption]);
 
   const [prepared, setPrepared] = useState<Prepared | null>(null);
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -183,12 +191,12 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     timer.current = setTimeout(async () => {
       // Validate the live session in place (no reload) — scoped to the focus.
       const results = await engine.validateFocus(prepared.focusNode, prepared.rootShapeId);
-      setErrors(mapResults(results));
+      setErrors(mapResults(results, locale, strings));
     }, validationDebounceMs);
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [engine, prepared, version, validateOn, validationDebounceMs]);
+  }, [engine, prepared, version, validateOn, validationDebounceMs, locale, strings]);
 
   const isValid = useMemo(() => {
     for (const list of errors.values()) {
@@ -219,10 +227,10 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const validate = useCallback(async () => {
     if (!prepared) return [];
     const results = await engine.validateFocus(prepared.focusNode, prepared.rootShapeId);
-    const map = mapResults(results);
+    const map = mapResults(results, locale, strings);
     setErrors(map);
     return [...map.values()].flat();
-  }, [engine, prepared]);
+  }, [engine, prepared, locale, strings]);
 
   return useMemo<MetadataFormController>(
     () => ({
@@ -235,6 +243,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       isValid,
       report,
       locale,
+      strings,
       graph,
       // rudof serializes just the focus's subgraph (one record), prefixes retained.
       toTurtle: () => (model ? engine.serializeFocus(model.focusNode, "text/turtle") : Promise.resolve("")),
@@ -248,6 +257,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       _graph: graph,
       _revealTarget: revealTarget,
     }),
-    [model, error, getQuads, errors, isValid, report, locale, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
+    [model, error, getQuads, errors, isValid, report, locale, strings, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
   );
 }

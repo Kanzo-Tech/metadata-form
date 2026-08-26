@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
 import { namedNode, literal } from "@/engine/factory.js";
+import { mapResults } from "@/form/validation.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import { projectTree, projectTreeSync } from "@/engine/projectTree.js";
 import { allFields } from "@/form/FormModel.js";
@@ -91,6 +92,33 @@ describe("RudofEngine over the REAL wasm", () => {
     // Conforming data → no violations.
     await engine.loadData(dataTtl);
     expect(await engine.validate()).toHaveLength(0);
+  });
+
+  it("carries multilingual sh:message through the report and mapResults picks by locale", async () => {
+    // A minCount constraint with author messages in es + ca. The wasm merges the
+    // engine's untagged default with these lang-tagged entries; the ABI must keep
+    // the tags (not flatten), so mapResults can select the locale's wording.
+    await engine.loadShapes(`
+      @prefix sh:  <http://www.w3.org/ns/shacl#> .
+      @prefix ex:  <${EX}> .
+      @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      ex:PersonShape a sh:NodeShape ; sh:targetClass ex:Person ;
+        sh:property [ sh:path ex:name ; sh:datatype xsd:string ; sh:minCount 1 ;
+          sh:message "El nombre es obligatorio"@es , "El nom és obligatori"@ca ] .
+    `);
+    await engine.loadData(`@prefix ex: <${EX}> . ex:dave a ex:Person .`);
+    const results = await engine.validate();
+    const daveResult = results.find((r) => r.focusNode.value === `${EX}dave`);
+    expect(daveResult).toBeTruthy();
+    // The lang tags survived the ABI (the whole point of the fork change).
+    const langs = daveResult!.messages.map((m) => m.language).sort();
+    expect(langs).toEqual(expect.arrayContaining(["ca", "es"]));
+
+    const key = `${EX}dave|${EX}name`;
+    expect(mapResults(results, "es").get(key)?.[0].message).toBe("El nombre es obligatorio");
+    expect(mapResults(results, "ca").get(key)?.[0].message).toBe("El nom és obligatori");
+    // No author message for en → localized catalog default.
+    expect(mapResults(results, "en").get(key)?.[0].message).toBe("This field is required");
   });
 
   it("validateFocus scopes validation to a single focus node (the spine's validate_focus)", async () => {

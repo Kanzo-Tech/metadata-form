@@ -141,6 +141,7 @@ evds-sh:dataset-accessJustification
     sh:datatype xsd:string ;
     sh:nodeKind sh:Literal ;
     sh:minCount 1 ;
+    sh:message "Indica el motivo del acceso restringido; es obligatorio cuando el acceso es «Restringido»."@es, "Indica el motiu de l'accés restringit; és obligatori quan l'accés és «Restringit»."@ca ;
     shui:editor shui:TextAreaEditor .
 
 #################################################################
@@ -156,7 +157,8 @@ evds-sh:dataset-title
     sh:order 1 ;
     sh:datatype rdf:langString ;
     sh:nodeKind sh:Literal ;
-    sh:minCount 1 .
+    sh:minCount 1 ;
+    sh:message "El título del dataset es obligatorio."@es, "El títol del dataset és obligatori."@ca .
 
 evds-sh:dataset-description
     a sh:PropertyShape ;
@@ -286,7 +288,8 @@ evds-sh:dataset-accessRights
         <http://publications.europa.eu/resource/authority/access-right/PUBLIC>
         <http://publications.europa.eu/resource/authority/access-right/RESTRICTED>
         <http://publications.europa.eu/resource/authority/access-right/NON_PUBLIC>
-    ) .
+    ) ;
+    sh:message "Selecciona el nivel de acceso del dataset."@es, "Selecciona el nivell d'accés del dataset."@ca .
 
 evds-sh:dataset-distribution
     a sh:PropertyShape ;
@@ -315,7 +318,8 @@ evds-sh:dataset-participantDID
     sh:nodeKind sh:Literal ;
     sh:pattern "^did:web:.+" ;
     sh:minCount 1 ;
-    sh:maxCount 1 .
+    sh:maxCount 1 ;
+    sh:message "Introduce el DID del participante en formato did:web:organizacion.example.org."@es, "Introdueix el DID del participant en format did:web:organitzacio.example.org."@ca .
 
 evds-sh:dataset-dataspaceRole
     a sh:PropertyShape ;
@@ -581,4 +585,5 @@ evds-sh:field-position
     sh:datatype xsd:integer ;
     sh:nodeKind sh:Literal ;
     sh:minInclusive 0 ;
-    sh:maxCount 1 .
+    sh:maxCount 1 ;
+    sh:message "La posición debe ser un número entero igual o mayor que 0."@es, "La posició ha de ser un nombre enter igual o més gran que 0."@ca .

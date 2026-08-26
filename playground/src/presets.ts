@@ -1,5 +1,6 @@
 import { healthDcatApShapes, healthDcatApSampleData, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
 import { evidenzeShapes, evidenzeSampleData, evidenzeLogo, evidenzeIcon, evidenzeRootShape } from "@examples/evidenze-dataspace/index.js";
+import { evidenzeHealthShapes, evidenzeHealthSampleData, evidenzeHealthRootShape } from "@examples/evidenze-health/index.js";
 import type { PermalinkOptions, PermalinkState } from "./lib/permalink.js";
 
 /** Optional per-example branding — lets a bundled example wear its own identity
@@ -51,6 +52,19 @@ export interface ShapeExample {
 // exact regardless of how many typed resources the data graph carries.
 const HEALTH_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: healthDcatApRootShape };
 const EVIDENZE_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: evidenzeRootShape };
+const EVIDENZE_HEALTH_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: evidenzeHealthRootShape };
+
+/** Evidenze branding, shared by both Evidenze examples. */
+const EVIDENZE_BRANDING: ExampleBranding = {
+  logoUrl: evidenzeLogo,
+  logoRatio: 677 / 115,
+  accentColor: "indigo",
+  grayColor: "slate",
+  appearance: "dark",
+  docTitle: "Evidenze · Dataset Onboarding",
+  faviconUrl: evidenzeIcon,
+  tint: true,
+};
 
 /** Bundled examples as permalink presets: picking one applies its state and syncs
  *  the URL — the exact same path as opening a shared link. The content is authored
@@ -84,16 +98,7 @@ export const EXAMPLES: ShapeExample[] = [
     label: "Evidenze Data Space (SHACL 1.2)",
     // Evidenze's own identity (colours from their site: navy #091a40, blue
     // #1d4ebd, green #27b564) — the app wears it while this example is active.
-    branding: {
-      logoUrl: evidenzeLogo,
-      logoRatio: 677 / 115,
-      accentColor: "indigo",
-      grayColor: "slate",
-      appearance: "dark",
-      docTitle: "Evidenze · Dataset Onboarding",
-      faviconUrl: evidenzeIcon,
-      tint: true,
-    },
+    branding: EVIDENZE_BRANDING,
     uiLocales: ["es", "ca"],
     presets: [
       {
@@ -110,6 +115,30 @@ export const EXAMPLES: ShapeExample[] = [
           shapesText: evidenzeShapes,
           dataText: evidenzeSampleData,
           options: EVIDENZE_OPTIONS,
+        },
+      },
+    ],
+  },
+  {
+    id: "evidenze-health",
+    label: "Evidenze · HealthDCAT-AP (R7)",
+    branding: { ...EVIDENZE_BRANDING, docTitle: "Evidenze · HealthDCAT-AP" },
+    uiLocales: ["es", "ca"],
+    presets: [
+      {
+        id: "empty",
+        label: "Empty (new dataset)",
+        state: { v: 1, exampleId: "evidenze-health", shapesText: evidenzeHealthShapes, dataText: "", options: EVIDENZE_HEALTH_OPTIONS },
+      },
+      {
+        id: "msk",
+        label: "AIFOS · MSK Cancer Therapy",
+        state: {
+          v: 1,
+          exampleId: "evidenze-health",
+          shapesText: evidenzeHealthShapes,
+          dataText: evidenzeHealthSampleData,
+          options: EVIDENZE_HEALTH_OPTIONS,
         },
       },
     ],

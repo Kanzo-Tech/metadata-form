@@ -1,6 +1,18 @@
 import { useMemo, useState } from "react";
 import { Box, Flex, Popover, Text, TextField } from "@radix-ui/themes";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
+import type { Strings } from "../../i18n/strings.js";
+
+/** UI chrome, injectable for i18n. English defaults keep the widget usable
+ *  standalone (outside a <MetadataForm>, which otherwise supplies the catalog). */
+type PickerStrings = Strings["languagePicker"];
+const DEFAULT_STRINGS: PickerStrings = {
+  label: "Language",
+  searchPlaceholder: "Search or type a tag…",
+  filterPlaceholder: "Filter…",
+  noMatches: "No matches",
+  enterToUse: "Press Enter to use this tag",
+};
 
 /**
  * A compact, searchable language-tag picker for `rdf:langString` values, designed
@@ -51,6 +63,7 @@ export function LanguagePicker({
   allowed,
   disabled,
   invalid,
+  strings = DEFAULT_STRINGS,
 }: {
   value: string;
   onChange: (tag: string) => void;
@@ -58,6 +71,8 @@ export function LanguagePicker({
   allowed?: string[];
   disabled?: boolean;
   invalid?: boolean;
+  /** Localized UI chrome; defaults to English when rendered standalone. */
+  strings?: PickerStrings;
 }) {
   const constrained = !!(allowed && allowed.length);
   const [open, setOpen] = useState(false);
@@ -99,7 +114,7 @@ export function LanguagePicker({
         <button
           type="button"
           disabled={disabled}
-          aria-label="Idioma"
+          aria-label={strings.label}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -118,7 +133,7 @@ export function LanguagePicker({
             whiteSpace: "nowrap",
           }}
         >
-          {value || "idioma"}
+          {value || strings.label}
           <ChevronDownIcon aria-hidden style={{ opacity: 0.6, flexShrink: 0 }} />
         </button>
       </Popover.Trigger>
@@ -126,7 +141,7 @@ export function LanguagePicker({
         <TextField.Root
           autoFocus
           size="1"
-          placeholder={constrained ? "Filtrar…" : "Buscar o escribir tag…"}
+          placeholder={constrained ? strings.filterPlaceholder : strings.searchPlaceholder}
           value={query}
           onChange={(e) => { setQuery(e.target.value); setActive(0); }}
           onKeyDown={onKeyDown}
@@ -153,7 +168,7 @@ export function LanguagePicker({
             ))}
             {filtered.length === 0 && (
               <Text size="1" color="gray" style={{ padding: "var(--space-1) var(--space-2)" }}>
-                {constrained ? "Sin coincidencias" : "Pulsa Enter para usar este tag"}
+                {constrained ? strings.noMatches : strings.enterToUse}
               </Text>
             )}
           </Flex>

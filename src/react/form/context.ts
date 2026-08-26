@@ -5,6 +5,7 @@ import type { FormModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
 import type { FormAssist, WidgetRegistry } from "../widgets/widgets.js";
 import type { FormReport } from "../validation/useFormReport.js";
+import type { Strings } from "../../i18n/strings.js";
 
 /** Arrangement of the root property groups. */
 export type FormLayout = "sequential" | "tabs" | "steps";
@@ -26,6 +27,8 @@ export interface FormContextValue {
   model: FormModel;
   widgets: WidgetRegistry;
   locale: string;
+  /** Resolved UI string catalog (language-picker chrome, default messages). */
+  strings: Strings;
   errors: Map<string, FieldError[]>;
   report: FormReport;
   assist?: FormAssist;

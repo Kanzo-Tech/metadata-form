@@ -38,6 +38,7 @@ export function MetadataForm({ form, widgets, layout, grid, className }: Metadat
       model: form.model,
       widgets: registry,
       locale: form.locale,
+      strings: form.strings,
       errors: form.errors,
       report: form.report,
       assist: form.assist,
@@ -45,7 +46,7 @@ export function MetadataForm({ form, widgets, layout, grid, className }: Metadat
       grid,
       revealTarget: form._revealTarget,
     };
-  }, [form._graph, form.model, registry, form.locale, form.errors, form.report, form.assist, layout, grid, form._revealTarget]);
+  }, [form._graph, form.model, registry, form.locale, form.strings, form.errors, form.report, form.assist, layout, grid, form._revealTarget]);
 
   if (form.error) {
     return (

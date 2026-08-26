@@ -21,7 +21,8 @@ function toValidationResult(r: RudofResult): ValidationResult {
   return {
     focusNode: toTerm(r.focusNode),
     path: r.path ? toTerm(r.path) : undefined,
-    message: r.message.join(" "),
+    // Keep every lang-tagged message; the locale-aware pick happens in `friendly`.
+    messages: r.message,
     severity: mapSeverity(r.severity),
     constraint: r.sourceConstraintComponent,
     value: r.value ? toTerm(r.value) : undefined,

@@ -1,0 +1,792 @@
+@prefix adms:         <http://www.w3.org/ns/adms#> .
+@prefix csvw:         <http://www.w3.org/ns/csvw#> .
+@prefix dcat:         <http://www.w3.org/ns/dcat#> .
+@prefix dcatap:       <http://data.europa.eu/r5r/> .
+@prefix dct:          <http://purl.org/dc/terms/> .
+@prefix evds:         <https://dataspace.evidenze.example/ns#> .
+@prefix evds-sh:      <https://dataspace.evidenze.example/shapes#> .
+@prefix evds-voc:     <https://dataspace.evidenze.example/voc#> .
+@prefix foaf:         <http://xmlns.com/foaf/0.1/> .
+@prefix healthdcatap: <http://healthdataportal.eu/ns/health#> .
+@prefix owl:          <http://www.w3.org/2002/07/owl#> .
+@prefix prov:         <http://www.w3.org/ns/prov#> .
+@prefix rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:           <http://www.w3.org/ns/shacl#> .
+@prefix skos:         <http://www.w3.org/2004/02/skos/core#> .
+@prefix vcard:        <http://www.w3.org/2006/vcard/ns#> .
+@prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
+
+#################################################################
+# Evidenze Data Space — HealthDCAT-AP Release 7 onboarding shape
+# Pure SHACL 1.2 + SHACL-UI (shui:) — no DASH.
+#
+# Migrated from the original DASH profile:
+#  · the 4 node shapes with the same sh:targetClass (Health/Public/
+#    NonPublic/Restricted, differing only by a hidden sh:hasValue on
+#    dct:accessRights) collapse into this SINGLE shape with a visible
+#    access-level selector;
+#  · the root sh:or (hasStructuredData ⇒ hasVariables) becomes a SHACL 1.2
+#    sh:if/sh:then: toggling "Datos estructurados" reveals and requires the
+#    variable dictionary — rendered live by the engine;
+#  · DASH editors become shui:editor; hidden constant-stamp fields dropped;
+#  · the huge EU authority enums (language ~8200, file-type ~227) are trimmed
+#    to a representative set — the full authority lists apply in production.
+#################################################################
+
+evds-sh:ShapeGraph
+    a owl:Ontology ;
+    rdfs:label "Evidenze Data Space · HealthDCAT-AP Release 7"@es , "Evidenze Data Space · HealthDCAT-AP Release 7"@ca ;
+    dct:conformsTo <https://healthdataeu.pages.code.europa.eu/healthdcat-ap/releases/release-7/> ;
+    rdfs:comment "Perfil de captura de metadatos para datasets de salud publicables en Evidenze Data Space, alineado con HealthDCAT-AP Release 7. La validación normativa final debe ejecutarse contra las SHACL oficiales de HealthDCAT-AP R7."@es .
+
+#################################################################
+# Minimal Evidenze controlled values (local vocabulary)
+#################################################################
+
+evds-voc:provider     a skos:Concept ; skos:prefLabel "Proveedor de datos"@es , "Proveïdor de dades"@ca .
+evds-voc:consumer     a skos:Concept ; skos:prefLabel "Consumidor de datos"@es , "Consumidor de dades"@ca .
+evds-voc:intermediary a skos:Concept ; skos:prefLabel "Intermediario"@es , "Intermediari"@ca .
+
+evds-voc:production    a skos:Concept ; skos:prefLabel "Producción"@es , "Producció"@ca .
+evds-voc:preproduction a skos:Concept ; skos:prefLabel "Preproducción"@es , "Preproducció"@ca .
+evds-voc:sandbox       a skos:Concept ; skos:prefLabel "Entorno de pruebas"@es , "Entorn de proves"@ca .
+
+#################################################################
+# Wizard groups
+#################################################################
+
+evds-sh:basicInfoGroup      a sh:PropertyGroup ; rdfs:label "1. Información básica"@es , "1. Informació bàsica"@ca ; sh:order 1 .
+evds-sh:classificationGroup a sh:PropertyGroup ; rdfs:label "2. Clasificación"@es , "2. Classificació"@ca ; sh:order 2 .
+evds-sh:organisationGroup   a sh:PropertyGroup ; rdfs:label "3. Organización y contacto"@es , "3. Organització i contacte"@ca ; sh:order 3 .
+evds-sh:accessGroup         a sh:PropertyGroup ; rdfs:label "4. Acceso al dataset"@es , "4. Accés al dataset"@ca ; sh:order 4 .
+evds-sh:evidenzeGroup       a sh:PropertyGroup ; rdfs:label "5. Evidenze Data Space"@es , "5. Evidenze Data Space"@ca ; sh:order 5 .
+evds-sh:healthGroup         a sh:PropertyGroup ; rdfs:label "6. HealthDCAT-AP"@es , "6. HealthDCAT-AP"@ca ; sh:order 6 .
+evds-sh:variablesGroup      a sh:PropertyGroup ; rdfs:label "7. Diccionario de variables"@es , "7. Diccionari de variables"@ca ; sh:order 7 .
+
+evds-sh:publisherDetailsGroup     a sh:PropertyGroup ; rdfs:label "Datos de la organización"@es , "Dades de l'organització"@ca ; sh:order 1 .
+evds-sh:contactDetailsGroup       a sh:PropertyGroup ; rdfs:label "Datos de contacto"@es , "Dades de contacte"@ca ; sh:order 1 .
+evds-sh:distributionDetailsGroup  a sh:PropertyGroup ; rdfs:label "Datos de acceso"@es , "Dades d'accés"@ca ; sh:order 1 .
+evds-sh:hdabDetailsGroup          a sh:PropertyGroup ; rdfs:label "Organismo de acceso a datos de salud"@es , "Organisme d'accés a dades de salut"@ca ; sh:order 1 .
+evds-sh:tableDetailsGroup         a sh:PropertyGroup ; rdfs:label "Tabla"@es , "Taula"@ca ; sh:order 1 .
+evds-sh:columnDetailsGroup        a sh:PropertyGroup ; rdfs:label "Variable"@es , "Variable"@ca ; sh:order 1 .
+
+#################################################################
+# Root shape — single HealthDCAT-AP onboarding form
+#################################################################
+
+evds-sh:HealthDatasetOnboardingShape
+    a sh:NodeShape ;
+    rdfs:label "Formulario HealthDCAT-AP Release 7 para dataset Evidenze"@es , "Formulari HealthDCAT-AP Release 7 per a dataset Evidenze"@ca ;
+    sh:targetClass dcat:Dataset ;
+    sh:property
+        evds-sh:dataset-title,
+        evds-sh:dataset-description,
+        evds-sh:dataset-identifier,
+        evds-sh:dataset-landingPage,
+        evds-sh:dataset-theme,
+        evds-sh:dataset-keyword,
+        evds-sh:dataset-language,
+        evds-sh:dataset-publisher,
+        evds-sh:dataset-contactPoint,
+        evds-sh:dataset-accessRights,
+        evds-sh:dataset-distribution,
+        evds-sh:dataset-participantDID,
+        evds-sh:dataset-dataspaceRole,
+        evds-sh:dataset-organisationalUnit,
+        evds-sh:dataset-environmentZone,
+        evds-sh:dataset-healthCategory,
+        evds-sh:dataset-healthTheme,
+        evds-sh:dataset-hdab,
+        evds-sh:dataset-conformsTo,
+        evds-sh:dataset-hasCodingSystem,
+        evds-sh:dataset-wasGeneratedBy,
+        evds-sh:dataset-hasStructuredData ;
+    # SHACL 1.2 conditional (was a root sh:or): if the dataset declares
+    # structured data, reveal & require the variable dictionary.
+    sh:if evds-sh:StructuredDataCondition ;
+    sh:then evds-sh:StructuredDataRequirements .
+
+evds-sh:StructuredDataCondition
+    a sh:NodeShape ;
+    sh:property [
+        sh:path healthdcatap:hasStructuredData ;
+        sh:hasValue true ;
+    ] .
+
+evds-sh:StructuredDataRequirements
+    a sh:NodeShape ;
+    sh:property evds-sh:dataset-hasVariables .
+
+#################################################################
+# 1. Basic information
+#################################################################
+
+evds-sh:dataset-title
+    a sh:PropertyShape ;
+    sh:path dct:title ;
+    sh:name "Título del dataset"@es , "Títol del dataset"@ca ;
+    sh:description "Nombre claro y representativo del dataset, orientado a facilitar su identificación por parte de otros participantes del espacio de datos."@es ;
+    sh:group evds-sh:basicInfoGroup ;
+    sh:order 1 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    sh:message "El título del dataset es obligatorio."@es , "El títol del dataset és obligatori."@ca .
+
+evds-sh:dataset-description
+    a sh:PropertyShape ;
+    sh:path dct:description ;
+    sh:name "Descripción del dataset"@es , "Descripció del dataset"@ca ;
+    sh:description "Descripción sintética del contenido del dataset, su alcance y su utilidad prevista dentro del espacio de datos."@es ;
+    sh:group evds-sh:basicInfoGroup ;
+    sh:order 2 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    shui:editor shui:TextAreaEditor .
+
+evds-sh:dataset-identifier
+    a sh:PropertyShape ;
+    sh:path dct:identifier ;
+    sh:name "Identificador del dataset"@es , "Identificador del dataset"@ca ;
+    sh:description "Código o identificador estable utilizado para referenciar el dataset dentro de la organización o del espacio de datos."@es ;
+    sh:group evds-sh:basicInfoGroup ;
+    sh:order 3 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 .
+
+evds-sh:dataset-landingPage
+    a sh:PropertyShape ;
+    sh:path dcat:landingPage ;
+    sh:name "Página del dataset"@es , "Pàgina del dataset"@ca ;
+    sh:description "Página web con información general sobre el dataset o el procedimiento de consulta asociado."@es ;
+    sh:group evds-sh:basicInfoGroup ;
+    sh:order 4 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+#################################################################
+# 2. Classification
+#################################################################
+
+evds-sh:dataset-theme
+    a sh:PropertyShape ;
+    sh:path dcat:theme ;
+    sh:name "Tema DCAT"@es , "Tema DCAT"@ca ;
+    sh:description "Área temática principal del dataset en el vocabulario de temas de datos de la UE."@es ;
+    sh:group evds-sh:classificationGroup ;
+    sh:order 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:in (
+        <http://publications.europa.eu/resource/authority/data-theme/HEAL>
+        <http://publications.europa.eu/resource/authority/data-theme/TECH>
+        <http://publications.europa.eu/resource/authority/data-theme/SOCI>
+        <http://publications.europa.eu/resource/authority/data-theme/GOVE>
+        <http://publications.europa.eu/resource/authority/data-theme/EDUC>
+    ) .
+
+evds-sh:dataset-keyword
+    a sh:PropertyShape ;
+    sh:path dcat:keyword ;
+    sh:name "Palabras clave"@es , "Paraules clau"@ca ;
+    sh:description "Términos relevantes para facilitar la búsqueda y recuperación del dataset."@es ;
+    sh:group evds-sh:classificationGroup ;
+    sh:order 2 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal .
+
+evds-sh:dataset-language
+    a sh:PropertyShape ;
+    sh:path dct:language ;
+    sh:name "Idioma del dataset"@es , "Idioma del dataset"@ca ;
+    sh:description "Idioma principal utilizado en el dataset."@es ;
+    sh:group evds-sh:classificationGroup ;
+    sh:order 3 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 ;
+    # Authority list completa (~8200 idiomas) en producción; recortada para el demo.
+    sh:in (
+        <http://publications.europa.eu/resource/authority/language/SPA>
+        <http://publications.europa.eu/resource/authority/language/ENG>
+        <http://publications.europa.eu/resource/authority/language/CAT>
+        <http://publications.europa.eu/resource/authority/language/EUS>
+        <http://publications.europa.eu/resource/authority/language/GLG>
+        <http://publications.europa.eu/resource/authority/language/FRA>
+    ) .
+
+#################################################################
+# 3. Organisation and contact
+#################################################################
+
+evds-sh:dataset-publisher
+    a sh:PropertyShape ;
+    sh:path dct:publisher ;
+    sh:name "Organización publicadora"@es , "Organització publicadora"@ca ;
+    sh:description "Entidad responsable de publicar o mantener la descripción del dataset."@es ;
+    sh:group evds-sh:organisationGroup ;
+    sh:order 1 ;
+    sh:class foaf:Agent ;
+    sh:node evds-sh:PublisherShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+evds-sh:dataset-contactPoint
+    a sh:PropertyShape ;
+    sh:path dcat:contactPoint ;
+    sh:name "Punto de contacto del dataset"@es , "Punt de contacte del dataset"@ca ;
+    sh:description "Persona, buzón o unidad funcional habilitada para atender consultas sobre el dataset."@es ;
+    sh:group evds-sh:organisationGroup ;
+    sh:order 2 ;
+    sh:class vcard:Kind ;
+    sh:node evds-sh:ContactPointShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+#################################################################
+# 4. Access
+#################################################################
+
+evds-sh:dataset-accessRights
+    a sh:PropertyShape ;
+    sh:path dct:accessRights ;
+    sh:name "Nivel de acceso"@es , "Nivell d'accés"@ca ;
+    sh:description "Clasificación del nivel de acceso del dataset según HealthDCAT-AP."@es ;
+    sh:group evds-sh:accessGroup ;
+    sh:order 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:in (
+        <http://publications.europa.eu/resource/authority/access-right/PUBLIC>
+        <http://publications.europa.eu/resource/authority/access-right/RESTRICTED>
+        <http://publications.europa.eu/resource/authority/access-right/NON_PUBLIC>
+        <http://publications.europa.eu/resource/authority/access-right/CONFIDENTIAL>
+        <http://publications.europa.eu/resource/authority/access-right/SENSITIVE>
+        <http://publications.europa.eu/resource/authority/access-right/NORMAL>
+        <http://publications.europa.eu/resource/authority/access-right/OP_DATPRO>
+    ) ;
+    sh:message "Selecciona el nivel de acceso del dataset."@es , "Selecciona el nivell d'accés del dataset."@ca .
+
+evds-sh:dataset-distribution
+    a sh:PropertyShape ;
+    sh:path dcat:distribution ;
+    sh:name "Distribución o procedimiento de acceso"@es , "Distribució o procediment d'accés"@ca ;
+    sh:description "Datos básicos sobre la forma de acceso al dataset: URL de acceso y, cuando proceda, formato y licencia."@es ;
+    sh:group evds-sh:accessGroup ;
+    sh:order 2 ;
+    sh:class dcat:Distribution ;
+    sh:node evds-sh:DistributionShape ;
+    sh:minCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+#################################################################
+# 5. Evidenze Data Space
+#################################################################
+
+evds-sh:dataset-participantDID
+    a sh:PropertyShape ;
+    sh:path evds:participantDID ;
+    sh:name "DID del participante"@es , "DID del participant"@ca ;
+    sh:description "Identificador descentralizado del participante que aporta el dataset. Formato did:web:organizacion.example.org."@es ;
+    sh:group evds-sh:evidenzeGroup ;
+    sh:order 1 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:pattern "^did:web:.+" ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:message "Introduce el DID del participante en formato did:web:organizacion.example.org."@es , "Introdueix el DID del participant en format did:web:organitzacio.example.org."@ca .
+
+evds-sh:dataset-dataspaceRole
+    a sh:PropertyShape ;
+    sh:path evds:dataspaceRole ;
+    sh:name "Rol en Evidenze Data Space"@es , "Rol a Evidenze Data Space"@ca ;
+    sh:description "Rol principal de la entidad participante respecto al dataset registrado."@es ;
+    sh:group evds-sh:evidenzeGroup ;
+    sh:order 2 ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:in ( evds-voc:provider evds-voc:consumer evds-voc:intermediary ) .
+
+evds-sh:dataset-organisationalUnit
+    a sh:PropertyShape ;
+    sh:path evds:organisationalUnit ;
+    sh:name "Unidad organizativa"@es , "Unitat organitzativa"@ca ;
+    sh:description "Área, departamento o unidad responsable de la gestión operativa del dataset."@es ;
+    sh:group evds-sh:evidenzeGroup ;
+    sh:order 3 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:maxCount 1 .
+
+evds-sh:dataset-environmentZone
+    a sh:PropertyShape ;
+    sh:path evds:environmentZone ;
+    sh:name "Entorno"@es , "Entorn"@ca ;
+    sh:description "Entorno en el que se prepara, revisa o publica el registro del dataset."@es ;
+    sh:group evds-sh:evidenzeGroup ;
+    sh:order 4 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 ;
+    sh:in ( evds-voc:production evds-voc:preproduction evds-voc:sandbox ) .
+
+#################################################################
+# 6. HealthDCAT-AP
+#################################################################
+
+evds-sh:dataset-healthCategory
+    a sh:PropertyShape ;
+    sh:path healthdcatap:healthCategory ;
+    sh:name "Categoría de datos de salud"@es , "Categoria de dades de salut"@ca ;
+    sh:description "Categoría HealthDCAT-AP a la que pertenece el dataset."@es ;
+    sh:group evds-sh:healthGroup ;
+    sh:order 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:in (
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/PGEH>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/DIOH>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/EHCT>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/EHRS>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/EINS>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/EMRD>
+    ) ;
+    sh:message "Selecciona la categoría de datos de salud."@es , "Selecciona la categoria de dades de salut."@ca .
+
+evds-sh:dataset-healthTheme
+    a sh:PropertyShape ;
+    sh:path healthdcatap:healthTheme ;
+    sh:name "Temática sanitaria"@es , "Temàtica sanitària"@ca ;
+    sh:description "Tema sanitario principal cubierto por el dataset."@es ;
+    sh:group evds-sh:healthGroup ;
+    sh:order 2 ;
+    sh:nodeKind sh:IRI ;
+    sh:in (
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/CANCER_DISEASE>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/ANTIMICROBIAL_CONTROL>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/BLOOD_INFECTIONS>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/CLIMATE_HEALTH>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/EMERGENCY_SETTINGS>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/ENTERIC_INFECTIONS>
+    ) .
+
+evds-sh:dataset-hdab
+    a sh:PropertyShape ;
+    sh:path healthdcatap:hdab ;
+    sh:name "Organismo de acceso a datos de salud"@es , "Organisme d'accés a dades de salut"@ca ;
+    sh:description "Health Data Access Body responsable de mediar el acceso al dataset."@es ;
+    sh:group evds-sh:healthGroup ;
+    sh:order 3 ;
+    sh:class foaf:Agent ;
+    sh:node evds-sh:HDABShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+evds-sh:dataset-conformsTo
+    a sh:PropertyShape ;
+    sh:path dct:conformsTo ;
+    sh:name "Estándares o modelos de datos"@es , "Estàndards o models de dades"@ca ;
+    sh:description "Estándares o modelos de datos con los que es conforme el dataset."@es ;
+    sh:group evds-sh:healthGroup ;
+    sh:order 4 ;
+    sh:nodeKind sh:IRI ;
+    sh:in (
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/FHIR>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/CDA>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/CDISC-SDTM>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/DICOM>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/HL7-V2>
+    ) .
+
+evds-sh:dataset-hasCodingSystem
+    a sh:PropertyShape ;
+    sh:path healthdcatap:hasCodingSystem ;
+    sh:name "Sistemas de codificación"@es , "Sistemes de codificació"@ca ;
+    sh:description "Sistemas de codificación clínica utilizados en el dataset."@es ;
+    sh:group evds-sh:healthGroup ;
+    sh:order 5 ;
+    sh:nodeKind sh:IRI ;
+    sh:in (
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/SNOMED-CT>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/ICD-10>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/ICD-11>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/ATC>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/HGNC>
+    ) .
+
+evds-sh:dataset-wasGeneratedBy
+    a sh:PropertyShape ;
+    sh:path prov:wasGeneratedBy ;
+    sh:name "Actividad generadora"@es , "Activitat generadora"@ca ;
+    sh:description "Tipo de actividad sanitaria que generó los datos."@es ;
+    sh:group evds-sh:healthGroup ;
+    sh:order 6 ;
+    sh:nodeKind sh:IRI ;
+    sh:in (
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/OBSERVATIONAL_DATA>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/CLINICAL_TRIAL>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/BIOBANK_COLLECTION>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/ADMINISTRATIVE_PROCESSES>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/CENSUS_DATA>
+    ) .
+
+evds-sh:dataset-hasStructuredData
+    a sh:PropertyShape ;
+    sh:path healthdcatap:hasStructuredData ;
+    sh:name "Datos estructurados"@es , "Dades estructurades"@ca ;
+    sh:description "Indica si el dataset contiene datos estructurados descritos por un diccionario de variables."@es ;
+    sh:group evds-sh:healthGroup ;
+    sh:order 7 ;
+    sh:datatype xsd:boolean ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    sh:maxCount 1 .
+
+#################################################################
+# 7. Variable dictionary (revealed by the sh:if/sh:then above)
+#################################################################
+
+evds-sh:dataset-hasVariables
+    a sh:PropertyShape ;
+    sh:path healthdcatap:hasVariables ;
+    sh:name "Diccionario de variables"@es , "Diccionari de variables"@ca ;
+    sh:description "Diccionario de variables del dataset, serializado como CSVW (grupo de tablas → tabla → columnas)."@es ;
+    sh:group evds-sh:variablesGroup ;
+    sh:order 1 ;
+    sh:class csvw:TableGroup ;
+    sh:node evds-sh:CSVWTableGroupShape ;
+    sh:minCount 1 ;
+    sh:message "El diccionario de variables es obligatorio cuando el dataset tiene datos estructurados."@es , "El diccionari de variables és obligatori quan el dataset té dades estructurades."@ca ;
+    shui:editor shui:DetailsEditor .
+
+#################################################################
+# Nested shapes
+#################################################################
+
+evds-sh:PublisherShape
+    a sh:NodeShape ;
+    rdfs:label "Organización publicadora"@es , "Organització publicadora"@ca ;
+    # No sh:targetClass: reached only via sh:node from dataset-publisher. Both this
+    # and HDABShape describe foaf:Agent; a shared class target would cross-apply.
+    sh:property evds-sh:publisher-name, evds-sh:publisher-type, evds-sh:publisher-homepage .
+
+evds-sh:publisher-name
+    a sh:PropertyShape ;
+    sh:path foaf:name ;
+    sh:name "Nombre de la organización"@es , "Nom de l'organització"@ca ;
+    sh:group evds-sh:publisherDetailsGroup ;
+    sh:order 1 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    sh:message "El nombre de la organización es obligatorio."@es , "El nom de l'organització és obligatori."@ca .
+
+evds-sh:publisher-type
+    a sh:PropertyShape ;
+    sh:path dct:type ;
+    sh:name "Tipo de organización"@es , "Tipus d'organització"@ca ;
+    sh:group evds-sh:publisherDetailsGroup ;
+    sh:order 2 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 ;
+    sh:in (
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/publisher-type/private-company>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/publisher-type/administrative-institution>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/publisher-type/biobank>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/publisher-type/gov-public-sector-org>
+        <https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/publisher-type/healthcare-providers>
+    ) .
+
+evds-sh:publisher-homepage
+    a sh:PropertyShape ;
+    sh:path foaf:homepage ;
+    sh:name "Página web"@es , "Pàgina web"@ca ;
+    sh:group evds-sh:publisherDetailsGroup ;
+    sh:order 3 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+evds-sh:HDABShape
+    a sh:NodeShape ;
+    rdfs:label "Organismo de acceso a datos de salud"@es , "Organisme d'accés a dades de salut"@ca ;
+    # No sh:targetClass (see PublisherShape): reached only via sh:node from dataset-hdab.
+    sh:property evds-sh:hdab-name, evds-sh:hdab-contactPoint .
+
+evds-sh:hdab-name
+    a sh:PropertyShape ;
+    sh:path foaf:name ;
+    sh:name "Nombre del organismo"@es , "Nom de l'organisme"@ca ;
+    sh:group evds-sh:hdabDetailsGroup ;
+    sh:order 1 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 .
+
+evds-sh:hdab-contactPoint
+    a sh:PropertyShape ;
+    sh:path dcatap:contactPoint ;
+    sh:name "Contacto del organismo"@es , "Contacte de l'organisme"@ca ;
+    sh:group evds-sh:hdabDetailsGroup ;
+    sh:order 2 ;
+    sh:class vcard:Kind ;
+    sh:node evds-sh:ContactPointShape ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+evds-sh:ContactPointShape
+    a sh:NodeShape ;
+    rdfs:label "Punto de contacto"@es , "Punt de contacte"@ca ;
+    sh:targetClass vcard:Kind ;
+    sh:property evds-sh:contact-name, evds-sh:contact-email, evds-sh:contact-page .
+
+evds-sh:contact-name
+    a sh:PropertyShape ;
+    sh:path vcard:fn ;
+    sh:name "Nombre del contacto"@es , "Nom del contacte"@ca ;
+    sh:group evds-sh:contactDetailsGroup ;
+    sh:order 1 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:maxCount 1 .
+
+evds-sh:contact-email
+    a sh:PropertyShape ;
+    sh:path vcard:hasEmail ;
+    sh:name "Correo electrónico"@es , "Correu electrònic"@ca ;
+    sh:group evds-sh:contactDetailsGroup ;
+    sh:order 2 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+evds-sh:contact-page
+    a sh:PropertyShape ;
+    sh:path vcard:hasURL ;
+    sh:name "Página de contacto"@es , "Pàgina de contacte"@ca ;
+    sh:group evds-sh:contactDetailsGroup ;
+    sh:order 3 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+evds-sh:DistributionShape
+    a sh:NodeShape ;
+    rdfs:label "Distribución"@es , "Distribució"@ca ;
+    sh:targetClass dcat:Distribution ;
+    sh:property
+        evds-sh:distribution-accessURL,
+        evds-sh:distribution-format,
+        evds-sh:distribution-license,
+        evds-sh:distribution-downloadURL,
+        evds-sh:distribution-availability,
+        evds-sh:distribution-status .
+
+evds-sh:distribution-accessURL
+    a sh:PropertyShape ;
+    sh:path dcat:accessURL ;
+    sh:name "URL de acceso"@es , "URL d'accés"@ca ;
+    sh:group evds-sh:distributionDetailsGroup ;
+    sh:order 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:minCount 1 ;
+    sh:message "La URL de acceso de la distribución es obligatoria."@es , "La URL d'accés de la distribució és obligatòria."@ca .
+
+evds-sh:distribution-format
+    a sh:PropertyShape ;
+    sh:path dct:format ;
+    sh:name "Formato"@es , "Format"@ca ;
+    sh:group evds-sh:distributionDetailsGroup ;
+    sh:order 2 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 ;
+    # Authority list completa (~227 formatos) en producción; recortada para el demo.
+    sh:in (
+        <http://publications.europa.eu/resource/authority/file-type/XLSX>
+        <http://publications.europa.eu/resource/authority/file-type/CSV>
+        <http://publications.europa.eu/resource/authority/file-type/JSON>
+        <http://publications.europa.eu/resource/authority/file-type/XML>
+    ) .
+
+evds-sh:distribution-license
+    a sh:PropertyShape ;
+    sh:path dct:license ;
+    sh:name "Licencia"@es , "Llicència"@ca ;
+    sh:group evds-sh:distributionDetailsGroup ;
+    sh:order 3 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+evds-sh:distribution-downloadURL
+    a sh:PropertyShape ;
+    sh:path dcat:downloadURL ;
+    sh:name "URL de descarga"@es , "URL de descàrrega"@ca ;
+    sh:group evds-sh:distributionDetailsGroup ;
+    sh:order 4 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+evds-sh:distribution-availability
+    a sh:PropertyShape ;
+    sh:path dcatap:availability ;
+    sh:name "Disponibilidad"@es , "Disponibilitat"@ca ;
+    sh:group evds-sh:distributionDetailsGroup ;
+    sh:order 5 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 ;
+    sh:in (
+        <http://publications.europa.eu/resource/authority/planned-availability/AVAILABLE>
+        <http://publications.europa.eu/resource/authority/planned-availability/STABLE>
+        <http://publications.europa.eu/resource/authority/planned-availability/EXPERIMENTAL>
+        <http://publications.europa.eu/resource/authority/planned-availability/TEMPORARY>
+    ) .
+
+evds-sh:distribution-status
+    a sh:PropertyShape ;
+    sh:path adms:status ;
+    sh:name "Estado de la distribución"@es , "Estat de la distribució"@ca ;
+    sh:group evds-sh:distributionDetailsGroup ;
+    sh:order 6 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 ;
+    sh:in (
+        <http://publications.europa.eu/resource/authority/distribution-status/COMPLETED>
+        <http://publications.europa.eu/resource/authority/distribution-status/ONGOING>
+        <http://publications.europa.eu/resource/authority/distribution-status/PLANNED>
+        <http://publications.europa.eu/resource/authority/distribution-status/DEPRECATED>
+        <http://publications.europa.eu/resource/authority/distribution-status/WITHDRAWN>
+    ) .
+
+#################################################################
+# CSVW variable dictionary: TableGroup → Table → Column
+#################################################################
+
+evds-sh:CSVWTableGroupShape
+    a sh:NodeShape ;
+    rdfs:label "Diccionario de variables"@es , "Diccionari de variables"@ca ;
+    sh:targetClass csvw:TableGroup ;
+    sh:property evds-sh:tableGroup-table .
+
+evds-sh:tableGroup-table
+    a sh:PropertyShape ;
+    sh:path csvw:table ;
+    sh:name "Tabla"@es , "Taula"@ca ;
+    sh:group evds-sh:tableDetailsGroup ;
+    sh:order 1 ;
+    sh:class csvw:Table ;
+    sh:node evds-sh:CSVWTableShape ;
+    sh:minCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+evds-sh:CSVWTableShape
+    a sh:NodeShape ;
+    rdfs:label "Tabla"@es , "Taula"@ca ;
+    sh:targetClass csvw:Table ;
+    sh:property evds-sh:table-title, evds-sh:table-url, evds-sh:table-keyword, evds-sh:table-column .
+
+evds-sh:table-title
+    a sh:PropertyShape ;
+    sh:path dct:title ;
+    sh:name "Nombre de la tabla"@es , "Nom de la taula"@ca ;
+    sh:group evds-sh:tableDetailsGroup ;
+    sh:order 1 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 .
+
+evds-sh:table-url
+    a sh:PropertyShape ;
+    sh:path csvw:url ;
+    sh:name "URL de la tabla"@es , "URL de la taula"@ca ;
+    sh:group evds-sh:tableDetailsGroup ;
+    sh:order 2 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .
+
+evds-sh:table-keyword
+    a sh:PropertyShape ;
+    sh:path dcat:keyword ;
+    sh:name "Palabras clave de la tabla"@es , "Paraules clau de la taula"@ca ;
+    sh:group evds-sh:tableDetailsGroup ;
+    sh:order 3 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal .
+
+evds-sh:table-column
+    a sh:PropertyShape ;
+    sh:path csvw:column ;
+    sh:name "Variables"@es , "Variables"@ca ;
+    sh:group evds-sh:tableDetailsGroup ;
+    sh:order 4 ;
+    sh:class csvw:Column ;
+    sh:node evds-sh:CSVWColumnShape ;
+    sh:minCount 1 ;
+    shui:editor shui:DetailsEditor .
+
+evds-sh:CSVWColumnShape
+    a sh:NodeShape ;
+    rdfs:label "Variable"@es , "Variable"@ca ;
+    sh:targetClass csvw:Column ;
+    sh:property
+        evds-sh:column-name,
+        evds-sh:column-title,
+        evds-sh:column-description,
+        evds-sh:column-datatype,
+        evds-sh:column-propertyUrl .
+
+evds-sh:column-name
+    a sh:PropertyShape ;
+    sh:path csvw:name ;
+    sh:name "Nombre técnico"@es , "Nom tècnic"@ca ;
+    sh:group evds-sh:columnDetailsGroup ;
+    sh:order 1 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 .
+
+evds-sh:column-title
+    a sh:PropertyShape ;
+    sh:path csvw:title ;
+    sh:name "Nombre visible"@es , "Nom visible"@ca ;
+    sh:group evds-sh:columnDetailsGroup ;
+    sh:order 2 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 .
+
+evds-sh:column-description
+    a sh:PropertyShape ;
+    sh:path dct:description ;
+    sh:name "Descripción de la variable"@es , "Descripció de la variable"@ca ;
+    sh:group evds-sh:columnDetailsGroup ;
+    sh:order 3 ;
+    sh:datatype rdf:langString ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    shui:editor shui:TextAreaEditor .
+
+evds-sh:column-datatype
+    a sh:PropertyShape ;
+    sh:path csvw:datatype ;
+    sh:name "Tipo de dato"@es , "Tipus de dada"@ca ;
+    sh:group evds-sh:columnDetailsGroup ;
+    sh:order 4 ;
+    sh:datatype xsd:string ;
+    sh:nodeKind sh:Literal ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:in ( "string" "integer" "decimal" "boolean" "date" "dateTime" ) .
+
+evds-sh:column-propertyUrl
+    a sh:PropertyShape ;
+    sh:path csvw:propertyUrl ;
+    sh:name "Propiedad semántica"@es , "Propietat semàntica"@ca ;
+    sh:group evds-sh:columnDetailsGroup ;
+    sh:order 5 ;
+    sh:nodeKind sh:IRI ;
+    sh:maxCount 1 .

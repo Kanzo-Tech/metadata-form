@@ -1,4 +1,5 @@
 import type {
+  LangString,
   NodeShapeIR,
   ProjectedForm,
   PropertyGroupIR,
@@ -33,7 +34,9 @@ export interface RudofResult {
   focusNode: TermValue;
   path?: TermValue;
   value?: TermValue;
-  message: string[];
+  /** Lang-tagged messages: the engine default (untagged) merged with the shape's
+   *  per-language `sh:message`. The TS side picks the best by locale. */
+  message: LangString[];
   severity?: string;
   sourceConstraintComponent?: string;
 }
