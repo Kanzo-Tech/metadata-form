@@ -10,6 +10,7 @@ export default defineConfig({
       "metadata-form": r("src/index.ts"),
       "@": r("src"),
       "@examples": r("playground/examples"),
+      "@playground": r("playground/src"),
     },
   },
   test: {

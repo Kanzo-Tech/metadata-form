@@ -21,7 +21,12 @@ export function useWorkspace(initial: PermalinkState | null, onPick: (state: Per
   const [shapeText, setShapeText] = useState(seed.shapesText);
   const [dataText, setDataText] = useState(seed.dataText);
   // The form knobs (no UI to change them yet — restored from a permalink if present).
-  const [options] = useState<PermalinkOptions>(seed.options);
+  // A setter, and its absence was the whole of "sharing does not work". These froze
+  // at mount, so every example kept the FIRST-loaded one's `rootShape`: picking a
+  // second shape killed the form with "Could not resolve a root node shape", and
+  // Share emitted a permalink pairing one example's shapes with another's options —
+  // overwriting the correct URL the pick had already written.
+  const [options, setOptions] = useState<PermalinkOptions>(seed.options);
 
   const shape = useMemo(() => EXAMPLES.find((e) => e.id === shapeId)!, [shapeId]);
 
@@ -32,6 +37,7 @@ export function useWorkspace(initial: PermalinkState | null, onPick: (state: Per
     setPresetId(presetId);
     setShapeText(state.shapesText);
     setDataText(state.dataText);
+    setOptions(state.options);
     onPick(state);
   };
 
