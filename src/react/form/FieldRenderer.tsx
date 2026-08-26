@@ -24,7 +24,7 @@ import {
 import { useFormContext } from "./context.js";
 import { useField } from "../hooks/useField.js";
 import { NodeForm } from "./NodeForm.js";
-import { SuggestMenu } from "../fieldassist/SuggestionBox.js";
+import { SuggestList, SuggestMark, SuggestRoot } from "@kanzo-tech/ai";
 
 /** Renders a single field: label, help, value rows (multi-value), errors. */
 export function FieldRenderer({ field }: { field: FieldModel }) {
@@ -153,35 +153,38 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     );
   };
 
-  return (
-    <FieldShell
-      field={field}
-      errors={errs}
-      action={
-        assist?.suggest && !field.readOnly && caps.suggest ? (
-          <SuggestMenu
-            fetch={(signal) => assist.suggest!({ field, graph, locale, signal })}
-            existing={real.map((s) => s.value?.value ?? "").filter(Boolean)}
-            onPick={applySuggestion}
-          />
-        ) : undefined
-      }
+  const rows = singleValue ? (
+    row(0)
+  ) : (
+    <FieldArray
+      count={rowCount}
+      rowKey={rowKey}
+      canAdd={canAddMore}
+      canRemove={!field.readOnly}
+      onAdd={() => setPending((n) => n + 1)}
+      onRemove={removeRow}
     >
-      {singleValue ? (
-        row(0)
-      ) : (
-        <FieldArray
-          count={rowCount}
-          rowKey={rowKey}
-          canAdd={canAddMore}
-          canRemove={!field.readOnly}
-          onAdd={() => setPending((n) => n + 1)}
-          onRemove={removeRow}
-        >
-          {row}
-        </FieldArray>
-      )}
-    </FieldShell>
+      {row}
+    </FieldArray>
+  );
+
+  const suggests = assist?.suggest && !field.readOnly && caps.suggest;
+  if (!suggests) return <FieldShell field={field} errors={errs}>{rows}</FieldShell>;
+
+  // The ✨ and its candidates are one compound around the field's own rows: the
+  // mark is bound to the stream by context, so it reads correctly in the label
+  // row and the strip lands under the values it is offering to fill.
+  return (
+    <SuggestRoot
+      suggest={(signal) => assist.suggest!({ field, graph, locale, signal })}
+      existing={real.map((s) => s.value?.value ?? "").filter(Boolean)}
+      onPick={applySuggestion}
+    >
+      <FieldShell field={field} errors={errs} action={<SuggestMark />}>
+        {rows}
+        <SuggestList />
+      </FieldShell>
+    </SuggestRoot>
   );
 }
 

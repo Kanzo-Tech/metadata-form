@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Box, Card, Flex, Text } from "@radix-ui/themes";
+import { Button, Card, CardContent } from "@kanzo-tech/ui";
+import { XIcon } from "lucide-react";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
-import { CloseButton } from "../form/CloseButton.js";
 import { defaultMascot, type MascotCharacter } from "./mascot.js";
 
 export interface FormAssistantProps {
@@ -36,45 +36,45 @@ export function FormAssistant({ form, character = defaultMascot, corner = "botto
     if (nextField) form.revealField(nextField.id);
   };
 
-  const pos = corner === "bottom-left" ? { left: "var(--space-5)" } : { right: "var(--space-5)" };
-
   return (
-    <Box position="fixed" style={{ bottom: "var(--space-5)", ...pos, zIndex: 50 }}>
+    <div
+      className={`fixed bottom-6 z-50 ${corner === "bottom-left" ? "left-6" : "right-6"}`}
+    >
       <Card
+        className={`max-w-70 ${actionable ? "cursor-pointer" : ""}`}
         role={actionable ? "button" : undefined}
         tabIndex={actionable ? 0 : undefined}
         onClick={actionable ? onActivate : undefined}
         onKeyDown={(e) => actionable && (e.key === "Enter" || e.key === " ") && onActivate()}
-        style={{ maxWidth: 280, cursor: actionable ? "pointer" : "default" }}
       >
-        <Flex align="center" gap="3">
+        <CardContent className="flex items-center gap-3">
           <Character mood={health.mood} size={44} />
-          <Flex direction="column" gap="1" style={{ minWidth: 0 }}>
-            <Text size="2" weight="medium">
-              {health.message}
-            </Text>
+          <div className="flex min-w-0 flex-col gap-1">
+            <p className="font-medium text-sm">{health.message}</p>
             {actionable ? (
-              <Text size="1" color="gray">
-                Next: {nextField!.label} →
-              </Text>
+              <p className="text-muted-foreground text-xs">Next: {nextField!.label} →</p>
             ) : (
               progress.total > 0 && (
-                <Text size="1" color="gray">
+                <p className="text-muted-foreground text-xs">
                   {progress.filled}/{progress.total} filled
-                </Text>
+                </p>
               )
             )}
-          </Flex>
-          <CloseButton
-            label="Dismiss assistant"
+          </div>
+          <Button
+            aria-label="Dismiss assistant"
+            size="sm"
+            variant="ghost"
             onClick={(e) => {
               e.stopPropagation();
               setDismissed(true);
               onDismiss?.();
             }}
-          />
-        </Flex>
+          >
+            <XIcon />
+          </Button>
+        </CardContent>
       </Card>
-    </Box>
+    </div>
   );
 }

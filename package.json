@@ -55,8 +55,8 @@
     "@radix-ui/react-icons": ">=1.3",
     "@radix-ui/themes": ">=3",
     "ai": ">=5",
-    "react": ">=18",
-    "react-dom": ">=18",
+    "react": ">=19",
+    "react-dom": ">=19",
     "zod": ">=3.23"
   },
   "peerDependenciesMeta": {
@@ -72,7 +72,6 @@
     "@kanzo-tech/rudof-wasm": "^0.3.4",
     "@kanzo-tech/theme": "file:vendor/kanzo-tech-theme-0.0.0.tgz",
     "@kanzo-tech/ui": "file:vendor/kanzo-tech-ui-0.0.0.tgz",
-    "downshift": "^9.3.6",
     "lucide-react": "^1.34.0"
   },
   "devDependencies": {

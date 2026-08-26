@@ -12,7 +12,7 @@ import { CompleteHint, CompleteRoot, CompleteTextarea } from "@kanzo-tech/ai";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import type { Widget, WidgetProps, WidgetRegistry } from "./widgets.js";
 import { makeDateField } from "./DateField.js";
-import { Combobox } from "../fieldassist/SuggestionBox.js";
+import { AsyncCombobox } from "../fieldassist/AsyncCombobox.js";
 import { LanguagePicker } from "./LanguagePicker.js";
 import { useFormContext } from "../form/context.js";
 
@@ -172,11 +172,14 @@ const ReferenceField: Widget = (p) => {
   const inner = IriField(p);
   if (!p.loadOptions) return inner;
   return (
-    <Combobox
+    <AsyncCombobox
       value={p.value}
       onChange={p.onChange}
       loadItems={p.loadOptions}
       placeholder="IRI or search…"
+      // The suggestions are candidates, not the permitted values: an IRI nobody
+      // suggested must survive being typed.
+      allowCustomValue
     />
   );
 };
@@ -243,7 +246,9 @@ function makeSelect(choices: (p: WidgetProps) => { value: string; label: string 
       [items],
     );
     if (items.length > SELECT_MAX_OPTIONS) {
-      return <Combobox value={p.value} onChange={p.onChange} loadItems={search} placeholder="Search…" />;
+      // Closed set: the enumeration IS the permitted values, so an unmatched
+      // input reverting on blur is correct rather than lossy.
+      return <AsyncCombobox value={p.value} onChange={p.onChange} loadItems={search} placeholder="Search…" />;
     }
     return (
       <NativeSelect

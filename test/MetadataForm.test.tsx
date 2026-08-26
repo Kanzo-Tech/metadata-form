@@ -87,9 +87,13 @@ describe("useMetadataForm + <MetadataForm>", () => {
     render(<AssistForm />);
     await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
-    // The ✨ trigger opens a Radix Popover; suggestions stream in as the seam yields.
+    // The ✨ asks the seam and the candidates stream into a strip under the field.
+    // The strip is shown while the field has focus, and jsdom's click does not
+    // move focus the way a real press does — so focus it as a browser would.
     // Title is the first suggestible field.
-    const sparkles = screen.getAllByRole("button", { name: "Suggest a value" });
+    const sparkles = screen.getAllByRole("button", { name: "Suggest" });
+    sparkles[0].focus();
+    fireEvent.focus(sparkles[0]);
     fireEvent.click(sparkles[0]);
 
     const pick = await screen.findByText("Suggested Title");
@@ -101,7 +105,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
     });
   });
 
-  it("keeps a fixed window of suggestions and regenerates one when dismissed", async () => {
+  it("takes a budget from the stream, and dismissing one does not refill it", async () => {
     function AssistForm() {
       const form = useMetadataForm({
         shapes,
@@ -121,18 +125,21 @@ describe("useMetadataForm + <MetadataForm>", () => {
     render(<AssistForm />);
     await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
-    fireEvent.click(screen.getAllByRole("button", { name: "Suggest a value" })[0]);
+    // See above: the strip lives for as long as the field has focus.
+    const mark = screen.getAllByRole("button", { name: "Suggest" })[0];
+    mark.focus();
+    fireEvent.focus(mark);
+    fireEvent.click(mark);
 
-    // Only the first three stream into the window — not all five.
-    await screen.findByText("Charlie");
-    expect(screen.getAllByRole("button", { name: "Dismiss suggestion" })).toHaveLength(3);
-    expect(screen.queryByText("Delta")).toBeNull();
+    // A strip wraps, so the count is a budget rather than a window: all five
+    // arrive, and dismissing one leaves four. The old three-row window existed to
+    // keep a popover full, and there is no popover now.
+    await screen.findByText("Echo");
+    expect(screen.getAllByRole("button", { name: /^Dismiss / })).toHaveLength(5);
 
-    // Dismissing Alpha regenerates the next one (Delta) to keep the window full.
-    fireEvent.click(screen.getAllByRole("button", { name: "Dismiss suggestion" })[0]);
-    await screen.findByText("Delta");
-    expect(screen.queryByText("Alpha")).toBeNull();
-    expect(screen.getAllByRole("button", { name: "Dismiss suggestion" })).toHaveLength(3);
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss Alpha" }));
+    await waitFor(() => expect(screen.queryByText("Alpha")).toBeNull());
+    expect(screen.getAllByRole("button", { name: /^Dismiss / })).toHaveLength(4);
   });
 
   it("streams inline ghost-text into the textarea and Tab accepts it", async () => {
