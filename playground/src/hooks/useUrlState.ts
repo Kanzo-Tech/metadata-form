@@ -1,3 +1,4 @@
+export type ShareStatus = "idle" | "copied" | "uncopied";
 import { useCallback, useState } from "react";
 import { decodeState, encodeState, type PermalinkState } from "../lib/permalink.js";
 
@@ -11,26 +12,39 @@ export function useUrlState() {
   const [initial] = useState<PermalinkState | null>(() =>
     typeof location === "undefined" ? null : decodeState(location.hash),
   );
-  const [shared, setShared] = useState(false);
+  const [status, setStatus] = useState<ShareStatus>("idle");
 
   const writeUrl = useCallback((state: PermalinkState) => {
     history.replaceState(null, "", `#${encodeState(state)}`);
   }, []);
 
+  /**
+   * Copy the permalink, and **say so when it did not copy**.
+   *
+   * The `catch` here used to be empty, with a comment explaining that the address
+   * bar holds the URL anyway. It does — but nobody reads a comment, and on
+   * `http://localhost` `navigator.clipboard` is `undefined`, so every Share threw
+   * a TypeError into that silence and the button said nothing at all. Confirmed as
+   * the second, independent cause of "sharing does not work"; the first was a
+   * frozen options object in `useWorkspace`.
+   *
+   * The guard is explicit rather than relying on the throw: a missing API is a
+   * known state to report, not an exception to swallow.
+   */
   const share = useCallback(
     async (state: PermalinkState) => {
       writeUrl(state);
+      if (!navigator.clipboard) return setStatus("uncopied");
       try {
         await navigator.clipboard.writeText(location.href);
-        setShared(true);
-        setTimeout(() => setShared(false), 1500);
+        setStatus("copied");
+        setTimeout(() => setStatus("idle"), 1500);
       } catch {
-        // Clipboard may be blocked (insecure context / denied permission); the hash
-        // is set regardless, so the address bar already holds the shareable URL.
+        setStatus("uncopied");
       }
     },
     [writeUrl],
   );
 
-  return { initial, writeUrl, share, shared };
+  return { initial, writeUrl, share, status };
 }

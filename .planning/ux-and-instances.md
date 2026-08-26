@@ -304,3 +304,21 @@ The panel body is **library-side**, the pane chrome is the playground's — that
 **Cut from this plan: K2 (`MadeWith`).** It is a kanzo-ui admission decision, it belongs in that repo's `/docs/design`, and nothing in metadata-form is blocked on it. The playground already writes the three elements and a `Link` itself, which is option 2 and is fine.
 
 **Do not cut, despite being upstream and gated: the fork's `sh:message` merge (W1b).** Eleven of thirty constraint components silently discard the author's message. That is a spec bug on the multilingual path the whole i18n effort was built on, and no TS-side change can substitute for it. Run it as an independent track so the republish gate never blocks the playground work.
+
+---
+
+## Decisions taken, 2026-08-26
+
+Answered by the author; the plan's recommendation was taken in all four.
+
+| | Decision | Consequence |
+|---|---|---|
+| **D1** | An example's theme is a **`{ light, dark }` pair, owned by the example**, read by `instance.ts`. | `defaultTheme` is side-agnostic, so a single name paints the light side dark. Needs `defaultTheme?: string \| Partial<Record<Appearance, string>>` widened in kanzo-ui (~5 lines). The field changes reader, not home. |
+| **D2** | A permalink **references a bundled example by id when clean and embeds only when dirty**. | ~40-char URLs instead of 15.5 KB. Accepted out loud: an id-only link resolves only on a deployment shipping that shape set — which is what an instance is. |
+| **D3** | An instance is **build-time only** (`VITE_MF_INSTANCE`). | Shapes stay in the bundle: no flash, no network dependency, offline. The runtime `fetch` layer is cut until someone asks. |
+| **D4–D7** | Taken as recommended, unread: publish all 29 themes in the playground and exactly two in a client instance (never `policy.pinned`); drop `sh:pattern` from the HTML attribute; select multi-value controls by cardinality; suppress the `sh:node` rollup row when something nested reported. | — |
+
+**Confirmed, not decided:** the author was on `http://localhost`, so `navigator.clipboard`
+was `undefined` and the empty catch swallowed a TypeError on *every* Share. That is the
+second, independent cause of "sharing does not work" — the first was the frozen options
+object. Both are now fixed.

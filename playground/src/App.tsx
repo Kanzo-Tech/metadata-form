@@ -60,7 +60,7 @@ function ThemedApp() {
 
   // Permalink: the URL fragment is the source of truth. Hydrate from it on load,
   // keep it in sync on example/data picks, and copy it on Share.
-  const { initial, writeUrl, share, shared } = useUrlState();
+  const { initial, writeUrl, share, status: shareStatus } = useUrlState();
   const workspace = useWorkspace(initial, writeUrl);
   const { shapeText, dataText, setShapeText, setDataText, applied, shape, options } = workspace;
   // A bundled example may carry its own identity (logo bar + accent); when present
@@ -225,7 +225,7 @@ function ThemedApp() {
                 <LocaleSelect value={locale} locales={localeOptions} onChange={setUiLocale} />
               )}
               <ShareButton
-                shared={shared}
+                status={shareStatus}
                 onShare={async () => {
                   // Capture the form's LIVE graph (its serialization), not the stale
                   // source-panel text — so a permalink reproduces what you built.
