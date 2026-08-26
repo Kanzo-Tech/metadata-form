@@ -49,7 +49,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit && tsc --noEmit -p playground/tsconfig.json",
     "lint": "eslint .",
-    "build:wasm": "bash ../rudof-fork/rudof_wasm/build.sh"
+    "build:wasm": "bash ../rudof-fork/rudof_wasm/build.sh",
+    "link:kanzo": "bash scripts/link-kanzo-ui.sh"
   },
   "peerDependencies": {
     "@kanzo-tech/ai": ">=0",
