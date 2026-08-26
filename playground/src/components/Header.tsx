@@ -1,4 +1,4 @@
-import { Kbd, Link } from "@kanzo-tech/ui";
+import { Kbd, MadeWith } from "@kanzo-tech/ui";
 import { ScrollTextIcon } from "lucide-react";
 import { ValidationSummary } from "metadata-form";
 import { BrandLogo } from "./BrandLogo.js";
@@ -45,12 +45,9 @@ export function Header({
         <span className="hidden text-muted-foreground xl:inline">
           Preferences <Kbd>P</Kbd>
         </span>
-        <span className="hidden text-muted-foreground 2xl:inline">
-          Made with ❤️ at{" "}
-          <Link href="https://kanzo.tech" target="_blank" rel="noreferrer">
-            Kanzo
-          </Link>
-        </span>
+        <MadeWith href="https://kanzo.tech" className="hidden 2xl:inline-flex">
+          Kanzo
+        </MadeWith>
       </div>
     </div>
   );

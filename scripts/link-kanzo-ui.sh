@@ -19,3 +19,18 @@ for pkg in theme ui ai; do
   echo "  ✓ @kanzo-tech/$pkg"
 done
 ls -1 "$OUT"/kanzo-tech-*.tgz
+
+# Re-installing is NOT optional, and neither is dropping the old trees first.
+# The tarball path and the version never change, so npm resolves the lockfile
+# entry from its cache and a refreshed tarball is silently ignored — the symptom
+# is a new export that typechecks in kanzo-ui and is "not exported" here.
+# Re-install by naming the tarballs, and it has to be by name. A bare
+# `npm install` resolves them from the lockfile entry, whose integrity hash still
+# describes the PREVIOUS tarball, so npm serves the old one out of its cache and a
+# refreshed build is silently ignored — the symptom is an export that typechecks
+# in kanzo-ui and is "not exported" here. Deleting node_modules first does not
+# help: the cache is keyed by that hash, not by what is on disk.
+echo "reinstalling"
+(cd "$HERE" && npm install --no-audit --no-fund --silent --save-dev \
+  "$OUT/kanzo-tech-theme-0.0.0.tgz" "$OUT/kanzo-tech-ui-0.0.0.tgz" "$OUT/kanzo-tech-ai-0.0.0.tgz")
+echo "done"
