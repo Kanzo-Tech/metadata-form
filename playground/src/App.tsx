@@ -169,7 +169,7 @@ function ThemedApp() {
           id: "source",
           minSize: 15,
           node: (
-            <ShellAside side="start" aria-label="Source" className="h-full">
+            <ShellAside side="start" aria-label="Source" className="h-full bg-card">
               {sourcePanel}
             </ShellAside>
           ),
@@ -181,7 +181,7 @@ function ThemedApp() {
           id: "output",
           minSize: 15,
           node: (
-            <ShellAside side="end" aria-label="Output" className="h-full">
+            <ShellAside side="end" aria-label="Output" className="h-full bg-card">
               {outputPanel}
             </ShellAside>
           ),
@@ -245,8 +245,12 @@ function ThemedApp() {
         {overlay ? (
           <>
             {formColumn}
+            {/* `bg-card` is load-bearing: ShellAside is presentational and paints
+                nothing, so an overlay without a surface shows the form straight
+                through it. The deleted Aside.tsx carried this as PANEL_BG. */}
             <ShellAside
               overlay
+              className="bg-card"
               side={source.show ? "start" : "end"}
               aria-label={source.show ? "Source" : "Output"}
             >
