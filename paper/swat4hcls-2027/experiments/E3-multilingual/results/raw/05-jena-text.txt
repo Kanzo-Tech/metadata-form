@@ -1,0 +1,7 @@
+Node=<http://example.org/d1>
+  Path=<http://example.org/issued>
+  Value: "March 2026"
+  Message: Issue date must be an xsd:date.
+Node=<http://example.org/d1>
+  Path=<http://example.org/identifier>
+  Message: ["Un conjunt de dades ha de tenir un identificador."@ca,"Un conjunto de datos debe tener un identificador."@es,"A dataset must have an identifier."@en]

@@ -1,0 +1,5 @@
+@prefix ex: <http://example.org/> .
+
+# Violates C1 (no ex:identifier) and C2 (ex:issued is not an xsd:date).
+ex:d1 a ex:Dataset ;
+    ex:issued "March 2026" .

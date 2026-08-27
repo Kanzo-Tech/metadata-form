@@ -1,0 +1,26 @@
+PREFIX ex:   <http://example.org/>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sh:   <http://www.w3.org/ns/shacl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+
+[ rdf:type     sh:ValidationReport;
+  sh:conforms  false;
+  sh:result    [ rdf:type                      sh:ValidationResult;
+                 sh:focusNode                  ex:d1;
+                 sh:resultMessage              "A dataset must have an identifier."@en , "Un conjunto de datos debe tener un identificador."@es , "Un conjunt de dades ha de tenir un identificador."@ca;
+                 sh:resultPath                 ex:identifier;
+                 sh:resultSeverity             sh:Violation;
+                 sh:sourceConstraintComponent  sh:MinCountConstraintComponent;
+                 sh:sourceShape                [] 
+               ];
+  sh:result    [ rdf:type                      sh:ValidationResult;
+                 sh:focusNode                  ex:d1;
+                 sh:resultMessage              "Issue date must be an xsd:date.";
+                 sh:resultPath                 ex:issued;
+                 sh:resultSeverity             sh:Violation;
+                 sh:sourceConstraintComponent  sh:DatatypeConstraintComponent;
+                 sh:sourceShape                [] ;
+                 sh:value                      "March 2026"
+               ]
+] .

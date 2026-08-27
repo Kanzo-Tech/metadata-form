@@ -1,0 +1,44 @@
+# Which single message does pyshacl -f table print? 12 runs per input.
+
+## shapes=shapes.ttl data=data.ttl
+  Un conjunt de dades ha detenir un identificador.
+  Un conjunt de dades ha detenir un identificador.
+  A dataset must have an identifier.
+  Un conjunto de datos debetener un identificador.
+  Un conjunt de dades ha detenir un identificador.
+  A dataset must have an identifier.
+  Un conjunto de datos debetener un identificador.
+  A dataset must have an identifier.
+  Un conjunt de dades ha detenir un identificador.
+  A dataset must have an identifier.
+  A dataset must have an identifier.
+  A dataset must have an identifier.
+
+## shapes=probe-no-en.ttl data=probe-data.ttl
+  DE-message
+  CA-message
+  CA-message
+  DE-message
+  ES-message
+  ES-message
+  CA-message
+  ES-message
+  ES-message
+  DE-message
+  DE-message
+  DE-message
+
+## shapes=probe-en-last.ttl data=probe-data.ttl
+  EN-message
+  EN-message
+  ZZ-message
+  ES-message
+  ZZ-message
+  ZZ-message
+  ZZ-message
+  EN-message
+  ES-message
+  ES-message
+  ZZ-message
+  EN-message
+

@@ -1,0 +1,10 @@
+# rudof-wasm 0.3.5: language tags on the ex:identifier result, 8 runs.
+# (Result ORDER varies between runs; the runner sorts by path.)
+  ["(untagged)", "ca", "en", "es"]
+  ["(untagged)", "ca", "en", "es"]
+  ["(untagged)", "ca", "en", "es"]
+  ["(untagged)", "ca", "en", "es"]
+  ["(untagged)", "ca", "en", "es"]
+  ["(untagged)", "ca", "en", "es"]
+  ["(untagged)", "ca", "en", "es"]
+  ["(untagged)", "ca", "en", "es"]

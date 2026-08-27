@@ -1,0 +1,2 @@
+@prefix ex: <http://example.org/> .
+ex:d1 a ex:Dataset .

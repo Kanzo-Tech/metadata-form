@@ -1,0 +1,19 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+_:1 a sh:ValidationReport ;
+	sh:conforms false ;
+	sh:result _:2 , _:3 .
+_:2 sh:value "March 2026" ;
+	sh:resultPath <http://example.org/issued> ;
+	a sh:ValidationResult ;
+	sh:sourceShape _:b77686217b5d47d340445c46ef42677d ;
+	sh:resultSeverity sh:Violation ;
+	sh:sourceConstraintComponent sh:DatatypeConstraintComponent ;
+	sh:focusNode <http://example.org/d1> ;
+	sh:resultMessage "Issue date must be an xsd:date." .
+_:3 sh:resultPath <http://example.org/identifier> ;
+	a sh:ValidationResult ;
+	sh:sourceShape _:b0c5c33d46cb7afc25ab934142a79cb4 ;
+	sh:resultSeverity sh:Violation ;
+	sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+	sh:focusNode <http://example.org/d1> ;
+	sh:resultMessage "MinCount(1) not satisfied" , "Un conjunto de datos debe tener un identificador."@es , "Un conjunt de dades ha de tenir un identificador."@ca , "A dataset must have an identifier."@en .

@@ -1,0 +1,19 @@
+### rdf-validate-shacl@0.6.5 (@zazuko/env-node@3.1.0, node v23.9.0)
+conforms: false
+
+--- JS API surface: report.results[i].message ---
+* path = http://example.org/identifier
+  typeof message = Array(3)
+    { value: "A dataset must have an identifier.", language: "en", datatype: http://www.w3.org/1999/02/22-rdf-syntax-ns#langString }
+    { value: "Un conjunt de dades ha de tenir un identificador.", language: "ca", datatype: http://www.w3.org/1999/02/22-rdf-syntax-ns#langString }
+    { value: "Un conjunto de datos debe tener un identificador.", language: "es", datatype: http://www.w3.org/1999/02/22-rdf-syntax-ns#langString }
+* path = http://example.org/issued
+  typeof message = Array(1)
+    { value: "Issue date must be an xsd:date.", language: "", datatype: http://www.w3.org/2001/XMLSchema#string }
+
+--- RDF report graph: sh:resultMessage triples ---
+    "A dataset must have an identifier." | lang="en" | dt=http://www.w3.org/1999/02/22-rdf-syntax-ns#langString
+    "Issue date must be an xsd:date." | lang="" | dt=http://www.w3.org/2001/XMLSchema#string
+    "Un conjunt de dades ha de tenir un identificador." | lang="ca" | dt=http://www.w3.org/1999/02/22-rdf-syntax-ns#langString
+    "Un conjunto de datos debe tener un identificador." | lang="es" | dt=http://www.w3.org/1999/02/22-rdf-syntax-ns#langString
+    total sh:resultMessage triples = 4

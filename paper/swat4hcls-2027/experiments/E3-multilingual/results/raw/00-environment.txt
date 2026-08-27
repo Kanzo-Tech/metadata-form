@@ -1,0 +1,13 @@
+# E3 environment, captured 2026-08-27T16:02:04Z
+uname:        Darwin 25.2.0 arm64
+python:       Python 3.14.5
+pySHACL:      PySHACL Version: 0.40.1
+rdflib:       rdflib      7.6.0
+node:         v23.9.0
+java:         openjdk version "26.0.2" 2026-07-21
+jena shacl:   Apache Jena SHACL version 6.2.0
+topbraid:     org.topbraid:shacl:1.4.4 (sha256 f382585dea378cda596068db239f89c26b339071c91cfdea720f9cd116128c62)
+rdf-validate-shacl: 0.6.5
+rudof (cli):  rudof 0.3.14
+rudof-wasm before: 0.3.4
+rudof-wasm after:  0.3.5
