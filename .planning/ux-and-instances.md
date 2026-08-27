@@ -322,3 +322,35 @@ Answered by the author; the plan's recommendation was taken in all four.
 was `undefined` and the empty catch swallowed a TypeError on *every* Share. That is the
 second, independent cause of "sharing does not work" — the first was the frozen options
 object. Both are now fixed.
+
+
+---
+
+## Wave 1b landed, and the finding was understated
+
+`rudof-fork` `c4362e002` on `arch/wasm-validator`.
+
+The investigation said **11 of 30** components drop the author's `sh:message`. The truth is
+**14**: every component that builds its own `ValidationResult` dropped it. The eleven named
+were all real; the finding missed `and.rs`, `equals.rs` and `closed.rs` — and those three are
+worse, because they set no message *at all*, so those violations reached a user with no text
+whatsoever.
+
+The merge is now one helper, `with_shape_message`, and the two sites in `constraints/mod.rs`
+that already did it correctly call it too. `sh:sparql` deliberately keeps its own ordering
+(solution `?message` > the constraint's > the shape's), since all three are author text.
+
+`node.rs` stops `Display`ing the whole `IRShape` — that dump is what reached the screen.
+
+**Consuming this needs a republish of `@kanzo-tech/rudof-wasm` with a NEW version number.**
+The published `0.3.4` and the local `0.3.4` are already different binaries; republishing
+`0.3.4` again would leave three artefacts wearing one version string.
+
+**Two consequences to check after the republish.** `and`/`equals`/`closed` now carry text
+where they carried none, so anything downstream that read "empty message" as a signal will
+see a string. And `sh:node`'s untagged default changed shape — if a test pins the old AST
+dump, that break *is* the fix landing.
+
+**Known gap, reported rather than hidden:** the `basic_sparql` ordering change is
+compile-verified and reviewed, not test-covered — exercising it needs a `sh:sparql`
+constraint under `ShaclValidationMode::Sparql`, and the crate's tests there are `ignored`.
