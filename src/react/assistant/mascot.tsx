@@ -21,8 +21,8 @@ const FACE: Record<MascotMood, string> = {
 
 /** A soft mood-tinted halo behind the emoji. */
 const HALO: Record<MascotMood, string> = {
-  idle: "var(--accent-a3)",
-  guiding: "var(--accent-a3)",
+  idle: "var(--muted)",
+  guiding: "var(--muted)",
   celebrating: "var(--grass-a3)",
   warning: "var(--amber-a3)",
 };

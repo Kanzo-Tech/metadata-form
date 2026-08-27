@@ -6,7 +6,7 @@ export function BrandLogo({
   url,
   ratio,
   height = 26,
-  color = "var(--accent-12)",
+  color = "var(--foreground)",
   label,
 }: {
   url: string;

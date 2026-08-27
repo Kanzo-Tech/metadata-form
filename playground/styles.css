@@ -15,7 +15,7 @@ body {
 .mf-resize-handle:hover > span,
 .mf-resize-handle:active > span {
   width: 2px;
-  background: var(--accent-9);
+  background: var(--primary);
 }
 
 /* Narrow viewports: the full-screen aside slides in/out from its own edge. */

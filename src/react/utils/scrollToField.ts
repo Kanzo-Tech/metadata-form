@@ -8,9 +8,9 @@ export function scrollToField(id: string): boolean {
   el.querySelector<HTMLElement>("input, textarea, button")?.focus();
   el.animate?.(
     [
-      { boxShadow: "0 0 0 0 var(--accent-a6)" },
-      { boxShadow: "0 0 0 6px var(--accent-a4)" },
-      { boxShadow: "0 0 0 0 var(--accent-a6)" },
+      { boxShadow: "0 0 0 0 transparent" },
+      { boxShadow: "0 0 0 6px color-mix(in oklch, var(--ring) 40%, transparent)" },
+      { boxShadow: "0 0 0 0 transparent" },
     ],
     { duration: 1000, easing: "ease-out" },
   );
