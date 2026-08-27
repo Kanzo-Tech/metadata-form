@@ -73,7 +73,7 @@
     }
   },
   "dependencies": {
-    "@kanzo-tech/rudof-wasm": "^0.3.4"
+    "@kanzo-tech/rudof-wasm": "^0.3.5"
   },
   "devDependencies": {
     "@ai-sdk/anthropic": "^3.0.86",
