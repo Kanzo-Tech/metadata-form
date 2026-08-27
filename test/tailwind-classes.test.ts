@@ -3,8 +3,8 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 /**
- * The library may only use utility classes that `@kanzo-tech/ui/styles.css`
- * actually ships.
+ * Neither the library nor the playground may use a utility class that
+ * `@kanzo-tech/ui/styles.css` does not actually ship.
  *
  * That sheet is compiled, and it contains exactly the utilities the design
  * system's OWN components use — nothing generates ours. A class we invent is not
@@ -17,8 +17,15 @@ import { join, resolve } from "node:path";
  * deliberately ships no primitive, write the value as an inline `style`. A
  * `className` survives here only where a component takes no `style` prop — and
  * then it must be a class this sheet ships, which is what this test checks.
+ *
+ * `playground/src` is scanned too. It is an app, not the library, so it may use
+ * classes freely — but it compiles no Tailwind of its own either: it loads the
+ * same one compiled sheet, so an invented class is exactly as inert there. Eight
+ * of them were, and three were visible (`h-[3px]` painted a 0px brand line,
+ * `h-11` left the header without a height, `size-3.5` let the pane icons render
+ * at lucide's 24px default).
  */
-const SRC = resolve(__dirname, "../src");
+const ROOTS = [resolve(__dirname, "../src"), resolve(__dirname, "../playground/src")];
 const SHEET = resolve(__dirname, "../node_modules/@kanzo-tech/ui/dist/styles.css");
 
 function tsxFiles(dir: string): string[] {
@@ -45,18 +52,21 @@ function classesIn(text: string): string[] {
   return out;
 }
 
-describe("library utility classes", () => {
+describe("utility classes", () => {
   it("only uses classes present in @kanzo-tech/ui's compiled stylesheet", () => {
     const sheet = readFileSync(SHEET, "utf8");
     const has = (c: string) =>
       new RegExp(`\\.${c.replace(/[.[\]/%:]/g, "\\$&")}(?![\\w-])`).test(sheet);
 
+    const repo = resolve(__dirname, "..");
     const missing = new Map<string, string[]>();
-    for (const file of tsxFiles(SRC)) {
-      for (const c of new Set(classesIn(readFileSync(file, "utf8")))) {
-        if (has(c)) continue;
-        const rel = file.slice(SRC.length + 1);
-        missing.set(c, [...(missing.get(c) ?? []), rel]);
+    for (const root of ROOTS) {
+      for (const file of tsxFiles(root)) {
+        for (const c of new Set(classesIn(readFileSync(file, "utf8")))) {
+          if (has(c)) continue;
+          const rel = file.slice(repo.length + 1);
+          missing.set(c, [...(missing.get(c) ?? []), rel]);
+        }
       }
     }
     expect(
