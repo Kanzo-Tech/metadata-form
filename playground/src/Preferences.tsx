@@ -1,9 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import {
   Field,
   FieldLabel,
-  Input,
   InputGroup,
   InputGroupButton,
   InputGroupInput,
@@ -21,11 +20,14 @@ import {
   Switch,
 } from "@kanzo-tech/ui";
 import {
+  Columns2Icon,
+  Columns3Icon,
   EyeIcon,
   EyeOffIcon,
   GalleryVerticalIcon,
   LayoutPanelTopIcon,
   ListOrderedIcon,
+  RectangleHorizontalIcon,
 } from "lucide-react";
 import type { FormLayout } from "metadata-form";
 
@@ -78,8 +80,11 @@ export function usePreferences(): PreferencesContextValue {
 function load(): PreferencesState {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}") as Partial<PreferencesState>;
+    const layout = { ...defaultPreferences.layout, ...saved.layout };
     return {
-      layout: { ...defaultPreferences.layout, ...saved.layout },
+      // A stored 4 predates the three-card control and would select no card at
+      // all, so it is clamped rather than shown as an empty choice.
+      layout: { ...layout, columns: Math.min(3, Math.max(1, Math.round(layout.columns) || 1)) },
       ai: { ...defaultPreferences.ai, ...saved.ai },
       assistant: { ...defaultPreferences.assistant, ...saved.assistant },
     };
@@ -110,44 +115,76 @@ function Root({ children }: { children: ReactNode }) {
   );
 }
 
-const LAYOUTS = [
+type Choice = readonly [value: string, label: string, icon: ComponentType<{ className?: string }>];
+
+const LAYOUTS: readonly Choice[] = [
   ["sequential", "Sequential", GalleryVerticalIcon],
   ["tabs", "Tabs", LayoutPanelTopIcon],
   ["steps", "Steps", ListOrderedIcon],
-] as const;
+];
+
+/** `FieldsGrid` writes `repeat(N, minmax(0, 1fr))` and takes any N, so three is
+ *  a judgement about forms rather than a limit of the grid: past three, a label
+ *  and its control stop fitting on a line at the widths this column gets with a
+ *  panel open on either side. A number input said otherwise. */
+const COLUMNS: readonly Choice[] = [
+  ["1", "One", RectangleHorizontalIcon],
+  ["2", "Two", Columns2Icon],
+  ["3", "Three", Columns3Icon],
+];
+
+/** A row of icon cards, one of which is chosen — the shape both layout axes take. */
+function CardChoice({
+  label,
+  onChange,
+  options,
+  value,
+}: {
+  label: string;
+  onChange: (value: string) => void;
+  options: readonly Choice[];
+  value: string;
+}) {
+  return (
+    <PreferencesField label={label}>
+      <RadioGroup
+        aria-label={label}
+        className="flex-row flex-wrap gap-2"
+        value={value}
+        onValueChange={(d) => d.value && onChange(d.value)}
+      >
+        {options.map(([v, text, Icon]) => (
+          <RadioGroupCard
+            key={v}
+            value={v}
+            className="min-w-0 flex-1 basis-20 flex-col items-center px-2 py-2"
+            style={{ gap: "0.375rem" }}
+          >
+            <Icon className="size-4 text-muted-foreground" />
+            <span className="font-medium text-xs">{text}</span>
+          </RadioGroupCard>
+        ))}
+      </RadioGroup>
+    </PreferencesField>
+  );
+}
 
 function LayoutSection() {
   const { prefs, update } = usePreferences();
   return (
     <>
-      <PreferencesField label="Layout">
-        <RadioGroup
-          aria-label="Form layout"
-          className="flex-row flex-wrap gap-2"
-          value={prefs.layout.mode}
-          onValueChange={(d) => d.value && update("layout", { mode: d.value as FormLayout })}
-        >
-          {LAYOUTS.map(([value, label, Icon]) => (
-            <RadioGroupCard
-              key={value}
-              value={value}
-              className="min-w-0 flex-1 basis-16 flex-col items-center gap-1.5 px-2 py-2"
-            >
-              <Icon className="size-4 text-muted-foreground" />
-              <span className="font-medium text-xs">{label}</span>
-            </RadioGroupCard>
-          ))}
-        </RadioGroup>
-      </PreferencesField>
-      <PreferencesField label="Columns">
-        <Input
-          type="number"
-          min={1}
-          max={4}
-          value={prefs.layout.columns}
-          onChange={(e) => update("layout", { columns: Math.max(1, Number(e.target.value) || 1) })}
-        />
-      </PreferencesField>
+      <CardChoice
+        label="Layout"
+        options={LAYOUTS}
+        value={prefs.layout.mode}
+        onChange={(v) => update("layout", { mode: v as FormLayout })}
+      />
+      <CardChoice
+        label="Columns"
+        options={COLUMNS}
+        value={String(prefs.layout.columns)}
+        onChange={(v) => update("layout", { columns: Number(v) })}
+      />
     </>
   );
 }
@@ -193,15 +230,21 @@ function ClaudeKeySection() {
   );
 }
 
-/** The panel: ours first — they are what this screen is about — then the design
- *  system's own axes, in the order it publishes them. */
+/** The panel: colour first, then ours, then the design system's remaining axes in
+ *  the order it publishes them.
+ *
+ *  Colour leads because it is the only light/dark control this app has, and a
+ *  person hunting for one looks at the top of a settings panel. It renders
+ *  nothing until the provider is given two or more `themes` — `PreferencesColor`
+ *  returns null on an empty list — which is why the panel appears to start at
+ *  Layout today. */
 function Panel() {
   return (
     <PreferencesPanel>
+      <PreferencesColor />
       <LayoutSection />
       <AssistantSection />
       <ClaudeKeySection />
-      <PreferencesColor />
       <PreferencesDensity />
       <PreferencesRadius />
       <PreferencesFont />
