@@ -36,6 +36,7 @@ import { useFormOutputs } from "./hooks/useFormOutputs.js";
 import { useUrlState } from "./hooks/useUrlState.js";
 import { useWorkspace } from "./state/useWorkspace.js";
 import { INSTANCE, brandingFor, defaultThemeFor, policyFor } from "./instance.js";
+import { ChromeContext, fill, pickChrome } from "./i18n.js";
 import type { ExampleBranding } from "./presets.js";
 import { makeAssist } from "./lib/assist.js";
 import "@kanzo-tech/ui/styles.css";
@@ -108,6 +109,11 @@ function ThemedApp({
   const [uiLocale, setUiLocale] = useState<string | undefined>(undefined);
   useEffect(() => setUiLocale(undefined), [workspace.shapeId]);
   const locale = uiLocale ?? localeOptions[0] ?? options.locale;
+  // The workspace's own words follow the form's language, from the playground's
+  // catalog rather than the library's — see `i18n.ts` for where that line is drawn.
+  // A pane header reading "Issues · 3 blocking of 3" over a Spanish panel is the
+  // half-translated page this exists to stop.
+  const chrome = useMemo(() => pickChrome(locale), [locale]);
 
   // Branded examples take over the browser tab: title + favicon (the brand mark),
   // restored to the playground defaults when a plain example is active.
@@ -134,14 +140,11 @@ function ThemedApp({
   const [dismissed, setDismissed] = useState(false);
   const notice =
     decoded.status === "unreadable"
-      ? {
-          title: "That link did not survive the trip",
-          detail: "The address carried a permalink we could not read — most likely truncated on the way here. Ask for it again, or start from an example below.",
-        }
+      ? { title: chrome.notice.truncatedTitle, detail: chrome.notice.truncatedDetail }
       : decoded.status === "unknown"
         ? {
-            title: `This deployment does not ship “${decoded.exampleId}”`,
-            detail: "The link names a shape set by id, which only resolves where that shape set is installed. Ask the sender for a link with the shapes embedded.",
+            title: fill(chrome.notice.unknownTitle, { id: decoded.exampleId }),
+            detail: chrome.notice.unknownDetail,
           }
         : null;
 
@@ -208,12 +211,12 @@ function ThemedApp({
   // Source means beside its tab, not in the header over both of them.
   const sourcePanel = (
     <>
-      <PaneHeader icon={FileTextIcon} title="Source" onClose={source.toggle} />
+      <PaneHeader icon={FileTextIcon} title={chrome.panes.source} onClose={source.toggle} />
       <CodePanel
         tabs={[
           {
             value: "shape",
-            label: "SHACL shape",
+            label: chrome.source.shapeTab,
             node: <CodeEditor value={shapeText} onChange={setShapeText} lang="turtle" />,
             action: (
               <ShapePicker examples={workspace.examples} shapeId={workspace.shapeId} onPick={workspace.pickShape} />
@@ -221,7 +224,7 @@ function ThemedApp({
           },
           {
             value: "data",
-            label: "Data graph",
+            label: chrome.source.dataTab,
             node: <CodeEditor value={dataText} onChange={setDataText} lang="turtle" />,
             action: <PresetPicker presets={shape.presets} presetId={workspace.presetId} onPick={workspace.pickPreset} />,
           },
@@ -237,9 +240,13 @@ function ThemedApp({
     <>
       <PaneHeader
         icon={ListChecksIcon}
-        title="Issues"
+        title={chrome.panes.issues}
         onClose={issues.toggle}
-        detail={issueCount === 0 ? "Nothing found" : `${violations} blocking of ${issueCount}`}
+        detail={
+          issueCount === 0
+            ? chrome.issues.clean
+            : fill(chrome.issues.blocking, { blocking: violations, total: issueCount })
+        }
         tone={violations > 0 ? "destructive" : issueCount > 0 ? "warning" : "success"}
       />
       <div className="min-h-0 flex-1 overflow-auto p-3">
@@ -259,12 +266,12 @@ function ThemedApp({
     <>
       <PaneHeader
         icon={Code2Icon}
-        title="Output"
+        title={chrome.panes.output}
         onClose={output.toggle}
         actions={
           <span className="flex min-w-0 items-center" style={{ gap: "0.375rem" }}>
             <NativeSelect
-              aria-label="Which output"
+              aria-label={chrome.output.which}
               onChange={(e) => setOutputDoc(e.target.value as "turtle" | "jsonld")}
               size="sm"
               style={{ height: "1.5rem", width: "7rem", minWidth: 0 }}
@@ -283,7 +290,7 @@ function ThemedApp({
               mimeType={outputDoc === "turtle" ? "text/turtle" : "application/ld+json"}
             >
               <Button
-                aria-label={`Download the ${outputDoc === "turtle" ? "Turtle" : "JSON-LD"}`}
+                aria-label={fill(chrome.output.download, { format: outputDoc === "turtle" ? "Turtle" : "JSON-LD" })}
                 className="size-6 shrink-0 text-muted-foreground"
                 size="icon-sm"
                 variant="ghost"
@@ -338,10 +345,10 @@ function ThemedApp({
   });
 
   const columns: WorkspaceColumn[] = [
-    ...(source.show ? [aside("source", "Source", "start", sourcePanel)] : []),
+    ...(source.show ? [aside("source", chrome.panes.source, "start", sourcePanel)] : []),
     { id: "form", minSize: 34, node: formColumn },
-    ...(issues.show ? [aside("issues", "Issues", "end", issuesPanel)] : []),
-    ...(output.show ? [aside("output", "Output", "end", outputPanel)] : []),
+    ...(issues.show ? [aside("issues", chrome.panes.issues, "end", issuesPanel)] : []),
+    ...(output.show ? [aside("output", chrome.panes.output, "end", outputPanel)] : []),
   ];
   const split = asideSplit(Math.max(1, columns.length - 1));
 
@@ -349,116 +356,121 @@ function ThemedApp({
   const overlay = isNarrow && open.length > 0;
 
   return (
-    <ShellRoot>
-      {/* Brand-tinted top edge — a thin line of the theme's primary. The height
-          is inline: `h-[3px]` is an arbitrary-value class, and nothing compiles
-          Tailwind here, so it painted a 0px-tall line until this was noticed. */}
-      {branding?.tint && <div className="bg-primary" style={{ height: "3px", flex: "none" }} />}
-      <ShellHeader>
-        <Header
-          form={form}
-          branding={branding}
-          actions={
-            <>
-              {localeOptions.length > 1 && locale && (
-                <LocaleSelect value={locale} locales={localeOptions} onChange={setUiLocale} />
-              )}
-              <ShareButton
-                status={shareStatus}
-                onShare={async () => {
-                  // Capture the form's LIVE graph (its serialization), not the stale
-                  // source-panel text — so a permalink reproduces what you built.
-                  const dataText = form.ready ? await form.toTurtle() : workspace.dataText;
-                  // The reader's chosen language rides along: it is a view knob, but a
-                  // link to a Spanish form that opens in English is the wrong document.
-                  share(
-                    { ...workspace.permalink, dataText, locale: uiLocale },
-                    workspace.sourcePristine && dataText === baseline,
-                  );
-                }}
+    // Everything below reads its own words from here — the pane headers, the rail,
+    // Share, and the preferences drawer, which renders inside this tree even though
+    // its root sits above it.
+    <ChromeContext.Provider value={chrome}>
+      <ShellRoot>
+        {/* Brand-tinted top edge — a thin line of the theme's primary. The height
+            is inline: `h-[3px]` is an arbitrary-value class, and nothing compiles
+            Tailwind here, so it painted a 0px-tall line until this was noticed. */}
+        {branding?.tint && <div className="bg-primary" style={{ height: "3px", flex: "none" }} />}
+        <ShellHeader>
+          <Header
+            form={form}
+            branding={branding}
+            actions={
+              <>
+                {localeOptions.length > 1 && locale && (
+                  <LocaleSelect value={locale} locales={localeOptions} onChange={setUiLocale} />
+                )}
+                <ShareButton
+                  status={shareStatus}
+                  onShare={async () => {
+                    // Capture the form's LIVE graph (its serialization), not the stale
+                    // source-panel text — so a permalink reproduces what you built.
+                    const dataText = form.ready ? await form.toTurtle() : workspace.dataText;
+                    // The reader's chosen language rides along: it is a view knob, but a
+                    // link to a Spanish form that opens in English is the wrong document.
+                    share(
+                      { ...workspace.permalink, dataText, locale: uiLocale },
+                      workspace.sourcePristine && dataText === baseline,
+                    );
+                  }}
+                />
+                {/* No panel toggles here. A control that opens a region belongs against
+                    the region — they are on the rail now, on the edge they open on. */}
+              </>
+            }
+          />
+        </ShellHeader>
+
+        {/* A link that arrived broken says so. Both of these used to decode to `null`
+            and open the default example without a word — which, from the side of the
+            person who shared it, is indistinguishable from Share doing nothing. Long
+            links invite exactly this: chat clients truncate them. */}
+        {notice && !dismissed && (
+          <Alert variant="warning" style={{ flex: "none", margin: "0.5rem 0.75rem 0" }}>
+            <AlertTitle>{notice.title}</AlertTitle>
+            <AlertDescription>{notice.detail}</AlertDescription>
+            <AlertAction>
+              <Button size="sm" variant="ghost" onClick={() => setDismissed(true)}>
+                {chrome.notice.dismiss}
+              </Button>
+            </AlertAction>
+          </Alert>
+        )}
+
+        <ShellBody>
+          {/* Which panels are open, drawn as icons on the edge they open on. First
+              child of the body, so it keeps its strip whatever the workspace does. */}
+          <PanelRail
+            label={chrome.panes.rail}
+            onValueChange={setOpen}
+            panels={[
+              { icon: FileTextIcon, label: `${chrome.panes.source} — ${chrome.panes.sourceHint} (S)`, value: "source" },
+              { icon: ListChecksIcon, label: `${chrome.panes.issues} — ${chrome.panes.issuesHint} (I)`, value: "issues" },
+              { icon: Code2Icon, label: `${chrome.panes.output} — ${chrome.panes.outputHint} (O)`, value: "output" },
+            ]}
+            value={open}
+          />
+
+          {/* The workspace is wrapped, and the wrapper is the rail's whole defence: the
+              narrow branch's aside is `absolute inset-0`, and inset-0 of the BODY would
+              have covered the rail along with the form. */}
+          <div className="relative flex min-w-0 flex-1">
+            {overlay ? (
+              <>
+                {formColumn}
+                {/* `bg-card` is load-bearing: ShellAside is presentational and paints
+                    nothing, so an overlay without a surface shows the form straight
+                    through it. The deleted Aside.tsx carried this as PANEL_BG. The
+                    last two readers of that constant are gone, so `panel.ts` went
+                    with them. */}
+                <ShellAside
+                  overlay
+                  className="bg-card"
+                  side={source.show ? "start" : "end"}
+                  aria-label={source.show ? chrome.panes.source : issues.show ? chrome.panes.issues : chrome.panes.output}
+                >
+                  {activePanel}
+                </ShellAside>
+              </>
+            ) : (
+              <WorkspaceColumns
+                columns={columns}
+                defaultSize={columns.map((c) => (c.id === "form" ? split.main : split.aside))}
               />
-              {/* No panel toggles here. A control that opens a region belongs against
-                  the region — they are on the rail now, on the edge they open on. */}
-            </>
-          }
-        />
-      </ShellHeader>
+            )}
+          </div>
+        </ShellBody>
 
-      {/* A link that arrived broken says so. Both of these used to decode to `null`
-          and open the default example without a word — which, from the side of the
-          person who shared it, is indistinguishable from Share doing nothing. Long
-          links invite exactly this: chat clients truncate them. */}
-      {notice && !dismissed && (
-        <Alert variant="warning" style={{ flex: "none", margin: "0.5rem 0.75rem 0" }}>
-          <AlertTitle>{notice.title}</AlertTitle>
-          <AlertDescription>{notice.detail}</AlertDescription>
-          <AlertAction>
-            <Button size="sm" variant="ghost" onClick={() => setDismissed(true)}>
-              Dismiss
-            </Button>
-          </AlertAction>
-        </Alert>
-      )}
+        {prefs.assistant.enabled && (
+          // The FAB is fixed bottom-end and owns that spot (it is the design system's,
+          // and every showcase puts it there); the companion is the guest, so it moves
+          // up by the FAB's height and its gap rather than sitting on top of it.
+          <FormAssistant
+            form={form}
+            offset={{ bottom: "4rem" }}
+            onDismiss={() => update("assistant", { enabled: false })}
+          />
+        )}
 
-      <ShellBody>
-        {/* Which panels are open, drawn as icons on the edge they open on. First
-            child of the body, so it keeps its strip whatever the workspace does. */}
-        <PanelRail
-          label="Panels"
-          onValueChange={setOpen}
-          panels={[
-            { icon: FileTextIcon, label: "Source — the shapes and the data (S)", value: "source" },
-            { icon: ListChecksIcon, label: "Issues — what validation found (I)", value: "issues" },
-            { icon: Code2Icon, label: "Output — Turtle and JSON-LD (O)", value: "output" },
-          ]}
-          value={open}
-        />
-
-        {/* The workspace is wrapped, and the wrapper is the rail's whole defence: the
-            narrow branch's aside is `absolute inset-0`, and inset-0 of the BODY would
-            have covered the rail along with the form. */}
-        <div className="relative flex min-w-0 flex-1">
-          {overlay ? (
-            <>
-              {formColumn}
-              {/* `bg-card` is load-bearing: ShellAside is presentational and paints
-                  nothing, so an overlay without a surface shows the form straight
-                  through it. The deleted Aside.tsx carried this as PANEL_BG. The
-                  last two readers of that constant are gone, so `panel.ts` went
-                  with them. */}
-              <ShellAside
-                overlay
-                className="bg-card"
-                side={source.show ? "start" : "end"}
-                aria-label={source.show ? "Source" : issues.show ? "Issues" : "Output"}
-              >
-                {activePanel}
-              </ShellAside>
-            </>
-          ) : (
-            <WorkspaceColumns
-              columns={columns}
-              defaultSize={columns.map((c) => (c.id === "form" ? split.main : split.aside))}
-            />
-          )}
-        </div>
-      </ShellBody>
-
-      {prefs.assistant.enabled && (
-        // The FAB is fixed bottom-end and owns that spot (it is the design system's,
-        // and every showcase puts it there); the companion is the guest, so it moves
-        // up by the FAB's height and its gap rather than sitting on top of it.
-        <FormAssistant
-          form={form}
-          offset={{ bottom: "4rem" }}
-          onDismiss={() => update("assistant", { enabled: false })}
-        />
-      )}
-
-      {/* The FAB and the drawer. The panel composes its own sections now — ours
-          first, then the design system's theme axes. */}
-      <Preferences.Trigger />
-      <Preferences.Panel />
-    </ShellRoot>
+        {/* The FAB and the drawer. The panel composes its own sections now — ours
+            first, then the design system's theme axes. */}
+        <Preferences.Trigger />
+        <Preferences.Panel />
+      </ShellRoot>
+    </ChromeContext.Provider>
   );
 }

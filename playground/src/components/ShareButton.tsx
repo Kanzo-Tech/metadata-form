@@ -1,5 +1,6 @@
 import { Button } from "@kanzo-tech/ui";
 import { CheckIcon, LinkIcon, Share2Icon } from "lucide-react";
+import { useChrome } from "../i18n.js";
 import type { ShareStatus } from "../hooks/useUrlState.js";
 
 /**
@@ -12,15 +13,15 @@ import type { ShareStatus } from "../hooks/useUrlState.js";
  * that reports nothing in that case is indistinguishable from a broken one.
  */
 export function ShareButton({ onShare, status }: { onShare: () => void; status: ShareStatus }) {
-  const label =
-    status === "copied" ? "Copied!" : status === "uncopied" ? "In the address bar" : "Share";
+  const t = useChrome().share;
+  const label = status === "copied" ? t.copied : status === "uncopied" ? t.uncopied : t.idle;
   const Icon = status === "copied" ? CheckIcon : status === "uncopied" ? LinkIcon : Share2Icon;
   return (
     <Button
       size="sm"
       variant="ghost"
       onClick={onShare}
-      title={status === "uncopied" ? "The clipboard is unavailable here — copy the URL from the address bar" : undefined}
+      title={status === "uncopied" ? t.unavailable : undefined}
     >
       <Icon />
       {label}

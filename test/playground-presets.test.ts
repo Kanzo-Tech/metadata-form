@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { EXAMPLES } from "@playground/presets.js";
+import { fill, pickChrome } from "@playground/i18n.js";
 
 /**
  * The regression this pins: `options` used to be `useState(seed.options)` with no
@@ -26,5 +27,42 @@ describe("example presets", () => {
         expect(preset.state.exampleId, `${ex.id}/${preset.id}`).toBe(ex.id);
       }
     }
+  });
+});
+
+/**
+ * The playground carries its own chrome catalog rather than borrowing the
+ * library's — see `playground/src/i18n.ts` for the line. What that costs is a
+ * second table to keep in step, so the step is pinned: a string added in English
+ * and forgotten in Catalan is the exact defect this whole pass was fixing.
+ */
+describe("the playground's chrome catalog", () => {
+  const leaves = (o: unknown, at = ""): [string, string][] =>
+    typeof o === "string"
+      ? [[at, o]]
+      : Object.entries(o as Record<string, unknown>).flatMap(([k, v]) => leaves(v, at ? `${at}.${k}` : k));
+
+  const english = leaves(pickChrome("en"));
+
+  it.each(["es", "ca"])("says everything English says, in %s", (locale) => {
+    const translated = new Map(leaves(pickChrome(locale)));
+    for (const [key, value] of english) {
+      expect(translated.get(key), key).toBeTruthy();
+      // The `{name}` slots are the sentence's structure, not its words: a
+      // translation that drops one silently renders "{total}" to a reader.
+      const slots = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
+      expect(slots(translated.get(key)!), key).toEqual(slots(value));
+    }
+  });
+
+  it("falls back down the base-language chain, exactly as the library does", () => {
+    expect(pickChrome("es-ES")).toBe(pickChrome("es"));
+    expect(pickChrome("de")).toBe(pickChrome("en"));
+    expect(pickChrome(undefined)).toBe(pickChrome("en"));
+  });
+
+  it("fills a slot by name and leaves an unknown one alone", () => {
+    expect(fill("{blocking} of {total}", { blocking: 1, total: 3 })).toBe("1 of 3");
+    expect(fill("{nope}", {})).toBe("{nope}");
   });
 });

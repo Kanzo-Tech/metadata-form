@@ -2,6 +2,7 @@ import { Kbd, MadeWith } from "@kanzo-tech/ui";
 import { ScrollTextIcon } from "lucide-react";
 import { ValidationSummary } from "metadata-form";
 import { BrandLogo } from "./BrandLogo.js";
+import { useChrome } from "../i18n.js";
 import type { ExampleBranding } from "../presets.js";
 
 /**
@@ -23,6 +24,7 @@ export function Header({
   form: React.ComponentProps<typeof ValidationSummary>["form"];
   branding?: ExampleBranding;
 }) {
+  const chrome = useChrome();
   return (
     // The row's height and its two gaps are inline: `h-11`, `gap-2.5` and
     // `gap-1.5` are not in the compiled sheet, so the header had no height of
@@ -34,9 +36,7 @@ export function Header({
         <>
           <ScrollTextIcon aria-hidden size={14} className="shrink-0 text-muted-foreground" />
           <h1 className="shrink-0 font-heading font-medium text-sm">metadata-form</h1>
-          <span className="hidden shrink-0 text-muted-foreground lg:inline">
-            SHACL shapes → editable RDF form → Turtle &amp; JSON-LD
-          </span>
+          <span className="hidden shrink-0 text-muted-foreground lg:inline">{chrome.tagline}</span>
         </>
       )}
 
@@ -46,7 +46,7 @@ export function Header({
             badges in tabs/steps are wayfinding dots, not a competing counter). */}
         <ValidationSummary form={form} />
         <span className="hidden text-muted-foreground xl:inline">
-          Preferences <Kbd>P</Kbd>
+          {chrome.preferences} <Kbd>P</Kbd>
         </span>
         <MadeWith href="https://kanzo.tech" className="hidden 2xl:inline-flex">
           Kanzo

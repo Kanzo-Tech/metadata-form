@@ -30,6 +30,7 @@ import {
   RectangleHorizontalIcon,
 } from "lucide-react";
 import type { FormLayout } from "metadata-form";
+import { useChrome, type Chrome } from "./i18n.js";
 
 /**
  * The playground's preferences — the reference pattern for embedding
@@ -115,12 +116,19 @@ function Root({ children }: { children: ReactNode }) {
   );
 }
 
-type Choice = readonly [value: string, label: string, icon: ComponentType<{ className?: string }>];
+/** The label is a function of the catalog rather than a string, so both axes stay
+ *  one table each: the list is what a choice IS, and which language it is said in
+ *  is not part of that. */
+type Choice = readonly [
+  value: string,
+  label: (t: Chrome["prefs"]) => string,
+  icon: ComponentType<{ className?: string }>,
+];
 
 const LAYOUTS: readonly Choice[] = [
-  ["sequential", "Sequential", GalleryVerticalIcon],
-  ["tabs", "Tabs", LayoutPanelTopIcon],
-  ["steps", "Steps", ListOrderedIcon],
+  ["sequential", (t) => t.sequential, GalleryVerticalIcon],
+  ["tabs", (t) => t.tabs, LayoutPanelTopIcon],
+  ["steps", (t) => t.steps, ListOrderedIcon],
 ];
 
 /** `FieldsGrid` writes `repeat(N, minmax(0, 1fr))` and takes any N, so three is
@@ -128,9 +136,9 @@ const LAYOUTS: readonly Choice[] = [
  *  and its control stop fitting on a line at the widths this column gets with a
  *  panel open on either side. A number input said otherwise. */
 const COLUMNS: readonly Choice[] = [
-  ["1", "One", RectangleHorizontalIcon],
-  ["2", "Two", Columns2Icon],
-  ["3", "Three", Columns3Icon],
+  ["1", (t) => t.one, RectangleHorizontalIcon],
+  ["2", (t) => t.two, Columns2Icon],
+  ["3", (t) => t.three, Columns3Icon],
 ];
 
 /** A row of icon cards, one of which is chosen — the shape both layout axes take. */
@@ -145,6 +153,7 @@ function CardChoice({
   options: readonly Choice[];
   value: string;
 }) {
+  const t = useChrome().prefs;
   return (
     <PreferencesField label={label}>
       <RadioGroup
@@ -161,7 +170,7 @@ function CardChoice({
             style={{ gap: "0.375rem" }}
           >
             <Icon className="size-4 text-muted-foreground" />
-            <span className="font-medium text-xs">{text}</span>
+            <span className="font-medium text-xs">{text(t)}</span>
           </RadioGroupCard>
         ))}
       </RadioGroup>
@@ -171,16 +180,17 @@ function CardChoice({
 
 function LayoutSection() {
   const { prefs, update } = usePreferences();
+  const t = useChrome().prefs;
   return (
     <>
       <CardChoice
-        label="Layout"
+        label={t.layout}
         options={LAYOUTS}
         value={prefs.layout.mode}
         onChange={(v) => update("layout", { mode: v as FormLayout })}
       />
       <CardChoice
-        label="Columns"
+        label={t.columns}
         options={COLUMNS}
         value={String(prefs.layout.columns)}
         onChange={(v) => update("layout", { columns: Number(v) })}
@@ -191,9 +201,10 @@ function LayoutSection() {
 
 function AssistantSection() {
   const { prefs, update } = usePreferences();
+  const t = useChrome().prefs;
   return (
     <Field orientation="horizontal">
-      <FieldLabel className="w-fit flex-1">Show the mascot companion</FieldLabel>
+      <FieldLabel className="w-fit flex-1">{t.mascot}</FieldLabel>
       <Switch
         checked={prefs.assistant.enabled}
         onCheckedChange={(d) => update("assistant", { enabled: d.checked === true })}
@@ -208,8 +219,9 @@ function AssistantSection() {
 function ClaudeKeySection() {
   const { prefs, update } = usePreferences();
   const [shown, setShown] = useState(false);
+  const t = useChrome().prefs;
   return (
-    <PreferencesField label="Anthropic API key">
+    <PreferencesField label={t.apiKey}>
       <InputGroup>
         <InputGroupInput
           type={shown ? "text" : "password"}
@@ -220,7 +232,7 @@ function ClaudeKeySection() {
           onChange={(e) => update("ai", { claudeKey: e.target.value })}
         />
         <InputGroupButton
-          aria-label={shown ? "Hide the key" : "Show the key"}
+          aria-label={shown ? t.hideKey : t.showKey}
           onClick={() => setShown((s) => !s)}
         >
           {shown ? <EyeOffIcon /> : <EyeIcon />}

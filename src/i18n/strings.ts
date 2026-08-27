@@ -46,6 +46,10 @@ export interface Strings {
     infoDetail: string;
     /** Precedes the offending term. */
     reportedValue: string;
+    /** Accessible name of the disclosure that opens one finding. `{field}` is the
+     *  field's hierarchical label — the only interpolation in this catalog, and it
+     *  is a name substituted verbatim, not a quantity that would need a formatter. */
+    detailsOf: string;
   };
 }
 
@@ -114,6 +118,7 @@ const EN: Strings = {
     warningDetail: "The data is still valid; this is worth a look.",
     infoDetail: "Reported for information only.",
     reportedValue: "Reported value",
+    detailsOf: "Details of the issue on {field}",
   },
 };
 
@@ -170,6 +175,7 @@ const ES: Strings = {
     warningDetail: "Los datos siguen siendo válidos; conviene revisarlo.",
     infoDetail: "Solo a título informativo.",
     reportedValue: "Valor recibido",
+    detailsOf: "Detalles de la incidencia en {field}",
   },
 };
 
@@ -226,6 +232,7 @@ const CA: Strings = {
     warningDetail: "Les dades continuen sent vàlides; convé revisar-ho.",
     infoDetail: "Només a títol informatiu.",
     reportedValue: "Valor rebut",
+    detailsOf: "Detalls de la incidència a {field}",
   },
 };
 

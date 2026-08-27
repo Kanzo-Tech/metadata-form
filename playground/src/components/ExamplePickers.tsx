@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { NativeSelect, NativeSelectOption } from "@kanzo-tech/ui";
+import { useChrome } from "../i18n.js";
 import type { Preset, ShapeExample } from "../presets.js";
 
 /**
@@ -61,9 +62,10 @@ export function ShapePicker({
   onPick: (id: string) => void;
   shapeId: string;
 }) {
+  const chrome = useChrome();
   if (examples.length < 2) return null;
   return (
-    <PaneSelect label="Shape" onChange={onPick} value={shapeId}>
+    <PaneSelect label={chrome.source.shapePicker} onChange={onPick} value={shapeId}>
       {examples.map((e) => (
         <NativeSelectOption key={e.id} value={e.id}>
           {e.label}
@@ -83,9 +85,10 @@ export function PresetPicker({
   presetId: string;
   presets: Preset[];
 }) {
+  const chrome = useChrome();
   if (presets.length < 2) return null;
   return (
-    <PaneSelect label="Data" onChange={onPick} value={presetId}>
+    <PaneSelect label={chrome.source.dataPicker} onChange={onPick} value={presetId}>
       {presets.map((p) => (
         <NativeSelectOption key={p.id} value={p.id}>
           {p.label}

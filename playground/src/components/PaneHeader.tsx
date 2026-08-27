@@ -1,6 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 import { Button, Status } from "@kanzo-tech/ui";
 import { XIcon } from "lucide-react";
+import { fill, useChrome } from "../i18n.js";
 
 /**
  * A panel's own header: what the panel is, a control that governs its document,
@@ -34,6 +35,9 @@ export function PaneHeader({
    *  reader takes in without reading. */
   tone?: "destructive" | "info" | "success" | "warning";
 }) {
+  // `title` arrives already translated (it is the pane's name); the sentence built
+  // around it for the close button is this component's, so it is resolved here.
+  const chrome = useChrome();
   return (
     <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border px-3">
       <Icon aria-hidden size={14} className="shrink-0 text-muted-foreground" />
@@ -51,7 +55,7 @@ export function PaneHeader({
         ) : null}
         {onClose ? (
           <Button
-            aria-label={`Close ${title}`}
+            aria-label={fill(chrome.panes.close, { pane: title })}
             className="size-6 shrink-0 text-muted-foreground"
             onClick={onClose}
             size="icon-sm"

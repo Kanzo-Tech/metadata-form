@@ -1,4 +1,5 @@
 import { NativeSelect, NativeSelectOption } from "@kanzo-tech/ui";
+import { useChrome } from "../i18n.js";
 
 /** The UI-language selector — switches the language of the form's labels and
  *  descriptions (`useMetadataForm({ locale })`). Shown only for examples whose
@@ -15,10 +16,13 @@ export function LocaleSelect({
   locales: string[];
   onChange: (locale: string) => void;
 }) {
+  // Its own accessible name follows the language it is currently selecting — this
+  // said "Idioma" in every locale, which is the defect this control invites.
+  const chrome = useChrome();
   return (
     <NativeSelect
       size="sm"
-      aria-label="Idioma"
+      aria-label={chrome.language}
       style={{ height: "1.75rem", width: "7rem" }}
       value={value}
       onChange={(e) => onChange(e.target.value)}

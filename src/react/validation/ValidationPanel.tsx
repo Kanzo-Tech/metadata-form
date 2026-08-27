@@ -34,6 +34,8 @@ export interface ValidationPanelLabels {
   consequence?: Partial<Record<Severity, string>>;
   /** Precedes the offending term. */
   reportedValue?: string;
+  /** Accessible name of the disclosure. `{field}` is replaced by the field's label. */
+  detailsOf?: string;
 }
 
 /** The panel's own wording, from the catalog the controller already resolved for
@@ -45,6 +47,7 @@ function wordsFor(strings: Strings, labels: ValidationPanelLabels | undefined) {
   return {
     empty: labels?.empty ?? p.empty,
     reportedValue: labels?.reportedValue ?? p.reportedValue,
+    detailsOf: labels?.detailsOf ?? p.detailsOf,
     severity: {
       violation: labels?.severity?.violation ?? p.violation,
       warning: labels?.severity?.warning ?? p.warning,
@@ -157,7 +160,7 @@ export function ValidationPanel({ form, openId, onOpenChange, labels }: Validati
               <DiagnosticSource>{where}</DiagnosticSource>
               <DiagnosticActions className="ms-auto">
                 {/* The chevron alone; the name it carries is what `aria-label` is for. */}
-                <DiagnosticTrigger aria-label={`Details of the issue on ${row.label}`} />
+                <DiagnosticTrigger aria-label={words.detailsOf.replace("{field}", row.label)} />
               </DiagnosticActions>
               <DiagnosticTitle className="basis-full">{row.message}</DiagnosticTitle>
             </DiagnosticHeader>
