@@ -21,16 +21,19 @@ export function PaneHeader({
 }: {
   actions?: ReactNode;
   detail?: string;
-  icon: ComponentType<{ "aria-hidden"?: boolean; className?: string }>;
+  // `size` rather than a `size-3.5` class: that class is not in the design
+  // system's sheet, and every icon we pass here is a lucide component, which
+  // takes the number directly.
+  icon: ComponentType<{ "aria-hidden"?: boolean; className?: string; size?: number }>;
   onClose?: () => void;
   title: string;
 }) {
   return (
     <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border px-3">
-      <Icon aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
+      <Icon aria-hidden size={14} className="shrink-0 text-muted-foreground" />
       <span className="shrink-0 font-medium text-xs">{title}</span>
       {actions}
-      <span className="ms-auto flex min-w-0 items-center gap-1.5">
+      <span className="ms-auto flex min-w-0 items-center" style={{ gap: "0.375rem" }}>
         {detail ? (
           <span className="truncate text-muted-foreground text-xs" title={detail}>
             {detail}

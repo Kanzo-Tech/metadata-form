@@ -172,7 +172,9 @@ function ThemedApp() {
       <div style={{ margin: "0 auto", width: "100%", maxWidth: "48rem", padding: "2rem 1.5rem" }}>
         {form.error ? (
           <Card>
-            <CardContent className="pt-6 text-destructive-foreground">{form.error.message}</CardContent>
+            <CardContent className="text-destructive-foreground" style={{ paddingBlock: "1.5rem" }}>
+              {form.error.message}
+            </CardContent>
           </Card>
         ) : (
           <MetadataForm form={form} layout={prefs.layout.mode} grid={{ columns: prefs.layout.columns }} />
@@ -213,8 +215,10 @@ function ThemedApp() {
 
   return (
     <ShellRoot>
-      {/* Brand-tinted top edge — a thin line of the theme's primary. */}
-      {branding?.tint && <div className="h-[3px] flex-none bg-primary" />}
+      {/* Brand-tinted top edge — a thin line of the theme's primary. The height
+          is inline: `h-[3px]` is an arbitrary-value class, and nothing compiles
+          Tailwind here, so it painted a 0px-tall line until this was noticed. */}
+      {branding?.tint && <div className="bg-primary" style={{ height: "3px", flex: "none" }} />}
       <ShellHeader>
         <Header
           form={form}

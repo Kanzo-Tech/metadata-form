@@ -25,7 +25,7 @@ export function ExamplePickers({
   onPickPreset: (id: string) => void;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-1.5">
+    <div className="flex min-w-0 items-center" style={{ gap: "0.375rem" }}>
       <NativeSelect
         size="sm"
         aria-label="Shape"

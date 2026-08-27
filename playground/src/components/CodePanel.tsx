@@ -14,7 +14,7 @@ const jsonLang = json();
 export function CodePanel({ tabs }: { tabs: { value: string; label: string; node: React.ReactNode }[] }) {
   return (
     <Tabs defaultValue={tabs[0].value} className="flex min-h-0 flex-1 flex-col">
-      <TabsList className="flex-none">
+      <TabsList style={{ flex: "none" }}>
         {tabs.map((t) => (
           <TabsTrigger key={t.value} value={t.value}>
             {t.label}
