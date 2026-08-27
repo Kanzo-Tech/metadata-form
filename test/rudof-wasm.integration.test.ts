@@ -334,4 +334,51 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(report.issues.rows[0].label).toBe("Publisher › Name");
     expect(report.issues.rows[0].constraint).toBe("http://www.w3.org/ns/shacl#MinCountConstraintComponent");
   });
+
+  /**
+   * The cure for M6, and the reason `@kanzo-tech/rudof-wasm` was republished
+   * (fork `c4362e002`): every constraint component that builds its own
+   * `ValidationResult` used to drop the shape's `sh:message`, so a multilingual
+   * message on a `sh:node` property shape never reached a reader — 14 of 30
+   * components, on exactly the path the i18n work was built for.
+   *
+   * Two halves, both pinned here because nothing else pins either:
+   *  - the author's messages arrive lang-TAGGED, so `friendly()` can pick by
+   *    locale (untagged engine text is excluded from that choice by design);
+   *  - `sh:node`'s own untagged default names the shape's ID and no longer
+   *    `Display`s the whole `IRShape`. The dump M6 reported verbatim
+   *    ("Node(NodeShape Targets: … Property Shapes: [22, 13, 23])") is gone.
+   */
+  it("keeps the shape's multilingual sh:message on a sh:node violation", async () => {
+    await engine.loadShapes(`
+      @prefix sh:  <http://www.w3.org/ns/shacl#> .
+      @prefix ex:  <${EX}> .
+      @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      ex:AgentShape a sh:NodeShape ;
+        sh:property [ sh:path ex:name ; sh:datatype xsd:string ; sh:minCount 1 ] .
+      ex:DatasetShape a sh:NodeShape ; sh:targetClass ex:Dataset ;
+        sh:property [ sh:path ex:publisher ; sh:node ex:AgentShape ;
+                      sh:message "El publicador está incompleto"@es ;
+                      sh:message "The publisher is incomplete"@en ] .
+    `);
+    await engine.loadData(`@prefix ex: <${EX}> . ex:d1 a ex:Dataset ; ex:publisher ex:p1 . ex:p1 a ex:Agent .`);
+
+    const [result] = await engine.validate();
+    expect(result.constraint).toBe("http://www.w3.org/ns/shacl#NodeConstraintComponent");
+
+    const tagged = new Map(result.messages.filter((m) => m.language).map((m) => [m.language, m.value]));
+    expect(tagged.get("es")).toBe("El publicador está incompleto");
+    expect(tagged.get("en")).toBe("The publisher is incomplete");
+
+    // The engine's own default names the shape, not its expansion.
+    const untagged = result.messages.find((m) => !m.language)?.value ?? "";
+    expect(untagged).toContain(`${EX}AgentShape`);
+    expect(untagged).not.toContain("NodeShape Targets");
+
+    // And that is what a reader gets, per locale.
+    const es = mapResults([result], "es").get(`${EX}d1|${EX}publisher`)![0];
+    expect(es.message).toBe("El publicador está incompleto");
+    expect(mapResults([result], "en").get(`${EX}d1|${EX}publisher`)![0].message)
+      .toBe("The publisher is incomplete");
+  });
 });
