@@ -14,6 +14,10 @@ export type { MetadataFormProps } from "./react/form/MetadataForm.js";
 export type { FormLayout, GridLayout } from "./react/form/context.js";
 export { ValidationSummary } from "./react/validation/ValidationSummary.js";
 export type { ValidationSummaryProps } from "./react/validation/ValidationSummary.js";
+// The findings, read as a list. The panel half of "a pill summarises, a panel
+// explains" — see the component's own docblock for why it is not the pill.
+export { ValidationPanel } from "./react/validation/ValidationPanel.js";
+export type { ValidationPanelProps, ValidationPanelLabels } from "./react/validation/ValidationPanel.js";
 // Derived form state — the single source for validation + completion + health.
 export { computeFormReport, useFormReport } from "./react/validation/useFormReport.js";
 export type { FormReport, FormProgress, FormMood, IssueRow, GroupIssues } from "./react/validation/useFormReport.js";

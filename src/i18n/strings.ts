@@ -30,6 +30,23 @@ export interface Strings {
    * the last resort for any other/unknown constraint.
    */
   validationDefaults: Record<string, string>;
+  /** Chrome of the findings panel — the words AROUND a message, not the message.
+   *  A form whose fields and errors are Spanish and whose severity badge says
+   *  "Violation" is a form that is half translated. */
+  validationPanel: {
+    /** Shown when the report is clean. */
+    empty: string;
+    /** The severity, as the badge word. Keyed by `Severity`. */
+    violation: string;
+    warning: string;
+    info: string;
+    /** What each severity means for the data, shown when a finding is opened. */
+    violationDetail: string;
+    warningDetail: string;
+    infoDetail: string;
+    /** Precedes the offending term. */
+    reportedValue: string;
+  };
 }
 
 /** A recursive partial for consumer overrides. */
@@ -88,6 +105,16 @@ const EN: Strings = {
     [`${SH}SPARQLConstraintComponent`]: "Value does not meet a custom requirement",
     _fallback: "Invalid value",
   },
+  validationPanel: {
+    empty: "Nothing to fix. Every shape this form covers is satisfied.",
+    violation: "Violation",
+    warning: "Warning",
+    info: "Info",
+    violationDetail: "The data does not satisfy the shape until this is resolved.",
+    warningDetail: "The data is still valid; this is worth a look.",
+    infoDetail: "Reported for information only.",
+    reportedValue: "Reported value",
+  },
 };
 
 const ES: Strings = {
@@ -133,6 +160,16 @@ const ES: Strings = {
     [`${SH}ClosedConstraintComponent`]: "Esta propiedad no está permitida aquí",
     [`${SH}SPARQLConstraintComponent`]: "El valor no cumple un requisito personalizado",
     _fallback: "Valor no válido",
+  },
+  validationPanel: {
+    empty: "No hay nada que corregir. El formulario cumple todas las formas.",
+    violation: "Infracción",
+    warning: "Aviso",
+    info: "Información",
+    violationDetail: "Los datos no cumplen la forma mientras esto no se resuelva.",
+    warningDetail: "Los datos siguen siendo válidos; conviene revisarlo.",
+    infoDetail: "Solo a título informativo.",
+    reportedValue: "Valor recibido",
   },
 };
 
@@ -180,6 +217,16 @@ const CA: Strings = {
     [`${SH}SPARQLConstraintComponent`]: "El valor no compleix un requisit personalitzat",
     _fallback: "Valor no vàlid",
   },
+  validationPanel: {
+    empty: "No hi ha res a corregir. El formulari compleix totes les formes.",
+    violation: "Infracció",
+    warning: "Avís",
+    info: "Informació",
+    violationDetail: "Les dades no compleixen la forma mentre això no es resolgui.",
+    warningDetail: "Les dades continuen sent vàlides; convé revisar-ho.",
+    infoDetail: "Només a títol informatiu.",
+    reportedValue: "Valor rebut",
+  },
 };
 
 /** Built-in tables. English is the ultimate fallback for any missing key. */
@@ -205,5 +252,10 @@ export function resolveStrings(locale: string | undefined, override?: DeepPartia
       ...override?.languagePicker,
     },
     validationDefaults,
+    validationPanel: {
+      ...EN.validationPanel,
+      ...table.validationPanel,
+      ...override?.validationPanel,
+    },
   };
 }

@@ -1,5 +1,5 @@
 import type { ComponentType, ReactNode } from "react";
-import { Button } from "@kanzo-tech/ui";
+import { Button, Status } from "@kanzo-tech/ui";
 import { XIcon } from "lucide-react";
 
 /**
@@ -10,7 +10,8 @@ import { XIcon } from "lucide-react";
  * where a control belongs: `actions` is for something that acts on **this
  * panel's document** — the shape and data pickers replace what Source is
  * showing, so they sit here against it. A control that acts on the whole page
- * (Share, the validation tally, the panel toggles) stays in the page header.
+ * (Share, the validation tally) stays in the page header — or, for the toggles
+ * that open these panels, on the rail against the edge they open on.
  */
 export function PaneHeader({
   actions,
@@ -18,6 +19,7 @@ export function PaneHeader({
   icon: Icon,
   onClose,
   title,
+  tone,
 }: {
   actions?: ReactNode;
   detail?: string;
@@ -27,6 +29,10 @@ export function PaneHeader({
   icon: ComponentType<{ "aria-hidden"?: boolean; className?: string; size?: number }>;
   onClose?: () => void;
   title: string;
+  /** How the panel's document is doing, as a dot before `detail`. A count says
+   *  how many; the dot says whether any of them matter, which is the half a
+   *  reader takes in without reading. */
+  tone?: "destructive" | "info" | "success" | "warning";
 }) {
   return (
     <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border px-3">
@@ -34,6 +40,10 @@ export function PaneHeader({
       <span className="shrink-0 font-medium text-xs">{title}</span>
       {actions}
       <span className="ms-auto flex min-w-0 items-center" style={{ gap: "0.375rem" }}>
+        {/* 6px, the size the showcase draws it at beside 12px type. Inline, because
+            `size-1.5` is not in the compiled sheet and `Status`'s own steps stop at
+            8px (`sm`); the recipe's default `md` would paint 10px. */}
+        {tone ? <Status className="shrink-0" variant={tone} style={{ width: "0.375rem", height: "0.375rem" }} /> : null}
         {detail ? (
           <span className="truncate text-muted-foreground text-xs" title={detail}>
             {detail}

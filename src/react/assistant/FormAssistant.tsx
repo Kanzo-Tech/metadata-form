@@ -11,6 +11,16 @@ export interface FormAssistantProps {
   character?: MascotCharacter;
   /** Where the companion floats. Defaults to bottom-right. */
   corner?: "bottom-right" | "bottom-left";
+  /**
+   * How far the companion sits from its corner. Defaults to `1.5rem` on both axes.
+   *
+   * The library floats one thing in a corner and cannot know what else the host
+   * floats there — the design system's own preferences FAB is fixed bottom-end,
+   * and the two overlapped by half the FAB's hit area until this existed. Moving
+   * the host's control is not always possible (that FAB owns its position), so
+   * the guest gets a way out of the way.
+   */
+  offset?: { bottom?: string; inline?: string };
   /** Called when the user closes the companion (the ✕). Wire this to your own
    * "show assistant" setting so the toggle stays in sync with the close button. */
   onDismiss?: () => void;
@@ -23,7 +33,13 @@ export interface FormAssistantProps {
  * required field (scroll + focus + a soft pulse — never a spotlight overlay).
  * The mascot is swappable via `character`.
  */
-export function FormAssistant({ form, character = defaultMascot, corner = "bottom-right", onDismiss }: FormAssistantProps) {
+export function FormAssistant({
+  form,
+  character = defaultMascot,
+  corner = "bottom-right",
+  offset,
+  onDismiss,
+}: FormAssistantProps) {
   const { health, progress, nextField } = form.report;
   const [dismissed, setDismissed] = useState(false);
   const Character = character;
@@ -46,8 +62,8 @@ export function FormAssistant({ form, character = defaultMascot, corner = "botto
       style={{
         position: "fixed",
         zIndex: 50,
-        bottom: "1.5rem",
-        [corner === "bottom-left" ? "left" : "right"]: "1.5rem",
+        bottom: offset?.bottom ?? "1.5rem",
+        [corner === "bottom-left" ? "left" : "right"]: offset?.inline ?? "1.5rem",
       }}
     >
       <Card

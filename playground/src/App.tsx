@@ -7,22 +7,26 @@ import {
   Button,
   Card,
   CardContent,
+  DownloadTrigger,
+  JsonTreeView,
   KanzoThemeProvider,
+  NativeSelect,
+  NativeSelectOption,
   ShellAside,
   ShellBody,
   ShellHeader,
   ShellMain,
   ShellRoot,
 } from "@kanzo-tech/ui";
-import { Code2Icon, FileTextIcon } from "lucide-react";
+import { Code2Icon, DownloadIcon, FileTextIcon, ListChecksIcon } from "lucide-react";
 import { PaneHeader } from "./components/PaneHeader.js";
-import { FormAssistant, MetadataForm, useMetadataForm, type FormAssist } from "metadata-form";
+import { FormAssistant, MetadataForm, useMetadataForm, ValidationPanel, type FormAssist } from "metadata-form";
 import { Preferences, usePreferences } from "./Preferences.js";
 import { Header } from "./components/Header.js";
-import { ExamplePickers } from "./components/ExamplePickers.js";
+import { PresetPicker, ShapePicker } from "./components/ExamplePickers.js";
 import { LocaleSelect } from "./components/LocaleSelect.js";
 import { ShareButton } from "./components/ShareButton.js";
-import { Toggle } from "./components/Toggle.js";
+import { PanelRail } from "./components/PanelRail.js";
 import { WorkspaceColumns, type WorkspaceColumn } from "./components/Workspace.js";
 import { CodePanel, CodeEditor } from "./components/CodePanel.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
@@ -36,11 +40,15 @@ import type { ExampleBranding } from "./presets.js";
 import { makeAssist } from "./lib/assist.js";
 import "@kanzo-tech/ui/styles.css";
 
-/** Default split of the workspace row, as percentages: source | form | output. */
-const SPLIT_ALL = [24, 46, 30];
-const SPLIT_ONE_ASIDE = [30, 70];
+/** The form keeps what the panels do not take: 24% each, down to a floor of 34%.
+ *  Written as a sum rather than a table of splits — there are eight open-sets with
+ *  three panels, and the table was already two ternaries deep at two. */
+const asideSplit = (asides: number) => {
+  const main = Math.max(34, 100 - asides * 24);
+  return { main, aside: (100 - main) / asides };
+};
 
-/** Below this width the two asides can't sit beside the form, so the layout switches
+/** Below this width the asides can't sit beside the form, so the layout switches
  *  to form-only with a single overlay drawer. */
 const NARROW = "(max-width: 1024px)";
 
@@ -138,10 +146,24 @@ function ThemedApp({
         : null;
 
   const isNarrow = useMediaQuery(NARROW);
-  const { source, output } = usePanels({ narrow: isNarrow });
+  const { panels, open, setOpen } = usePanels({ narrow: isNarrow });
+  const { source, issues, output } = panels;
 
-  // Keyboard toggles (S / O). Preferences owns the "," shortcut.
-  useHotkey(useMemo(() => ({ S: source.toggle, O: output.toggle }), [source.toggle, output.toggle]));
+  // Keyboard toggles (S / I / O). Preferences owns the "P" shortcut.
+  useHotkey(
+    useMemo(
+      () => ({ S: source.toggle, I: issues.toggle, O: output.toggle }),
+      [source.toggle, issues.toggle, output.toggle],
+    ),
+  );
+
+  // Which output document the pane is showing, and which finding is expanded.
+  // Both live HERE, above `ShellBody`, and that is not a preference: opening any
+  // panel re-keys the splitter, the re-key remounts every column, and state held
+  // inside a column would reset as the reader used it — a finding whose frame
+  // opens Source would close itself on the way.
+  const [outputDoc, setOutputDoc] = useState<"turtle" | "jsonld">("turtle");
+  const [openIssue, setOpenIssue] = useState<string | null>(null);
 
   const form = useMetadataForm({
     shapes: applied.shapes,
@@ -154,6 +176,11 @@ function ThemedApp({
   });
 
   const outputs = useFormOutputs(form);
+
+  // The tally the Issues pane's header carries. The pill in the page header counts
+  // the same rows — one report, two readings of it.
+  const issueCount = form.report.issues.rows.length;
+  const violations = form.report.issues.rows.filter((r) => r.severity === "violation").length;
 
   /**
    * The other half of "shareable by reference": the form's graph is still the one the
@@ -175,53 +202,107 @@ function ThemedApp({
     };
   }, [form, baseline]);
 
-  // Panel content defined once and reused by the docked aside (wide) and the drawer (narrow).
-  // Each panel carries its own header: what it is, a close, and — for Source — the
-  // pickers, because they replace the document it is showing and a control belongs
-  // against the thing it acts on.
+  // Panel content defined once and reused by the docked aside (wide) and the drawer
+  // (narrow). Each panel carries its own header: what it is, how it is doing, and a
+  // close. A control that REPLACES a document sits against that document — which for
+  // Source means beside its tab, not in the header over both of them.
   const sourcePanel = (
     <>
-      <PaneHeader
-        icon={FileTextIcon}
-        title="Source"
-        onClose={source.toggle}
-        actions={
-          <ExamplePickers
-            examples={workspace.examples}
-            shapeId={workspace.shapeId}
-            presets={shape.presets}
-            presetId={workspace.presetId}
-            onPickShape={workspace.pickShape}
-            onPickPreset={workspace.pickPreset}
-          />
-        }
-      />
+      <PaneHeader icon={FileTextIcon} title="Source" onClose={source.toggle} />
       <CodePanel
         tabs={[
           {
             value: "shape",
             label: "SHACL shape",
             node: <CodeEditor value={shapeText} onChange={setShapeText} lang="turtle" />,
+            action: (
+              <ShapePicker examples={workspace.examples} shapeId={workspace.shapeId} onPick={workspace.pickShape} />
+            ),
           },
           {
             value: "data",
             label: "Data graph",
             node: <CodeEditor value={dataText} onChange={setDataText} lang="turtle" />,
+            action: <PresetPicker presets={shape.presets} presetId={workspace.presetId} onPick={workspace.pickPreset} />,
           },
         ]}
       />
     </>
   );
 
+  // What validation found, read as a list rather than counted. The panel body is the
+  // library's — an instance that is not this playground needs the findings without
+  // copying a playground to get them — and the chrome around it is ours.
+  const issuesPanel = (
+    <>
+      <PaneHeader
+        icon={ListChecksIcon}
+        title="Issues"
+        onClose={issues.toggle}
+        detail={issueCount === 0 ? "Nothing found" : `${violations} blocking of ${issueCount}`}
+        tone={violations > 0 ? "destructive" : issueCount > 0 ? "warning" : "success"}
+      />
+      <div className="min-h-0 flex-1 overflow-auto p-3">
+        <ValidationPanel form={form} openId={openIssue} onOpenChange={setOpenIssue} />
+      </div>
+    </>
+  );
+
+  // One document at a time, chosen in the panel's own header — the showcase's rule for
+  // every panel it has, and the reason this stopped being a tab strip: Turtle and
+  // JSON-LD are two renderings of one graph, not two things to read against each other
+  // (which IS what Source's two documents are, and why that one keeps its tabs).
+  //
+  // JSON-LD is a tree, not text: the object survives all the way here now, so the
+  // reader can collapse a node instead of scrolling past it.
   const outputPanel = (
     <>
-      <PaneHeader icon={Code2Icon} title="Output" onClose={output.toggle} />
-      <CodePanel
-        tabs={[
-          { value: "turtle", label: "Turtle", node: <CodeEditor value={outputs.turtle} lang="turtle" readOnly /> },
-          { value: "jsonld", label: "JSON-LD", node: <CodeEditor value={outputs.jsonld} lang="json" readOnly /> },
-        ]}
+      <PaneHeader
+        icon={Code2Icon}
+        title="Output"
+        onClose={output.toggle}
+        actions={
+          <span className="flex min-w-0 items-center" style={{ gap: "0.375rem" }}>
+            <NativeSelect
+              aria-label="Which output"
+              onChange={(e) => setOutputDoc(e.target.value as "turtle" | "jsonld")}
+              size="sm"
+              style={{ height: "1.5rem", width: "7rem", minWidth: 0 }}
+              value={outputDoc}
+            >
+              <NativeSelectOption value="turtle">Turtle</NativeSelectOption>
+              <NativeSelectOption value="jsonld">JSON-LD</NativeSelectOption>
+            </NativeSelect>
+            {/* `data` is deferred, so the graph is serialized when somebody asks for
+                the file and not on every keystroke — and there is no object URL of
+                ours to build, revoke or leak. */}
+            <DownloadTrigger
+              asChild
+              data={outputDoc === "turtle" ? () => form.toTurtle() : () => form.toJsonLd().then((j) => JSON.stringify(j, null, 2))}
+              fileName={outputDoc === "turtle" ? "metadata.ttl" : "metadata.jsonld"}
+              mimeType={outputDoc === "turtle" ? "text/turtle" : "application/ld+json"}
+            >
+              <Button
+                aria-label={`Download the ${outputDoc === "turtle" ? "Turtle" : "JSON-LD"}`}
+                className="size-6 shrink-0 text-muted-foreground"
+                size="icon-sm"
+                variant="ghost"
+              >
+                <DownloadIcon />
+              </Button>
+            </DownloadTrigger>
+          </span>
+        }
       />
+      {outputDoc === "turtle" ? (
+        <div className="min-h-0 flex-1">
+          <CodeEditor value={outputs.turtle} lang="turtle" readOnly />
+        </div>
+      ) : (
+        <div className="min-h-0 flex-1 overflow-auto p-3">
+          {outputs.jsonld ? <JsonTreeView data={outputs.jsonld} defaultExpandedDepth={2} /> : null}
+        </div>
+      )}
     </>
   );
 
@@ -241,35 +322,31 @@ function ThemedApp({
     </ShellMain>
   );
 
-  // Wide: the open panels sit beside the form as columns of one draggable row.
-  // Narrow: the form fills and the single active panel is an overlay aside.
-  const columns: WorkspaceColumn[] = [
-    ...(source.show
-      ? [{
-          id: "source",
-          minSize: 15,
-          node: (
-            <ShellAside side="start" aria-label="Source" className="h-full bg-card">
-              {sourcePanel}
-            </ShellAside>
-          ),
-        }]
-      : []),
-    { id: "form", minSize: 30, node: formColumn },
-    ...(output.show
-      ? [{
-          id: "output",
-          minSize: 15,
-          node: (
-            <ShellAside side="end" aria-label="Output" className="h-full bg-card">
-              {outputPanel}
-            </ShellAside>
-          ),
-        }]
-      : []),
-  ];
+  // Wide: the open panels sit beside the form as columns of one draggable row, in
+  // reading order — the shapes that define the form, the form, what it found and
+  // what it produces. Narrow: the form fills and the single active panel is an
+  // overlay aside.
+  const aside = (id: string, label: string, side: "start" | "end", body: React.ReactNode) => ({
+    id,
+    minSize: 16,
+    node: (
+      // `bg-card` is load-bearing: ShellAside is presentational and paints nothing.
+      <ShellAside side={side} aria-label={label} className="h-full bg-card">
+        {body}
+      </ShellAside>
+    ),
+  });
 
-  const overlay = isNarrow && (source.show || output.show);
+  const columns: WorkspaceColumn[] = [
+    ...(source.show ? [aside("source", "Source", "start", sourcePanel)] : []),
+    { id: "form", minSize: 34, node: formColumn },
+    ...(issues.show ? [aside("issues", "Issues", "end", issuesPanel)] : []),
+    ...(output.show ? [aside("output", "Output", "end", outputPanel)] : []),
+  ];
+  const split = asideSplit(Math.max(1, columns.length - 1));
+
+  const activePanel = source.show ? sourcePanel : issues.show ? issuesPanel : outputPanel;
+  const overlay = isNarrow && open.length > 0;
 
   return (
     <ShellRoot>
@@ -300,12 +377,8 @@ function ThemedApp({
                   );
                 }}
               />
-              <Toggle on={source.show} onClick={source.toggle} icon={<FileTextIcon />} kbd="S">
-                Source
-              </Toggle>
-              <Toggle on={output.show} onClick={output.toggle} icon={<Code2Icon />} kbd="O">
-                Output
-              </Toggle>
+              {/* No panel toggles here. A control that opens a region belongs against
+                  the region — they are on the rail now, on the edge they open on. */}
             </>
           }
         />
@@ -328,31 +401,58 @@ function ThemedApp({
       )}
 
       <ShellBody>
-        {overlay ? (
-          <>
-            {formColumn}
-            {/* `bg-card` is load-bearing: ShellAside is presentational and paints
-                nothing, so an overlay without a surface shows the form straight
-                through it. The deleted Aside.tsx carried this as PANEL_BG. */}
-            <ShellAside
-              overlay
-              className="bg-card"
-              side={source.show ? "start" : "end"}
-              aria-label={source.show ? "Source" : "Output"}
-            >
-              {source.show ? sourcePanel : outputPanel}
-            </ShellAside>
-          </>
-        ) : (
-          <WorkspaceColumns
-            columns={columns}
-            defaultSize={columns.length === 3 ? SPLIT_ALL : SPLIT_ONE_ASIDE}
-          />
-        )}
+        {/* Which panels are open, drawn as icons on the edge they open on. First
+            child of the body, so it keeps its strip whatever the workspace does. */}
+        <PanelRail
+          label="Panels"
+          onValueChange={setOpen}
+          panels={[
+            { icon: FileTextIcon, label: "Source — the shapes and the data (S)", value: "source" },
+            { icon: ListChecksIcon, label: "Issues — what validation found (I)", value: "issues" },
+            { icon: Code2Icon, label: "Output — Turtle and JSON-LD (O)", value: "output" },
+          ]}
+          value={open}
+        />
+
+        {/* The workspace is wrapped, and the wrapper is the rail's whole defence: the
+            narrow branch's aside is `absolute inset-0`, and inset-0 of the BODY would
+            have covered the rail along with the form. */}
+        <div className="relative flex min-w-0 flex-1">
+          {overlay ? (
+            <>
+              {formColumn}
+              {/* `bg-card` is load-bearing: ShellAside is presentational and paints
+                  nothing, so an overlay without a surface shows the form straight
+                  through it. The deleted Aside.tsx carried this as PANEL_BG. The
+                  last two readers of that constant are gone, so `panel.ts` went
+                  with them. */}
+              <ShellAside
+                overlay
+                className="bg-card"
+                side={source.show ? "start" : "end"}
+                aria-label={source.show ? "Source" : issues.show ? "Issues" : "Output"}
+              >
+                {activePanel}
+              </ShellAside>
+            </>
+          ) : (
+            <WorkspaceColumns
+              columns={columns}
+              defaultSize={columns.map((c) => (c.id === "form" ? split.main : split.aside))}
+            />
+          )}
+        </div>
       </ShellBody>
 
       {prefs.assistant.enabled && (
-        <FormAssistant form={form} onDismiss={() => update("assistant", { enabled: false })} />
+        // The FAB is fixed bottom-end and owns that spot (it is the design system's,
+        // and every showcase puts it there); the companion is the guest, so it moves
+        // up by the FAB's height and its gap rather than sitting on top of it.
+        <FormAssistant
+          form={form}
+          offset={{ bottom: "4rem" }}
+          onDismiss={() => update("assistant", { enabled: false })}
+        />
       )}
 
       {/* The FAB and the drawer. The panel composes its own sections now — ours
