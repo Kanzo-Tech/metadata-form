@@ -354,3 +354,66 @@ dump, that break *is* the fix landing.
 **Known gap, reported rather than hidden:** the `basic_sparql` ordering change is
 compile-verified and reviewed, not test-covered — exercising it needs a `sh:sparql`
 constraint under `ShaclValidationMode::Sparql`, and the crate's tests there are `ignored`.
+
+---
+
+## The republish, and what verifying it actually showed (2026-08-27)
+
+`rudof-fork` `arch/wasm-validator` carried two changes that were never committed —
+found while preparing the republish, not listed in any handover:
+
+- `rudof_wasm/src/{dto,validate}.rs` — `message` as `Vec<LangString>` instead of
+  `Vec<String>`. `result_to_dto` collected `.values()` and discarded the key that
+  held each message's language, so the multilingual half of SHACL messages was
+  unreachable through the whole ABI. Now `3fda6b26b`.
+- `rudof_wasm/build.sh` + `.github/workflows/publish-wasm.yml` — off wasm-pack
+  (archived) onto the three tools it wrapped, with the wasm-bindgen 0.2.120 and
+  binaryen 116 pins stated and enforced. Now `8db3a61ea`.
+
+That is the third artefact explained: published `0.3.4` (30 Jun) has **no**
+`LangString`; the `node_modules` `0.3.4` (15 Jul) has it but predates
+`c4362e002`, so it lacks the fourteen-component `sh:message` merge.
+
+### Both warned-about consequences are absorbed, and here is why
+
+Neither turned a test red, and the reason is structural rather than luck:
+
+- **`and`/`equals`/`closed` now carry text.** `authorMessage`
+  (`src/form/validation.ts:48`) reads lang-**tagged** entries only, and nothing in
+  `src/` reads message-emptiness as a signal. The new text is the author's
+  `sh:message`, which is the point of the change.
+- **`sh:node`'s default changed shape.** `friendly()` already stops every `sh:`
+  constraint at the catalog or `_fallback` and never falls through to engine text
+  (`validation.ts:85`), so no dump could reach a screen before or after. Nothing
+  pinned it because nothing could see it.
+
+What the new binary actually emits for the M6 case, verified end to end:
+the author's `@es` and `@en` messages both arrive tagged, and the untagged default
+is `Node(http://example.org/AgentShape)` — the shape's ID. M6's reported dump,
+`Node(NodeShape Targets: … Property Shapes: [22, 13, 23])`, is gone.
+Pinned by `test/rudof-wasm.integration.test.ts` (`93b7508`), which fails on the
+published `0.3.4` on purpose: it is the acceptance test for the republish.
+
+### Runbook — in this order, or CI stays red
+
+Version is **0.3.5** (author's call; `^0.3.4` therefore resolves to it, so no
+consumer range needs editing — the lockfile does).
+
+1. `git push` — `rudof-fork arch/wasm-validator`, then `metadata-form feat/kanzo-ui`.
+   **Needs the human**: `~/.ssh/kanzo` is passphrase-protected with nothing in the
+   agent, and the `gh` token (account `angelip2303`) is read-only on `Kanzo-Tech`.
+2. Tag, which is what publishes:
+   `git -C ../rudof-fork tag rudof-wasm-v0.3.5 8db3a61ea && git -C ../rudof-fork push upstream rudof-wasm-v0.3.5`
+   The workflow builds from the tag and authenticates by OIDC — no `NPM_TOKEN`.
+   The tag must point at `8db3a61ea` or later: `c4362e002` alone lacks the ABI.
+3. **Refresh the lockfile — publishing alone does nothing for CI.** It pins
+   `0.3.4` to the *published* tarball's integrity hash, and CI runs `npm install`,
+   so it keeps serving the old binary until:
+   `npm install @kanzo-tech/rudof-wasm@0.3.5` — then commit `package-lock.json`.
+4. `npm test` (81 expected) and `npm run typecheck`. The two wasm tests that were
+   red in a clean clone, plus the new one, go green together — they always had the
+   one cause.
+
+Local `node_modules` currently holds the un-published build (`3022552` bytes,
+from `8db3a61ea`); step 3 replaces it with the real artefact. The previous copy is
+at `/tmp/rudof-wasm-backup` until then.
