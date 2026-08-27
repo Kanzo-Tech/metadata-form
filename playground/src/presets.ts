@@ -4,43 +4,37 @@ import { evidenzeHealthShapes, evidenzeHealthSampleData, evidenzeHealthRootShape
 import type { PermalinkOptions, PermalinkState } from "./lib/permalink.js";
 
 /** Optional per-example branding — lets a bundled example wear its own identity
- *  (logo + brand accent), so the playground doubles as a client-branded demo. The
- *  accent is a Radix scale, so it adapts to light/dark automatically; `appearance`
- *  and layout stay owned by the user's Preferences. */
+ *  (logo + theme), so the playground doubles as a client-branded demo. `instance.ts`
+ *  is what reads this: an instance and a branded example are the same declaration
+ *  seen from two distances. Layout and density stay owned by the user's Preferences. */
 export interface ExampleBranding {
   /** Bundled asset URL of the (white) wordmark shown in the app title. */
   logoUrl?: string;
   /** Intrinsic width/height ratio of the wordmark, for crisp sizing. */
   logoRatio?: number;
   /**
-   * A published theme name from `@kanzo-tech/theme` (e.g. `"night"`, `"nord"`,
-   * `"kanzo-dark"`). The example wears it while active and it reverts when you
-   * switch away.
+   * The published `@kanzo-tech/theme` names this brand wears — **one per side**.
    *
-   * This replaced a Radix `accentColor` + `grayColor` + `appearance` triple. A
-   * brand is not a hue plus a mode here: it is a theme, a flat block of CSS that
-   * travels in the page under its own `[data-theme]`, so naming one is the whole
-   * of it and the light/dark sides come with it.
+   * A pair, not a name, and that is the whole answer to the question this docblock
+   * used to ask. A theme carries its own light or dark palette, so `"night"` is not
+   * "the Evidenze theme": it is Evidenze *after dark*, and naming it alone painted
+   * the daylight side dark with `.dark` off. `KanzoThemeProvider.defaultTheme` now
+   * takes `{ light, dark }` for exactly this (widened upstream in `a73c29e`).
    *
-   * **Declared but not yet applied, deliberately.** `ThemePrefs.theme` is a map
-   * per appearance side, not a string, and the only way to set it is through the
-   * provider's preference store — which is what the user chose in the Preferences
-   * panel, and is persisted. Wiring this naively means opening an example silently
-   * rewrites somebody's saved theme, and reverting on switch cannot recover a
-   * choice made *while* an example was active.
-   *
-   * The open question is whose choice wins, and it is a product decision rather
-   * than a mechanical one: either a brand is a non-persisting overlay the provider
-   * would have to support, or an example may not override a stated preference at
-   * all. Left unwired until that is answered.
+   * **It applies, and it does not overwrite anybody.** The open question was whose
+   * choice wins; the resolution chain already answers it — pinned → stored → policy
+   * → the tenant's default — so a `defaultTheme` is a *deferral target*, the value
+   * that applies while nobody has chosen. A reader who picks a theme in Preferences
+   * outranks it, on that side, for good. That is why this can be wired without the
+   * "opening an example rewrote my saved theme" hazard: it never writes a preference.
    */
-  theme?: string;
+  theme?: { light: string; dark: string };
   /** Browser-tab title while this example is active. */
   docTitle?: string;
   /** Bundled asset URL for the browser-tab favicon (the brand mark). */
   faviconUrl?: string;
-  /** Tint the app chrome (top edge + header) with the brand accent — subtle, and
-   *  adapts to light/dark since it uses Radix accent tokens. */
+  /** Tint the app chrome (top edge) with the theme's primary — it comes from the
+   *  theme, so it follows whichever side is being worn. */
   tint?: boolean;
 }
 
@@ -74,7 +68,7 @@ const EVIDENZE_HEALTH_OPTIONS: PermalinkOptions = { validateOn: "change", rootSh
 const EVIDENZE_BRANDING: ExampleBranding = {
   logoUrl: evidenzeLogo,
   logoRatio: 677 / 115,
-  theme: "night",
+  theme: { light: "bank", dark: "night" },
   docTitle: "Evidenze · Dataset Onboarding",
   faviconUrl: evidenzeIcon,
   tint: true,
@@ -92,13 +86,12 @@ export const EXAMPLES: ShapeExample[] = [
       {
         id: "empty",
         label: "Empty (new dataset)",
-        state: { v: 1, exampleId: "health-dcat-ap", shapesText: healthDcatApShapes, dataText: "", options: HEALTH_OPTIONS },
+        state: { exampleId: "health-dcat-ap", shapesText: healthDcatApShapes, dataText: "", options: HEALTH_OPTIONS },
       },
       {
         id: "covid",
         label: "COVID-19 registry",
         state: {
-          v: 1,
           exampleId: "health-dcat-ap",
           shapesText: healthDcatApShapes,
           dataText: healthDcatApSampleData,
@@ -118,13 +111,12 @@ export const EXAMPLES: ShapeExample[] = [
       {
         id: "empty",
         label: "Empty (new dataset)",
-        state: { v: 1, exampleId: "evidenze-dataspace", shapesText: evidenzeShapes, dataText: "", options: EVIDENZE_OPTIONS },
+        state: { exampleId: "evidenze-dataspace", shapesText: evidenzeShapes, dataText: "", options: EVIDENZE_OPTIONS },
       },
       {
         id: "restricted",
         label: "Registro oncológico (acceso restringido)",
         state: {
-          v: 1,
           exampleId: "evidenze-dataspace",
           shapesText: evidenzeShapes,
           dataText: evidenzeSampleData,
@@ -142,13 +134,12 @@ export const EXAMPLES: ShapeExample[] = [
       {
         id: "empty",
         label: "Empty (new dataset)",
-        state: { v: 1, exampleId: "evidenze-health", shapesText: evidenzeHealthShapes, dataText: "", options: EVIDENZE_HEALTH_OPTIONS },
+        state: { exampleId: "evidenze-health", shapesText: evidenzeHealthShapes, dataText: "", options: EVIDENZE_HEALTH_OPTIONS },
       },
       {
         id: "msk",
         label: "AIFOS · MSK Cancer Therapy",
         state: {
-          v: 1,
           exampleId: "evidenze-health",
           shapesText: evidenzeHealthShapes,
           dataText: evidenzeHealthSampleData,
