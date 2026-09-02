@@ -45,6 +45,10 @@ export interface WidgetProps {
   complete?: (value: string, signal?: AbortSignal) => AsyncIterable<string>;
   /** The sh:class IRI for `reference` fields. */
   classIri?: string;
+  /** Every class the value may belong to, when an `sh:or` allowed more than one
+   *  (`classIri` is the first). A widget that searches instances should search all
+   *  of them; one that reads a single class still works off `classIri`. */
+  classIn?: string[];
   /** True when the field must hold a value (`sh:minCount` ≥ 1). Presentational
    *  only — a widget may pick a different control (a switch has no "unset"). The
    *  *state* props a widget would otherwise thread — invalid, disabled — are NOT
@@ -105,6 +109,8 @@ export interface MultiWidgetProps {
   options?: WidgetOption[];
   loadOptions?: (query: string, signal?: AbortSignal) => Promise<WidgetOption[]>;
   classIri?: string;
+  /** See {@link WidgetProps.classIn}. */
+  classIn?: string[];
   minCount?: number;
   maxCount?: number;
   placeholder?: string;
@@ -174,7 +180,10 @@ export interface FieldSuggestion {
  * For a one-line setup over the Vercel AI SDK, see the `metadata-form/ai` adapter.
  */
 export interface FormAssist {
-  search?(args: { classIri: string; query: string; signal?: AbortSignal }): Promise<WidgetOption[]>;
+  /** `classIn` carries every class the value may belong to when an `sh:or`
+   *  allowed more than one; `classIri` is the first of them, so an implementation
+   *  that only reads it keeps working and simply searches one of the alternatives. */
+  search?(args: { classIri: string; classIn?: string[]; query: string; signal?: AbortSignal }): Promise<WidgetOption[]>;
   suggest?(args: { field: FieldModel; graph: GraphState; locale: string; signal?: AbortSignal }): AsyncIterable<FieldSuggestion>;
   complete?(args: { field: FieldModel; value: string; graph: GraphState; locale: string; signal?: AbortSignal }): AsyncIterable<string>;
 }

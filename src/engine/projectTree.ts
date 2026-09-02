@@ -72,10 +72,14 @@ export function projectTreeSync(project: SyncProjector, shapes: ShapeModel, shap
 
 /** The property shapes whose paths projectForm evaluates for a node shape: its
  *  direct properties plus every conditional branch's (so conditional fields have
- *  their values ready the moment their branch activates). */
+ *  their values ready the moment their branch activates).
+ *
+ *  Deactivated shapes (SHACL §2.1.6) are excluded: they build no field, so
+ *  descending into their `sh:node` sub-forms would project — and later validate —
+ *  a subtree the form never shows. */
 function projectedPropertyShapes(node: NodeShapeIR): PropertyShapeIR[] {
   const branch = (node.conditionals ?? []).flatMap((c) => [...c.then, ...c.else]);
-  return [...node.properties, ...branch];
+  return [...node.properties, ...branch].filter((ps) => !ps.deactivated);
 }
 
 function recurseSync(
@@ -90,7 +94,8 @@ function recurseSync(
   if (visited.has(guard)) return;
   visited.add(guard);
   const node = shapes.nodeShapes.get(shapeId);
-  if (!node) return;
+  // A deactivated node shape (SHACL §2.1.6) renders nothing and validates nothing.
+  if (!node || node.deactivated) return;
   tree.nodes.push({ focus, shapeId });
   const form = project(focus, shapeId);
   tree.satisfied.set(focus.value, new Set(form.satisfied ?? []));
@@ -122,7 +127,8 @@ async function recurse(
   visited.add(guard);
 
   const node = shapes.nodeShapes.get(shapeId);
-  if (!node) return;
+  // A deactivated node shape (SHACL §2.1.6) renders nothing and validates nothing.
+  if (!node || node.deactivated) return;
   tree.nodes.push({ focus, shapeId });
 
   const form = await project(focus, shapeId);

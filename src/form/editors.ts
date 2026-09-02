@@ -1,7 +1,7 @@
 import { NS } from "../engine/factory.js";
 import { Editors } from "./vocab/shacl-ui.js";
 import { SH_IRI } from "./vocab/shacl.js";
-import type { FieldModel } from "./FormModel.js";
+import type { FieldConstraints, FieldModel } from "./FormModel.js";
 
 const XSD = NS.xsd;
 const RDF_LANGSTRING = `${NS.rdf}langString`;
@@ -33,7 +33,19 @@ export const NUMERIC = new Set(
  * this value be edited as at all", not "what would be nicest".
  */
 export function fallbackEditorId(field: FieldModel): string {
-  const c = field.constraints;
+  return editorForConstraints(field.constraints);
+}
+
+/**
+ * The same derivation from constraints alone.
+ *
+ * Split out because an `sh:or` branch is a set of constraints with no field of
+ * its own, and asking "what could this be edited as" is the question that decides
+ * whether two branches need one control or two. A branch that has to be wrapped
+ * in a fake `FieldModel` to be asked would be a sign the question was about the
+ * field; it is not.
+ */
+export function editorForConstraints(c: FieldConstraints): string {
   if (c.options?.length) return Editors.EnumSelect;
   const dt = c.datatype;
   if (dt === RDF_LANGSTRING) return Editors.TextFieldWithLang;

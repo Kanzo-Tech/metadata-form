@@ -370,15 +370,94 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(tagged.get("es")).toBe("El publicador está incompleto");
     expect(tagged.get("en")).toBe("The publisher is incomplete");
 
-    // The engine's own default names the shape, not its expansion.
-    const untagged = result.messages.find((m) => !m.language)?.value ?? "";
-    expect(untagged).toContain(`${EX}AgentShape`);
-    expect(untagged).not.toContain("NodeShape Targets");
+    // And ONLY those. SHACL 2.1.5: where a shape declares any `sh:message`, the
+    // result carries exactly them — a generated one may be added only when the
+    // shape is silent (3.6.2.7). This assertion is the inverse of what it said
+    // when it was written against 0.3.5, which asserted the untagged engine text
+    // sat alongside the author's; that was the defect, not the contract, and the
+    // fix landed in 0.3.6. A test written from observed behaviour pins whatever
+    // the engine did that day, including its bugs.
+    expect(result.messages.filter((m) => !m.language)).toEqual([]);
 
     // And that is what a reader gets, per locale.
     const es = mapResults([result], "es").get(`${EX}d1|${EX}publisher`)![0];
     expect(es.message).toBe("El publicador está incompleto");
     expect(mapResults([result], "en").get(`${EX}d1|${EX}publisher`)![0].message)
       .toBe("The publisher is incomplete");
+  });
+
+
+  /**
+   * A violation on a complex path must name the field it is about.
+   *
+   * `path` on a result is a TERM, and only a predicate is one, so every inverse,
+   * sequence, alternative and quantified path arrived with no path at all and
+   * `mapResults` filed it under the node-level key. The user got "something in
+   * here is wrong" from a form that knew exactly what was wrong — the same
+   * defect M6 reported for `sh:node`, entering through a different door.
+   *
+   * It was survivable while those fields were read-only. It stopped being
+   * survivable when they became editable: Bioschemas alone contributes 530
+   * alternative-path fields and they carry `sh:minCount 1`.
+   *
+   * `pathKey` is produced by `shapes::path_key` — the SAME serialiser that keys
+   * the projected fields. Not a second implementation that agrees today.
+   */
+  it("reports a complex-path violation against the field, not the node", async () => {
+    await engine.loadShapes(`
+      @prefix sh: <http://www.w3.org/ns/shacl#> .
+      @prefix ex: <${EX}> .
+      ex:OwnedShape a sh:NodeShape ; sh:targetClass ex:Owned ;
+        sh:property [ sh:path [ sh:inversePath ex:owns ] ; sh:minCount 1 ] .
+    `);
+    await engine.loadData(`@prefix ex: <${EX}> . ex:thing a ex:Owned .`);
+
+    const [result] = await engine.validate();
+    expect(result.constraint).toBe("http://www.w3.org/ns/shacl#MinCountConstraintComponent");
+
+    // The term form cannot express it; the key can, and it is the canonical one.
+    expect(result.path).toBeUndefined();
+    expect(result.pathKey).toBe(`^${EX}owns`);
+
+    // And that is what makes it land on a field instead of on the node.
+    const byField = mapResults([result], "en");
+    expect([...byField.keys()]).toEqual([`${EX}thing|^${EX}owns`]);
+    expect([...byField.keys()]).not.toContain(`${EX}thing|`);
+  });
+
+
+  /**
+   * The other half of M6, and it needs a SILENT shape to be visible at all.
+   *
+   * The reported defect was an engine dump reaching a person —
+   * "Node(NodeShape Targets: - targetClass(...) Property Shapes: [22, 13, 23])"
+   * — because `sh:node` printed `Display for IRShape`. It prints the shape's id
+   * now.
+   *
+   * That guard used to live in the test above, which is exactly where it could
+   * not survive: once §2.1.5 was honoured, a shape declaring its own messages
+   * stopped carrying any generated text, so there was no default left to
+   * inspect. The guard was not wrong, it was attached to the wrong case.
+   */
+  it("names the shape rather than dumping it when the shape declares no message", async () => {
+    await engine.loadShapes(`
+      @prefix sh: <http://www.w3.org/ns/shacl#> .
+      @prefix ex: <${EX}> .
+      @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      ex:QuietAgentShape a sh:NodeShape ;
+        sh:property [ sh:path ex:name ; sh:datatype xsd:string ; sh:minCount 1 ] .
+      ex:QuietDatasetShape a sh:NodeShape ; sh:targetClass ex:QuietDataset ;
+        sh:property [ sh:path ex:publisher ; sh:node ex:QuietAgentShape ] .
+    `);
+    await engine.loadData(
+      `@prefix ex: <${EX}> . ex:qd a ex:QuietDataset ; ex:publisher ex:qp . ex:qp a ex:Agent .`,
+    );
+
+    const [result] = await engine.validate();
+    const generated = result.messages.find((m) => !m.language)?.value ?? "";
+
+    expect(generated).toContain(`${EX}QuietAgentShape`);
+    expect(generated).not.toContain("NodeShape Targets");
+    expect(generated).not.toContain("Property Shapes:");
   });
 });

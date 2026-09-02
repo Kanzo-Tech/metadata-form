@@ -181,11 +181,15 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       onDiagnostic,
       values,
       satisfied,
+      // The live graph, for the one question the shapes cannot answer: whether a
+      // sequence path's intermediate resource exists and is unique (see BuildArgs).
+      readStep: prepared.graph.readStep,
+      strings,
     });
     return { model, nodes };
     // `version` re-projects field values from the graph after each edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, prepared, version, locale, onDiagnostic]);
+  }, [engine, prepared, version, locale, onDiagnostic, strings]);
 
   const model: FormModel | undefined = projected?.model;
 

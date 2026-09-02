@@ -7,6 +7,8 @@
  * base-language chain (`es-ES` → `es` → `en`).
  */
 
+import type { ReadOnlyCode } from "../form/FormModel.js";
+
 /** SHACL constraint-component IRIs used as keys of `validationDefaults`. */
 const SH = "http://www.w3.org/ns/shacl#";
 
@@ -51,6 +53,14 @@ export interface Strings {
      *  is a name substituted verbatim, not a quantity that would need a formatter. */
     detailsOf: string;
   };
+  /**
+   * Why a field shows its values but does not take input, keyed by
+   * {@link ReadOnlyCode}. A disabled field with no account of itself reads as a
+   * bug; these are the sentence that turns it into a statement about the profile.
+   * Written for the person filling the form, so they name the consequence rather
+   * than the SHACL construct.
+   */
+  readOnly: Record<ReadOnlyCode, string>;
 }
 
 /** A recursive partial for consumer overrides. */
@@ -120,6 +130,20 @@ const EN: Strings = {
     reportedValue: "Reported value",
     detailsOf: "Details of the issue on {field}",
   },
+  readOnly: {
+    "variable-length-path":
+      "Shown for reference. The profile reaches these values through a repeating path, which does not say where a new one would be stored.",
+    "compound-path":
+      "Shown for reference. The profile reaches these values through a combination of properties that cannot be edited one statement at a time.",
+    "intermediate-missing":
+      "Shown for reference. This value belongs to a related resource that does not exist yet — fill that section in first and this field becomes editable.",
+    "intermediate-ambiguous":
+      "Shown for reference. This value could belong to more than one related resource, so there is no single place to store a change.",
+    "disjunction-of-shapes":
+      "Shown for reference. The profile accepts several alternatives here, and every one of them describes a related resource with a structure of its own rather than a value that can be typed in.",
+    "unsatisfiable-conjunction":
+      "Shown for reference. Several rules in the profile apply to this field and contradict one another, so no value could satisfy all of them.",
+  },
 };
 
 const ES: Strings = {
@@ -176,6 +200,20 @@ const ES: Strings = {
     infoDetail: "Solo a título informativo.",
     reportedValue: "Valor recibido",
     detailsOf: "Detalles de la incidencia en {field}",
+  },
+  readOnly: {
+    "variable-length-path":
+      "Se muestra a título informativo. El perfil llega a estos valores por un camino repetitivo, que no indica dónde se guardaría uno nuevo.",
+    "compound-path":
+      "Se muestra a título informativo. El perfil llega a estos valores combinando varias propiedades, y eso no se puede editar declaración a declaración.",
+    "intermediate-missing":
+      "Se muestra a título informativo. Este valor pertenece a un recurso relacionado que aún no existe: complétalo primero y este campo se podrá editar.",
+    "intermediate-ambiguous":
+      "Se muestra a título informativo. Este valor podría pertenecer a más de un recurso relacionado, así que no hay un único sitio donde guardar el cambio.",
+    "disjunction-of-shapes":
+      "Se muestra a título informativo. El perfil admite varias alternativas aquí, y todas ellas describen un recurso relacionado con estructura propia, no un valor que se pueda escribir.",
+    "unsatisfiable-conjunction":
+      "Se muestra a título informativo. Varias reglas del perfil se aplican a este campo y se contradicen entre sí, así que ningún valor podría cumplirlas todas.",
   },
 };
 
@@ -234,6 +272,20 @@ const CA: Strings = {
     reportedValue: "Valor rebut",
     detailsOf: "Detalls de la incidència a {field}",
   },
+  readOnly: {
+    "variable-length-path":
+      "Es mostra a títol informatiu. El perfil arriba a aquests valors per un camí repetitiu, que no indica on es desaria un de nou.",
+    "compound-path":
+      "Es mostra a títol informatiu. El perfil arriba a aquests valors combinant diverses propietats, i això no es pot editar declaració a declaració.",
+    "intermediate-missing":
+      "Es mostra a títol informatiu. Aquest valor pertany a un recurs relacionat que encara no existeix: completa'l primer i aquest camp es podrà editar.",
+    "intermediate-ambiguous":
+      "Es mostra a títol informatiu. Aquest valor podria pertànyer a més d'un recurs relacionat, així que no hi ha un únic lloc on desar el canvi.",
+    "disjunction-of-shapes":
+      "Es mostra a títol informatiu. El perfil admet diverses alternatives aquí, i totes descriuen un recurs relacionat amb estructura pròpia, no un valor que es pugui escriure.",
+    "unsatisfiable-conjunction":
+      "Es mostra a títol informatiu. Diverses regles del perfil s'apliquen a aquest camp i es contradiuen entre elles, així que cap valor no les podria complir totes.",
+  },
 };
 
 /** Built-in tables. English is the ultimate fallback for any missing key. */
@@ -263,6 +315,11 @@ export function resolveStrings(locale: string | undefined, override?: DeepPartia
       ...EN.validationPanel,
       ...table.validationPanel,
       ...override?.validationPanel,
+    },
+    readOnly: {
+      ...EN.readOnly,
+      ...table.readOnly,
+      ...override?.readOnly,
     },
   };
 }

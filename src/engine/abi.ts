@@ -33,6 +33,11 @@ export interface RudofQuad {
 export interface RudofResult {
   focusNode: TermValue;
   path?: TermValue;
+  /** The path as its canonical key, for every path kind — `path` above carries
+   *  a predicate only, so an inverse or alternative used to arrive with no path
+   *  at all and its error was filed at node level. Produced by the same
+   *  serialiser that keys the projected fields; see `shapes::path_key`. */
+  pathKey?: string;
   value?: TermValue;
   /** Lang-tagged messages: the engine default (untagged) merged with the shape's
    *  per-language `sh:message`. The TS side picks the best by locale. */

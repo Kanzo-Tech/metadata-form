@@ -115,7 +115,7 @@ describe("SHACL → FormModel", () => {
     expect(keyword?.values.map((v) => v.value?.value).sort()).toEqual(["a", "b", "c"]);
   });
 
-  it("renders sh:inversePath as a read-only field with the inverse subjects", async () => {
+  it("renders sh:inversePath as an EDITABLE field holding the inverse subjects", async () => {
     const inverseShapes = `
       @prefix sh: <http://www.w3.org/ns/shacl#> .
       @prefix ex: <http://example.org/> .
@@ -131,14 +131,21 @@ describe("SHACL → FormModel", () => {
       { shapesTtl: inverseShapes, rootIri: "http://example.org/S" },
     );
     const children = allFields(model).find((f) => f.label === "Children");
-    expect(children?.readOnly).toBe(true);
+    // Writing through `^ex:parent` is asserting (value, ex:parent, focus) — one
+    // statement, so the field takes input like any other.
+    expect(children?.readOnly).toBeFalsy();
+    expect(children?.readOnlyReason).toBeUndefined();
+    expect(children?.write?.branches).toHaveLength(1);
+    expect(children?.write?.branches[0].via).toEqual([]);
+    expect(children?.write?.branches[0].step.direction).toBe("inverse");
+    expect(children?.write?.branches[0].step.predicate.value).toBe("http://example.org/parent");
     expect(children?.values.map((v) => v.value?.value).sort()).toEqual([
       "http://example.org/c1",
       "http://example.org/c2",
     ]);
   });
 
-  it("renders a complex path (sequence) as a read-only field with projected values", async () => {
+  it("leaves a sequence path read-only, with the reason, while its intermediate is unknown", async () => {
     const sequenceShapes = `
       @prefix sh: <http://www.w3.org/ns/shacl#> .
       @prefix ex: <http://example.org/> .
@@ -153,9 +160,15 @@ describe("SHACL → FormModel", () => {
       `,
       { shapesTtl: sequenceShapes, rootIri: "http://example.org/S" },
     );
+    // `buildWithData` passes no `readStep`, i.e. the build has no data graph to
+    // resolve the intermediate against — the structure-only case, which is
+    // exactly "no intermediate node".
     const field = allFields(model).find((f) => f.pathKind === "complex");
     expect(field).toBeDefined();
     expect(field?.readOnly).toBe(true);
+    expect(field?.readOnlyReason?.code).toBe("intermediate-missing");
+    expect(field?.readOnlyReason?.message).toMatch(/does not exist yet/);
+    expect(field?.readOnlyReason?.detail).toBe("(http://example.org/a/http://example.org/b)");
     expect(field?.values.map((v) => v.value?.value)).toEqual(["deep"]);
   });
 

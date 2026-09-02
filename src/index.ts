@@ -64,9 +64,37 @@ export type {
   ValueSlot,
   FieldConstraints,
   FieldOption,
+  FieldAlternative,
   EditorId,
+  ReadOnlyCode,
+  ReadOnlyReason,
 } from "./form/FormModel.js";
 export { allFields } from "./form/FormModel.js";
+// The write half of a property path — what a shape language defines only for
+// reading. `planWrite` and `chooseBranch` carry the reasoning; a consumer needs
+// the types to read `field.write` / `field.readOnlyReason`.
+export {
+  planWrite,
+  chooseBranch,
+  resolveCarrier,
+  branchValues,
+  statementFor,
+  forwardWrite,
+  writesSubjects,
+} from "./form/writePath.js";
+export type {
+  FieldWrite,
+  WriteBranch,
+  WriteStep,
+  WriteDirection,
+  WritePlan,
+  StepReader,
+  PathReadOnlyCode,
+} from "./form/writePath.js";
+// A value disjunction (`sh:or`): what it does to a field, and which arm of one a
+// value is already on. `planDisjunction` carries the reasoning.
+export { planDisjunction, alternativeFor, nodeDisjunction } from "./form/disjunction.js";
+export type { Disjunction, DisjunctionArgs, DroppedBranch } from "./form/disjunction.js";
 export type {
   ValidationResult,
   FieldError,

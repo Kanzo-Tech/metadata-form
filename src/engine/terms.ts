@@ -1,3 +1,10 @@
+/** The last segment of an IRI — what a term is called when nothing named it.
+ *  Returns the IRI unchanged when it has no `#` or `/` to cut at. */
+export function localName(iri: string): string {
+  const m = iri.match(/[#/]([^#/]+)$/);
+  return m ? m[1] : iri;
+}
+
 /** Anything carrying a value + language tag (rdfjs Literal or an IR LangString). */
 interface LangTagged {
   value: string;

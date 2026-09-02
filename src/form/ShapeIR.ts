@@ -52,12 +52,22 @@ export interface ValueConstraints {
   languageIn?: string[];
 }
 
-/** Logical combinators kept as real structure (not flattened to "first option"). */
+/**
+ * Logical combinators kept as real structure (not flattened to "first option").
+ *
+ * The members are {@link ShapeIR}, not {@link PropertyShapeIR}, because a
+ * combinator takes *shapes* and a shape need not have a path. SHACL says so
+ * outright — §4.6.1 defines `sh:or` over "the provided shapes", and the shapes
+ * that appear there in practice are pathless ones stating a datatype or a class.
+ * Typing these as property shapes is not a simplification but a filter: it makes
+ * the common member unrepresentable, and a producer that honours the type has no
+ * choice but to drop it.
+ */
 export interface LogicalConstraints {
-  or?: PropertyShapeIR[];
-  xone?: PropertyShapeIR[];
-  and?: PropertyShapeIR[];
-  not?: PropertyShapeIR;
+  or?: ShapeIR[];
+  xone?: ShapeIR[];
+  and?: ShapeIR[];
+  not?: ShapeIR;
 }
 
 /**
@@ -102,16 +112,36 @@ export interface PresentationHints {
  */
 export interface ComponentIR {
   iri: string;
-  params: Record<string, TermValue[]>;
+  /** Parameter terms, keyed by parameter name (`"value"` for a plain
+   *  predicate/object pair). A `Map`, not a plain object: the engine marshals it
+   *  through `serde-wasm-bindgen`, whose default representation of a Rust map is a
+   *  JS `Map`. */
+  params: Map<string, TermValue[]>;
 }
 
-export interface PropertyShapeIR {
+/**
+ * A shape: a set of constraints something must conform to.
+ *
+ * Two things can be under constraint, and `path` is what tells them apart. With a
+ * path, the shape is about the *values reached by that path* from whatever is in
+ * focus — a {@link PropertyShapeIR}, the thing a field is built from. Without one,
+ * the shape is about the focused node **itself**: "be an IRI", "be an
+ * `xsd:date`", "be a `dcat:Dataset`".
+ *
+ * The pathless form has no field of its own and never appears in a node shape's
+ * `properties`. It appears inside {@link LogicalConstraints} — as a member of a
+ * disjunction, where the node in focus is a *value* of the enclosing property and
+ * the branch says what kind of value it may be.
+ */
+export interface ShapeIR {
   /** Shape id (IRI or blank-node id), when addressable. */
   id?: string;
-  path: PathExpr;
+  /** Absent on a shape that constrains the focused node itself (see above). */
+  path?: PathExpr;
   /** Canonical SPARQL-ish path key (`(a/b)`, `^p`) emitted by rudof — matches the
-   *  projected {@link ProjectedProperty.pathKey}, so values align without re-derivation. */
-  pathKey: string;
+   *  projected {@link ProjectedProperty.pathKey}, so values align without
+   *  re-derivation. Absent exactly when {@link path} is. */
+  pathKey?: string;
   cardinality: Cardinality;
   value: ValueConstraints;
   logical: LogicalConstraints;
@@ -120,6 +150,20 @@ export interface PropertyShapeIR {
   presentation: PresentationHints;
   /** Open list of all constraint components (typed-core superset). */
   components: ComponentIR[];
+  /** The shape is switched off (SHACL `sh:deactivated true`, §2.1.6): every RDF
+   *  term conforms to it, so it constrains nothing and the validator reports
+   *  nothing for it. A switched-off property shape therefore builds NO field —
+   *  rendering one would collect input that is never validated. Absent/`false`
+   *  means active. See {@link NodeShapeIR.deactivated}. */
+  deactivated?: boolean;
+}
+
+/** A shape that constrains the values of a path — the shape a field is built
+ *  from. {@link ShapeIR} with the path present rather than a separate record, so
+ *  a disjunction can hold either kind without a second type to convert between. */
+export interface PropertyShapeIR extends ShapeIR {
+  path: PathExpr;
+  pathKey: string;
 }
 
 export interface NodeShapeIR {
@@ -131,7 +175,23 @@ export interface NodeShapeIR {
   /** SHACL 1.2 `sh:if`/`sh:then`/`sh:else` conditionals declared on this node
    *  shape. Empty/absent when the shape has none. */
   conditionals?: ConditionalIR[];
+  /**
+   * Combinators declared on the node shape itself, constraining the focused node
+   * rather than any one of its properties.
+   *
+   * The same field as on a property shape, because it is the same construct: a
+   * shape may be a disjunction whether or not it has a path. Published profiles
+   * lean on this to name a value kind once and reuse it — DCAT-AP declares
+   * `:DateOrDateTimeDataType_Shape` as nothing but an `sh:or` of four datatypes
+   * and points a dozen properties at it with `sh:node`. Without this field those
+   * properties reach the form as a reference to a shape that says nothing.
+   */
+  logical?: LogicalConstraints;
   closed?: boolean;
+  /** The shape is switched off (SHACL `sh:deactivated true`, §2.1.6). Deactivation
+   *  applies to shapes generally, node shapes included: a switched-off node shape
+   *  builds no fields at all and is never chosen as a form's root shape. */
+  deactivated?: boolean;
 }
 
 export interface PropertyGroupIR {

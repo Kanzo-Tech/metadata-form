@@ -5,6 +5,7 @@ import { ValidationSummary } from "@/react/validation/ValidationSummary.js";
 import { FormAssistant } from "@/react/assistant/FormAssistant.js";
 import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
+import { namedNode } from "@/engine/factory.js";
 import { healthDcatApShapes } from "@examples/health-dcat-ap/index.js";
 
 const shapes = healthDcatApShapes;
@@ -370,6 +371,65 @@ describe("useMetadataForm + <MetadataForm>", () => {
     }
     render(<Summary />);
     await waitFor(() => expect(screen.getByText(/issue/)).toBeInTheDocument());
+  });
+
+  // Complex paths, end to end through the widgets — the model-level rules are
+  // pinned in test/write-paths.test.ts; these are the two things a person sees.
+  const pathShapes = `
+    @prefix sh: <http://www.w3.org/ns/shacl#> .
+    @prefix ex: <http://example.org/> .
+    ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
+      sh:property [ sh:path [ sh:inversePath ex:parent ] ; sh:name "Parent of" ; sh:maxCount 1 ] ;
+      sh:property [ sh:path ( ex:a ex:b ) ; sh:name "Behind a resource" ; sh:maxCount 1 ] .
+  `;
+
+  it("commits through an inverse path: typing writes (value, predicate, focus)", async () => {
+    const { result } = renderHook(() =>
+      useMetadataForm({
+        shapes: pathShapes,
+        focusNode: "http://example.org/d1",
+        rootShape: "http://example.org/S",
+        validateOn: "off",
+      }),
+    );
+    await waitFor(() => expect(result.current.ready).toBe(true));
+
+    const field = result.current.model!.groups[0].fields.find((f) => f.label === "Parent of")!;
+    expect(field.readOnly).toBeFalsy();
+
+    act(() => {
+      result.current.graph!.setValue(
+        result.current.focusNode!,
+        field.write!,
+        null,
+        namedNode("http://example.org/child"),
+      );
+    });
+
+    await waitFor(() =>
+      expect(
+        result.current.model!.groups[0].fields
+          .find((f) => f.label === "Parent of")!
+          .values.map((v) => v.value?.value),
+      ).toEqual(["http://example.org/child"]),
+    );
+    // The statement is on the child, so the whole graph carries it even though the
+    // focus's own subgraph does not.
+    expect(result.current.graph!.allQuads().some((q) => q.subject.value.endsWith("child"))).toBe(true);
+  });
+
+  it("shows WHY a still-read-only field is disabled, instead of a dead input", async () => {
+    render(
+      <Form
+        shapes={pathShapes}
+        focusNode="http://example.org/d1"
+        rootShape="http://example.org/S"
+      />,
+    );
+    await waitFor(() => expect(screen.getByText("Behind a resource")).toBeInTheDocument());
+    const reason = document.querySelector('[data-readonly-reason="intermediate-missing"]');
+    expect(reason).not.toBeNull();
+    expect(reason!.textContent).toMatch(/does not exist yet/);
   });
 
   it("exposes live output reactively (no onChange)", async () => {

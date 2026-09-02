@@ -13,6 +13,12 @@ export interface ValidationResult {
   focusNode: Term;
   /** The predicate/path the result is about, if any. */
   path?: Term;
+  /** The same path as the canonical key the fields are indexed by. Prefer this
+   *  over `path`: `path` is a term and only a predicate is one, so every
+   *  complex path arrived here empty and its violation was filed under the
+   *  node-level key — "something in here is wrong" on a field that knows
+   *  exactly what is wrong. */
+  pathKey?: string;
   /**
    * Lang-tagged messages for this result: the engine's default (untagged, i.e.
    * `language: ""`) merged with the shape author's per-language `sh:message`.
@@ -101,7 +107,10 @@ export function mapResults(
   const map = new Map<string, FieldError[]>();
   for (const r of results) {
     if (!r.focusNode) continue;
-    const key = r.path ? fieldKey(r.focusNode, r.path) : `${r.focusNode.value}|`;
+    // `pathKey` first, and `path` only as the older engine's fallback: a
+    // predicate's key IS its IRI, so the two agree wherever both exist.
+    const pk = r.pathKey ?? (r.path ? r.path.value : undefined);
+    const key = pk !== undefined ? `${r.focusNode.value}|${pk}` : `${r.focusNode.value}|`;
     const list = map.get(key) ?? [];
     list.push({
       message: friendly(r, locale, strings),

@@ -1,7 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import type { Term } from "@rdfjs/types";
 import { useFocusNode, useFormContext } from "../form/context.js";
 import { fieldKey } from "../../form/validation.js";
+import { forwardWrite, type FieldWrite } from "../../form/writePath.js";
 import type { FieldModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
 
@@ -20,29 +21,40 @@ export function useField(field: FieldModel): UseFieldResult {
   const { graph, errors } = useFormContext();
   const focusNode = useFocusNode();
 
+  // A read-only field has no write plan at all, and the widgets it renders are
+  // disabled — but a custom widget could still call a commit, so it gets a plan
+  // that names its own path rather than a crash or a silent no-op. The graph then
+  // refuses (or writes exactly what the path says) rather than this layer guessing.
+  const write: FieldWrite = useMemo(
+    () => field.write ?? forwardWrite(field.path),
+    [field.write, field.path],
+  );
+
   const setValue = useCallback(
     (oldValue: Term | null, newValue: Term | null) =>
-      graph.setValue(focusNode, field.path, oldValue, newValue),
-    [graph, focusNode, field.path],
+      graph.setValue(focusNode, write, oldValue, newValue),
+    [graph, focusNode, write],
   );
   const addValue = useCallback(
-    (value: Term) => graph.addValue(focusNode, field.path, value),
-    [graph, focusNode, field.path],
+    (value: Term) => graph.addValue(focusNode, write, value),
+    [graph, focusNode, write],
   );
   const setValues = useCallback(
-    (values: Term[]) => graph.setValues(focusNode, field.path, values),
-    [graph, focusNode, field.path],
+    (values: Term[]) => graph.setValues(focusNode, write, values),
+    [graph, focusNode, write],
   );
   const removeValue = useCallback(
-    (value: Term) => graph.removeValue(focusNode, field.path, value),
-    [graph, focusNode, field.path],
+    (value: Term) => graph.removeValue(focusNode, write, value),
+    [graph, focusNode, write],
   );
   const createNested = useCallback(
-    () => graph.createNested(focusNode, field.path, field.nestedTypeIri),
-    [graph, focusNode, field.path, field.nestedTypeIri],
+    () => graph.createNested(focusNode, write, field.nestedTypeIri),
+    [graph, focusNode, write, field.nestedTypeIri],
   );
 
   return {
+    // `field.id` by construction — see FieldModel.path: one key for the field, its
+    // values and its findings.
     errors: errors.get(fieldKey(focusNode, field.path)) ?? [],
     setValue,
     addValue,
