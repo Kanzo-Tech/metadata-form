@@ -1,0 +1,276 @@
+{
+ "generated_utc": "2026-09-02T09:19:08+00:00",
+ "total_defects": 1367,
+ "old_claim": {
+  "statement": "L1 and L2 are preventable at entry by construction",
+  "pct_defects_preventable": 96.3
+ },
+ "measured_against_the_shapes_the_validator_ran": {
+  "widget": 414,
+  "pct_widget": 30.3,
+  "validation": 903,
+  "pct_validation": 66.1,
+  "not_prevented": 50,
+  "pct_not_prevented": 3.7,
+  "prevented_total": 1317,
+  "pct_prevented": 96.3
+ },
+ "measured_against_the_published_profile_alone": {
+  "widget": 507,
+  "pct_widget": 37.1,
+  "validation": 181,
+  "pct_validation": 13.2,
+  "not_prevented": 679,
+  "pct_not_prevented": 49.7,
+  "prevented_total": 688,
+  "pct_prevented": 50.3
+ },
+ "by_component": [
+  {
+   "component": "L2:InConstraintComponent",
+   "widget": 0,
+   "validation": 594,
+   "not_prevented": 0,
+   "n": 594
+  },
+  {
+   "component": "L1:DatatypeConstraintComponent",
+   "widget": 330,
+   "validation": 0,
+   "not_prevented": 0,
+   "n": 330
+  },
+  {
+   "component": "L1:ClassConstraintComponent",
+   "widget": 0,
+   "validation": 136,
+   "not_prevented": 0,
+   "n": 136
+  },
+  {
+   "component": "L1:NodeKindConstraintComponent",
+   "widget": 39,
+   "validation": 97,
+   "not_prevented": 0,
+   "n": 136
+  },
+  {
+   "component": "L1:MaxCountConstraintComponent",
+   "widget": 45,
+   "validation": 1,
+   "not_prevented": 0,
+   "n": 46
+  },
+  {
+   "component": "L1:MinCountConstraintComponent",
+   "widget": 0,
+   "validation": 40,
+   "not_prevented": 0,
+   "n": 40
+  },
+  {
+   "component": "L3:StaleVsDeclaredFrequency",
+   "widget": 0,
+   "validation": 0,
+   "not_prevented": 34,
+   "n": 34
+  },
+  {
+   "component": "L2:MinLengthConstraintComponent",
+   "widget": 0,
+   "validation": 18,
+   "not_prevented": 0,
+   "n": 18
+  },
+  {
+   "component": "L2:PatternConstraintComponent",
+   "widget": 0,
+   "validation": 17,
+   "not_prevented": 0,
+   "n": 17
+  },
+  {
+   "component": "L3:DeadLink",
+   "widget": 0,
+   "validation": 0,
+   "not_prevented": 13,
+   "n": 13
+  },
+  {
+   "component": "L3:UnparseableRecord",
+   "widget": 0,
+   "validation": 0,
+   "not_prevented": 2,
+   "n": 2
+  },
+  {
+   "component": "L3:PlaceholderValue",
+   "widget": 0,
+   "validation": 0,
+   "not_prevented": 1,
+   "n": 1
+  }
+ ],
+ "reasons": [
+  {
+   "component": "L2:InConstraintComponent",
+   "bucket": "validation",
+   "reason": "1 of 2 controls on this path accept free input, so the enumeration does not make the bad value untypable",
+   "n": 594
+  },
+  {
+   "component": "L1:DatatypeConstraintComponent",
+   "bucket": "widget",
+   "reason": "every control on this path stamps the declared datatype",
+   "n": 330
+  },
+  {
+   "component": "L1:ClassConstraintComponent",
+   "bucket": "validation",
+   "reason": "the reference control sets allowCustomValue on purpose, so any IRI can be typed",
+   "n": 136
+  },
+  {
+   "component": "L1:NodeKindConstraintComponent",
+   "bucket": "validation",
+   "reason": "primitiveToTerm emits an IRI only for sh:nodeKind sh:IRI; this profile says sh:BlankNodeOrIRI, so the control writes a literal",
+   "n": 92
+  },
+  {
+   "component": "L1:MaxCountConstraintComponent",
+   "bucket": "widget",
+   "reason": "every control on this path is capped, so '+ Add' stops",
+   "n": 45
+  },
+  {
+   "component": "L1:MinCountConstraintComponent",
+   "bucket": "validation",
+   "reason": "the array control never blocks removing the last value; sh:minCount is presentational in the UI and enforced only by the validator",
+   "n": 40
+  },
+  {
+   "component": "L1:NodeKindConstraintComponent",
+   "bucket": "widget",
+   "reason": "every control on this path emits an IRI by construction",
+   "n": 39
+  },
+  {
+   "component": "L3:StaleVsDeclaredFrequency",
+   "bucket": "not_prevented",
+   "reason": "no shape can express this defect (that is the point)",
+   "n": 34
+  },
+  {
+   "component": "L2:MinLengthConstraintComponent",
+   "bucket": "validation",
+   "reason": "HTML minlength only fires on submit, and the form calls preventDefault on submit, so it never fires",
+   "n": 18
+  },
+  {
+   "component": "L2:PatternConstraintComponent",
+   "bucket": "validation",
+   "reason": "sh:pattern is deliberately not passed to the HTML pattern attribute \u2014 an unanchored XPath regex is not an anchored HTML one",
+   "n": 17
+  },
+  {
+   "component": "L3:DeadLink",
+   "bucket": "not_prevented",
+   "reason": "no shape can express this defect (that is the point)",
+   "n": 13
+  },
+  {
+   "component": "L1:NodeKindConstraintComponent",
+   "bucket": "validation",
+   "reason": "not made untypable by the control",
+   "n": 5
+  },
+  {
+   "component": "L3:UnparseableRecord",
+   "bucket": "not_prevented",
+   "reason": "no shape can express this defect (that is the point)",
+   "n": 2
+  },
+  {
+   "component": "L1:MaxCountConstraintComponent",
+   "bucket": "validation",
+   "reason": "the cap is on one property shape; the other controls on the same path are uncapped",
+   "n": 1
+  },
+  {
+   "component": "L3:PlaceholderValue",
+   "bucket": "not_prevented",
+   "reason": "no shape can express this defect (that is the point)",
+   "n": 1
+  }
+ ],
+ "form_inventory": {
+  "published": {
+   "label": "published",
+   "nodeShapes": 35,
+   "shapesFailed": [],
+   "fields": 131,
+   "readOnly": 0,
+   "complexPath": 0,
+   "nested": 0,
+   "closedControls": 0,
+   "noWidget": 0
+  },
+  "vocab": {
+   "label": "vocab",
+   "nodeShapes": 12,
+   "shapesFailed": [],
+   "fields": 12,
+   "readOnly": 0,
+   "complexPath": 0,
+   "nested": 0,
+   "closedControls": 4,
+   "noWidget": 0
+  },
+  "merged": {
+   "label": "merged",
+   "nodeShapes": 47,
+   "shapesFailed": [],
+   "fields": 143,
+   "readOnly": 0,
+   "complexPath": 0,
+   "nested": 0,
+   "closedControls": 4,
+   "noWidget": 0
+  }
+ },
+ "duplicate_path_fields": {
+  "published": {
+   "distinct_class_path_pairs": 131,
+   "pairs_with_more_than_one_field": 0,
+   "max_fields_on_one_pair": 1,
+   "extra_fields": 0
+  },
+  "vocab": {
+   "distinct_class_path_pairs": 10,
+   "pairs_with_more_than_one_field": 2,
+   "max_fields_on_one_pair": 2,
+   "extra_fields": 2
+  },
+  "merged": {
+   "distinct_class_path_pairs": 131,
+   "pairs_with_more_than_one_field": 10,
+   "max_fields_on_one_pair": 3,
+   "extra_fields": 12
+  }
+ },
+ "validation_gate": {
+  "severities_seen": {
+   "Violation": 1317
+  },
+  "non_violation_severities": 0,
+  "note": "form.isValid is false only for severity=violation, so a warning would not gate anything. Every constraint in both shapes graphs leaves sh:severity unstated, which SHACL \u00a72.1.2 defaults to sh:Violation.",
+  "library_ships_no_submit_gate": true,
+  "gate_note": "MetadataForm's <form> calls preventDefault on submit and the library renders no submit button; toTurtle()/toJsonLd() serialize unconditionally. form.isValid is a boolean the host application must choose to honour. 'Prevented by validation' therefore means the form surfaces the violation and offers the gate, not that the library closes it."
+ },
+ "composition_caveat": {
+  "sh_node_fields_in_profile": 0,
+  "defects_not_on_the_root_class": 1171,
+  "pct": 85.7,
+  "note": "DCAT-AP 3.0.1 declares no sh:node, so a form rooted at the Dataset shape projects a tree of one node and validateTree never reaches the distribution. The numbers above assume each class is edited under its own shape."
+ }
+}

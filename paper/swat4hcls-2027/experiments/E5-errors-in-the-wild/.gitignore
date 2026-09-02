@@ -1,0 +1,21 @@
+# Harvested records are NOT committed. See README.md, "Licence and ethics".
+# The licence would allow it (CC0), the ethics of this experiment do not.
+data/raw/
+data/frame/
+data/vocab/
+data/sample.json
+data/linkcheck.csv
+data/ontologies/
+
+# Regenerable by `harvest.py types`. Kept out because it is a list of the
+# publisher agent IRIs the sampled records point at, i.e. a roster of
+# institutions, and this experiment names none.
+data/ref-types.ttl
+
+.venv/
+__pycache__/
+
+# Written by validate.py: the per-record validation graphs the engine parses,
+# plus rudof's raw report. Derived from data/raw/, so it inherits the same
+# reason for staying out.
+data/stage/

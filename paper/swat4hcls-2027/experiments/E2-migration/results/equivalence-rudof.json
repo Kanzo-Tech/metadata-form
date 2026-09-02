@@ -1,0 +1,443 @@
+{
+  "validator": "rudof (wasm)",
+  "package": "@kanzo-tech/rudof-wasm",
+  "version": "0.3.8",
+  "shapes": {
+    "verbatim_core_files": [
+      "Agent.ttl",
+      "Attribution.ttl",
+      "Catalog.ttl",
+      "Checksum.ttl",
+      "DataService.ttl",
+      "Dataset.ttl",
+      "DatasetSeries.ttl",
+      "Distribution.ttl",
+      "Identifier.ttl",
+      "Kind.ttl",
+      "PeriodOfTime.ttl",
+      "QualityCertificate.ttl",
+      "Relationship.ttl",
+      "Resource.ttl"
+    ],
+    "encodings": {
+      "shipped": "overlay-00-shipped.ttl",
+      "partition-subjectsof": "overlay-01-partition-subjectsof.ttl",
+      "partition-sparql": "overlay-02-partition-sparql.ttl",
+      "implication": "overlay-03-implication.ttl",
+      "shacl12-if": "overlay-04-shacl12-if.ttl"
+    }
+  },
+  "cases": {
+    "01-no-personal-data": {
+      "shipped": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-subjectsof": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-sparql": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "implication": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "shacl12-if": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      }
+    },
+    "02-no-personal-data-with-legal-basis": {
+      "shipped": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-subjectsof": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-sparql": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "implication": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "shacl12-if": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      }
+    },
+    "03-personal-data-complete": {
+      "shipped": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-subjectsof": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-sparql": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "implication": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "shacl12-if": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      }
+    },
+    "04-personal-data-no-legal-basis": {
+      "shipped": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-subjectsof": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasLegalBasis"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "partition-sparql": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "implication": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "shacl12-if": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      }
+    },
+    "05-personal-data-no-purpose": {
+      "shipped": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-subjectsof": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasPurpose"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "partition-sparql": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "implication": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "shacl12-if": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      }
+    },
+    "06-personal-data-neither": {
+      "shipped": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-subjectsof": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasLegalBasis",
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasPurpose"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "partition-sparql": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "implication": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "shacl12-if": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      }
+    },
+    "07-personal-data-multivalued": {
+      "shipped": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-subjectsof": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-sparql": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "implication": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "shacl12-if": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      }
+    },
+    "08-personal-data-on-non-dataset": {
+      "shipped": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "partition-subjectsof": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/notADataset\thttps://w3id.org/dpv#hasLegalBasis",
+          "http://example.org/e2/notADataset\thttps://w3id.org/dpv#hasPurpose"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "partition-sparql": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "implication": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "shacl12-if": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      }
+    },
+    "09-base-violation-missing-title": {
+      "shipped": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "partition-subjectsof": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "partition-sparql": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "implication": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "shacl12-if": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      }
+    },
+    "10-base-violation-bad-access-rights": {
+      "shipped": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/accessRights\thttp://www.w3.org/ns/shacl#InConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "partition-subjectsof": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/accessRights\thttp://www.w3.org/ns/shacl#InConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "partition-sparql": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/accessRights\thttp://www.w3.org/ns/shacl#InConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "implication": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/accessRights\thttp://www.w3.org/ns/shacl#InConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "shacl12-if": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/accessRights\thttp://www.w3.org/ns/shacl#InConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      }
+    },
+    "11-personal-data-plus-base-violation": {
+      "shipped": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "partition-subjectsof": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasLegalBasis",
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasPurpose"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "partition-sparql": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "implication": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "shacl12-if": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      }
+    }
+  }
+}

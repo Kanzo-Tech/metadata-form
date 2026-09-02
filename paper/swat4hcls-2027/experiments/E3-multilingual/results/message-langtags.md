@@ -1,51 +1,61 @@
 # E3 — Does a lang-tagged `sh:message` survive to the consumer?
 
-Run 2026-08-27. Every number below is produced by `../run.sh`; the raw output it
-wrote is in `raw/`, referenced per row.
+Re-run 2026-09-02. Every number below is produced by `../run.sh`; the raw output
+it wrote is in `raw/`, referenced per row. No third-party SHACL validator is
+involved in any number on this page.
 
 ---
 
-## Headline, and a correction to our own claim
+## Headline
 
-The claim we set out to test was: *"multilingual SHACL is specified but not
+**The multilingual half of `sh:message` is unverified by the W3C conformance
+suites.** Across the SHACL 1.0 suite (150 test graphs) and the SHACL 1.2 suite
+(426), **not one** subject carries two or more `sh:message` values. Exactly one
+subject in each suite carries a language tag at all, and it is a single `@en`
+message. An implementation can pass the entire approved suite while handling one
+message in one language.
+
+That is a fact about the suites, not about anybody's software. It says the
+behaviour is **unconstrained by the conformance process** — never asked about,
+so never guaranteed.
+
+**And ours was in fact wrong there, until we fixed it.**
+`@kanzo-tech/rudof-wasm@0.3.4` flattened every `sh:message` to a bare string at
+the wasm ABI boundary, discarding the tag; `0.3.5` preserves it. That is the
+worked example of the risk, evidenced on the one implementation we can speak
+for.
+
+So the framing for §5 is: *"the conformance suite never asks a validator to
+handle more than one language, so what happens in the layers it does not reach
+is nobody's promise — and in our own binding, the tag was being dropped."*
+
+---
+
+## Provenance, and a claim this experiment no longer makes
+
+The claim we originally drafted was: *"multilingual SHACL is specified but not
 implemented by validators — `sh:message` with language tags gets flattened or
 dropped."*
 
-**As stated, that claim is false, and we should not publish it.** Every SHACL
-validator we could install emits a **fully conformant RDF validation report**:
-all three languages, tags intact, on the same `sh:ValidationResult`. That is
-pySHACL, Apache Jena, TopBraid (the reference implementation from the spec's
-editor, built on Jena), rdf-validate-shacl and rudof — four independent engines
-across five products. The RDF layer of the ecosystem is in good shape and we say
-so.
+An earlier round of this experiment (2026-08-27) tested that claim by running
+the same shapes and data through four third-party SHACL products alongside
+rudof. **The round refuted the claim**: we did not find the failure we had
+assumed, and the drafted sentence was wrong.
 
-What we did find, and what the paper can defend, is narrower and in our view
-more interesting:
+Those runs have been removed from `run.sh` and from `raw/`. A survey of other
+people's validators, published at those maintainers' own community venue, is not
+what this paper is for — and that holds whichever way the survey came out.
+**The paper therefore makes no claim about other implementations at all.** No
+per-product behaviour is named, graded or tabulated here.
 
-1. **The multilingual case is untested by the conformance suite.** Across the
-   W3C SHACL 1.0 test suite (150 test graphs) and the SHACL 1.2 test suite
-   (426), **not one** shape carries two or more `sh:message` values. Exactly one
-   subject in each suite carries a language tag at all, and it is a single
-   `@en` message. The sentence in §2.1.5 that governs the multilingual case is
-   therefore unexercised by any approved test.
-2. **Behaviour diverges precisely where the suite does not reach** — in the
-   surfaces a consumer actually reads. The RDF report is tested by
-   `message-001`, and everyone passes it. The CLI text renderers and
-   language-binding ABIs are not tested, and there they diverge: pySHACL's
-   `table` renderer prints one message chosen **non-deterministically**; the
-   upstream `rudof` CLI's default renderer prints **none**; and our own
-   `@kanzo-tech/rudof-wasm@0.3.4` flattened every message to a bare `string`,
-   destroying the tag at the JavaScript boundary.
-3. **No validator performs language negotiation.** Not one of the five selects a
-   message for a requested locale. Every one either hands over all messages or picks one
-   by accident. Choosing the right message for the reader is left entirely to
-   the consumer — which is exactly the job a form has to do, and exactly why the
-   ABI must carry the tag.
-
-So the honest framing for §5 is not *"validators drop language tags"*. It is
-*"the conformance suite never asks a validator to handle more than one language,
-and in the layers it does not reach, the tag is where implementations quietly
-disagree — including ours."*
+**What that costs, stated plainly.** E3 no longer has evidence about how widely
+multilingual `sh:message` is handled in practice. We can say the conformance
+suites do not test it, and we can say our own binding got it wrong; we cannot
+say anything about how common that is. That is a weaker claim than the one the
+draft made, and §5 must not recover the stronger one by implication — not with
+"validators may…", not with "in practice…", not with an unsourced aside. Where
+the reader wants to know how the rest of the ecosystem behaves, the honest
+answer is that this paper does not measure it.
 
 ---
 
@@ -81,7 +91,8 @@ Two consequences matter for how we read the results:
 - **The requirement binds the results graph, not the console.** A CLI that
   renders one message out of three to a terminal is not violating §2.1.5, as
   long as the RDF report it can emit carries all three. We grade the RDF report
-  against the spec, and grade the rendering layers separately, as usability.
+  against the spec, and grade the rendering and binding layers separately, as
+  usability.
 - **The spec's own worked example is the multilingual case.** §2.1.4 shows a
   shape with `sh:message "Too many characters"@en` and `"Zu viele Zeichen"@de`
   and a report carrying both. The behaviour is not an obscure corner; it is the
@@ -119,104 +130,95 @@ ex:d1 a ex:Dataset ; ex:issued "March 2026" .
 ```
 
 Three further probe graphs (`probe-no-en.ttl`, `probe-en-last.ttl`,
-`probe-data.ttl`) vary the languages present and their document order, to
-determine *on what basis* a renderer that shows one message picks it.
+`probe-data.ttl`) existed to determine on what basis a third-party renderer that
+shows one message picked it. They were inputs to the removed round only, and
+have been deleted with it.
 
 ---
 
-## Tab. 2 — `sh:message` language tags across SHACL validators
+## The finding that carries §5 — the conformance suite never asks
 
-Test input: one constraint carrying `@en` + `@es` + `@ca`, one carrying an
-untagged message. "Surface" is the output the row grades. **Tags kept** = the
-language tag is recoverable by the consumer. **Languages emitted** = how many of
-the three reach the consumer. **Negotiates** = selects by a requested locale.
+`raw/16`, regenerated from `w3c/data-shapes` @ `b7844c77` (2026-09-01), parsed
+with rdflib rather than grepped, counting **subjects**:
 
-| Validator | Version tested | Surface graded | Tags kept | Languages emitted | Selection basis | Conformant (§2.1.5) | Raw |
-|---|---|---|---|---|---|---|---|
-| pySHACL | 0.40.1 (rdflib 7.6.0) | RDF report (`-f turtle`) | ✅ yes | 3 of 3 | n/a — emits all | ✅ yes | `raw/01` |
-| pySHACL | 0.40.1 | text report (`-f human`) | ⚠️ no tag shown | 3 of 3 | n/a — emits all | n/a (rendering) | `raw/02` |
-| pySHACL | 0.40.1 | table report (`-f table`) | ❌ no | **1 of 3** | **non-deterministic** | n/a (rendering) | `raw/03`, `raw/14` |
-| Apache Jena SHACL | 6.2.0 | RDF report (default) | ✅ yes | 3 of 3 | n/a — emits all | ✅ yes | `raw/04` |
-| Apache Jena SHACL | 6.2.0 | text report (`--text`) | ✅ yes (`@ca`,`@es`,`@en`) | 3 of 3 | n/a — emits all | n/a (rendering) | `raw/05` |
-| TopBraid SHACL API | 1.4.4 | RDF report (`shaclvalidate.sh`) | ✅ yes | 3 of 3 | n/a — emits all | ✅ yes | `raw/06` |
-| rdf-validate-shacl | 0.6.5 | RDF report (`report.dataset`) | ✅ yes | 3 of 3 | n/a — emits all | ✅ yes | `raw/07` |
-| rdf-validate-shacl | 0.6.5 | JS API (`result.message`) | ✅ yes (RDF/JS terms) | 3 of 3 | n/a — emits all | n/a (binding) | `raw/07` |
-| rudof CLI (upstream) | 0.3.14 | RDF report (`-r turtle`) | ✅ yes | 3 of 3 | n/a — emits all | ⚠️ near — see note | `raw/09` |
-| rudof CLI (upstream) | 0.3.14 | table (`-r compact`, default) | ❌ n/a | **0 of 3** | messages not rendered | n/a (rendering) | `raw/08` |
-| rudof CLI (upstream) | 0.3.14 | table (`-r details`) | ✅ yes (`es:`/`en:`/`ca:`) | 3 of 3 | n/a — emits all | n/a (rendering) | `raw/10` |
-| rudof CLI (upstream) | 0.3.14 | JSON (`-r json`) | — | — | **`todo!()` panic** | n/a | `raw/11` |
-| **rudof-wasm — before** | **@kanzo-tech/rudof-wasm@0.3.4** | **JS ABI (`message`)** | **❌ no — `string[]`** | 3 of 3, **indistinguishable** | **none possible** | n/a (binding) | `raw/12` |
-| **rudof-wasm — after** | **@kanzo-tech/rudof-wasm@0.3.5** | **JS ABI (`message`)** | **✅ yes — `{value, language}[]`** | 3 of 3 | consumer picks by locale | n/a (binding) | `raw/13` |
+| | SHACL 1.0 suite | SHACL 1.2 suite |
+|---|---|---|
+| test graphs parsed | 150 | 426 |
+| subjects carrying ≥1 `sh:message` | 9 | 8 (+1, see caveat) |
+| subjects carrying **>1** `sh:message` value | **0** | **0** |
+| subjects with a language-tagged `sh:message` | 1 | 1 (+1) |
+| subjects with **two or more distinct languages** | **0** | **0** |
 
-**Every RDF validation report tested is conformant with §2.1.5.** No validator
-we ran drops a language tag from the results graph, and none picks one language
-over another in that graph.
+The one language-tagged test is `core/misc/message-001`, whose whole content is
+a single `sh:message "Test message"@en` and an expected report containing the
+same literal. Its own comment says what it is for:
+
+> Note: This test verifies that the sh:message is copied into sh:resultMessage.
+
+SHACL 1.2 adds `core/misc/message-002`, the same assertion through RDF 1.2
+reifier syntax — `sh:datatype xsd:integer {| sh:message "Test message"@en |}`.
+Still one message, still one language. It is the `+1` in the table: rdflib 7.6.0
+cannot parse RDF 1.2 reifier syntax, so `run.sh` prints it as skipped and we
+read it by hand. Nineteen graphs of the 1.2 suite are skipped for that reason
+(none in the 1.0 suite). `run.sh` greps every one of them for the literal string
+`sh:message` and prints the counts at the foot of `raw/16`: **only
+`message-002.ttl` matches at all** — three occurrences, being the one
+`sh:message` triple and two mentions in the test's own `rdfs:comment`. The other
+eighteen contain none, so excluding them costs the count nothing.
+
+So an implementation can pass the entire approved conformance suite while
+handling exactly one message in exactly one language. Nothing in the process
+requires more. What an implementation does with a second language is not a
+conformance question at all — it is a choice nobody checks.
+
+That is the argument §5 should make: not that the ecosystem is broken, but that
+the multilingual half of `sh:message` is **unverified**, and unverified
+behaviour is what a data space cannot build on. A profile author in Catalonia
+choosing whether to write `sh:message` in three languages has no way to know
+whether it will reach a user — and E1's finding that the official Health-RI
+profile carries 321 `@en` tags and no other language is what that uncertainty
+looks like downstream.
+
+**This number did not move.** The re-run picked up a newer upstream head
+(`b7844c77`, 2026-09-01) than the first round (`d4756bf2`, 2026-08-26). All five
+counts in each column are identical. The only change in `raw/16` is that
+`sparql/rules/run-once-example.ttl` was renamed upstream to
+`inference-rules/run-once-example.ttl`; it carries no `sh:message` and it is
+unparseable by rdflib in both revisions, so it appears in the skip list either
+way.
+
+---
+
+## Tab. 2 — where a language tag survives, in rudof
+
+Only rudof surfaces. Test input as above: one constraint carrying `@en` + `@es`
++ `@ca`, one carrying an untagged message. "Surface" is the output the row
+grades. **Tags kept** = the language tag is recoverable by the consumer.
+**Languages emitted** = how many of the three reach the consumer.
+
+| Build | Version | Surface graded | Tags kept | Languages emitted | Conformant (§2.1.5) | Raw |
+|---|---|---|---|---|---|---|
+| rudof CLI (upstream) | 0.3.14 | RDF report (`-r turtle`) | yes | 3 of 3 | near — see note | `raw/09` |
+| rudof CLI (upstream) | 0.3.14 | table (`-r compact`, default) | n/a | **0 of 3** | n/a (rendering) | `raw/08` |
+| rudof CLI (upstream) | 0.3.14 | table (`-r details`) | yes (`es:`/`en:`/`ca:`) | 3 of 3 | n/a (rendering) | `raw/10` |
+| rudof CLI (upstream) | 0.3.14 | JSON (`-r json`) | — | — | `todo!()` panic | `raw/11` |
+| **rudof-wasm — before** | **@kanzo-tech/rudof-wasm@0.3.4** | **JS ABI (`message`)** | **no — `string[]`** | 3 of 3, **indistinguishable** | n/a (binding) | `raw/12` |
+| **rudof-wasm — after** | **@kanzo-tech/rudof-wasm@0.3.5** | **JS ABI (`message`)** | **yes — `{value, language}[]`** | 3 of 3 | n/a (binding) | `raw/13` |
+
+The engine never lost a tag. The default CLI renderer never shows one, and our
+own JavaScript binding used to destroy one. Neither of those is a spec
+violation; both are places a real consumer stops being able to pick a language.
 
 ---
 
 ## Row notes
-
-### pySHACL 0.40.1 — the `table` renderer picks at random
-
-`-f turtle` and `-f human` both emit all three messages; `-f human` prints them
-on three `Message:` lines without their tags, which loses the tag but not the
-text. `-f table` prints exactly **one**, and we could not find a rule behind the
-choice. Twelve runs per input (`raw/14`):
-
-| Shapes graph (document order of the messages) | en | es | ca | de | zz |
-|---|---|---|---|---|---|
-| `shapes.ttl` (en, es, ca) | 6 | 2 | 4 | – | – |
-| `probe-no-en.ttl` (ca, es, de) | – | 4 | 3 | 5 | – |
-| `probe-en-last.ttl` (zz, es, en) | 4 | 3 | – | – | 5 |
-
-The choice is not locale-aware (it does not prefer `@en`; it happily prints
-`@de` or the nonsense tag `@zz`), not document order, and **not stable between
-runs of the same command on the same input** — consistent with iteration over
-an rdflib term set under Python's randomised string hashing. A user re-running
-the same validation can be shown a different language each time, in a format
-that does not say which language it is.
-
-The counts above are one run of `run.sh` — the committed `raw/14`. They are
-themselves random, and re-running the harness redistributes them (an earlier run
-of the same 12×3 gave 3/5/4, 2/5/5 and 3/5/4 for the same three rows). What
-reproduces is the *shape* of the result: every language present appears, none
-dominates, and no run of twelve is the same as another. Reviewers re-running
-`run.sh` should expect different counts and the same conclusion.
-
-This is a rendering defect, not a spec violation, and we present it as such.
-
-### Apache Jena SHACL 6.2.0 — conformant, and tags visible in `--text`
-
-The only tested CLI whose *text* output keeps the tags, printing the messages as
-a bracketed list `["…"@ca,"…"@es,"…"@en]`. Order was identical across three runs.
-No negotiation: it shows all three and leaves the reader to choose.
-
-### TopBraid SHACL API 1.4.4 — conformant
-
-The reference implementation (Holger Knublauch, spec editor). Its report body is
-byte-identical to Jena's — the two files differ only in the prefix block, TopBraid
-declaring `dash:`, `tosh:` and friends — which is unsurprising, since TopBraid's
-API runs on Jena (it bundles `jena-arq-5.2.0`). Read the two rows as one engine
-family with two front ends, not as two independent confirmations.
-`shaclvalidate.sh` exits `1` on non-conformance, which is a CLI convention, not
-an error. Tested via the
-Maven Central binary distribution (`sha256 f382585d…`); we have no TopBraid EDG
-licence and did not test the commercial product.
-
-### rdf-validate-shacl 0.6.5 — conformant, and the JS binding keeps the terms
-
-The one JS validator that models messages as RDF/JS `Literal` terms rather than
-strings, so `result.message[i].language` is available to the caller. This is the
-design our fork adopted for the wasm ABI. Requires `@zazuko/env-node` (3.1.0
-tested) as its factory; the bare `rdf-ext` factory lacks the `clownface` method
-the validator calls, so a naive install fails at construction.
 
 ### rudof — the before/after, and where the loss actually was
 
 The interesting detail is **which layer lost the tag**. It was not the engine.
 
 The Rust core keeps messages in a map keyed by `Option<Lang>`, and both the
-upstream CLI's Turtle report and its `--details` table print all three with
+upstream CLI's Turtle report and its `-r details` table print all three with
 their tags (`raw/09`, `raw/10`). The loss was in the **WASM ABI serializer**:
 `result_to_dto` in `rudof_wasm/src/validate.rs` called
 `r.message().messages().values()`, taking the map's values and discarding the
@@ -244,16 +246,22 @@ Catalan from Spanish. The fix (fork commit `3fda6b26b`, shipped in
 ]
 ```
 
-Both packages are on npm and can be installed side by side:
-`@kanzo-tech/rudof-wasm@0.3.4` (`sha512-ptA6/I5/yBIe…`, 2026-06-30T11:57:51Z) and
-`@kanzo-tech/rudof-wasm@0.3.5` (`sha512-G+rKIn0jHjHE…`, 2026-08-27T12:19:14Z).
-These are the only two versions published.
+Both versions are on npm and can be installed side by side; `run.sh` installs
+each into its own tree and runs the same input through both.
+
+**The fix has shipped in every release since 0.3.5.** `raw/00` records the
+package's full published history rather than leaving it to be hand-typed: the
+published versions are 0.3.4, 0.3.5, 0.3.6, 0.3.7 and 0.3.8, `latest` is
+**0.3.8**, and 0.3.4 is the only one that lacks the tags. The 0.3.4/0.3.5 pair
+in the table is the before/after; it is not a description of the current
+package, which is 0.3.8 and carries the tags.
 
 **Two things this row does not let us claim.** First, the loss was in *our*
 binding, not in rudof's engine, so it is evidence that a language binding is a
-place tags get dropped — not that rudof was broken. Second, the fix is the
-*precondition* for locale selection, not the selection itself; picking the right
-message is still the form's job.
+place tags get dropped — not that rudof was broken, and certainly not that
+anyone else's binding does the same. Second, the fix is the *precondition* for
+locale selection, not the selection itself; picking the right message for the
+reader is still the form's job.
 
 ### Where rudof is itself not conformant, and we should say so
 
@@ -263,63 +271,34 @@ Both rudof versions add an engine-generated message —
 messages, and §3.6.2.7 permits an engine-generated message only "in cases where
 a constraint does not have any values for `sh:message`". Emitting both is
 outside what the spec allows, in the upstream CLI's Turtle report (`raw/09`) as
-well as in the wasm ABI. It is a small defect and it is ours to fix, not
-someone else's; the 0.3.5 ABI at least tags it `language: ""` so a consumer can
-exclude it from a locale choice rather than have it shadow a localised message.
+well as in the wasm ABI. It is a small defect and it is ours to fix; the 0.3.5
+ABI at least tags it `language: ""` so a consumer can exclude it from a locale
+choice rather than have it shadow a localised message.
 
 Two further rudof 0.3.14 observations, recorded because they are facts about the
 current published version: the default `compact` renderer has a `Details` column
 that stays empty, so `rudof validate -M shacl` shows **no message at all** unless
-`-r details` is passed; and `-r json` panics on an unimplemented branch
-(`serialize_shacl_validation_results.rs:42`) rather than returning an error.
-Neither bears on language tags.
+`-r details` is passed (`raw/08`); and `-r json` panics on an unimplemented
+branch (`serialize_shacl_validation_results.rs:42`) rather than returning an
+error (`raw/11`). Neither bears on language tags.
 
 Finally, **order is not stable anywhere in rudof** — neither the order of results
 in a report nor the order of messages within one result, in the CLI's Turtle and
-`--details` output as well as in the wasm ABI. The *set* is stable (`raw/15`,
+`-r details` output as well as in the wasm ABI. The *set* is stable (`raw/15`,
 8 runs, identical), so nothing is lost; but a consumer must not treat
 `message[0]` as meaningful, and our runner sorts by path so the committed dumps
-stay comparable. Re-running `run.sh` reorders `raw/09` and `raw/10` without
-changing their content.
+stay comparable. Re-running `run.sh` reorders `raw/08`, `raw/09` and `raw/10`
+without changing their content — the 2026-09-02 re-run did exactly that, and
+nothing else.
 
----
+### rudof does not negotiate, and nor should it
 
-## The finding that carries §5 — the conformance suite never asks
-
-`raw/16`, regenerated from `w3c/data-shapes` @ `d4756bf2` (2026-08-26), parsed
-with rdflib rather than grepped, counting **subjects**:
-
-| | SHACL 1.0 suite | SHACL 1.2 suite |
-|---|---|---|
-| test graphs parsed | 150 | 426 |
-| subjects carrying ≥1 `sh:message` | 9 | 8 (+1, see caveat) |
-| subjects carrying **>1** `sh:message` value | **0** | **0** |
-| subjects with a language-tagged `sh:message` | 1 | 1 (+1) |
-| subjects with **two or more distinct languages** | **0** | **0** |
-
-The one language-tagged test is `core/misc/message-001`, whose whole content is
-a single `sh:message "Test message"@en` and an expected report containing the
-same literal. Its own comment says what it is for:
-
-> Note: This test verifies that the sh:message is copied into sh:resultMessage.
-
-SHACL 1.2 adds `core/misc/message-002`, the same assertion through RDF 1.2
-reifier syntax — `sh:datatype xsd:integer {| sh:message "Test message"@en |}`.
-Still one message, still one language.
-
-So an implementation can pass the entire approved conformance suite while
-handling exactly one message in exactly one language. Every implementation we
-tested does better than that in its RDF report — but nothing in the process
-required it to, and in the layers with no test at all (renderers, bindings) the
-behaviour is inconsistent, undocumented and, in pySHACL's table, random.
-
-That is the argument §5 should make: not that the ecosystem is broken, but that
-the multilingual half of `sh:message` is **unverified**, and unverified
-behaviour is what a data space cannot build on. A profile author in Catalonia
-choosing whether to write `sh:message` in three languages has no way to know
-whether it will reach a user — and E1's finding that the official Health-RI
-profile carries 321 `@en` tags and no other language is what that uncertainty
-looks like downstream.
+Neither the CLI nor the wasm ABI selects a message for a requested locale: both
+hand over the whole set. We think that is right — the engine cannot know the
+reader's locale, so its job is to preserve the tags and let the consumer choose.
+That is precisely why the ABI has to carry the tag, and why 0.3.4 made the
+consumer's job impossible. We make no claim about whether other implementations
+negotiate.
 
 ---
 
@@ -327,78 +306,73 @@ looks like downstream.
 
 1. Author one shapes graph and one data graph (above), deliberately tiny so they
    fit in the paper. C1 exercises the multilingual case, C2 the untagged control
-   that shows a validator is not simply dropping every message.
-2. Install each validator at a pinned version into a scratch tree, run the same
-   two files through it, and capture **every** output format it offers — because
-   the spec constrains the RDF report and users read the renderer, and those can
-   disagree.
-3. Where a renderer emits one message out of several, vary the input to find the
-   selection rule: remove `@en` to test for a hard-coded English preference,
-   reorder the messages to test for document order, and repeat each run twelve
-   times to test for stability.
-4. Grade the RDF report against SHACL §2.1.5 / §3.6.2.7, and grade renderers and
+   that shows an implementation is not simply dropping every message.
+2. Install both pinned `@kanzo-tech/rudof-wasm` builds side by side and the
+   pinned upstream `rudof` CLI, run the same two files through each, and capture
+   **every** output format offered — because the spec constrains the RDF report
+   and users read the renderer, and those can disagree.
+3. Grade the RDF report against SHACL §2.1.5 / §3.6.2.7, and grade renderers and
    bindings separately as usability, saying which is which.
-5. Count what the W3C conformance suites actually test, by parsing them.
+4. Count what the W3C conformance suites actually test, by parsing every test
+   graph with rdflib. rdflib is an RDF toolkit, not a SHACL engine; it reads
+   Turtle and nothing more.
+5. Re-run the wasm probe eight times to confirm the message *set* is stable even
+   though its order is not.
 
-Reproduce with `../run.sh`. It installs everything (pySHACL via `uv`, Jena via
-`brew`, TopBraid from Maven Central with a checksum, the npm packages, `rudof`
-via `cargo install`), writes `raw/00-environment.txt` and re-derives every file
-in `raw/`. Set `E3_WORK` to keep the installs between runs.
+Reproduce with `../run.sh`. It installs everything (rdflib via `uv`, the npm
+packages, `rudof` via `cargo install`), writes `raw/00-environment.txt` and
+re-derives every file in `raw/`. Set `E3_WORK` to keep the installs between runs.
 
 ### Environment (`raw/00-environment.txt`)
 
 ```
 Darwin 25.2.0 arm64
-Python 3.14.5          pySHACL 0.40.1, rdflib 7.6.0
-node v23.9.0           rdf-validate-shacl 0.6.5, @zazuko/env-node 3.1.0
-openjdk 26.0.2         Apache Jena SHACL 6.2.0
-                       org.topbraid:shacl:1.4.4 (sha256 f382585d…)
+Python 3.13.12         rdflib 7.6.0 (pinned directly; W3C-suite parsing only)
+node v23.9.0
 rudof 0.3.14 (crates.io rudof_cli, upstream)
-@kanzo-tech/rudof-wasm 0.3.4 and 0.3.5
+@kanzo-tech/rudof-wasm 0.3.4 and 0.3.5 (published: 0.3.4 … 0.3.8; latest 0.3.8)
 ```
+
+Two environment lines moved between the 2026-08-27 round and the 2026-09-02
+re-run, and neither affects a result. Python is 3.13.12 rather than 3.14.5,
+because the venv is now created for `rdflib` alone and `uv` picked a different
+default interpreter; rdflib itself is pinned at the same 7.6.0 it was before, so
+the suite parse is unchanged (and `raw/16` confirms it — identical counts). The
+per-package version lines for the four removed products are gone with them.
 
 ---
 
 ## Threats to validity, and what we could not test
 
-**Validators we could not run.**
+**We measure the suites and ourselves, and nothing else.** This is the largest
+limitation and it is deliberate. E3 has no evidence about how any other SHACL
+implementation handles a multilingual `sh:message`, in either direction. A
+reader who wants to know whether the problem we found in our own binding is
+common will not find the answer here, and §5 must not imply one.
 
-- **TopBraid EDG / TopBraid Composer** — the commercial products. We tested the
-  open-source `org.topbraid:shacl` API, which is the engine behind them, but we
-  hold no licence and cannot speak for the products' own UI rendering. Since
-  their UI is precisely the kind of surface where we found divergence, this is a
-  real gap.
-- **SHACL validators behind hosted services** (e.g. portal-side validation in
-  data.europa.eu) — not installable, versions not published, so out of scope.
-- **Older versions of the validators tested.** We ran current stable releases
-  only. It is entirely possible that a 2019 pySHACL flattened tags; testing an
-  old version to make the claim land would be cherry-picking, and we did not.
-  The claim is about the ecosystem as it is today.
-- **`-r json` for the rudof CLI**, which panics; there is nothing to grade.
+**One shapes graph, one constraint type.** Three languages on a single
+`sh:minCount`, plus an untagged control. We did not sweep constraint components,
+nor SHACL-SPARQL messages with `{?var}` substitution, where the interaction
+between substitution and language tags is a plausible second failure mode we
+have not looked at.
 
-**Four independent engines, one shapes graph.** Five products, but TopBraid's API
-is built on Jena and returns the same report, so the table's rows are not five
-independent confirmations — they are pySHACL (rdflib), the Jena family, 
-rdf-validate-shacl and rudof. We tested one constraint type carrying three
-languages. We did not sweep constraint components, nor SHACL-SPARQL
-messages with `{?var}` substitution, where the interaction between substitution
-and language tags is a plausible second failure mode we have not looked at.
+**The corpus count is a count of the suites, not of the world.** It shows the
+conformance process does not exercise the multilingual case. It does not show
+that implementations therefore get it wrong — only that nothing obliges them to
+get it right, which is a claim about assurance, not about quality.
 
-**The non-determinism finding is platform-conditional.** pySHACL's random
-selection depends on Python's hash randomisation, which is on by default but can
-be disabled with `PYTHONHASHSEED`. On a runner that pins the seed the choice
-would be stable — arbitrary, but stable. We report it as observed with default
-settings, which is what a user gets.
+**The `+1` rows are read by hand.** rdflib 7.6.0 cannot parse the RDF 1.2
+reifier syntax in `shacl12-test-suite/core/misc/message-002.ttl`, so that file is
+skipped by the parser and counted manually: one `sh:message`, one language. It
+would not change any of the zeros. `run.sh` greps all nineteen skipped files for
+`sh:message` and prints the result in `raw/16`, so a reviewer does not have to
+take the exclusion on trust — the other eighteen contain none.
 
 **We are not disinterested.** This experiment exists to justify a fork we
 maintain, and the one clear "before" failure in the table is our own package.
-That cuts both ways: it is the reason to be careful about the claim, and it is
-also why the table reports our own spec violation (the extra engine message)
-alongside everyone else's clean results. Reviewers can re-run `run.sh`.
+That is also why the table reports our own spec violation — the extra engine
+message — rather than only the fix. Reviewers can re-run `run.sh`.
 
-**We reported nothing upstream yet.** If §5 is going to observe that pySHACL's
-table renderer is non-deterministic, an issue on `RDFLib/pySHACL` should be
-filed before the camera-ready, and the paper should cite it. Same for the rudof
-`compact` renderer's empty `Details` column and the `-r json` panic. Publishing
-a defect at a community venue without having told the maintainers first is not
-how we want to do this.
+**Third-party defects we observed are not reported here, and are not the
+paper's to publish.** Anything the removed round turned up is a courtesy to be
+raised with those maintainers directly, not a paper artefact.

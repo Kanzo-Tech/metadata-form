@@ -1,0 +1,100 @@
+# E7 verification, run 2026-08-28T16:36:28Z
+# repo:     /Users/angel.ip/dev/kanzo/keasy/metadata-form @ 21d9931 (feat/kanzo-ui)
+# fork:     /Users/angel.ip/dev/kanzo/keasy/rudof-fork
+
+## 1. npm packages
+   @kanzo-tech/rudof-wasm  latest=0.3.5
+   @kanzo-tech/ui  latest=0.1.0
+   @kanzo-tech/ai  latest=0.1.0
+   @kanzo-tech/theme  latest=0.1.0
+   metadata-form  NOT PUBLISHED (404)
+
+   @kanzo-tech/rudof-wasm versions: ["0.3.4","0.3.5"]
+   0.3.4 dist.attestations:
+   0.3.5 dist.attestations:
+     {
+       "url": "https://registry.npmjs.org/-/npm/v1/attestations/@kanzo-tech%2frudof-wasm@0.3.5",
+       "provenance": {
+         "predicateType": "https://slsa.dev/provenance/v1"
+       }
+     }
+
+## 2. provenance — what the attestation actually binds
+   subject:    pkg:npm/%40kanzo-tech/rudof-wasm@0.3.5
+   repository: https://github.com/Kanzo-Tech/rudof
+   ref:        refs/tags/rudof-wasm-v0.3.5
+   workflow:   .github/workflows/publish-wasm.yml
+   builder:    https://github.com/actions/runner/github-hosted
+
+   A reviewer verifies it with:
+     npm i @kanzo-tech/rudof-wasm@0.3.5 && npm audit signatures
+   running it here, in a throwaway project:
+     audited 1 package in 0s
+     
+     1 package has a verified registry signature
+     
+     1 package has a verified attestation
+     
+
+## 3. the tag the attestation names, and the commit it resolves to
+   93a2c6346d10746bc3f3be8c71293d0a9c992c3f	refs/tags/rudof-wasm-v0.3.4
+   3978c35ad1f25809168b34f5277f225fa7f39126	refs/tags/rudof-wasm-v0.3.5
+   8bf8bcc5a43ddf832e515146e3c4ce1f477aea43	refs/tags/rudof-wasm-v0.3.5^{}
+
+## 4. playground deployment
+   https://kanzo-tech.github.io/metadata-form/ -> HTTP 200
+   permalink codec on origin/main (what the deployment is built from):
+     v2 markers: 0
+   permalink codec on this branch:
+     v2 markers: 4
+   fragments this repo can produce for health-dcat-ap / covid:
+       v2 by-reference: 67 chars -> N4IgbiBcBMA0IFMAeUQAsEEMA2AXNAtACYDGmuBmADiPFQE4IDOCuqJA9mAJZEgC+QA
+       v1 embedded:     4538 chars (not printed)
+
+## 5. fork divergence from real upstream (GitHub API — authoritative)
+   base..fork:    ahead_by 70 files 300
+   master..fork:  status diverged ahead_by 70 behind_by 297
+   local clone is shallow: YES
+   (a shallow clone makes `git rev-list --left-right --count` overcount the
+    'behind' side by every commit before the graft point — use the API above)
+   local left-right count (WRONG if shallow): 70	3051
+   fork working tree:
+      M rudof_wasm/src/dto.rs
+      M rudof_wasm/src/shapes.rs
+      M shacl/src/ast/property_shape.rs
+     ^^ DIRTY — a DOI cannot pin this
+   is sh:if support upstream? `IfConstraintComponent` in rudof-upstream/master:
+     hits: 0  (0 = fork-only)
+
+## 6. can each experiment be re-run with ONE command?
+   E1-coverage: vitest harness only (no wrapper)   (python steps: 0)
+   E2-migration: Makefile (make)   (python steps: 3)
+   E3-multilingual: run.sh   (python steps: 0)
+   E4-performance: run.sh   (python steps: 0)
+   E5-errors-in-the-wild: NO single command   (python steps: 6)
+   E6-llm-assist: run.sh   (python steps: 0)
+   E7-availability: run.sh   (python steps: 0)
+
+## 7. licences
+   metadata-form:        MIT
+   rudof (fork + upstream): MIT OR Apache-2.0
+   rudof LICENSE files:  LICENSE-APACHE LICENSE-MIT 
+   @kanzo-tech/rudof-wasm on npm: MIT OR Apache-2.0
+   vendored shapes, one PROVENANCE.md each:
+     E1-coverage/data/bioschemas/PROVENANCE.md  ->  CC-BY-SA-4.0** (`src/LICENSE`, Attribution-ShareAlike 4.0 In
+     E1-coverage/data/dcat-ap-3/PROVENANCE.md  ->  CC-BY-4.0** (declared on the repository) — redistribution pe
+     E1-coverage/data/dcat-ap-de/PROVENANCE.md  ->  CC-BY-4.0** (`src/LICENSE`, Attribution 4.0 International) —
+     E1-coverage/data/fair-data-point/PROVENANCE.md  ->  MIT** (`src/LICENSE`) — redistribution permitted.
+     E1-coverage/data/health-ri/PROVENANCE.md  ->  CC-BY-4.0** (see `src/LICENSE`) — redistribution permitted w
+     E1-coverage/data/healthdcat-ap/PROVENANCE.md  ->  CC-BY-4.0** — "Copyright © 2025 European Union. All material
+     E1-coverage/data/spdx-3/PROVENANCE.md  ->  Community Specification License 1.0** (`src/License.md`) — n
+     E1-coverage/data/sphn/PROVENANCE.md  ->  CC-BY-4.0** (`src/LICENSE`, Attribution 4.0 International; G
+     E2-migration/data/PROVENANCE.md  ->  <see file>
+     E5-errors-in-the-wild/data/dcat-ap-3.0.1/PROVENANCE.md  ->  CC-BY-4.0 (repository `LICENSE`) — redistributable with attr
+
+   vendored @kanzo-tech tarballs in the repo (NOT the npm versions):
+     kanzo-tech-ai-0.0.0.tgz  sha256=c3b65d2a0a08bb3c…  tracked=yes
+     kanzo-tech-theme-0.0.0.tgz  sha256=eeb66e637f8b1e50…  tracked=yes
+     kanzo-tech-ui-0.0.0.tgz  sha256=5eefb3b9604b309b…  tracked=yes
+
+# end

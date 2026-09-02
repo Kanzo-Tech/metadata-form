@@ -1,0 +1,666 @@
+{
+ "generated_utc": "2026-09-02T10:15:43+00:00",
+ "n": 372,
+ "n_population": 33228,
+ "n_catalogues": 77,
+ "parse_failures": 0,
+ "linkcheck_available": true,
+ "records_with_l1_violation": {
+  "k": 139,
+  "n": 372,
+  "pct_sample": 37.4,
+  "ci95_sample": [
+   32.6,
+   42.4
+  ],
+  "pct_population_weighted": 43.4,
+  "ci95_population_weighted": [
+   38.4,
+   48.4
+  ],
+  "pct_equal_weight_per_catalogue": 23.9,
+  "catalogue_rate_quartiles": [
+   0.0,
+   0.0,
+   0.0,
+   50.0,
+   100.0
+  ],
+  "n_catalogues_all_conformant": 50,
+  "n_catalogues": 77
+ },
+ "records_with_l1_or_l2_violation": {
+  "k": 257,
+  "n": 372,
+  "pct_sample": 69.1,
+  "ci95_sample": [
+   64.2,
+   73.6
+  ],
+  "pct_population_weighted": 78.7,
+  "ci95_population_weighted": [
+   75.4,
+   82.0
+  ],
+  "pct_equal_weight_per_catalogue": 55.3,
+  "catalogue_rate_quartiles": [
+   0.0,
+   0.0,
+   59.4,
+   100.0,
+   100.0
+  ],
+  "n_catalogues_all_conformant": 23,
+  "n_catalogues": 77
+ },
+ "records_with_any_defect": {
+  "k": 271,
+  "n": 372,
+  "pct_sample": 72.8,
+  "ci95_sample": [
+   68.1,
+   77.1
+  ],
+  "pct_population_weighted": 81.3,
+  "ci95_population_weighted": [
+   78.0,
+   84.6
+  ],
+  "pct_equal_weight_per_catalogue": 60.7,
+  "catalogue_rate_quartiles": [
+   0.0,
+   0.0,
+   77.8,
+   100.0,
+   100.0
+  ],
+  "n_catalogues_all_conformant": 21,
+  "n_catalogues": 77
+ },
+ "records_with_l3_defect": {
+  "k": 48,
+  "n": 372,
+  "pct_sample": 12.9,
+  "ci95_sample": [
+   9.9,
+   16.7
+  ],
+  "pct_population_weighted": 11.0,
+  "ci95_population_weighted": [
+   7.8,
+   14.2
+  ],
+  "pct_equal_weight_per_catalogue": 14.3,
+  "catalogue_rate_quartiles": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   100.0
+  ],
+  "n_catalogues_all_conformant": 58,
+  "n_catalogues": 77
+ },
+ "records_upper_bound": {
+  "k": 307,
+  "n": 372,
+  "pct_sample": 82.5,
+  "ci95_sample": [
+   78.3,
+   86.0
+  ],
+  "pct_population_weighted": 86.2,
+  "ci95_population_weighted": [
+   83.6,
+   88.9
+  ],
+  "pct_equal_weight_per_catalogue": 76.5,
+  "catalogue_rate_quartiles": [
+   0.0,
+   50.0,
+   100.0,
+   100.0,
+   100.0
+  ],
+  "n_catalogues_all_conformant": 12,
+  "n_catalogues": 77
+ },
+ "records_untagged_title": {
+  "k": 59,
+  "n": 372,
+  "pct_sample": 15.9,
+  "ci95_sample": [
+   12.5,
+   19.9
+  ],
+  "pct_population_weighted": 18.3,
+  "ci95_population_weighted": [
+   16.6,
+   20.0
+  ],
+  "pct_equal_weight_per_catalogue": 8.3,
+  "catalogue_rate_quartiles": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   100.0
+  ],
+  "n_catalogues_all_conformant": 68,
+  "n_catalogues": 77
+ },
+ "mt_literals_stripped": 38821,
+ "records_with_mt_literals": 297,
+ "records_without_description": {
+  "k": 2,
+  "n": 372,
+  "pct_sample": 0.5,
+  "ci95_sample": [
+   0.1,
+   1.9
+  ],
+  "pct_population_weighted": 0.5,
+  "ci95_population_weighted": [
+   0.0,
+   1.2
+  ],
+  "pct_equal_weight_per_catalogue": 0.4,
+  "catalogue_rate_quartiles": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   33.3
+  ],
+  "n_catalogues_all_conformant": 76,
+  "n_catalogues": 77
+ },
+ "pct_records_with_l1_violation": 37.4,
+ "pct_records_with_any_defect": 72.8,
+ "total_defects": 1367,
+ "total_preventable": 1317,
+ "pct_defects_preventable": 96.3,
+ "defect_sites_total": 456,
+ "defect_sites_preventable": 406,
+ "pct_defect_sites_preventable": 89.0,
+ "defects_preventable_spec_listed": 1117,
+ "pct_defects_preventable_spec_listed": 81.7,
+ "design": {
+  "sampling_fraction": 0.0112,
+  "inclusion_prob_min": 0.005235,
+  "inclusion_prob_max": 1.0,
+  "inclusion_prob_ratio": 191,
+  "strata_at_floor": 37,
+  "strata_at_cap": 1,
+  "strata_fully_censused": 17,
+  "kish_design_effect": 1.43,
+  "effective_n": 260
+ },
+ "bucket_mapping": [
+  {
+   "layer": "L2",
+   "component": "InConstraintComponent",
+   "label": "value outside the mandated vocabulary",
+   "bucket": "preventable",
+   "on_spec_list": true,
+   "n": 594
+  },
+  {
+   "layer": "L1",
+   "component": "DatatypeConstraintComponent",
+   "label": "wrong datatype",
+   "bucket": "preventable",
+   "on_spec_list": true,
+   "n": 330
+  },
+  {
+   "layer": "L1",
+   "component": "ClassConstraintComponent",
+   "label": "wrong class for a described node",
+   "bucket": "preventable",
+   "on_spec_list": false,
+   "n": 136
+  },
+  {
+   "layer": "L1",
+   "component": "NodeKindConstraintComponent",
+   "label": "wrong node kind / malformed IRI",
+   "bucket": "preventable",
+   "on_spec_list": true,
+   "n": 136
+  },
+  {
+   "layer": "L1",
+   "component": "MaxCountConstraintComponent",
+   "label": "cardinality exceeded",
+   "bucket": "preventable",
+   "on_spec_list": false,
+   "n": 46
+  },
+  {
+   "layer": "L1",
+   "component": "MinCountConstraintComponent",
+   "label": "missing required property",
+   "bucket": "preventable",
+   "on_spec_list": true,
+   "n": 40
+  },
+  {
+   "layer": "L3",
+   "component": "StaleVsDeclaredFrequency",
+   "label": "not refreshed at its own declared frequency",
+   "bucket": "not preventable",
+   "on_spec_list": false,
+   "n": 34
+  },
+  {
+   "layer": "L2",
+   "component": "MinLengthConstraintComponent",
+   "label": "mandatory property present but empty",
+   "bucket": "preventable",
+   "on_spec_list": false,
+   "n": 18
+  },
+  {
+   "layer": "L2",
+   "component": "PatternConstraintComponent",
+   "label": "malformed value",
+   "bucket": "preventable",
+   "on_spec_list": true,
+   "n": 17
+  },
+  {
+   "layer": "L3",
+   "component": "DeadLink",
+   "label": "distribution link does not resolve",
+   "bucket": "not preventable",
+   "on_spec_list": false,
+   "n": 13
+  },
+  {
+   "layer": "L3",
+   "component": "UnparseableRecord",
+   "label": "record carries an IRI a conformant Turtle parser must reject",
+   "bucket": "not preventable",
+   "on_spec_list": false,
+   "n": 2
+  },
+  {
+   "layer": "L3",
+   "component": "PlaceholderValue",
+   "label": "placeholder value, structurally valid",
+   "bucket": "not preventable",
+   "on_spec_list": false,
+   "n": 1
+  }
+ ],
+ "value_shapes": [
+  {
+   "path": "adms:status",
+   "shape": "IRI from the superseded purl.org/adms/status vocabulary",
+   "n": 187
+  },
+  {
+   "path": "adms:status",
+   "shape": "IRI from a different EU authority table",
+   "n": 8
+  },
+  {
+   "path": "dcat:byteSize",
+   "shape": "plain literal, no datatype",
+   "n": 112
+  },
+  {
+   "path": "dcat:byteSize",
+   "shape": "typed xsd:integer",
+   "n": 104
+  },
+  {
+   "path": "dcat:byteSize",
+   "shape": "typed xsd:nonNegativeInteger",
+   "n": 27
+  },
+  {
+   "path": "dcat:mediaType",
+   "shape": "IRI from the mandated IANA media-type registry",
+   "n": 731
+  },
+  {
+   "path": "dcat:mediaType",
+   "shape": "plain literal where the profile mandates an IRI",
+   "n": 16
+  },
+  {
+   "path": "dcat:mediaType",
+   "shape": "IRI from the EU File Type table that dct:format mandates",
+   "n": 1
+  },
+  {
+   "path": "dct:format",
+   "shape": "IRI from the mandated EU File Type table",
+   "n": 813
+  },
+  {
+   "path": "dct:format",
+   "shape": "IRI from outside any mandated vocabulary",
+   "n": 246
+  },
+  {
+   "path": "dct:format",
+   "shape": "plain literal where the profile mandates an IRI",
+   "n": 62
+  },
+  {
+   "path": "dct:format",
+   "shape": "IRI from the IANA registry that dcat:mediaType mandates",
+   "n": 7
+  }
+ ],
+ "defects_per_record_median": 2,
+ "not_assessable_total": 1175,
+ "pct_results_not_assessable": 46.2,
+ "engine_errors_total": 4,
+ "scaffolding_results_total": 5186,
+ "dangling_property_shapes_dropped": [
+  "dcat:DataServiceShape -> dcat:DataServiceShape/dc08f4dca4377fade57f89454e3fa06a8389d314",
+  "dcat:DataServiceShape -> dcat:DataServiceShape/eb3ac4e4fdde2e2588a9502c5956060a18c5c99f"
+ ],
+ "by_layer": {
+  "L1": 688,
+  "L2": 629,
+  "L3": 50
+ },
+ "by_component": {
+  "L2:InConstraintComponent": 594,
+  "L1:DatatypeConstraintComponent": 330,
+  "L1:ClassConstraintComponent": 136,
+  "L1:NodeKindConstraintComponent": 136,
+  "L1:MaxCountConstraintComponent": 46,
+  "L1:MinCountConstraintComponent": 40,
+  "L3:StaleVsDeclaredFrequency": 34,
+  "L2:MinLengthConstraintComponent": 18,
+  "L2:PatternConstraintComponent": 17,
+  "L3:DeadLink": 13,
+  "L3:UnparseableRecord": 2,
+  "L3:PlaceholderValue": 1
+ },
+ "taxonomy": [
+  {
+   "layer": "L2",
+   "label": "value outside the mandated vocabulary",
+   "n": 594
+  },
+  {
+   "layer": "L1",
+   "label": "wrong datatype",
+   "n": 330
+  },
+  {
+   "layer": "L1",
+   "label": "wrong class for a described node",
+   "n": 136
+  },
+  {
+   "layer": "L1",
+   "label": "wrong node kind / malformed IRI",
+   "n": 136
+  },
+  {
+   "layer": "L1",
+   "label": "cardinality exceeded",
+   "n": 46
+  },
+  {
+   "layer": "L1",
+   "label": "missing required property",
+   "n": 40
+  },
+  {
+   "layer": "L3",
+   "label": "not refreshed at its own declared frequency",
+   "n": 34
+  },
+  {
+   "layer": "L2",
+   "label": "mandatory property present but empty",
+   "n": 18
+  },
+  {
+   "layer": "L2",
+   "label": "malformed value",
+   "n": 17
+  },
+  {
+   "layer": "L3",
+   "label": "distribution link does not resolve",
+   "n": 13
+  },
+  {
+   "layer": "L3",
+   "label": "record carries an IRI a conformant Turtle parser must reject",
+   "n": 2
+  },
+  {
+   "layer": "L3",
+   "label": "placeholder value, structurally valid",
+   "n": 1
+  }
+ ],
+ "top_paths": [
+  {
+   "class": "Distribution",
+   "path": "dct:format",
+   "label": "value outside the mandated vocabulary",
+   "n": 340
+  },
+  {
+   "class": "Distribution",
+   "path": "dcat:byteSize",
+   "label": "wrong datatype",
+   "n": 215
+  },
+  {
+   "class": "Distribution",
+   "path": "adms:status",
+   "label": "value outside the mandated vocabulary",
+   "n": 192
+  },
+  {
+   "class": "Checksum",
+   "path": "spdx:checksumValue",
+   "label": "wrong datatype",
+   "n": 115
+  },
+  {
+   "class": "Distribution",
+   "path": "dct:format",
+   "label": "wrong class for a described node",
+   "n": 62
+  },
+  {
+   "class": "Distribution",
+   "path": "dct:format",
+   "label": "wrong node kind / malformed IRI",
+   "n": 62
+  },
+  {
+   "class": "Dataset",
+   "path": "dct:accrualPeriodicity",
+   "label": "value outside the mandated vocabulary",
+   "n": 43
+  },
+  {
+   "class": "Checksum",
+   "path": "spdx:algorithm",
+   "label": "missing required property",
+   "n": 35
+  },
+  {
+   "class": "Distribution",
+   "path": "dct:license",
+   "label": "cardinality exceeded",
+   "n": 33
+  },
+  {
+   "class": "Distribution",
+   "path": "dcatap:availability",
+   "label": "value outside the mandated vocabulary",
+   "n": 19
+  },
+  {
+   "class": "Distribution",
+   "path": "dcat:mediaType",
+   "label": "malformed value",
+   "n": 17
+  },
+  {
+   "class": "Dataset",
+   "path": "adms:identifier",
+   "label": "wrong class for a described node",
+   "n": 16
+  },
+  {
+   "class": "Dataset",
+   "path": "adms:identifier",
+   "label": "wrong node kind / malformed IRI",
+   "n": 16
+  },
+  {
+   "class": "Distribution",
+   "path": "dcat:mediaType",
+   "label": "wrong class for a described node",
+   "n": 16
+  },
+  {
+   "class": "Distribution",
+   "path": "dcat:mediaType",
+   "label": "wrong node kind / malformed IRI",
+   "n": 16
+  },
+  {
+   "class": "Location",
+   "path": "locn:geometry",
+   "label": "wrong class for a described node",
+   "n": 15
+  },
+  {
+   "class": "Location",
+   "path": "locn:geometry",
+   "label": "wrong node kind / malformed IRI",
+   "n": 15
+  },
+  {
+   "class": "Dataset",
+   "path": "dct:accrualPeriodicity",
+   "label": "wrong class for a described node",
+   "n": 14
+  },
+  {
+   "class": "Dataset",
+   "path": "dct:accrualPeriodicity",
+   "label": "wrong node kind / malformed IRI",
+   "n": 14
+  },
+  {
+   "class": "Dataset",
+   "path": "dct:description",
+   "label": "mandatory property present but empty",
+   "n": 10
+  }
+ ],
+ "engine": {
+  "name": "rudof (wasm)",
+  "package": "@kanzo-tech/rudof-wasm",
+  "version": "0.3.8",
+  "node": "v23.9.0"
+ },
+ "incomplete_harvest": 1,
+ "linkcheck_distribution": {
+  "ok": 233,
+  "tls_fail": 58,
+  "no_access_url": 44,
+  "blocked": 14,
+  "gone": 12,
+  "http_400": 3,
+  "server_error": 3,
+  "timeout": 2,
+  "dns_fail": 1,
+  "http_302": 1,
+  "unknown": 1
+ },
+ "linkcheck_counted_dead": 13,
+ "not_assessable_by_path": [
+  {
+   "path": "dcat:theme",
+   "component": "ClassConstraintComponent",
+   "n": 380
+  },
+  {
+   "path": "dct:license",
+   "component": "ClassConstraintComponent",
+   "n": 194
+  },
+  {
+   "path": "dct:format",
+   "component": "ClassConstraintComponent",
+   "n": 180
+  },
+  {
+   "path": "spdx:algorithm",
+   "component": "ClassConstraintComponent",
+   "n": 115
+  },
+  {
+   "path": "dcat:mediaType",
+   "component": "ClassConstraintComponent",
+   "n": 50
+  },
+  {
+   "path": "dct:spatial",
+   "component": "ClassConstraintComponent",
+   "n": 46
+  },
+  {
+   "path": "dcat:accessService",
+   "component": "ClassConstraintComponent",
+   "n": 43
+  },
+  {
+   "path": "dcat:landingPage",
+   "component": "ClassConstraintComponent",
+   "n": 43
+  },
+  {
+   "path": "dct:conformsTo",
+   "component": "ClassConstraintComponent",
+   "n": 31
+  },
+  {
+   "path": "foaf:page",
+   "component": "ClassConstraintComponent",
+   "n": 22
+  },
+  {
+   "path": "dcatap:availability",
+   "component": "ClassConstraintComponent",
+   "n": 19
+  },
+  {
+   "path": "dcat:compressFormat",
+   "component": "ClassConstraintComponent",
+   "n": 11
+  }
+ ],
+ "parse": {
+  "records_read": 370,
+  "records_refused": 2,
+  "staged_triples_total": 93395,
+  "rudof_quads_total": 93395,
+  "triples_lost_by_rudof": 0,
+  "triples_gained_by_rudof": 0,
+  "records_with_a_parse_difference": 0,
+  "pct_records_affected": 0.0,
+  "staged_triples_in_refused_records": 607
+ },
+ "records_engine_refused": 2
+}

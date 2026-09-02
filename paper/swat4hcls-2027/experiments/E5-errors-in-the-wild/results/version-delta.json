@@ -1,0 +1,54 @@
+{
+ "generated_utc": "2026-09-02T09:18:30+00:00",
+ "package": "@kanzo-tech/rudof-wasm",
+ "before": "0.3.5",
+ "after": "0.3.8",
+ "n_records": 372,
+ "whole_corpus": {
+  "records_refused_before": 0,
+  "records_refused_after": 2,
+  "records_flagged_before": 259,
+  "records_flagged_after": 257,
+  "defects_before": 1321,
+  "defects_after": 1317,
+  "defect_delta_by_component": [
+   {
+    "key": "L1:DatatypeConstraintComponent",
+    "before": 331,
+    "after": 330,
+    "delta": -1
+   },
+   {
+    "key": "L2:InConstraintComponent",
+    "before": 597,
+    "after": 594,
+    "delta": -3
+   }
+  ],
+  "defects_in_refused_records_under_before": 4,
+  "records_no_longer_flagged": 2,
+  "records_no_longer_flagged_are_exactly_the_refused": true
+ },
+ "records_both_versions_read": {
+  "n": 370,
+  "defects_before": 1317,
+  "defects_after": 1317,
+  "defect_delta_by_component": [],
+  "triage_delta": [
+   {
+    "key": "scaffolding",
+    "before": 5085,
+    "after": 5186,
+    "delta": 101
+   }
+  ],
+  "raw_result_delta_by_component": [
+   {
+    "key": "MinCountConstraintComponent",
+    "before": 5125,
+    "after": 5226,
+    "delta": 101
+   }
+  ]
+ }
+}

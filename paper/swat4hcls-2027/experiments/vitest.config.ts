@@ -26,7 +26,11 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: [r("test/setup.ts")],
     include: [resolve(__dirname, "**/*.harness.ts")],
-    testTimeout: 120_000,
-    hookTimeout: 120_000,
+    // These are report generators, not tests: one "test" walks a whole corpus and
+    // benchmarks each profile tens of times. E4 alone parses SPHN's 952 kB 36
+    // times. Minutes are expected; a test-shaped timeout would only truncate the
+    // evidence.
+    testTimeout: 1_800_000,
+    hookTimeout: 1_800_000,
   },
 });

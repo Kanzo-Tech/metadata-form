@@ -1,0 +1,322 @@
+{
+ "harvested_from": "https://data.europa.eu/sparql",
+ "theme": "http://publications.europa.eu/resource/authority/data-theme/HEAL",
+ "frame_built_utc": "2026-08-27T15:57:03+00:00",
+ "seed": 20260827,
+ "target_n": 250,
+ "stratum_floor": 2,
+ "stratum_cap": 40,
+ "n_catalogues": 77,
+ "n_population": 33228,
+ "n_sample": 372,
+ "strata": {
+  "avaandmete-portaal": {
+   "N": 2861,
+   "n": 24
+  },
+  "bmlfuw-at": {
+   "N": 6,
+   "n": 2
+  },
+  "cdt": {
+   "N": 1,
+   "n": 1
+  },
+  "chafea": {
+   "N": 1,
+   "n": 1
+  },
+  "cnect": {
+   "N": 71,
+   "n": 3
+  },
+  "codsi": {
+   "N": 28,
+   "n": 2
+  },
+  "commu": {
+   "N": 1,
+   "n": 1
+  },
+  "comp": {
+   "N": 1,
+   "n": 1
+  },
+  "csw-sk": {
+   "N": 60,
+   "n": 2
+  },
+  "dane-gov-pl": {
+   "N": 468,
+   "n": 6
+  },
+  "data-gov-be": {
+   "N": 663,
+   "n": 7
+  },
+  "data-gov-gr": {
+   "N": 1075,
+   "n": 10
+  },
+  "data-gov-ie": {
+   "N": 2514,
+   "n": 21
+  },
+  "data-gov-lt": {
+   "N": 164,
+   "n": 3
+  },
+  "data-gov-uk": {
+   "N": 1868,
+   "n": 16
+  },
+  "data-gv-at": {
+   "N": 3,
+   "n": 2
+  },
+  "data-norge-no": {
+   "N": 75,
+   "n": 3
+  },
+  "datavejviser": {
+   "N": 219,
+   "n": 4
+  },
+  "datenatlas-zg": {
+   "N": 5,
+   "n": 2
+  },
+  "dati-gov-it": {
+   "N": 1017,
+   "n": 10
+  },
+  "datos-gob-es": {
+   "N": 7641,
+   "n": 40
+  },
+  "deu": {
+   "N": 4,
+   "n": 2
+  },
+  "easa": {
+   "N": 1,
+   "n": 1
+  },
+  "ecdc": {
+   "N": 82,
+   "n": 3
+  },
+  "echa": {
+   "N": 17,
+   "n": 2
+  },
+  "eea-sdi": {
+   "N": 8,
+   "n": 2
+  },
+  "efsa": {
+   "N": 1,
+   "n": 1
+  },
+  "eib": {
+   "N": 3,
+   "n": 2
+  },
+  "eige": {
+   "N": 13,
+   "n": 2
+  },
+  "emcdda": {
+   "N": 78,
+   "n": 3
+  },
+  "emea": {
+   "N": 28,
+   "n": 2
+  },
+  "empl": {
+   "N": 1,
+   "n": 1
+  },
+  "ep": {
+   "N": 47,
+   "n": 2
+  },
+  "estat": {
+   "N": 3641,
+   "n": 29
+  },
+  "etf": {
+   "N": 2,
+   "n": 2
+  },
+  "eurac-edp": {
+   "N": 1,
+   "n": 1
+  },
+  "eurofound": {
+   "N": 6,
+   "n": 2
+  },
+  "fra": {
+   "N": 5,
+   "n": 2
+  },
+  "frontex": {
+   "N": 1,
+   "n": 1
+  },
+  "gdi-de": {
+   "N": 922,
+   "n": 9
+  },
+  "geocatalogue-fr": {
+   "N": 646,
+   "n": 7
+  },
+  "geodata-se": {
+   "N": 19,
+   "n": 2
+  },
+  "geology-cz": {
+   "N": 30,
+   "n": 2
+  },
+  "geoportal-cr": {
+   "N": 4,
+   "n": 2
+  },
+  "geoportal-is": {
+   "N": 2,
+   "n": 2
+  },
+  "geoportal-lt": {
+   "N": 3,
+   "n": 2
+  },
+  "geoportal-pl": {
+   "N": 13,
+   "n": 2
+  },
+  "govdata": {
+   "N": 3973,
+   "n": 32
+  },
+  "hadea": {
+   "N": 1,
+   "n": 1
+  },
+  "idee": {
+   "N": 317,
+   "n": 4
+  },
+  "inis": {
+   "N": 2,
+   "n": 2
+  },
+  "jrc": {
+   "N": 155,
+   "n": 3
+  },
+  "just": {
+   "N": 3,
+   "n": 2
+  },
+  "kozadatportal": {
+   "N": 5,
+   "n": 2
+  },
+  "la-plateforme-de-donnees-luxembourgeoise": {
+   "N": 96,
+   "n": 3
+  },
+  "london-datastore": {
+   "N": 161,
+   "n": 3
+  },
+  "metadata-si": {
+   "N": 32,
+   "n": 2
+  },
+  "mita": {
+   "N": 6,
+   "n": 2
+  },
+  "ng-ee": {
+   "N": 2,
+   "n": 2
+  },
+  "ngr-nl": {
+   "N": 306,
+   "n": 4
+  },
+  "nipp": {
+   "N": 6,
+   "n": 2
+  },
+  "nkod-opendata-cz": {
+   "N": 544,
+   "n": 6
+  },
+  "nsip-ie": {
+   "N": 30,
+   "n": 2
+  },
+  "nsip-lu": {
+   "N": 8,
+   "n": 2
+  },
+  "nsip-no": {
+   "N": 70,
+   "n": 3
+  },
+  "nsip-se": {
+   "N": 4,
+   "n": 2
+  },
+  "opendata-li": {
+   "N": 1,
+   "n": 1
+  },
+  "opendata-swiss": {
+   "N": 515,
+   "n": 6
+  },
+  "opendatascienceeurope": {
+   "N": 17,
+   "n": 2
+  },
+  "oppnadata": {
+   "N": 2415,
+   "n": 20
+  },
+  "osha": {
+   "N": 3,
+   "n": 2
+  },
+  "paikkatietohakemisto": {
+   "N": 4,
+   "n": 2
+  },
+  "publ": {
+   "N": 4,
+   "n": 2
+  },
+  "regio": {
+   "N": 1,
+   "n": 1
+  },
+  "rndt": {
+   "N": 222,
+   "n": 4
+  },
+  "rtd": {
+   "N": 2,
+   "n": 2
+  },
+  "sante": {
+   "N": 3,
+   "n": 2
+  }
+ }
+}

@@ -1,0 +1,1368 @@
+record,layer,component,focus_class,path,bucket,label
+r0000,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0000,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0000,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0000,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0000,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0000,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0000,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0000,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0000,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0000,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0000,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0000,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0000,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0000,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0000,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0000,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0000,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0000,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0000,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0000,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0000,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0000,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0000,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0000,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0000,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0000,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0000,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0000,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0000,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0000,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0000,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0000,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0000,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0000,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0000,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0000,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0000,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0000,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0000,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0000,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0000,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0000,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0001,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0002,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0003,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0003,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0003,L1,MaxCountConstraintComponent,Distribution,dcat:byteSize,preventable,cardinality exceeded
+r0003,L1,MaxCountConstraintComponent,Distribution,dcat:byteSize,preventable,cardinality exceeded
+r0003,L1,MaxCountConstraintComponent,Distribution,dcat:byteSize,preventable,cardinality exceeded
+r0003,L1,MaxCountConstraintComponent,Distribution,spdx:checksum,preventable,cardinality exceeded
+r0003,L1,MaxCountConstraintComponent,Distribution,spdx:checksum,preventable,cardinality exceeded
+r0003,L1,MaxCountConstraintComponent,Distribution,spdx:checksum,preventable,cardinality exceeded
+r0004,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0004,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0004,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0004,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0004,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0004,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0004,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0004,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0004,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0004,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0004,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0004,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0004,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0004,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0004,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0004,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0004,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0004,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0005,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0005,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0005,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0005,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0005,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0005,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0005,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0005,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0005,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0005,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0005,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0005,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0005,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0005,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0005,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0005,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0005,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0005,L2,MinLengthConstraintComponent,Dataset,dct:title,preventable,mandatory property present but empty
+r0006,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0006,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0006,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0006,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0006,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0006,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0006,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0006,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0006,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0006,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0006,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0006,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0006,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0006,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0006,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0006,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0006,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0006,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0007,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0007,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0007,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0007,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0007,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0007,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0007,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0007,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0007,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0007,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0007,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0007,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0007,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0007,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0007,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0007,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0008,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0008,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0009,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0010,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0011,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0012,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0013,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0014,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0015,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0015,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0015,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0015,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0015,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0015,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0015,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0015,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0015,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0015,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0015,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0015,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0015,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0015,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0015,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0016,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0016,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0016,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0016,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0016,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0016,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0016,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0016,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0016,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0016,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0016,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0016,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0016,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0016,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0016,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0017,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0018,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0018,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0018,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0018,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0018,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0018,L1,NodeKindConstraintComponent,Dataset,dct:identifier,preventable,wrong node kind / malformed IRI
+r0018,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0018,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0018,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0018,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0018,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0018,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0018,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0018,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0019,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0019,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0019,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0019,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0019,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0019,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0019,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0019,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0019,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0019,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0019,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0019,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0019,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0019,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0020,L1,ClassConstraintComponent,Agent,dct:type,preventable,wrong class for a described node
+r0020,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0020,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0020,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0020,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0020,L1,NodeKindConstraintComponent,Agent,dct:type,preventable,wrong node kind / malformed IRI
+r0020,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0020,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0020,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0020,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0020,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0020,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0021,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0021,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0021,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0021,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0021,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0021,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0021,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0021,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0021,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0021,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0021,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0021,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0022,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0022,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0022,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0022,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0022,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0022,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0022,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0022,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0022,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0022,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0022,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0022,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0023,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0023,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0023,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0023,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0023,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0023,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0023,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0023,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0023,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0023,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0023,L1,MaxCountConstraintComponent,Distribution,spdx:checksum,preventable,cardinality exceeded
+r0023,L1,MaxCountConstraintComponent,Distribution,spdx:checksum,preventable,cardinality exceeded
+r0024,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0024,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0024,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0024,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0024,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0024,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0024,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0024,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0024,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0024,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0025,L1,ClassConstraintComponent,Dataset,dcat:contactPoint,preventable,wrong class for a described node
+r0025,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0025,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0025,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0025,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0025,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0025,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0025,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0025,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0025,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0026,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0026,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0026,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0026,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0026,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0026,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0026,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0026,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0026,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0026,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0027,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0028,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0028,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0028,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0028,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0028,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0028,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0028,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0028,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0028,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0029,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0029,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0029,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0029,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0029,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0029,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0029,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0029,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0029,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0030,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0030,L1,ClassConstraintComponent,Dataset,dct:conformsTo,preventable,wrong class for a described node
+r0030,L1,ClassConstraintComponent,Dataset,dct:temporal,preventable,wrong class for a described node
+r0030,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0030,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0030,L1,NodeKindConstraintComponent,Dataset,dct:conformsTo,preventable,wrong node kind / malformed IRI
+r0030,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0030,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0030,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0031,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0031,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0031,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0031,L1,NodeKindConstraintComponent,Dataset,dct:identifier,preventable,wrong node kind / malformed IRI
+r0031,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0031,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0031,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0031,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0031,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0032,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0032,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0032,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0032,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0032,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0032,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0032,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0032,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0032,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0033,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0033,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0033,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0033,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0033,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0033,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0033,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0033,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0033,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0034,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0034,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0034,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0034,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0034,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0034,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0034,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0034,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0034,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0035,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0035,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0035,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0035,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0035,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0035,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0035,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0035,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0035,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0036,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0036,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0036,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0036,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0036,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0036,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0036,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0036,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0037,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0037,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0037,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0037,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0037,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0037,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0037,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0037,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0038,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0038,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0038,L1,NodeKindConstraintComponent,Dataset,dct:identifier,preventable,wrong node kind / malformed IRI
+r0038,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0038,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0038,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0038,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0038,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0039,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0039,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0039,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0039,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0039,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0039,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0039,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0039,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0040,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0040,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0040,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0040,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0040,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0040,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0040,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0040,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0041,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0041,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0041,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0041,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0041,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0041,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0041,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0041,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0042,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0042,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0042,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0042,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0042,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0042,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0042,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0042,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0043,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0043,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0043,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0043,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0043,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0043,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0043,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0043,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0044,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0044,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0044,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0044,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0044,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0044,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0044,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0044,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0045,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0045,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0045,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0045,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0045,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0045,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0045,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0045,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0046,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0046,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0046,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0046,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0046,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0046,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0046,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0046,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0047,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0047,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0047,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0047,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0047,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0047,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0047,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0047,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0048,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0048,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0048,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0048,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0048,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0048,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0048,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0048,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0049,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0049,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0049,L1,ClassConstraintComponent,Dataset,adms:identifier,preventable,wrong class for a described node
+r0049,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0049,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0049,L1,NodeKindConstraintComponent,Dataset,adms:identifier,preventable,wrong node kind / malformed IRI
+r0049,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0050,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0050,L1,ClassConstraintComponent,Distribution,dcat:mediaType,preventable,wrong class for a described node
+r0050,L1,NodeKindConstraintComponent,Dataset,dct:identifier,preventable,wrong node kind / malformed IRI
+r0050,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0050,L1,NodeKindConstraintComponent,Distribution,dcat:mediaType,preventable,wrong node kind / malformed IRI
+r0050,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0050,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0051,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0051,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0051,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0051,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0051,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0051,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0051,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0052,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0052,L1,MinCountConstraintComponent,Agent,foaf:name,preventable,missing required property
+r0052,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0052,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0052,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0052,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0052,L2,MinLengthConstraintComponent,Dataset,dct:title,preventable,mandatory property present but empty
+r0053,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0053,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0053,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0053,L1,MaxCountConstraintComponent,Location,locn:geometry,preventable,cardinality exceeded
+r0053,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0053,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0053,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0054,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0054,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0054,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0054,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0054,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0054,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0054,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0055,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0055,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0055,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0055,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0055,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0055,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0056,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0056,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0056,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0056,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0056,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0056,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0057,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0057,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0057,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0057,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0057,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0057,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0058,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0058,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0058,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0058,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0058,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0058,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0059,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0059,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0059,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0059,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0059,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0059,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0060,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0060,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0060,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0060,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0060,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0060,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0061,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0061,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0061,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0061,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0061,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0061,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0062,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0062,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0062,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0062,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0062,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0062,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0063,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0063,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0063,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0063,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0063,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0063,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0064,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0064,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0064,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0064,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0064,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0064,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0065,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0065,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0065,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0065,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0065,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0065,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0066,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0066,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0066,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0066,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0066,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0066,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0067,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0067,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0067,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0067,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0067,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0067,L2,MinLengthConstraintComponent,Dataset,dct:title,preventable,mandatory property present but empty
+r0068,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0068,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0068,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0068,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0068,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0068,L2,MinLengthConstraintComponent,Dataset,dct:title,preventable,mandatory property present but empty
+r0069,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0069,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0069,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0069,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0069,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0069,L2,MinLengthConstraintComponent,Dataset,dct:title,preventable,mandatory property present but empty
+r0070,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0070,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0070,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0070,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0070,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0070,L2,MinLengthConstraintComponent,Dataset,dct:title,preventable,mandatory property present but empty
+r0071,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0071,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0071,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0071,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0071,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0071,L2,MinLengthConstraintComponent,Dataset,dct:title,preventable,mandatory property present but empty
+r0072,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0072,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0072,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0072,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0072,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0072,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0073,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0073,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0073,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0073,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0073,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0073,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0074,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0074,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0074,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0074,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0074,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0074,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0075,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0075,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0075,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0075,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0075,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0075,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0076,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0076,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0076,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0076,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0076,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0076,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0077,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0077,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0077,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0077,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0077,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0077,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0078,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0078,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0078,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0078,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0078,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0078,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0079,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0079,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0079,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0079,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0079,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0079,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0080,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0080,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0080,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0080,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0080,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0080,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0081,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0081,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0081,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0081,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0081,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0081,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0082,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0082,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0082,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0082,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0082,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0082,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0083,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0083,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0083,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0083,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0083,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0083,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0084,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0084,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0084,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0084,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0084,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0084,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0085,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0085,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0085,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0085,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0085,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0085,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0086,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0086,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0086,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0086,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0086,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0086,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0087,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0087,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0087,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0087,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0087,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0087,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0088,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0088,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0088,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0088,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0088,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0088,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0089,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0089,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0089,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0089,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0089,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0089,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0090,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0090,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0090,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0090,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0090,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0090,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0091,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0091,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0091,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0091,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0091,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0091,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0092,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0092,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0092,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0092,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0092,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0092,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0093,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0093,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0093,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0093,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0093,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0093,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0094,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0094,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0094,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0094,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0094,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0094,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0095,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0095,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0095,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0095,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0095,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0095,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0096,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0096,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0096,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0096,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0096,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0096,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0097,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0097,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0097,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0097,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0097,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0097,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0098,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0098,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0098,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0098,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0098,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0098,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0099,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0099,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0099,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0099,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0099,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0099,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0100,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0100,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0100,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0100,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0100,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0100,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0101,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0101,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0101,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0101,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0101,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0101,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0102,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0102,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0102,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0102,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0102,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0102,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0103,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0103,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0103,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0103,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0103,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0103,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0104,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0104,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0104,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0104,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0104,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0104,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0105,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0105,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0105,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0105,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0105,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0105,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0106,L1,ClassConstraintComponent,Dataset,dct:accessRights,preventable,wrong class for a described node
+r0106,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0106,L1,NodeKindConstraintComponent,Dataset,dct:accessRights,preventable,wrong node kind / malformed IRI
+r0106,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0106,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0107,L1,ClassConstraintComponent,Dataset,dct:accessRights,preventable,wrong class for a described node
+r0107,L1,ClassConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong class for a described node
+r0107,L1,NodeKindConstraintComponent,Dataset,dct:accessRights,preventable,wrong node kind / malformed IRI
+r0107,L1,NodeKindConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,wrong node kind / malformed IRI
+r0107,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0108,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0108,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0108,L1,MaxCountConstraintComponent,Location,locn:geometry,preventable,cardinality exceeded
+r0108,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0108,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0109,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0109,L1,ClassConstraintComponent,Location,locn:geometry,preventable,wrong class for a described node
+r0109,L1,MaxCountConstraintComponent,Location,locn:geometry,preventable,cardinality exceeded
+r0109,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0109,L1,NodeKindConstraintComponent,Location,locn:geometry,preventable,wrong node kind / malformed IRI
+r0110,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0110,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0110,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0110,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0110,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0111,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0111,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0111,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0111,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0111,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0112,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0112,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0112,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0112,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0112,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0113,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0113,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0113,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0113,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0113,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0114,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0114,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0114,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0114,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0114,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0115,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0115,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0115,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0115,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0115,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0116,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0116,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0116,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0116,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0116,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0117,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0117,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0117,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0117,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0117,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0118,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0118,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0118,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0118,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0118,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0119,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0119,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0119,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0119,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0119,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0120,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0120,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0120,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0120,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0120,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0121,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0121,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0121,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0121,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0121,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0122,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0122,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0122,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0122,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0122,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0123,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0123,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0123,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0123,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0124,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0124,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0124,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0124,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0125,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0125,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0125,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0125,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0126,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0126,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0126,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0126,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0127,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0127,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0127,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0127,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0128,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0128,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0128,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0128,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0129,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0129,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0129,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0129,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0130,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0130,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0130,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0130,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0131,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0131,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0131,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0131,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0132,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0132,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0132,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0132,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0133,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0133,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0133,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0133,L2,PatternConstraintComponent,Distribution,dcat:mediaType,preventable,malformed value
+r0134,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0134,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0134,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0134,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0135,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0135,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0135,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0135,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0136,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0136,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0136,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0136,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0137,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0137,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0137,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0137,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0138,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0138,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0138,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0138,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0139,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0139,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0139,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0139,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0140,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0140,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0140,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0140,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0141,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0141,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0141,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0141,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0142,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0142,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0142,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0142,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0143,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0143,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0143,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0143,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0144,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0144,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0144,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0144,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0145,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0145,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0145,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0145,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0146,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0146,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0146,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0146,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0147,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0147,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0147,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0147,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0148,L1,ClassConstraintComponent,Dataset,dct:spatial,preventable,wrong class for a described node
+r0148,L1,MinCountConstraintComponent,Dataset,dct:description,preventable,missing required property
+r0148,L1,NodeKindConstraintComponent,Dataset,dct:spatial,preventable,wrong node kind / malformed IRI
+r0149,L1,ClassConstraintComponent,Dataset,dct:spatial,preventable,wrong class for a described node
+r0149,L1,MinCountConstraintComponent,Dataset,dct:description,preventable,missing required property
+r0149,L1,NodeKindConstraintComponent,Dataset,dct:spatial,preventable,wrong node kind / malformed IRI
+r0150,L1,ClassConstraintComponent,Distribution,dct:format,preventable,wrong class for a described node
+r0150,L1,NodeKindConstraintComponent,Distribution,dct:format,preventable,wrong node kind / malformed IRI
+r0150,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0151,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0151,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0151,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0152,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0152,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0152,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0153,L1,DatatypeConstraintComponent,Checksum,spdx:checksumValue,preventable,wrong datatype
+r0153,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0153,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0154,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0154,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0154,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0155,L1,MinCountConstraintComponent,Checksum,spdx:algorithm,preventable,missing required property
+r0155,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0155,L2,MinLengthConstraintComponent,Dataset,dct:title,preventable,mandatory property present but empty
+r0156,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0156,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0156,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0157,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0157,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0157,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0158,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0158,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0158,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0159,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0159,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0159,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0160,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0160,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0160,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0161,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0161,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0161,L3,PlaceholderValue,Dataset,dcat:keyword,not_preventable,"placeholder value, structurally valid"
+r0162,L1,ClassConstraintComponent,Checksum,spdx:algorithm,preventable,wrong class for a described node
+r0162,L1,NodeKindConstraintComponent,Checksum,spdx:algorithm,preventable,wrong node kind / malformed IRI
+r0163,L1,ClassConstraintComponent,Dataset,dcat:contactPoint,preventable,wrong class for a described node
+r0163,L1,ClassConstraintComponent,Dataset,dct:publisher,preventable,wrong class for a described node
+r0164,L1,ClassConstraintComponent,Dataset,dct:spatial,preventable,wrong class for a described node
+r0164,L1,NodeKindConstraintComponent,Dataset,dct:spatial,preventable,wrong node kind / malformed IRI
+r0165,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0165,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0166,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0166,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0167,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0167,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0168,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0168,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0169,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0169,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0170,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0170,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0171,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0171,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0172,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0172,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0173,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0173,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0174,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0174,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0175,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0175,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0176,L1,MaxCountConstraintComponent,Dataset,dct:modified,preventable,cardinality exceeded
+r0176,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0177,L1,MaxCountConstraintComponent,Distribution,dcat:mediaType,preventable,cardinality exceeded
+r0177,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0178,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0178,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0179,L1,MaxCountConstraintComponent,Distribution,dct:license,preventable,cardinality exceeded
+r0179,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0180,L1,NodeKindConstraintComponent,Dataset,dct:identifier,preventable,wrong node kind / malformed IRI
+r0180,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0181,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0181,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0182,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0182,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0183,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0183,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0184,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0184,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0185,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0185,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0186,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0186,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0187,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0187,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0188,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0188,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0189,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0189,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0190,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0190,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0191,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0191,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0192,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0192,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0193,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0193,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0194,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0194,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0195,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0195,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0196,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0196,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0197,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0197,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0198,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0198,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0199,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0199,L3,UnparseableRecord,Dataset,,not_preventable,record carries an IRI a conformant Turtle parser must reject
+r0200,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0200,L3,UnparseableRecord,Dataset,,not_preventable,record carries an IRI a conformant Turtle parser must reject
+r0201,L1,ClassConstraintComponent,Dataset,dcat:contactPoint,preventable,wrong class for a described node
+r0202,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0203,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0204,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0205,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0206,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0207,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0208,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0209,L1,DatatypeConstraintComponent,Distribution,dcat:byteSize,preventable,wrong datatype
+r0210,L1,MinCountConstraintComponent,Concept,skos:prefLabel,preventable,missing required property
+r0211,L1,MinCountConstraintComponent,Concept,skos:prefLabel,preventable,missing required property
+r0212,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0213,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0214,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0215,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0216,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0217,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0218,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0219,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0220,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0221,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0222,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0223,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0224,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0225,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0226,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0227,L2,InConstraintComponent,Dataset,dct:accrualPeriodicity,preventable,value outside the mandated vocabulary
+r0228,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0229,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0230,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0231,L2,InConstraintComponent,Distribution,adms:status,preventable,value outside the mandated vocabulary
+r0232,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0233,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0234,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0235,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0236,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0237,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0238,L2,InConstraintComponent,Distribution,dcatap:availability,preventable,value outside the mandated vocabulary
+r0239,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0240,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0241,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0242,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0243,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0244,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0245,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0246,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0247,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0248,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0249,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0250,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0251,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0252,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0253,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0254,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0255,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0256,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0257,L2,InConstraintComponent,Distribution,dct:format,preventable,value outside the mandated vocabulary
+r0258,L2,MinLengthConstraintComponent,Dataset,dct:description,preventable,mandatory property present but empty
+r0259,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0260,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0261,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0262,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0263,L3,DeadLink,Distribution,dcat:accessURL,not_preventable,distribution link does not resolve
+r0264,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0265,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0266,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0267,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0268,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0269,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency
+r0270,L3,StaleVsDeclaredFrequency,Dataset,dct:modified,not_preventable,not refreshed at its own declared frequency

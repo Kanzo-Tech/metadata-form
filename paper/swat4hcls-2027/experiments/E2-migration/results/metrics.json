@@ -1,0 +1,282 @@
+{
+  "corpus": {
+    "files": 14,
+    "lines_before": 1792,
+    "lines_after": 1651,
+    "triples_before": 1265,
+    "triples_after": 1124,
+    "node_shapes": 14,
+    "target_classes": 14,
+    "property_shapes_before": 143,
+    "property_shapes_after": 143,
+    "dash_editor": 141,
+    "dash_viewer": 141,
+    "dash_editor_kinds": {
+      "URIEditor": 74,
+      "TextFieldEditor": 24,
+      "BlankNodeEditor": 23,
+      "DateTimePickerEditor": 11,
+      "TextAreaEditor": 7,
+      "EnumSelectEditor": 2
+    },
+    "dash_viewer_kinds": {
+      "URIViewer": 74,
+      "LiteralViewer": 42,
+      "DetailsViewer": 22,
+      "LabelViewer": 3
+    },
+    "shui_editor_after": 141,
+    "shui_viewer_after": 0,
+    "logical_constraints": {
+      "or": 0,
+      "and": 0,
+      "not": 0,
+      "xone": 0,
+      "if": 0,
+      "then": 0,
+      "else": 0,
+      "qualifiedValueShape": 0,
+      "sparql": 0,
+      "condition": 0
+    },
+    "sh_defaultValue": 2,
+    "sh_in": 2,
+    "non_ui_isomorphic": true
+  },
+  "overlays": {
+    "shipped": {
+      "version": "\u2014",
+      "label": "not encoded (prose in `sh:description`)",
+      "file": "overlay-00-shipped.ttl",
+      "lines": 13,
+      "triples": 0,
+      "entry_points_on_dataset": 1,
+      "named_node_shapes_added": 0,
+      "anonymous_shapes_added": 0,
+      "hidden_stamp_fields": 0,
+      "dash_triples": 0,
+      "sh_or": 0,
+      "sh_not": 0,
+      "sh_if": 0,
+      "sparql_chars": 0
+    },
+    "partition-subjectsof": {
+      "version": "1.0",
+      "label": "node-shape partition, `sh:targetSubjectsOf`",
+      "file": "overlay-01-partition-subjectsof.ttl",
+      "lines": 44,
+      "triples": 21,
+      "entry_points_on_dataset": 2,
+      "named_node_shapes_added": 1,
+      "anonymous_shapes_added": 0,
+      "hidden_stamp_fields": 1,
+      "dash_triples": 5,
+      "sh_or": 0,
+      "sh_not": 0,
+      "sh_if": 0,
+      "sparql_chars": 0
+    },
+    "partition-sparql": {
+      "version": "1.0 + AF",
+      "label": "node-shape partition, `sh:SPARQLTarget`",
+      "file": "overlay-02-partition-sparql.ttl",
+      "lines": 58,
+      "triples": 31,
+      "entry_points_on_dataset": 2,
+      "named_node_shapes_added": 1,
+      "anonymous_shapes_added": 0,
+      "hidden_stamp_fields": 1,
+      "dash_triples": 5,
+      "sh_or": 0,
+      "sh_not": 0,
+      "sh_if": 0,
+      "sparql_chars": 117
+    },
+    "implication": {
+      "version": "1.0",
+      "label": "`sh:or ( [ sh:not C ] T )`",
+      "file": "overlay-03-implication.ttl",
+      "lines": 20,
+      "triples": 16,
+      "entry_points_on_dataset": 1,
+      "named_node_shapes_added": 0,
+      "anonymous_shapes_added": 6,
+      "hidden_stamp_fields": 0,
+      "dash_triples": 0,
+      "sh_or": 1,
+      "sh_not": 1,
+      "sh_if": 0,
+      "sparql_chars": 0
+    },
+    "shacl12-if": {
+      "version": "1.2",
+      "label": "`sh:if` / `sh:then` / `sh:else`",
+      "file": "overlay-04-shacl12-if.ttl",
+      "lines": 41,
+      "triples": 22,
+      "entry_points_on_dataset": 1,
+      "named_node_shapes_added": 2,
+      "anonymous_shapes_added": 1,
+      "hidden_stamp_fields": 0,
+      "dash_triples": 0,
+      "sh_or": 0,
+      "sh_not": 0,
+      "sh_if": 1,
+      "sparql_chars": 0
+    }
+  },
+  "dcatap": {
+    "file": "Health-RI ReusedCommunityStandards/dcatap.shapes.ttl (DCAT-AP 2.0)",
+    "node_shapes": 16,
+    "targetless_logic_shapes": [
+      "http://data.europa.eu/r5r#DateOrDateTimeDataType_Shape",
+      "http://data.europa.eu/r5r#DcatResource_Shape"
+    ],
+    "references_to_them": {
+      "http://data.europa.eu/r5r#DateOrDateTimeDataType_Shape": 10,
+      "http://data.europa.eu/r5r#DcatResource_Shape": 1
+    },
+    "sh_or": 2,
+    "hasValue_stamps": [
+      [
+        "http://spdx.org/rdf/terms#algorithm",
+        "http://spdx.org/rdf/terms#checksumAlgorithm_sha1"
+      ]
+    ]
+  },
+  "equivalence": {
+    "engine": "rudof (wasm) @kanzo-tech/rudof-wasm@0.3.8",
+    "measurement_toolkit": "rdflib 7.6.0, Python 3.13.12 (measurement only \u2014 not a validator)",
+    "cases": [
+      "01-no-personal-data",
+      "02-no-personal-data-with-legal-basis",
+      "03-personal-data-complete",
+      "04-personal-data-no-legal-basis",
+      "05-personal-data-no-purpose",
+      "06-personal-data-neither",
+      "07-personal-data-multivalued",
+      "08-personal-data-on-non-dataset",
+      "09-base-violation-missing-title",
+      "10-base-violation-bad-access-rights",
+      "11-personal-data-plus-base-violation"
+    ],
+    "matrix": {
+      "01-no-personal-data": {
+        "shipped": "C",
+        "partition-subjectsof": "C",
+        "partition-sparql": "C",
+        "implication": "C",
+        "shacl12-if": "C"
+      },
+      "02-no-personal-data-with-legal-basis": {
+        "shipped": "C",
+        "partition-subjectsof": "C",
+        "partition-sparql": "C",
+        "implication": "C",
+        "shacl12-if": "C"
+      },
+      "03-personal-data-complete": {
+        "shipped": "C",
+        "partition-subjectsof": "C",
+        "partition-sparql": "C",
+        "implication": "C",
+        "shacl12-if": "C"
+      },
+      "04-personal-data-no-legal-basis": {
+        "shipped": "C",
+        "partition-subjectsof": "V",
+        "partition-sparql": "C",
+        "implication": "V",
+        "shacl12-if": "V"
+      },
+      "05-personal-data-no-purpose": {
+        "shipped": "C",
+        "partition-subjectsof": "V",
+        "partition-sparql": "C",
+        "implication": "V",
+        "shacl12-if": "V"
+      },
+      "06-personal-data-neither": {
+        "shipped": "C",
+        "partition-subjectsof": "V",
+        "partition-sparql": "C",
+        "implication": "V",
+        "shacl12-if": "V"
+      },
+      "07-personal-data-multivalued": {
+        "shipped": "C",
+        "partition-subjectsof": "C",
+        "partition-sparql": "C",
+        "implication": "C",
+        "shacl12-if": "C"
+      },
+      "08-personal-data-on-non-dataset": {
+        "shipped": "C",
+        "partition-subjectsof": "V",
+        "partition-sparql": "C",
+        "implication": "C",
+        "shacl12-if": "C"
+      },
+      "09-base-violation-missing-title": {
+        "shipped": "V",
+        "partition-subjectsof": "V",
+        "partition-sparql": "V",
+        "implication": "V",
+        "shacl12-if": "V"
+      },
+      "10-base-violation-bad-access-rights": {
+        "shipped": "V",
+        "partition-subjectsof": "V",
+        "partition-sparql": "V",
+        "implication": "V",
+        "shacl12-if": "V"
+      },
+      "11-personal-data-plus-base-violation": {
+        "shipped": "V",
+        "partition-subjectsof": "V",
+        "partition-sparql": "V",
+        "implication": "V",
+        "shacl12-if": "V"
+      }
+    },
+    "checks": {
+      "rudof(implication) == rudof(shacl12-if)": {
+        "holds": true,
+        "first_divergence": null,
+        "on": null
+      },
+      "rudof(shacl12-if) == expected": {
+        "holds": true,
+        "first_divergence": null,
+        "on": null
+      },
+      "rudof(implication) == expected": {
+        "holds": true,
+        "first_divergence": null,
+        "on": null
+      },
+      "rudof(shacl12-if) base results == rudof(shipped) base results": {
+        "holds": true,
+        "first_divergence": null,
+        "on": null
+      }
+    },
+    "divergences": {
+      "rudof(shipped) != rudof(implication)": {
+        "identical": false,
+        "first_divergence": "04-personal-data-no-legal-basis",
+        "on": "conformance"
+      },
+      "rudof(partition-subjectsof) != rudof(implication)": {
+        "identical": false,
+        "first_divergence": "08-personal-data-on-non-dataset",
+        "on": "conformance"
+      },
+      "rudof(partition-sparql) != rudof(implication)": {
+        "identical": false,
+        "first_divergence": "04-personal-data-no-legal-basis",
+        "on": "conformance"
+      }
+    }
+  }
+}

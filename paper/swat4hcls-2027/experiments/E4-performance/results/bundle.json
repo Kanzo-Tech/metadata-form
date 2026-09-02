@@ -1,0 +1,79 @@
+{
+  "generated": "2026-08-28T17:46:57Z",
+  "vite": "6.4.3",
+  "react": "19.2.8",
+  "note": "Two production Vite builds of the same minimal React app, differing only in whether it imports and renders <MetadataForm> over a real SHACL profile. The JS delta excludes React (both builds pay for it) and excludes the .wasm binary, which is emitted as a separate on-demand asset.",
+  "baseline": {
+    "js": 194472,
+    "jsGzip": 60580,
+    "jsBrotli": 52280,
+    "css": 0,
+    "cssGzip": 0,
+    "wasm": 0,
+    "files": [
+      {
+        "file": "assets/index-7gKfPIkV.js",
+        "bytes": 194472,
+        "gzip": 60580
+      }
+    ]
+  },
+  "engineOnly": {
+    "js": 239387,
+    "jsGzip": 72207,
+    "jsBrotli": 62514,
+    "css": 0,
+    "cssGzip": 0,
+    "wasm": 2719043,
+    "files": [
+      {
+        "file": "assets/index-Dk-mJpds.js",
+        "bytes": 230346,
+        "gzip": 69008
+      },
+      {
+        "file": "assets/rudof_wasm-CcJvd-lq.js",
+        "bytes": 9041,
+        "gzip": 3199
+      }
+    ]
+  },
+  "withLib": {
+    "js": 706351,
+    "jsGzip": 206491,
+    "jsBrotli": 169917,
+    "css": 228592,
+    "cssGzip": 34774,
+    "wasm": 2719043,
+    "files": [
+      {
+        "file": "assets/index-I4uH_i04.css",
+        "bytes": 228592,
+        "gzip": 34774
+      },
+      {
+        "file": "assets/index-Ud1z-2rL.js",
+        "bytes": 697310,
+        "gzip": 203292
+      },
+      {
+        "file": "assets/rudof_wasm-CcJvd-lq.js",
+        "bytes": 9041,
+        "gzip": 3199
+      }
+    ]
+  },
+  "deltaEngine": {
+    "js": 44915,
+    "jsGzip": 11627,
+    "jsBrotli": 10234
+  },
+  "delta": {
+    "js": 511879,
+    "jsGzip": 145911,
+    "jsBrotli": 117637,
+    "css": 228592,
+    "cssGzip": 34774,
+    "wasm": 2719043
+  }
+}

@@ -1,0 +1,1076 @@
+{
+  "generated": "2026-08-28",
+  "separation": {
+    "sourceFiles": 45,
+    "sdkImporters": [
+      {
+        "file": "src/ai/index.ts",
+        "imports": [
+          "ai",
+          "zod"
+        ]
+      }
+    ],
+    "subpath": "./ai",
+    "barrelReexportsAi": false,
+    "peerOptional": {
+      "ai": true,
+      "zod": true,
+      "@kanzo-tech/ai": true
+    }
+  },
+  "fields": 29,
+  "assisted": 13,
+  "suggest": 11,
+  "complete": 2,
+  "withheld": 16,
+  "enumFields": 11,
+  "enumFieldsAssisted": 0,
+  "patternFields": 1,
+  "patternFieldsAssisted": 1,
+  "assistedDatatypes": [
+    [
+      "string",
+      8
+    ],
+    [
+      "langString",
+      3
+    ],
+    [
+      "—",
+      2
+    ]
+  ],
+  "rows": [
+    {
+      "profile": "health-dcat-ap",
+      "label": "Title",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/title",
+      "predicate": "http://purl.org/dc/terms/title",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "minCount": 1,
+        "maxCount": 1
+      },
+      "bounding": {
+        "sh:datatype": "shape",
+        "sh:maxCount": "unbounded"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\""
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\""
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\""
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\""
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\""
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\""
+        }
+      ]
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Description",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/description",
+      "predicate": "http://purl.org/dc/terms/description",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
+      "suggest": false,
+      "complete": true,
+      "reason": "the widget declares complete",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "minCount": 1
+      },
+      "bounding": {
+        "sh:datatype": "shape"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\""
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\""
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\""
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\""
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\""
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\""
+        }
+      ]
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Keywords",
+      "path": "urn:e6:focus|http://www.w3.org/ns/dcat#keyword",
+      "predicate": "http://www.w3.org/ns/dcat#keyword",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "minCount": 0
+      },
+      "bounding": {
+        "sh:datatype": "shape"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\""
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\""
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\""
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\""
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\""
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\""
+        }
+      ]
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Theme",
+      "path": "urn:e6:focus|http://www.w3.org/ns/dcat#theme",
+      "predicate": "http://www.w3.org/ns/dcat#theme",
+      "editorId": "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "minCount": 0,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI",
+        "classIri": "http://www.w3.org/2004/02/skos/core#Concept"
+      },
+      "bounding": {
+        "sh:class": "unbounded"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "<Cardiology Outpatient Registry>"
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "<not-a-number>"
+        },
+        {
+          "candidate": "9999",
+          "term": "<9999>"
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "<http://publications.europa.eu/resource/authority/access-right/SECRET>"
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "<did:web:evidenze.example.org>"
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "<web:evidenze.example.org>"
+        }
+      ]
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Access rights",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/accessRights",
+      "predicate": "http://purl.org/dc/terms/accessRights",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "http://publications.europa.eu/resource/authority/access-right/PUBLIC",
+          "http://publications.europa.eu/resource/authority/access-right/RESTRICTED",
+          "http://publications.europa.eu/resource/authority/access-right/NON_PUBLIC"
+        ],
+        "minCount": 0,
+        "maxCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape",
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Release date",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/issued",
+      "predicate": "http://purl.org/dc/terms/issued",
+      "editorId": "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (DatePickerEditor) declares no assistance",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#date",
+        "minCount": 0,
+        "maxCount": 1
+      },
+      "bounding": {
+        "sh:datatype": "n/a",
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Modification date",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/modified",
+      "predicate": "http://purl.org/dc/terms/modified",
+      "editorId": "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (DatePickerEditor) declares no assistance",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#date",
+        "minCount": 0,
+        "maxCount": 1
+      },
+      "bounding": {
+        "sh:datatype": "n/a",
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Health theme",
+      "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#healthTheme",
+      "predicate": "http://healthdataportal.eu/ns/health#healthTheme",
+      "editorId": "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "minCount": 0,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI",
+        "classIri": "http://www.w3.org/2004/02/skos/core#Concept"
+      },
+      "bounding": {
+        "sh:class": "unbounded"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "<Cardiology Outpatient Registry>"
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "<not-a-number>"
+        },
+        {
+          "candidate": "9999",
+          "term": "<9999>"
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "<http://publications.europa.eu/resource/authority/access-right/SECRET>"
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "<did:web:evidenze.example.org>"
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "<web:evidenze.example.org>"
+        }
+      ]
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Population coverage",
+      "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#populationCoverage",
+      "predicate": "http://healthdataportal.eu/ns/health#populationCoverage",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
+      "suggest": false,
+      "complete": true,
+      "reason": "the widget declares complete",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "minCount": 0,
+        "maxCount": 1
+      },
+      "bounding": {
+        "sh:datatype": "shape",
+        "sh:maxCount": "unbounded"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\""
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\""
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\""
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\""
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\""
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\""
+        }
+      ]
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Number of records",
+      "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#numberOfRecords",
+      "predicate": "http://healthdataportal.eu/ns/health#numberOfRecords",
+      "editorId": "http://www.w3.org/ns/shacl-ui#NumberFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#NumberFieldEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (NumberFieldEditor) declares no assistance",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+        "minCount": 0,
+        "maxCount": 1
+      },
+      "bounding": {
+        "sh:datatype": "n/a",
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    },
+    {
+      "profile": "health-dcat-ap",
+      "label": "Coding system",
+      "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#hasCodeSystem",
+      "predicate": "http://healthdataportal.eu/ns/health#hasCodeSystem",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "minCount": 0
+      },
+      "bounding": {
+        "sh:datatype": "shape"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\""
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\""
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\""
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\""
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\""
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\""
+        }
+      ]
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Título del dataset",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/title",
+      "predicate": "http://purl.org/dc/terms/title",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+        "minCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#Literal"
+      },
+      "bounding": {
+        "sh:datatype": "shape"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        }
+      ]
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Descripción del dataset",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/description",
+      "predicate": "http://purl.org/dc/terms/description",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+        "minCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#Literal"
+      },
+      "bounding": {
+        "sh:datatype": "shape"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        }
+      ]
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Identificador del dataset",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/identifier",
+      "predicate": "http://purl.org/dc/terms/identifier",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "minCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#Literal"
+      },
+      "bounding": {
+        "sh:datatype": "shape"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\""
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\""
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\""
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\""
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\""
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\""
+        }
+      ]
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Página del dataset",
+      "path": "urn:e6:focus|http://www.w3.org/ns/dcat#landingPage",
+      "predicate": "http://www.w3.org/ns/dcat#landingPage",
+      "editorId": "http://www.w3.org/ns/shacl-ui#IRIEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#IRIEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (IRIEditor) declares no assistance",
+      "constraints": {
+        "minCount": 0,
+        "maxCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Tema DCAT",
+      "path": "urn:e6:focus|http://www.w3.org/ns/dcat#theme",
+      "predicate": "http://www.w3.org/ns/dcat#theme",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "http://publications.europa.eu/resource/authority/data-theme/HEAL",
+          "http://publications.europa.eu/resource/authority/data-theme/TECH",
+          "http://publications.europa.eu/resource/authority/data-theme/SOCI",
+          "http://publications.europa.eu/resource/authority/data-theme/GOVE",
+          "http://publications.europa.eu/resource/authority/data-theme/EDUC"
+        ],
+        "minCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Palabras clave",
+      "path": "urn:e6:focus|http://www.w3.org/ns/dcat#keyword",
+      "predicate": "http://www.w3.org/ns/dcat#keyword",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+        "minCount": 0,
+        "nodeKind": "http://www.w3.org/ns/shacl#Literal"
+      },
+      "bounding": {
+        "sh:datatype": "shape"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>"
+        }
+      ]
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Idioma del dataset",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/language",
+      "predicate": "http://purl.org/dc/terms/language",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "http://publications.europa.eu/resource/authority/language/SPA",
+          "http://publications.europa.eu/resource/authority/language/ENG",
+          "http://publications.europa.eu/resource/authority/language/CAT",
+          "http://publications.europa.eu/resource/authority/language/EUS",
+          "http://publications.europa.eu/resource/authority/language/GLG",
+          "http://publications.europa.eu/resource/authority/language/FRA"
+        ],
+        "minCount": 0,
+        "maxCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape",
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Nivel de acceso",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/accessRights",
+      "predicate": "http://purl.org/dc/terms/accessRights",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "http://publications.europa.eu/resource/authority/access-right/PUBLIC",
+          "http://publications.europa.eu/resource/authority/access-right/RESTRICTED",
+          "http://publications.europa.eu/resource/authority/access-right/NON_PUBLIC",
+          "http://publications.europa.eu/resource/authority/access-right/CONFIDENTIAL",
+          "http://publications.europa.eu/resource/authority/access-right/SENSITIVE",
+          "http://publications.europa.eu/resource/authority/access-right/NORMAL",
+          "http://publications.europa.eu/resource/authority/access-right/OP_DATPRO"
+        ],
+        "minCount": 1,
+        "maxCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape",
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "DID del participante",
+      "path": "urn:e6:focus|https://dataspace.evidenze.example/ns#participantDID",
+      "predicate": "https://dataspace.evidenze.example/ns#participantDID",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "pattern": "^did:web:.+",
+        "minCount": 1,
+        "maxCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#Literal"
+      },
+      "bounding": {
+        "sh:datatype": "shape",
+        "sh:pattern": "unbounded",
+        "sh:maxCount": "unbounded"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\""
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\""
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\""
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\""
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\""
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\""
+        }
+      ]
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Rol en Evidenze Data Space",
+      "path": "urn:e6:focus|https://dataspace.evidenze.example/ns#dataspaceRole",
+      "predicate": "https://dataspace.evidenze.example/ns#dataspaceRole",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "https://dataspace.evidenze.example/voc#provider",
+          "https://dataspace.evidenze.example/voc#consumer",
+          "https://dataspace.evidenze.example/voc#intermediary"
+        ],
+        "minCount": 1,
+        "maxCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape",
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Unidad organizativa",
+      "path": "urn:e6:focus|https://dataspace.evidenze.example/ns#organisationalUnit",
+      "predicate": "https://dataspace.evidenze.example/ns#organisationalUnit",
+      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "suggest": true,
+      "complete": false,
+      "reason": "the widget declares suggest",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "minCount": 0,
+        "maxCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#Literal"
+      },
+      "bounding": {
+        "sh:datatype": "shape",
+        "sh:maxCount": "unbounded"
+      },
+      "commits": [
+        {
+          "candidate": "Cardiology Outpatient Registry",
+          "term": "\"Cardiology Outpatient Registry\""
+        },
+        {
+          "candidate": "not-a-number",
+          "term": "\"not-a-number\""
+        },
+        {
+          "candidate": "9999",
+          "term": "\"9999\""
+        },
+        {
+          "candidate": "http://publications.europa.eu/resource/authority/access-right/SECRET",
+          "term": "\"http://publications.europa.eu/resource/authority/access-right/SECRET\""
+        },
+        {
+          "candidate": "did:web:evidenze.example.org",
+          "term": "\"did:web:evidenze.example.org\""
+        },
+        {
+          "candidate": "web:evidenze.example.org",
+          "term": "\"web:evidenze.example.org\""
+        }
+      ]
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Entorno",
+      "path": "urn:e6:focus|https://dataspace.evidenze.example/ns#environmentZone",
+      "predicate": "https://dataspace.evidenze.example/ns#environmentZone",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "https://dataspace.evidenze.example/voc#production",
+          "https://dataspace.evidenze.example/voc#preproduction",
+          "https://dataspace.evidenze.example/voc#sandbox"
+        ],
+        "minCount": 0,
+        "maxCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape",
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Categoría de datos de salud",
+      "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#healthCategory",
+      "predicate": "http://healthdataportal.eu/ns/health#healthCategory",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/PGEH",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/DIOH",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/EHCT",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/EHRS",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/EINS",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/healthcategories/EMRD"
+        ],
+        "minCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Temática sanitaria",
+      "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#healthTheme",
+      "predicate": "http://healthdataportal.eu/ns/health#healthTheme",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/CANCER_DISEASE",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/ANTIMICROBIAL_CONTROL",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/BLOOD_INFECTIONS",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/CLIMATE_HEALTH",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/EMERGENCY_SETTINGS",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-theme/ENTERIC_INFECTIONS"
+        ],
+        "minCount": 0,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Estándares o modelos de datos",
+      "path": "urn:e6:focus|http://purl.org/dc/terms/conformsTo",
+      "predicate": "http://purl.org/dc/terms/conformsTo",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/FHIR",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/CDA",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/CDISC-SDTM",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/DICOM",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/standard/HL7-V2"
+        ],
+        "minCount": 0,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Sistemas de codificación",
+      "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#hasCodingSystem",
+      "predicate": "http://healthdataportal.eu/ns/health#hasCodingSystem",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/SNOMED-CT",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/ICD-10",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/ICD-11",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/ATC",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/coding-system/HGNC"
+        ],
+        "minCount": 0,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Actividad generadora",
+      "path": "urn:e6:focus|http://www.w3.org/ns/prov#wasGeneratedBy",
+      "predicate": "http://www.w3.org/ns/prov#wasGeneratedBy",
+      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (EnumSelectEditor) declares no assistance",
+      "constraints": {
+        "options": [
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/OBSERVATIONAL_DATA",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/CLINICAL_TRIAL",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/BIOBANK_COLLECTION",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/ADMINISTRATIVE_PROCESSES",
+          "https://hdeu-dcat.acceptance.data.health.europa.eu/resource/authority/health-activity/CENSUS_DATA"
+        ],
+        "minCount": 0,
+        "nodeKind": "http://www.w3.org/ns/shacl#IRI"
+      },
+      "bounding": {
+        "sh:in": "shape"
+      },
+      "commits": []
+    },
+    {
+      "profile": "evidenze-health",
+      "label": "Datos estructurados",
+      "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#hasStructuredData",
+      "predicate": "http://healthdataportal.eu/ns/health#hasStructuredData",
+      "editorId": "http://www.w3.org/ns/shacl-ui#BooleanEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#BooleanEditor",
+      "suggest": false,
+      "complete": false,
+      "reason": "the widget (BooleanEditor) declares no assistance",
+      "constraints": {
+        "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+        "minCount": 1,
+        "maxCount": 1,
+        "nodeKind": "http://www.w3.org/ns/shacl#Literal"
+      },
+      "bounding": {
+        "sh:datatype": "n/a",
+        "sh:maxCount": "n/a"
+      },
+      "commits": []
+    }
+  ],
+  "posthoc": {
+    "field": "DID del participante",
+    "predicate": "https://dataspace.evidenze.example/ns#participantDID",
+    "value": "web:evidenze.example.org",
+    "total": 13,
+    "results": [
+      {
+        "constraint": "http://www.w3.org/ns/shacl#PatternConstraintComponent",
+        "severity": "violation",
+        "message": "Introduce el DID del participante en formato did:web:organizacion.example.org. (@es) · Introdueix el DID del participant en format did:web:organitzacio.example.org. (@ca) · Pattern(^did:web:.+) not satisfied"
+      }
+    ]
+  },
+  "langProbe": {
+    "field": "Título del dataset",
+    "predicate": "http://purl.org/dc/terms/title",
+    "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+    "committed": "\"Cardiology Outpatient Registry\"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>",
+    "asCommitted": {
+      "field": "Título del dataset",
+      "predicate": "http://purl.org/dc/terms/title",
+      "value": "Cardiology Outpatient Registry",
+      "total": 12,
+      "results": []
+    },
+    "asSerialized": {
+      "field": "Título del dataset",
+      "predicate": "http://purl.org/dc/terms/title",
+      "value": "Cardiology Outpatient Registry",
+      "total": 13,
+      "results": [
+        {
+          "constraint": "http://www.w3.org/ns/shacl#DatatypeConstraintComponent",
+          "severity": "violation",
+          "message": "Expected Datatype: rdf:langString · El título del dataset es obligatorio. (@es) · El títol del dataset és obligatori. (@ca)"
+        }
+      ]
+    }
+  }
+}

@@ -1,14 +1,26 @@
 #!/usr/bin/env bash
 # E3 — does a lang-tagged sh:message survive to the consumer?
 #
-# Installs six pinned SHACL validators into $E3_WORK (default: a temp dir),
-# runs data/shapes.ttl + data/data.ttl through each, and writes every raw
-# output under results/raw/. Re-runnable; installs are skipped if present.
+# Two things are measured here, and no third-party SHACL validator is involved
+# in either:
+#
+#   1. rudof's own before/after. @kanzo-tech/rudof-wasm@0.3.4 flattened every
+#      sh:message to a bare string at the wasm ABI boundary; 0.3.5 carries the
+#      language tag. Both are installed side by side and given the same input.
+#      The upstream rudof CLI is run too, as the same engine family seen from
+#      the other side of the binding.
+#   2. What the W3C SHACL conformance suites actually test, counted by parsing
+#      every test graph with rdflib. rdflib is an RDF toolkit, not a SHACL
+#      engine; it is here to read Turtle, nothing more.
+#
+# An earlier round of this experiment also ran four third-party SHACL products.
+# It refuted our original draft claim, and those runs have been removed: the
+# paper makes no claim about other implementations. See ../README.md.
 #
 #   ./run.sh              # install (if needed) + run everything
 #   E3_WORK=~/e3 ./run.sh # keep the installs between runs
 #
-# Prerequisites: python3 + uv, node + npm, java, brew, curl, cargo.
+# Prerequisites: python3 + uv, node + npm, cargo, git, curl.
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -17,12 +29,7 @@ OUT="$HERE/results/raw"
 WORK="${E3_WORK:-${TMPDIR:-/tmp}/e3-validators}"
 
 # ---- pinned versions -------------------------------------------------------
-PYSHACL_V=0.40.1          # pip; pulls rdflib 7.6.0
-JENA_V=6.2.0              # brew install jena
-RVS_V=0.6.5               # npm rdf-validate-shacl
-ZAZUKO_ENV_V=3.1.0        # npm @zazuko/env-node (rdf-validate-shacl's factory)
-TOPBRAID_V=1.4.4          # Maven Central org.topbraid:shacl (bin dist)
-TOPBRAID_SHA256=f382585dea378cda596068db239f89c26b339071c91cfdea720f9cd116128c62
+RDFLIB_V=7.6.0            # pip; used only to parse the W3C test graphs
 RUDOF_CLI_V=0.3.14        # crates.io rudof_cli (upstream, unforked)
 RUDOF_WASM_BEFORE=0.3.4   # npm @kanzo-tech/rudof-wasm, published 2026-06-30
 RUDOF_WASM_AFTER=0.3.5    # npm @kanzo-tech/rudof-wasm, published 2026-08-27
@@ -34,32 +41,18 @@ say() { printf '\n=== %s\n' "$*" >&2; }
 # ---- install ---------------------------------------------------------------
 say "installing into $WORK"
 
-if [ ! -x "$WORK/pyshacl/.venv/bin/pyshacl" ]; then
-  mkdir -p "$WORK/pyshacl"
-  uv venv -q "$WORK/pyshacl/.venv"
-  VIRTUAL_ENV="$WORK/pyshacl/.venv" uv pip install -q "pyshacl==$PYSHACL_V"
+if [ ! -x "$WORK/rdflib/.venv/bin/python" ]; then
+  mkdir -p "$WORK/rdflib"
+  uv venv -q "$WORK/rdflib/.venv"
+  VIRTUAL_ENV="$WORK/rdflib/.venv" uv pip install -q "rdflib==$RDFLIB_V"
 fi
-PYSHACL="$WORK/pyshacl/.venv/bin/pyshacl"
+PY="$WORK/rdflib/.venv/bin/python"
 
-command -v shacl >/dev/null || brew install jena
-
-for d in js rudof-before rudof-after; do [ -d "$WORK/$d" ] || { mkdir -p "$WORK/$d"; (cd "$WORK/$d" && npm init -y >/dev/null); }; done
-[ -d "$WORK/js/node_modules/rdf-validate-shacl" ] || \
-  (cd "$WORK/js" && npm install --silent "rdf-validate-shacl@$RVS_V" "@zazuko/env-node@$ZAZUKO_ENV_V")
+for d in rudof-before rudof-after; do [ -d "$WORK/$d" ] || { mkdir -p "$WORK/$d"; (cd "$WORK/$d" && npm init -y >/dev/null); }; done
 [ -d "$WORK/rudof-before/node_modules/@kanzo-tech/rudof-wasm" ] || \
   (cd "$WORK/rudof-before" && npm install --silent "@kanzo-tech/rudof-wasm@$RUDOF_WASM_BEFORE")
 [ -d "$WORK/rudof-after/node_modules/@kanzo-tech/rudof-wasm" ] || \
   (cd "$WORK/rudof-after" && npm install --silent "@kanzo-tech/rudof-wasm@$RUDOF_WASM_AFTER")
-
-TB="$WORK/topbraid/shacl-$TOPBRAID_V"
-if [ ! -d "$TB" ]; then
-  mkdir -p "$WORK/topbraid"
-  curl -sSL -o "$WORK/topbraid/shacl.zip" \
-    "https://repo1.maven.org/maven2/org/topbraid/shacl/$TOPBRAID_V/shacl-$TOPBRAID_V-bin.zip"
-  echo "$TOPBRAID_SHA256  $WORK/topbraid/shacl.zip" | shasum -a 256 -c -
-  unzip -q -o "$WORK/topbraid/shacl.zip" -d "$WORK/topbraid"
-  chmod +x "$TB"/bin/*.sh
-fi
 
 command -v rudof >/dev/null || cargo install --locked "rudof_cli@$RUDOF_CLI_V"
 
@@ -67,36 +60,23 @@ command -v rudof >/dev/null || cargo install --locked "rudof_cli@$RUDOF_CLI_V"
 {
   echo "# E3 environment, captured $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "uname:        $(uname -srm)"
-  echo "python:       $(python3 --version 2>&1)"
-  echo "pySHACL:      $("$PYSHACL" --version 2>&1)"
-  echo "rdflib:       $(VIRTUAL_ENV="$WORK/pyshacl/.venv" uv pip list 2>/dev/null | grep -i '^rdflib' || true)"
+  echo "python:       $("$PY" --version 2>&1)"
+  echo "rdflib:       $(VIRTUAL_ENV="$WORK/rdflib/.venv" uv pip list 2>/dev/null | grep -i '^rdflib' || true)"
   echo "node:         $(node --version)"
-  echo "java:         $(java -version 2>&1 | head -1)"
-  echo "jena shacl:   $(shacl --version 2>&1 | head -1)"
-  echo "topbraid:     org.topbraid:shacl:$TOPBRAID_V (sha256 $TOPBRAID_SHA256)"
-  echo "rdf-validate-shacl: $(node -e "console.log(require('$WORK/js/node_modules/rdf-validate-shacl/package.json').version)")"
   echo "rudof (cli):  $(rudof --version 2>&1 | head -1)"
   echo "rudof-wasm before: $(node -e "console.log(require('$WORK/rudof-before/node_modules/@kanzo-tech/rudof-wasm/package.json').version)")"
   echo "rudof-wasm after:  $(node -e "console.log(require('$WORK/rudof-after/node_modules/@kanzo-tech/rudof-wasm/package.json').version)")"
+  # Every version of our package that exists, so the writeup never has to
+  # hand-type "the fix shipped in every release since 0.3.5".
+  echo "rudof-wasm published: $(npm view @kanzo-tech/rudof-wasm versions --json 2>/dev/null | tr -d ' \n' || echo '(offline)')"
+  echo "rudof-wasm latest:    $(npm view @kanzo-tech/rudof-wasm dist-tags.latest 2>/dev/null || echo '(offline)')"
+  echo "rudof-wasm publish times: $(npm view @kanzo-tech/rudof-wasm time --json 2>/dev/null | tr -d ' \n' || echo '(offline)')"
 } > "$OUT/00-environment.txt"
 
 # ---- run -------------------------------------------------------------------
-say "pySHACL $PYSHACL_V"
-"$PYSHACL" -s "$DATA/shapes.ttl" -df turtle -f turtle "$DATA/data.ttl" > "$OUT/01-pyshacl-turtle.ttl" || true
-"$PYSHACL" -s "$DATA/shapes.ttl" -df turtle -f human  "$DATA/data.ttl" > "$OUT/02-pyshacl-human.txt" || true
-"$PYSHACL" -s "$DATA/shapes.ttl" -df turtle -f table  "$DATA/data.ttl" > "$OUT/03-pyshacl-table.txt" || true
-
-say "Apache Jena SHACL $JENA_V"
-shacl validate        --shapes "$DATA/shapes.ttl" --data "$DATA/data.ttl" > "$OUT/04-jena-report.ttl" || true
-shacl validate --text --shapes "$DATA/shapes.ttl" --data "$DATA/data.ttl" > "$OUT/05-jena-text.txt"   || true
-
-say "TopBraid SHACL API $TOPBRAID_V"
-(cd "$TB" && SHACLROOT="$TB" ./bin/shaclvalidate.sh -datafile "$DATA/data.ttl" -shapesfile "$DATA/shapes.ttl") \
-  > "$OUT/06-topbraid-report.ttl" 2>/dev/null || true   # exits 1 when the data does not conform
-
-say "rdf-validate-shacl $RVS_V"
-node "$HERE/runners/run-rdf-validate-shacl.mjs" "$WORK/js" "$DATA/shapes.ttl" "$DATA/data.ttl" \
-  > "$OUT/07-rdf-validate-shacl.txt" || true
+# Raw-file numbers 01-07 and 14 belonged to the removed third-party round and
+# are deliberately left unused, so a reader of an older revision can see what
+# went and where.
 
 say "rudof CLI $RUDOF_CLI_V (upstream)"
 rudof validate -M shacl -s "$DATA/shapes.ttl" -f turtle             "$DATA/data.ttl" > "$OUT/08-rudof-cli-compact.txt" 2>&1 || true
@@ -108,45 +88,13 @@ say "rudof-wasm $RUDOF_WASM_BEFORE (before the fix) and $RUDOF_WASM_AFTER (after
 node "$HERE/runners/run-rudof.mjs" "$WORK/rudof-before" "$DATA/shapes.ttl" "$DATA/data.ttl" > "$OUT/12-rudof-wasm-0.3.4.json.txt" || true
 node "$HERE/runners/run-rudof.mjs" "$WORK/rudof-after"  "$DATA/shapes.ttl" "$DATA/data.ttl" > "$OUT/13-rudof-wasm-0.3.5.json.txt" || true
 
-# ---- probe: on what basis does a one-message renderer choose? ---------------
-# pySHACL's `table` renderer emits a single message. Run it N times on three
-# different shapes graphs to show the choice is neither locale-aware, nor
-# document order, nor stable between runs.
-say "probe: pySHACL table selection basis, 12 runs each"
-{
-  echo "# Which single message does pyshacl -f table print? 12 runs per input."
-  echo
-  for probe in "shapes:data" "probe-no-en:probe-data" "probe-en-last:probe-data"; do
-    sh="${probe%%:*}"; dt="${probe##*:}"
-    echo "## shapes=$sh.ttl data=$dt.ttl"
-    for _ in $(seq 12); do
-      # The Message column of the MinCount row. The table wraps long cells, and
-      # rejoining the fragments loses the space at each wrap point — read WHICH
-      # language was printed, not the exact string.
-      "$PYSHACL" -s "$DATA/$sh.ttl" -df turtle -f table "$DATA/$dt.ttl" 2>/dev/null \
-        | python3 -c '
-import sys
-rows, cur = [], None
-for line in sys.stdin:
-    if not line.startswith("|"): continue
-    cols = [c.strip() for c in line.strip().strip("|").split("|")]
-    if len(cols) < 6: continue
-    if cols[0].rstrip(".").isdigit(): rows.append(cur := [""] * len(cols))
-    if cur is not None: cur[:] = [a + b for a, b in zip(cur, cols)]
-print("  " + (rows[0][4] if rows else "(no row)"))
-' || true
-    done
-    echo
-  done
-} > "$OUT/14-probe-pyshacl-table-selection.txt"
-
 say "probe: is the rudof-wasm message set stable across runs?"
 {
   echo "# rudof-wasm 0.3.5: language tags on the ex:identifier result, 8 runs."
   echo "# (Result ORDER varies between runs; the runner sorts by path.)"
   for _ in $(seq 8); do
     node "$HERE/runners/run-rudof.mjs" "$WORK/rudof-after" "$DATA/shapes.ttl" "$DATA/data.ttl" \
-      | python3 -c '
+      | "$PY" -c '
 import sys, json
 t = sys.stdin.read()
 j = json.loads(t[t.index("{"):])
@@ -161,10 +109,10 @@ say "W3C SHACL test suite: how many tests exercise multilingual sh:message?"
 if [ ! -d "$WORK/data-shapes" ]; then
   git clone --depth 1 -q https://github.com/w3c/data-shapes.git "$WORK/data-shapes"
 fi
-# Counted by parsing each test graph with rdflib (from the pySHACL venv), not
-# by grep: the question is how many *subjects* carry two or more sh:message
-# values, which is the case SHACL 1.0 s2.1.5 / 1.2 s3.1.5 exists to govern.
-"$WORK/pyshacl/.venv/bin/python" - "$WORK/data-shapes" <<'PY' > "$OUT/16-w3c-test-suite-coverage.txt"
+# Counted by parsing each test graph with rdflib, not by grep: the question is
+# how many *subjects* carry two or more sh:message values, which is the case
+# SHACL 1.0 s2.1.5 / 1.2 s3.1.5 exists to govern.
+"$PY" - "$WORK/data-shapes" <<'PY' > "$OUT/16-w3c-test-suite-coverage.txt"
 import pathlib, subprocess, sys
 from collections import Counter
 from rdflib import Graph, URIRef
@@ -210,5 +158,22 @@ for suite in ("data-shapes-test-suite", "shacl12-test-suite"):
         print(d)
     print()
 PY
+
+# The graphs rdflib cannot parse are excluded from the counts above, so grep
+# each one for the literal string "sh:message" to show what the exclusion costs.
+# Only core/misc/message-002.ttl matches; its three hits are one sh:message
+# triple ("Test message"@en) and two mentions in the test's own rdfs:comment.
+{
+  echo "## graphs rdflib could not parse, excluded from the counts above"
+  echo "## (literal 'sh:message' occurrences per file, grepped not parsed)"
+  grep 'unparseable, skipped' "$OUT/16-w3c-test-suite-coverage.txt" | sed 's/.*skipped: //' | while read -r f; do
+    for suite in data-shapes-test-suite shacl12-test-suite; do
+      p="$WORK/data-shapes/$suite/tests/$f"
+      if [ -f "$p" ]; then
+        printf '   %2s  %s/%s\n' "$(grep -c 'sh:message' "$p" || true)" "$suite" "$f"
+      fi
+    done
+  done
+} >> "$OUT/16-w3c-test-suite-coverage.txt"
 
 say "done — raw output in $OUT"

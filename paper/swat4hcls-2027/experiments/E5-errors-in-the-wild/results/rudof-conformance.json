@@ -1,0 +1,338 @@
+{
+ "generated_utc": "2026-09-02T09:18:26+00:00",
+ "conformance_probe": {
+  "version": "0.3.8",
+  "constraints": [
+   {
+    "id": "target-direct",
+    "group": "sh:targetClass",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a72.1.3.2: \"If s is a shape in a shapes graph SG and s has value c for sh:targetClass in SG then the set of SHACL instances of c in a data graph DG is a target from DG for s in SG.\"",
+    "why": "ex:a is directly typed ex:Super, so it is a target, and it has no ex:label."
+   },
+   {
+    "id": "target-subclass-1hop",
+    "group": "sh:targetClass",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a71.1: \"The SHACL types of an RDF term in an RDF graph is the set of its values for rdf:type in the graph as well as the SHACL superclasses of these values in the graph.\" \u00a72.1.3.2: \"If s is a shape in a shapes graph SG and s has value c for sh:targetClass in SG then the set of SHACL instances of c in a data graph DG is a target from DG for s in SG.\"",
+    "why": "ex:Super is a SHACL type of ex:b, so ex:b is a SHACL instance of ex:Super and therefore a target."
+   },
+   {
+    "id": "target-subclass-2hop",
+    "group": "sh:targetClass",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a71.1: \"The SHACL types of an RDF term in an RDF graph is the set of its values for rdf:type in the graph as well as the SHACL superclasses of these values in the graph.\" \u00a72.1.3.2: \"If s is a shape in a shapes graph SG and s has value c for sh:targetClass in SG then the set of SHACL instances of c in a data graph DG is a target from DG for s in SG.\"",
+    "why": "SHACL subclass is the transitive closure of rdfs:subClassOf."
+   },
+   {
+    "id": "target-unrelated",
+    "group": "sh:targetClass",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a72.1.3.2: \"If s is a shape in a shapes graph SG and s has value c for sh:targetClass in SG then the set of SHACL instances of c in a data graph DG is a target from DG for s in SG.\"",
+    "why": "not an instance of ex:Super by any route, so not a target."
+   },
+   {
+    "id": "class-direct",
+    "group": "sh:class",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.1.1: \"For each value node that is either a literal, or a non-literal that is not a SHACL instance of $class in the data graph, there is a validation result\u2026\"",
+    "why": ""
+   },
+   {
+    "id": "class-subclass",
+    "group": "sh:class",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.1.1: \"For each value node that is either a literal, or a non-literal that is not a SHACL instance of $class in the data graph, there is a validation result\u2026\" \u00a71.1: \"The SHACL types of an RDF term in an RDF graph is the set of its values for rdf:type in the graph as well as the SHACL superclasses of these values in the graph.\"",
+    "why": "the same SHACL-instance rule that governs sh:targetClass."
+   },
+   {
+    "id": "class-untyped",
+    "group": "sh:class",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.1.1: \"For each value node that is either a literal, or a non-literal that is not a SHACL instance of $class in the data graph, there is a validation result\u2026\"",
+    "why": ""
+   },
+   {
+    "id": "class-literal",
+    "group": "sh:class",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.1.1: \"For each value node that is either a literal, or a non-literal that is not a SHACL instance of $class in the data graph, there is a validation result\u2026\"",
+    "why": ""
+   },
+   {
+    "id": "datatype-match",
+    "group": "sh:datatype",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.1.2: \"A literal matches a datatype if the literal's datatype has the same IRI and, for the datatypes supported by SPARQL 1.1, is not an ill-typed literal.\"",
+    "why": ""
+   },
+   {
+    "id": "datatype-mismatch",
+    "group": "sh:datatype",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.1.2: \"A literal matches a datatype if the literal's datatype has the same IRI and, for the datatypes supported by SPARQL 1.1, is not an ill-typed literal.\"",
+    "why": "the exact defect class this corpus is full of \u2014 dcat:byteSize as xsd:integer where xsd:nonNegativeInteger is required."
+   },
+   {
+    "id": "datatype-plain-is-string",
+    "group": "sh:datatype",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.1.2: \"A literal matches a datatype if the literal's datatype has the same IRI and, for the datatypes supported by SPARQL 1.1, is not an ill-typed literal.\" RDF 1.1 \u00a73.3: a literal with no datatype IRI is xsd:string.",
+    "why": ""
+   },
+   {
+    "id": "datatype-ill-typed",
+    "group": "sh:datatype",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.1.2: \"A literal matches a datatype if the literal's datatype has the same IRI and, for the datatypes supported by SPARQL 1.1, is not an ill-typed literal.\"",
+    "why": "the datatype IRI matches but the literal is ill-typed. This is precisely what a shape-driven form can still emit: the widget stamps the declared datatype, the user supplies the lexical form."
+   },
+   {
+    "id": "nodekind-iri-ok",
+    "group": "sh:nodeKind",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.1.3: \"For each value node that does not match $nodeKind, there is a validation result\u2026\"",
+    "why": ""
+   },
+   {
+    "id": "nodekind-literal-violates",
+    "group": "sh:nodeKind",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.1.3: \"For each value node that does not match $nodeKind, there is a validation result\u2026\"",
+    "why": ""
+   },
+   {
+    "id": "mincount-violated",
+    "group": "sh:minCount",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.2.1: \"If the number of value nodes is less than $minCount, there is a validation result.\"",
+    "why": ""
+   },
+   {
+    "id": "mincount-satisfied",
+    "group": "sh:minCount",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.2.1: \"If the number of value nodes is less than $minCount, there is a validation result.\"",
+    "why": ""
+   },
+   {
+    "id": "maxcount-violated",
+    "group": "sh:maxCount",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.2.2: \"If the number of value nodes is greater than $maxCount, there is a validation result.\"",
+    "why": ""
+   },
+   {
+    "id": "maxcount-satisfied",
+    "group": "sh:maxCount",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.2.2: \"If the number of value nodes is greater than $maxCount, there is a validation result.\"",
+    "why": ""
+   },
+   {
+    "id": "pattern-partial-match",
+    "group": "sh:pattern",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.4.3: \"For each value node \u2026 that does not match the regular expression $pattern \u2026\" \u2014 matched with SPARQL REGEX, which is a partial (unanchored) match.",
+    "why": "SHACL's regex is unanchored. This is why the form deliberately does not pass sh:pattern to the HTML pattern attribute, which is implicitly ^(?:\u2026)$ and would reject this value."
+   },
+   {
+    "id": "pattern-anchored-fails",
+    "group": "sh:pattern",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.4.3: \"For each value node \u2026 that does not match the regular expression $pattern \u2026\" \u2014 matched with SPARQL REGEX, which is a partial (unanchored) match.",
+    "why": ""
+   },
+   {
+    "id": "pattern-flags-i",
+    "group": "sh:pattern",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.4.3: \"For each value node \u2026 that does not match the regular expression $pattern \u2026\" \u2014 matched with SPARQL REGEX, which is a partial (unanchored) match. sh:flags supplies the regex flags.",
+    "why": ""
+   },
+   {
+    "id": "minlength-violated",
+    "group": "sh:minLength",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.4.1: \"\u2026the length of the string representation \u2026 less than $minLength \u2026\"",
+    "why": ""
+   },
+   {
+    "id": "minlength-satisfied",
+    "group": "sh:minLength",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.4.1: \"\u2026the length of the string representation \u2026 less than $minLength \u2026\"",
+    "why": ""
+   },
+   {
+    "id": "uniquelang-duplicate",
+    "group": "sh:uniqueLang",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.4.5: \"For each pair of value nodes that have the same language tag, there is a validation result.\"",
+    "why": ""
+   },
+   {
+    "id": "uniquelang-distinct",
+    "group": "sh:uniqueLang",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.4.5: \"For each pair of value nodes that have the same language tag, there is a validation result.\"",
+    "why": ""
+   },
+   {
+    "id": "uniquelang-untagged",
+    "group": "sh:uniqueLang",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.4.5: \"For each pair of value nodes that have the same language tag, there is a validation result.\"",
+    "why": "untagged literals have no language tag, so no pair shares one."
+   },
+   {
+    "id": "in-member",
+    "group": "sh:in",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.8.3: \"For each value node that is not a member of $in, there is a validation result\u2026\"",
+    "why": ""
+   },
+   {
+    "id": "in-nonmember",
+    "group": "sh:in",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.8.3: \"For each value node that is not a member of $in, there is a validation result\u2026\"",
+    "why": ""
+   },
+   {
+    "id": "closed-true-extra",
+    "group": "sh:closed",
+    "expect": "violation",
+    "rudof": "violation",
+    "correct": true,
+    "spec": "\u00a74.8.1: sh:closed true rejects any predicate not covered by the shape's property shapes or sh:ignoredProperties.",
+    "why": ""
+   },
+   {
+    "id": "closed-false-extra",
+    "group": "sh:closed",
+    "expect": "conform",
+    "rudof": "conform",
+    "correct": true,
+    "spec": "\u00a74.8.1: sh:closed true rejects any predicate not covered by the shape's property shapes or sh:ignoredProperties.",
+    "why": "DCAT-AP 3.0.1 says sh:closed false on all 33 of its node shapes, so this is the case the corpus actually exercises."
+   }
+  ],
+  "parser": [
+   {
+    "id": "parse-plain-iri",
+    "expect": "kept",
+    "rudof": "kept",
+    "correct": true,
+    "spec": "Turtle \u00a76.5 / RDF 1.1 Concepts \u00a73.2: an IRI that does not satisfy the IRIREF production is a syntax error the parser must report; it is never a triple the parser may quietly discard.",
+    "why": "a well-formed IRI; the control case."
+   },
+   {
+    "id": "parse-double-hash",
+    "expect": "kept-or-error",
+    "rudof": "error",
+    "correct": true,
+    "spec": "Turtle \u00a76.5 / RDF 1.1 Concepts \u00a73.2: an IRI that does not satisfy the IRIREF production is a syntax error the parser must report; it is never a triple the parser may quietly discard.",
+    "why": "'#' is not excluded by the Turtle IRIREF production, so this parses; it is not a valid RFC 3987 IRI, so a parser may reject it. Silently dropping the triple is the one answer that is not available."
+   },
+   {
+    "id": "parse-illegal-pipe",
+    "expect": "kept-or-error",
+    "rudof": "error",
+    "correct": true,
+    "spec": "Turtle \u00a76.5 / RDF 1.1 Concepts \u00a73.2: an IRI that does not satisfy the IRIREF production is a syntax error the parser must report; it is never a triple the parser may quietly discard.",
+    "why": "'|' IS excluded by the Turtle IRIREF production, so this is a syntax error and a conformant parser must report it."
+   },
+   {
+    "id": "parse-relative",
+    "expect": "kept-or-error",
+    "rudof": "kept",
+    "correct": true,
+    "spec": "Turtle \u00a76.3: relative IRIs are resolved against the base IRI.",
+    "why": "resolve against the base or refuse; do not discard."
+   }
+  ],
+  "failed": [],
+  "parser_failed": [],
+  "n_constraint_cases": 30,
+  "n_parser_cases": 4
+ },
+ "dangling_probe": {
+  "dangling_links": [
+   "dcat:DataServiceShape -> dcat:DataServiceShape/dc08f4dca4377fade57f89454e3fa06a8389d314",
+   "dcat:DataServiceShape -> dcat:DataServiceShape/eb3ac4e4fdde2e2588a9502c5956060a18c5c99f"
+  ],
+  "probe": "a synthetic dcat:DataService violating four constraints",
+  "as_published": "ran",
+  "as_published_results": [
+   "Class@dcat:theme",
+   "MinCount@dcat:endpointURL",
+   "MinCount@dct:title",
+   "NodeKind@dcat:theme"
+  ],
+  "de_dangled": "ran",
+  "de_dangled_results": [
+   "Class@dcat:theme",
+   "MinCount@dcat:endpointURL",
+   "MinCount@dct:title",
+   "NodeKind@dcat:theme"
+  ],
+  "same_answer": true
+ }
+}

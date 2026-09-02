@@ -1,0 +1,1156 @@
+{
+  "env": {
+    "os": "darwin arm64",
+    "osRelease": "26.2",
+    "cpu": "Apple M4 Pro",
+    "cores": 14,
+    "memGiB": 48,
+    "node": "v23.9.0",
+    "v8": "12.9.202.28-node.13",
+    "wasmPackage": "@kanzo-tech/rudof-wasm@0.3.5",
+    "wasmSha256": "e6ff1f2ee9cc5ae00242945b56e08f7c41cca75ca218ff76cffe0c3a0ca3a62b",
+    "runtime": "node + jsdom (NOT a browser)",
+    "generated": "2026-08-28T17:47:02Z"
+  },
+  "config": {
+    "N": 50,
+    "N_PARSE": 30,
+    "N_EDIT": 30,
+    "N_COLD": 25,
+    "WARMUP": 5
+  },
+  "sizes": {
+    "wasmRaw": 2719043,
+    "wasmGzip": 931071,
+    "wasmBrotli": 645060,
+    "glueRaw": 22771,
+    "glueGzip": 5063,
+    "glueBrotli": 4443
+  },
+  "cold": {
+    "n": 25,
+    "readBytes": {
+      "n": 25,
+      "min": 0.21820800000000062,
+      "p50": 0.2405419999999996,
+      "p95": 0.2642919999999993,
+      "max": 0.265625,
+      "mean": 0.24171164000000003
+    },
+    "importGlue": {
+      "n": 25,
+      "min": 0.6105830000000001,
+      "p50": 0.6473750000000003,
+      "p95": 0.6701250000000005,
+      "max": 0.6737079999999995,
+      "mean": 0.6467134400000001
+    },
+    "instantiate": {
+      "n": 25,
+      "min": 9.867582999999998,
+      "p50": 10.132624999999999,
+      "p95": 10.29425,
+      "max": 10.431833000000001,
+      "mean": 10.134256559999997
+    },
+    "newSession": {
+      "n": 25,
+      "min": 0.13929200000000108,
+      "p50": 0.1457090000000001,
+      "p95": 0.17112499999999997,
+      "max": 0.17583399999999827,
+      "mean": 0.14892512000000024
+    },
+    "toFirstSession": {
+      "n": 25,
+      "min": 10.899207999999998,
+      "p50": 11.196625,
+      "p95": 11.331667000000001,
+      "max": 11.452041,
+      "mean": 11.171606760000001
+    }
+  },
+  "profiles": [
+    {
+      "id": "dcat-ap-3",
+      "label": "DCAT-AP 3.0.1 (SEMIC)",
+      "origin": "external",
+      "note": "Upstream SEMIC. Same shape IRI as the vendored copy below, so the pair is a like-for-like drift comparison.",
+      "shapeFiles": 5,
+      "shapeBytes": 67023,
+      "shapeLines": 2155,
+      "nodeShapes": 91,
+      "propertyShapes": 298,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 1074.4129590000011,
+          "p50": 1215.7074170000014,
+          "p95": 1336.8845420000034,
+          "max": 1369.9273329999996,
+          "mean": 1219.2350514666662,
+          "firstCall": 1051.1817920000003
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.5268330000035348,
+          "p50": 0.9868750000023283,
+          "p95": 3.2323749999995925,
+          "max": 5.506750000000466,
+          "mean": 1.238609139999462,
+          "firstCall": 1.1734159999978147
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 0.38770800000202144,
+          "p50": 0.9398329999967245,
+          "p95": 2.5911659999983385,
+          "max": 4.106417000002693,
+          "mean": 1.1241732999998204,
+          "firstCall": 3.2405000000071595
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 7.8602500000051805,
+          "p50": 11.467583999998169,
+          "p95": 26.01075000000128,
+          "max": 43.536207999997714,
+          "mean": 14.136851739999837,
+          "firstCall": 23.913542000002053
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 1.966166999998677,
+          "p50": 2.7567920000001322,
+          "p95": 3.8032079999975394,
+          "max": 7.010292000006302,
+          "mean": 2.858385020000569,
+          "firstCall": 3.734167000002344
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 1.012125000001106,
+          "p50": 1.4319160000013653,
+          "p95": 2.4355840000062017,
+          "max": 3.5449159999989206,
+          "mean": 1.6365141199996287,
+          "firstCall": 6.605000000003201
+        }
+      },
+      "dataBytes": 10697,
+      "dataTriples": 198,
+      "rootShapeId": "http://data.europa.eu/r5r#Dataset_Shape",
+      "treeNodes": 1,
+      "validationResults": 111
+    },
+    {
+      "id": "healthdcat-ap",
+      "label": "HealthDCAT-AP Release 5 (European Commission)",
+      "origin": "external",
+      "note": "Public tier.",
+      "shapeFiles": 4,
+      "shapeBytes": 50711,
+      "shapeLines": 1281,
+      "nodeShapes": 52,
+      "propertyShapes": 139,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 231.37166699999943,
+          "p50": 286.50220799999806,
+          "p95": 394.1820000000007,
+          "max": 399.70708300000115,
+          "mean": 302.42403193333377,
+          "firstCall": 266.47499999999854
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.9684170000036829,
+          "p50": 1.4130839999997988,
+          "p95": 2.9790419999990263,
+          "max": 3.398041000000376,
+          "mean": 1.6811834200008888,
+          "firstCall": 3.189417000001413
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 1.0741669999988517,
+          "p50": 1.5345420000012382,
+          "p95": 2.175250000000233,
+          "max": 2.561333999998169,
+          "mean": 1.558181639999675,
+          "firstCall": 1.4458749999976135
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 3.980250000000524,
+          "p50": 6.190709000002244,
+          "p95": 10.021249999997963,
+          "max": 11.429374999999709,
+          "mean": 6.494461639999936,
+          "firstCall": 8.886166000003868
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 1.1616670000003069,
+          "p50": 1.7466659999990952,
+          "p95": 2.5475420000002487,
+          "max": 2.62354200000118,
+          "mean": 1.8324549800006207,
+          "firstCall": 2.063624999995227
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 0.9184580000001006,
+          "p50": 1.513874999996915,
+          "p95": 2.6682500000024447,
+          "max": 2.9843330000003334,
+          "mean": 1.6444324399990728,
+          "firstCall": 1.762416999998095
+        }
+      },
+      "dataBytes": 10697,
+      "dataTriples": 198,
+      "rootShapeId": "http://data.europa.eu/r5r#Dataset_Shape",
+      "treeNodes": 1,
+      "validationResults": 135
+    },
+    {
+      "id": "health-ri-core",
+      "label": "Health-RI Core (HealthDCAT-AP national implementation)",
+      "origin": "external",
+      "note": "Cross-file sh:node. Data = the profile's own Example-Data.",
+      "shapeFiles": 14,
+      "shapeBytes": 84832,
+      "shapeLines": 1819,
+      "nodeShapes": 14,
+      "propertyShapes": 143,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 196.81908299999486,
+          "p50": 226.74220799999603,
+          "p95": 301.1281670000026,
+          "max": 306.25800000000163,
+          "mean": 234.5375264333333,
+          "firstCall": 234.63408399999753
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 3.270667000004323,
+          "p50": 4.492333000001963,
+          "p95": 8.335542000000714,
+          "max": 12.048999999999069,
+          "mean": 4.968396700000739,
+          "firstCall": 7.664457999999286
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 4.4777500000054715,
+          "p50": 6.01754100000835,
+          "p95": 8.64279099999112,
+          "max": 11.392084000006435,
+          "mean": 6.235947439998563,
+          "firstCall": 7.1469579999975394
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 16.022375000000466,
+          "p50": 22.228624999988824,
+          "p95": 29.873666999992565,
+          "max": 32.980374999999185,
+          "mean": 22.977476679998507,
+          "firstCall": 30.70258300000569
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 56.78608299999905,
+          "p50": 82.83833299999242,
+          "p95": 107.73979099999997,
+          "max": 108.62029200000688,
+          "mean": 83.22746742000018,
+          "firstCall": 88.0530829999916
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 0.9015000000072177,
+          "p50": 1.4641669999982696,
+          "p95": 2.5252089999994496,
+          "max": 4.287750000003143,
+          "mean": 1.6104367600003024,
+          "firstCall": 2.3393339999893215
+        }
+      },
+      "dataBytes": 10697,
+      "dataTriples": 198,
+      "rootShapeId": "http://data.health-ri.nl/core/p2/DatasetShape",
+      "treeNodes": 4,
+      "validationResults": 1
+    },
+    {
+      "id": "dcat-ap-de",
+      "label": "DCAT-AP.de 2.0 (national extension, Germany)",
+      "origin": "external",
+      "note": "The German delta's own dataset shape; the DCAT-AP core it extends is counted under dcat-ap-3, not here.",
+      "shapeFiles": 4,
+      "shapeBytes": 71266,
+      "shapeLines": 1608,
+      "nodeShapes": 29,
+      "propertyShapes": 121,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 139.06762499999604,
+          "p50": 164.40062499999476,
+          "p95": 203.53912500001024,
+          "max": 236.15762499999255,
+          "mean": 168.04676096666566,
+          "firstCall": 154.66795800000546
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 1.7588749999995343,
+          "p50": 2.2775839999958407,
+          "p95": 3.4463749999995343,
+          "max": 3.577665999997407,
+          "mean": 2.4341316799988273,
+          "firstCall": 2.9841250000026776
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 1.875,
+          "p50": 2.424582999999984,
+          "p95": 3.90975000000617,
+          "max": 5.27675000000454,
+          "mean": 2.7225799400015966,
+          "firstCall": 2.126625000004424
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 3.2996249999996508,
+          "p50": 4.822207999997772,
+          "p95": 6.81516699999338,
+          "max": 10.835000000006403,
+          "mean": 4.962656680000655,
+          "firstCall": 4.613707999989856
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 1.3184999999939464,
+          "p50": 1.9835829999938142,
+          "p95": 2.809958000012557,
+          "max": 3.768625000011525,
+          "mean": 2.0177941799993278,
+          "firstCall": 1.7311249999911524
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 1.04191699999501,
+          "p50": 1.5012500000011642,
+          "p95": 2.0377909999951953,
+          "max": 2.2017500000074506,
+          "mean": 1.5067066599993268,
+          "firstCall": 1.3578750000015134
+        }
+      },
+      "dataBytes": 10697,
+      "dataTriples": 198,
+      "rootShapeId": "http://dcat-ap.de/def/dcatde/Dataset_Shape",
+      "treeNodes": 1,
+      "validationResults": 34
+    },
+    {
+      "id": "fair-data-point",
+      "label": "FAIR Data Point (FAIRDataTeam reference implementation)",
+      "origin": "external",
+      "note": "Not a specification document but the shapes a running FDP instance ships and serves to its own metadata editor — the closest thing in the corpus to a profile authored FOR a form. DASH-annotated throughout.",
+      "shapeFiles": 8,
+      "shapeBytes": 9287,
+      "shapeLines": 340,
+      "nodeShapes": 13,
+      "propertyShapes": 37,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 22.13262499999837,
+          "p50": 25.562459000007948,
+          "p95": 32.370292000006884,
+          "max": 38.79962499999965,
+          "mean": 27.160788833335875,
+          "firstCall": 28.272584000005736
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.32837499999732245,
+          "p50": 0.46595800000068266,
+          "p95": 0.893207999994047,
+          "max": 1.01912500000617,
+          "mean": 0.5344791200006148,
+          "firstCall": 0.5675419999897713
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 0.34191699999792036,
+          "p50": 0.45629200000257697,
+          "p95": 0.8731660000048578,
+          "max": 1.4153749999968568,
+          "mean": 0.5270400200001313,
+          "firstCall": 0.5209590000013122
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 0.7602090000000317,
+          "p50": 1.0234999999956926,
+          "p95": 1.9196249999949941,
+          "max": 3.721957999994629,
+          "mean": 1.1875933199995778,
+          "firstCall": 2.4280829999916023
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 0.2913339999940945,
+          "p50": 0.4066249999887077,
+          "p95": 0.7299579999962589,
+          "max": 0.7903330000117421,
+          "mean": 0.4542041999989306,
+          "firstCall": 0.7730830000073183
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 1.1248749999940628,
+          "p50": 1.3741660000086995,
+          "p95": 2.2887919999920996,
+          "max": 2.4986250000074506,
+          "mean": 1.4562065999995684,
+          "firstCall": 1.5898750000051223
+        }
+      },
+      "dataBytes": 10697,
+      "dataTriples": 198,
+      "rootShapeId": "http://fairdatapoint.org/DatasetShape",
+      "treeNodes": 1,
+      "validationResults": 6
+    },
+    {
+      "id": "sphn",
+      "label": "SPHN 2026.1 (Swiss Personalized Health Network)",
+      "origin": "external",
+      "note": "The corpus's non-DCAT health profile, and by two orders of magnitude its largest single file (952 kB). Closed shapes throughout and ~480 SPARQL-based constraints. Included precisely because it is the profile most likely to break something.",
+      "shapeFiles": 1,
+      "shapeBytes": 952178,
+      "shapeLines": 17025,
+      "nodeShapes": 1744,
+      "propertyShapes": 1246,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 13250.352249999996,
+          "p50": 13382.855125000002,
+          "p95": 66730.34287500009,
+          "max": 106094.94437499996,
+          "mean": 31018.205249933344,
+          "firstCall": 62075.30512500001
+        }
+      },
+      "unrigged": "No dataset-equivalent root shape. 1744 node shapes over 208 target classes, none of them a record/dataset the other profiles' focus node is comparable to; any pick would be an arbitrary one shape in a thousand, and the timing would measure that choice rather than the profile."
+    },
+    {
+      "id": "bioschemas",
+      "label": "Bioschemas profiles v20250219",
+      "origin": "external",
+      "note": "32 life-science profiles in one file, generated from the Bioschemas specifications. Every single path is an sh:alternativePath over the http/https forms of a schema.org term — a complex path used not for expressiveness but to paper over a namespace split. Carries sh:severity and sh:description and NOTHING else: no datatype, no class, no maxCount, no name. The corpus's worst case for type-fact inference, by construction.",
+      "shapeFiles": 1,
+      "shapeBytes": 227639,
+      "shapeLines": 2152,
+      "nodeShapes": 32,
+      "propertyShapes": 643,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 2304.3597079999745,
+          "p50": 2314.7280840000603,
+          "p95": 2331.4123750000726,
+          "max": 2334.5489579997957,
+          "mean": 2315.7426263333377,
+          "firstCall": 2326.7347500000615
+        }
+      },
+      "unrigged": "Not one profile but 32 independent ones in a single file, with no shape that contains the others. There is no single form to focus, and every path is an sh:alternativePath, which the form layer renders read-only."
+    },
+    {
+      "id": "spdx-3",
+      "label": "SPDX 3.0.1 model",
+      "origin": "external",
+      "note": "Not health, and not a metadata catalogue: the software bill-of-materials model, published by the Linux Foundation as generated SHACL interleaved with OWL axioms in one file. In the corpus as the out-of-domain control — if the coverage number holds here it is not a fact about DCAT.",
+      "shapeFiles": 1,
+      "shapeBytes": 183176,
+      "shapeLines": 3331,
+      "nodeShapes": 64,
+      "propertyShapes": 193,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 276.73258300009184,
+          "p50": 279.9615830001421,
+          "p95": 282.4877910001669,
+          "max": 282.64391700015403,
+          "mean": 280.2174124333542,
+          "firstCall": 278.8385000000708
+        }
+      },
+      "unrigged": "Zero sh:targetClass in the whole file (E1 Finding: generated SHACL interleaved with OWL). Nothing declares what a focus node would be an instance of, so a root shape could only be hand-picked from 64 untargeted node shapes."
+    },
+    {
+      "id": "health-ri-modules",
+      "label": "Health-RI domain modules (health, imaging, omics)",
+      "origin": "external",
+      "note": "No published example data and no dataset shape - an empty, seeded graph on its one node shape.",
+      "shapeFiles": 5,
+      "shapeBytes": 4883,
+      "shapeLines": 147,
+      "nodeShapes": 1,
+      "propertyShapes": 6,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 0.5244579999707639,
+          "p50": 0.5429999998304993,
+          "p95": 0.55808399990201,
+          "max": 0.5658330000005662,
+          "mean": 0.5446055666543543,
+          "firstCall": 0.5651669998187572
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.0029159998521208763,
+          "p50": 0.0032079999800771475,
+          "p95": 0.003375000087544322,
+          "max": 0.004125000210478902,
+          "mean": 0.003178279995918274,
+          "firstCall": 0.005917000118643045
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 0.004790999926626682,
+          "p50": 0.004916999954730272,
+          "p95": 0.007999999914318323,
+          "max": 0.018042000010609627,
+          "mean": 0.005460820002481341,
+          "firstCall": 0.0062500000931322575
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 0.029125000117346644,
+          "p50": 0.03216599998995662,
+          "p95": 0.034915999975055456,
+          "max": 0.04258299991488457,
+          "mean": 0.03234245997387916,
+          "firstCall": 0.058332999935373664
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 0.02800000016577542,
+          "p50": 0.02850000001490116,
+          "p95": 0.029832999920472503,
+          "max": 0.03279199986718595,
+          "mean": 0.028750840001739563,
+          "firstCall": 0.040541999973356724
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 0.0017089999746531248,
+          "p50": 0.0019160001538693905,
+          "p95": 0.0020830000285059214,
+          "max": 0.0021250001154839993,
+          "mean": 0.0018825799878686668,
+          "firstCall": 0.01716699986718595
+        }
+      },
+      "dataBytes": 0,
+      "dataTriples": 1,
+      "rootShapeId": "http://coreRule-healthri.nl#Scan_Shape",
+      "treeNodes": 1,
+      "validationResults": 6
+    },
+    {
+      "id": "evidenze-health",
+      "label": "Evidenze HealthDCAT-AP onboarding (ours)",
+      "origin": "ours",
+      "note": "Pure SHACL 1.2 + SHACL-UI. The deployment.",
+      "shapeFiles": 1,
+      "shapeBytes": 33566,
+      "shapeLines": 793,
+      "nodeShapes": 10,
+      "propertyShapes": 48,
+      "conditionals": 1,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 17.15133299981244,
+          "p50": 17.82150000007823,
+          "p95": 18.202791000017896,
+          "max": 18.255875000031665,
+          "mean": 17.82799436667313,
+          "firstCall": 17.891582999844104
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.28620800003409386,
+          "p50": 0.2985000000335276,
+          "p95": 0.3140420001000166,
+          "max": 0.3215830000117421,
+          "mean": 0.2990307800052687,
+          "firstCall": 0.34941700007766485
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 0.7788329999893904,
+          "p50": 0.7969589999411255,
+          "p95": 0.817665999988094,
+          "max": 0.833917000098154,
+          "mean": 0.7989808000158518,
+          "firstCall": 0.8621249999850988
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 0.3694160000886768,
+          "p50": 0.37737499992363155,
+          "p95": 0.386792000150308,
+          "max": 0.3914159999694675,
+          "mean": 0.3779682600358501,
+          "firstCall": 0.42520800000056624
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 2.525332999881357,
+          "p50": 2.559499999973923,
+          "p95": 2.608291999902576,
+          "max": 2.7695410000160336,
+          "mean": 2.5676682399818676,
+          "firstCall": 2.6486670000012964
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 0.4021670001093298,
+          "p50": 0.4177910001017153,
+          "p95": 0.43849999993108213,
+          "max": 0.4415000001899898,
+          "mean": 0.41959914000239223,
+          "firstCall": 0.5202089999802411
+        }
+      },
+      "dataBytes": 5991,
+      "dataTriples": 98,
+      "rootShapeId": "https://dataspace.evidenze.example/shapes#HealthDatasetOnboardingShape",
+      "treeNodes": 16,
+      "validationResults": 0
+    },
+    {
+      "id": "evidenze-dataspace",
+      "label": "Evidenze data space onboarding (ours)",
+      "origin": "ours",
+      "note": "Pure SHACL 1.2 + SHACL-UI.",
+      "shapeFiles": 1,
+      "shapeBytes": 28309,
+      "shapeLines": 590,
+      "nodeShapes": 7,
+      "propertyShapes": 33,
+      "conditionals": 1,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 9.852750000078231,
+          "p50": 10.295083000091836,
+          "p95": 10.449332999996841,
+          "max": 10.663625000044703,
+          "mean": 10.290830566679748,
+          "firstCall": 10.235290999989957
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.11308400006964803,
+          "p50": 0.1233339998871088,
+          "p95": 0.1320829999167472,
+          "max": 0.13299999991431832,
+          "mean": 0.12347501999232918,
+          "firstCall": 0.14320799987763166
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 0.1500000001396984,
+          "p50": 0.15383299998939037,
+          "p95": 0.1629160000011325,
+          "max": 0.16737499996088445,
+          "mean": 0.15497233999427407,
+          "firstCall": 0.17625000001862645
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 0.15483300015330315,
+          "p50": 0.16020799987018108,
+          "p95": 0.16779199987649918,
+          "max": 0.17166700004599988,
+          "mean": 0.16116825999692083,
+          "firstCall": 0.19191700010560453
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 0.37970799999311566,
+          "p50": 0.3858330000657588,
+          "p95": 0.3943750001490116,
+          "max": 0.40012499992735684,
+          "mean": 0.38668252003379167,
+          "firstCall": 0.4062920000869781
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 0.05520899989642203,
+          "p50": 0.05700000002980232,
+          "p95": 0.06329199997708201,
+          "max": 0.06654200004413724,
+          "mean": 0.05802178000099957,
+          "firstCall": 0.10433400003239512
+        }
+      },
+      "dataBytes": 1971,
+      "dataTriples": 23,
+      "rootShapeId": "https://dataspace.evidenze.example/shapes#DatasetOnboardingShape",
+      "treeNodes": 4,
+      "validationResults": 0
+    },
+    {
+      "id": "dcat-ap-3-generated",
+      "label": "DCAT-AP 3.0.1 — generated encoding",
+      "origin": "external",
+      "note": "The generated encoding of the same release; `shacl:` prefix, every node shape closed.",
+      "variantOf": "dcat-ap-3",
+      "shapeFiles": 2,
+      "shapeBytes": 235795,
+      "shapeLines": 3452,
+      "nodeShapes": 40,
+      "propertyShapes": 292,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 147.53287500003353,
+          "p50": 149.10191600001417,
+          "p95": 151.42045799992047,
+          "max": 153.31445900001563,
+          "mean": 149.37638746667653,
+          "firstCall": 147.71970800007693
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.6970420000143349,
+          "p50": 0.700834000017494,
+          "p95": 0.7109580000396818,
+          "max": 0.7134159998968244,
+          "mean": 0.7018624599836767,
+          "firstCall": 0.7607090000528842
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 0.6544579998590052,
+          "p50": 0.7151249998714775,
+          "p95": 0.7240410000085831,
+          "max": 0.8052910000551492,
+          "mean": 0.7140791199961677,
+          "firstCall": 0.7189589999616146
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 1.2292910001706332,
+          "p50": 1.2973340000025928,
+          "p95": 1.346625000005588,
+          "max": 1.67629100009799,
+          "mean": 1.3059833799907938,
+          "firstCall": 1.3835410000756383
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 0.47312500001862645,
+          "p50": 0.48200000007636845,
+          "p95": 0.5023749999236315,
+          "max": 0.5075410001445562,
+          "mean": 0.48319998001214115,
+          "firstCall": 0.5075409999117255
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 0.33237499999813735,
+          "p50": 0.3343749998603016,
+          "p95": 0.3481669998727739,
+          "max": 0.3545840000733733,
+          "mean": 0.33621092000976205,
+          "firstCall": 0.41250000009313226
+        }
+      },
+      "dataBytes": 10697,
+      "dataTriples": 198,
+      "rootShapeId": "https://semiceu.github.io/DCAT-AP/releases/3.0.1#dcat:DatasetShape",
+      "treeNodes": 1,
+      "validationResults": 32
+    },
+    {
+      "id": "healthdcat-ap-restricted",
+      "label": "HealthDCAT-AP Release 5 — restricted tier",
+      "origin": "external",
+      "note": "Restricted tier of the same shape IRIs.",
+      "variantOf": "healthdcat-ap",
+      "shapeFiles": 3,
+      "shapeBytes": 25611,
+      "shapeLines": 684,
+      "nodeShapes": 17,
+      "propertyShapes": 87,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 21.949832999845967,
+          "p50": 22.35829099989496,
+          "p95": 22.76970799989067,
+          "max": 22.888500000117347,
+          "mean": 22.364016666643632,
+          "firstCall": 22.491374999983236
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.3358330000191927,
+          "p50": 0.3378330001141876,
+          "p95": 0.35620800009928644,
+          "max": 0.3588749999180436,
+          "mean": 0.3406925800116733,
+          "firstCall": 0.3955419999547303
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 0.34145800000987947,
+          "p50": 0.34612499992363155,
+          "p95": 0.35362499998882413,
+          "max": 0.3619170000310987,
+          "mean": 0.3462866399856284,
+          "firstCall": 0.34558299998752773
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 0.818375000031665,
+          "p50": 0.8470000000670552,
+          "p95": 0.8687090000603348,
+          "max": 1.1670419999863952,
+          "mean": 0.8539483999786899,
+          "firstCall": 0.9694579998031259
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 0.203125,
+          "p50": 0.20849999994970858,
+          "p95": 0.21800000010989606,
+          "max": 0.23075000010430813,
+          "mean": 0.2099483000021428,
+          "firstCall": 0.2395839998498559
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 0.33062499994412065,
+          "p50": 0.3326659998856485,
+          "p95": 0.3460830000694841,
+          "max": 0.3511669998988509,
+          "mean": 0.3347733199829236,
+          "firstCall": 0.4139169999398291
+        }
+      },
+      "dataBytes": 10697,
+      "dataTriples": 198,
+      "rootShapeId": "http://data.europa.eu/r5r#Dataset_Shape",
+      "treeNodes": 1,
+      "validationResults": 108
+    },
+    {
+      "id": "dcat-ap-vendored",
+      "label": "DCAT-AP as vendored by Health-RI",
+      "origin": "external",
+      "note": "Health-RI's in-tree copy of DCAT-AP. Was the E1 'DCAT-AP' row until the upstream SEMIC release was vendored; demoted to a variant so DCAT-AP is counted once. Kept because the drift between a vendored copy and its upstream is itself worth a sentence.",
+      "variantOf": "dcat-ap-3",
+      "shapeFiles": 1,
+      "shapeBytes": 20344,
+      "shapeLines": 698,
+      "nodeShapes": 21,
+      "propertyShapes": 109,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 33.48937500012107,
+          "p50": 33.90870900009759,
+          "p95": 34.35616600001231,
+          "max": 34.39845800003968,
+          "mean": 33.906640233347815,
+          "firstCall": 33.58987500006333
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.6654999998863786,
+          "p50": 0.668125000083819,
+          "p95": 0.6774579999037087,
+          "max": 0.679875000147149,
+          "mean": 0.6692358200019225,
+          "firstCall": 0.7187919998541474
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 0.674875000026077,
+          "p50": 0.6817920000758022,
+          "p95": 0.6980840000323951,
+          "max": 0.7310829998459667,
+          "mean": 0.6844066600268707,
+          "firstCall": 0.6843749999534339
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 0.6211250000633299,
+          "p50": 0.6547499999869615,
+          "p95": 0.7185839999001473,
+          "max": 0.9707919999491423,
+          "mean": 0.662565779988654,
+          "firstCall": 0.7289579999633133
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 0.22537500015459955,
+          "p50": 0.2317919998895377,
+          "p95": 0.24537499994039536,
+          "max": 0.2512499999720603,
+          "mean": 0.23403666000813245,
+          "firstCall": 0.24662499991245568
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 0.33233399991877377,
+          "p50": 0.3355000000447035,
+          "p95": 0.3472499998752028,
+          "max": 0.35204099980182946,
+          "mean": 0.3368657999811694,
+          "firstCall": 0.4284169999882579
+        }
+      },
+      "dataBytes": 10697,
+      "dataTriples": 198,
+      "rootShapeId": "http://data.europa.eu/r5r#Dataset_Shape",
+      "treeNodes": 1,
+      "validationResults": 25
+    },
+    {
+      "id": "health-ri-fdp",
+      "label": "Health-RI FAIR Data Point shapes",
+      "origin": "external",
+      "note": "NOT an independent profile. It declares the same shape IRIs (hri:AgentShape, hri:CatalogShape, …) as PiecesShape, and its 178 sh:path lines collapse to the same 137 distinct (shape, path) pairs — each FDP file is self-contained and redefines the shared shapes, so concatenation merges them by identity. Unrelated to the FAIRDataTeam `fair-data-point` profile above.",
+      "variantOf": "health-ri-core",
+      "shapeFiles": 6,
+      "shapeBytes": 94599,
+      "shapeLines": 2077,
+      "nodeShapes": 14,
+      "propertyShapes": 143,
+      "conditionals": 0,
+      "ops": {
+        "loadShapes": {
+          "n": 30,
+          "min": 52.82295800000429,
+          "p50": 53.65775000001304,
+          "p95": 54.4636659999378,
+          "max": 54.5816249998752,
+          "mean": 53.67528469999476,
+          "firstCall": 52.709415999939665
+        },
+        "projectForm": {
+          "n": 50,
+          "min": 0.8534580001141876,
+          "p50": 0.8900000001303852,
+          "p95": 0.9513329998590052,
+          "max": 2.3539170001167804,
+          "mean": 0.9229766600066796,
+          "firstCall": 0.9813329998869449
+        },
+        "projectTree": {
+          "n": 50,
+          "min": 1.227750000078231,
+          "p50": 1.2840419998392463,
+          "p95": 1.3171250000596046,
+          "max": 1.3272090000100434,
+          "mean": 1.286315819993615,
+          "firstCall": 1.3190419999882579
+        },
+        "validateFull": {
+          "n": 50,
+          "min": 4.393374999985099,
+          "p50": 4.492791999829933,
+          "p95": 4.519125000108033,
+          "max": 4.526375000132248,
+          "mean": 4.490658259992488,
+          "firstCall": 4.792291000019759
+        },
+        "validateTree": {
+          "n": 50,
+          "min": 15.093208000063896,
+          "p50": 15.157709000166506,
+          "p95": 15.402916999999434,
+          "max": 15.607916999841109,
+          "mean": 15.186103280032984,
+          "firstCall": 15.230542000150308
+        },
+        "serializeTurtle": {
+          "n": 50,
+          "min": 0.3325409998651594,
+          "p50": 0.33574999985285103,
+          "p95": 0.34587499988265336,
+          "max": 0.35466700000688434,
+          "mean": 0.33702580000739546,
+          "firstCall": 0.4239580000285059
+        }
+      },
+      "dataBytes": 10697,
+      "dataTriples": 198,
+      "rootShapeId": "http://data.health-ri.nl/core/p2/DatasetShape",
+      "treeNodes": 4,
+      "validationResults": 1
+    }
+  ],
+  "edits": [
+    {
+      "id": "evidenze-health",
+      "label": "Evidenze HealthDCAT-AP onboarding (ours)",
+      "revealed": "http://healthdataportal.eu/ns/health#hasVariables",
+      "commitToModel": {
+        "n": 30,
+        "min": 1.3218340000603348,
+        "p50": 1.4119160000700504,
+        "p95": 1.7942500000353903,
+        "max": 2.0464590000919998,
+        "mean": 1.4768693666905164
+      },
+      "commitToDom": {
+        "n": 30,
+        "min": 12.356915999902412,
+        "p50": 26.310666000004858,
+        "p95": 53.21075000008568,
+        "max": 69.14029200002551,
+        "mean": 29.48200686664786
+      },
+      "textCommitDebounceMs": 250,
+      "validationDebounceMs": 300,
+      "fieldsRendered": 39
+    },
+    {
+      "id": "evidenze-dataspace",
+      "label": "Evidenze data space onboarding (ours)",
+      "revealed": "https://dataspace.evidenze.example/ns#accessJustification",
+      "commitToModel": {
+        "n": 30,
+        "min": 0.30300000007264316,
+        "p50": 0.3339169998653233,
+        "p95": 0.3519999999552965,
+        "max": 0.3523750000167638,
+        "mean": 0.33049456666534144
+      },
+      "commitToDom": {
+        "n": 30,
+        "min": 4.925667000003159,
+        "p50": 5.448500000173226,
+        "p95": 6.405250000068918,
+        "max": 6.722874999977648,
+        "mean": 5.5216151666517055
+      },
+      "textCommitDebounceMs": 250,
+      "validationDebounceMs": 300,
+      "fieldsRendered": 24
+    }
+  ],
+  "bundle": {
+    "generated": "2026-08-28T17:46:57Z",
+    "vite": "6.4.3",
+    "react": "19.2.8",
+    "note": "Two production Vite builds of the same minimal React app, differing only in whether it imports and renders <MetadataForm> over a real SHACL profile. The JS delta excludes React (both builds pay for it) and excludes the .wasm binary, which is emitted as a separate on-demand asset.",
+    "baseline": {
+      "js": 194472,
+      "jsGzip": 60580,
+      "jsBrotli": 52280,
+      "css": 0,
+      "cssGzip": 0,
+      "wasm": 0,
+      "files": [
+        {
+          "file": "assets/index-7gKfPIkV.js",
+          "bytes": 194472,
+          "gzip": 60580
+        }
+      ]
+    },
+    "engineOnly": {
+      "js": 239387,
+      "jsGzip": 72207,
+      "jsBrotli": 62514,
+      "css": 0,
+      "cssGzip": 0,
+      "wasm": 2719043,
+      "files": [
+        {
+          "file": "assets/index-Dk-mJpds.js",
+          "bytes": 230346,
+          "gzip": 69008
+        },
+        {
+          "file": "assets/rudof_wasm-CcJvd-lq.js",
+          "bytes": 9041,
+          "gzip": 3199
+        }
+      ]
+    },
+    "withLib": {
+      "js": 706351,
+      "jsGzip": 206491,
+      "jsBrotli": 169917,
+      "css": 228592,
+      "cssGzip": 34774,
+      "wasm": 2719043,
+      "files": [
+        {
+          "file": "assets/index-I4uH_i04.css",
+          "bytes": 228592,
+          "gzip": 34774
+        },
+        {
+          "file": "assets/index-Ud1z-2rL.js",
+          "bytes": 697310,
+          "gzip": 203292
+        },
+        {
+          "file": "assets/rudof_wasm-CcJvd-lq.js",
+          "bytes": 9041,
+          "gzip": 3199
+        }
+      ]
+    },
+    "deltaEngine": {
+      "js": 44915,
+      "jsGzip": 11627,
+      "jsBrotli": 10234
+    },
+    "delta": {
+      "js": 511879,
+      "jsGzip": 145911,
+      "jsBrotli": 117637,
+      "css": 228592,
+      "cssGzip": 34774,
+      "wasm": 2719043
+    }
+  }
+}

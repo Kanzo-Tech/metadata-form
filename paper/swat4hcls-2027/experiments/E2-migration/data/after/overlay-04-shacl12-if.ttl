@@ -1,0 +1,41 @@
+@prefix dpv:  <https://w3id.org/dpv#> .
+@prefix hri:  <http://data.health-ri.nl/core/p2/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+
+# Overlay 04 — SHACL 1.2.
+#
+# The same requirement, said once, in the order a reader thinks it, on the shape
+# that already targets the class. No second target, no hidden stamp, no SPARQL,
+# no negation.
+
+hri:DatasetShape
+  sh:if   hri:PersonalDataCondition ;
+  sh:then hri:PersonalDataRequirements .
+
+hri:PersonalDataCondition
+  a sh:NodeShape ;
+  rdfs:label "declares personal data"@en ;
+  sh:property [ sh:path dpv:hasPersonalData ; sh:minCount 1 ] .
+
+hri:PersonalDataRequirements
+  a sh:NodeShape ;
+  sh:property hri:DatasetShape-legal-basis-required ,
+              hri:DatasetShape-purpose-required .
+
+hri:DatasetShape-legal-basis-required
+  sh:path dpv:hasLegalBasis ;
+  sh:name "legal basis"@en ;
+  sh:minCount 1 ;
+  sh:nodeKind sh:IRI ;
+  shui:editor shui:IRIEditor ;
+  sh:message "A dataset that declares personal data must state its legal basis."@en .
+
+hri:DatasetShape-purpose-required
+  sh:path dpv:hasPurpose ;
+  sh:name "purpose"@en ;
+  sh:minCount 1 ;
+  sh:nodeKind sh:IRI ;
+  shui:editor shui:IRIEditor ;
+  sh:message "A dataset that declares personal data must state the purpose of processing."@en .

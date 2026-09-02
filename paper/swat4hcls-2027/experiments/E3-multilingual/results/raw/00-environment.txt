@@ -1,13 +1,11 @@
-# E3 environment, captured 2026-08-27T16:02:04Z
+# E3 environment, captured 2026-09-02T09:14:37Z
 uname:        Darwin 25.2.0 arm64
-python:       Python 3.14.5
-pySHACL:      PySHACL Version: 0.40.1
-rdflib:       rdflib      7.6.0
+python:       Python 3.13.12
+rdflib:       rdflib    7.6.0
 node:         v23.9.0
-java:         openjdk version "26.0.2" 2026-07-21
-jena shacl:   Apache Jena SHACL version 6.2.0
-topbraid:     org.topbraid:shacl:1.4.4 (sha256 f382585dea378cda596068db239f89c26b339071c91cfdea720f9cd116128c62)
-rdf-validate-shacl: 0.6.5
 rudof (cli):  rudof 0.3.14
 rudof-wasm before: 0.3.4
 rudof-wasm after:  0.3.5
+rudof-wasm published: ["0.3.4","0.3.5","0.3.6","0.3.7","0.3.8"]
+rudof-wasm latest:    0.3.8
+rudof-wasm publish times: {"created":"2026-06-30T11:57:51.487Z","modified":"2026-09-02T09:04:30.154Z","0.3.4":"2026-06-30T11:57:51.829Z","0.3.5":"2026-08-27T12:19:14.791Z","0.3.6":"2026-09-01T13:24:30.483Z","0.3.7":"2026-09-02T08:31:27.680Z","0.3.8":"2026-09-02T09:04:29.738Z"}

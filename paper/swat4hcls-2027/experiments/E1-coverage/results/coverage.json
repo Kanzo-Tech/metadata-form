@@ -1,400 +1,2130 @@
 {
-  "generated": "2026-08-26",
+  "generated": "2026-08-28",
+  "n": 11,
+  "nExternal": 9,
   "results": [
     {
-      "id": "health-ri-core",
-      "label": "Health-RI Core (HealthDCAT-AP)",
-      "note": "Per-class shapes with cross-file sh:node references. DASH-annotated.",
-      "files": 14,
-      "turtleLines": 1819,
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/deprecateduris.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/mdr-vocabularies.shape.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/range.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/shapes.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/shapes_recommended.ttl"
+      ],
+      "files": 5,
+      "form": {
+        "complexPathFields": 2,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 1,
+        "editorIds": {
+          "AutoCompleteEditor": 83,
+          "DetailsEditor": 35,
+          "IRIEditor": 24,
+          "NumberFieldEditor": 3,
+          "TextFieldEditor": 153
+        },
+        "fields": 298,
+        "inferred": 153,
+        "nested": 35,
+        "noWidget": 0,
+        "plainTextFallback": 153,
+        "readOnly": 2,
+        "shapesBuilt": 91,
+        "shapesFailed": [],
+        "statedEditorHonoured": 108,
+        "typedWidget": 108
+      },
+      "gaps": [
+        {
+          "count": 16,
+          "kind": "carried",
+          "term": "sh:hasValue",
+          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+        },
+        {
+          "count": 9,
+          "kind": "dropped",
+          "term": "sh:or",
+          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
+        },
+        {
+          "count": 5,
+          "kind": "unrendered",
+          "term": "sh:shape",
+          "why": "Not a SHACL 1.2 term at all — a leftover from a pre-REC draft, still shipped by DCAT-AP 3.0.1. It is recorded and ignored."
+        }
+      ],
+      "id": "dcat-ap-3",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 84,
+          "DatatypeConstraintComponent": 6,
+          "HasValueConstraintComponent": 16,
+          "MaxCountConstraintComponent": 54,
+          "MinCountConstraintComponent": 71,
+          "NodeConstraintComponent": 38,
+          "NodeKindConstraintComponent": 144
+        },
+        "conditionals": 0,
+        "described": 27,
+        "editors": {
+          "AutoCompleteEditor": 84,
+          "DetailsEditor": 35,
+          "IRIEditor": 22,
+          "NumberFieldEditor": 3,
+          "TextFieldEditor": 154
+        },
+        "groups": 0,
+        "named": 0,
+        "nodeShapes": 91,
+        "nodeShapesWithProperties": 61,
+        "parameters": {
+          "class": 84,
+          "datatype": 6,
+          "description": 27,
+          "hasValue": 16,
+          "maxCount": 54,
+          "message": 6,
+          "minCount": 71,
+          "node": 38,
+          "nodeKind": 144,
+          "path": 298,
+          "severity": 281,
+          "shape": 5
+        },
+        "pathKinds": {
+          "inverse": 2,
+          "predicate": 298
+        },
+        "propertyShapes": 298
+      },
+      "label": "DCAT-AP 3.0.1 (SEMIC)",
+      "note": "The upstream SEMIC release, not Health-RI's vendored copy. `shapes.ttl` (core constraints) + `range.ttl` (class ranges) + `mdr-vocabularies.shape.ttl` (controlled-vocabulary constraints) + `shapes_recommended.ttl` + `deprecateduris.ttl`. The two `*imports*.ttl` files are owl:imports stubs with no shapes in them and are excluded.",
+      "origin": "external",
       "parsed": true,
+      "perFile": [
+        {
+          "fields": 8,
+          "file": "deprecateduris.ttl",
+          "nested": 1,
+          "nodeShapes": 5,
+          "plain": 6,
+          "readOnly": 0,
+          "typed": 1
+        },
+        {
+          "fields": 42,
+          "file": "mdr-vocabularies.shape.ttl",
+          "nested": 24,
+          "nodeShapes": 28,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 18
+        },
+        {
+          "fields": 82,
+          "file": "range.ttl",
+          "nested": 2,
+          "nodeShapes": 15,
+          "plain": 0,
+          "readOnly": 1,
+          "typed": 79
+        },
+        {
+          "fields": 130,
+          "file": "shapes.ttl",
+          "nested": 8,
+          "nodeShapes": 25,
+          "plain": 111,
+          "readOnly": 1,
+          "typed": 10
+        },
+        {
+          "fields": 36,
+          "file": "shapes_recommended.ttl",
+          "nested": 0,
+          "nodeShapes": 19,
+          "plain": 36,
+          "readOnly": 0,
+          "typed": 0
+        }
+      ],
       "source": {
-        "shuiEditor": 0,
-        "dashEditor": 141,
+        "dashEditor": 0,
+        "langTags": {
+          "en": 51
+        },
         "shGroup": 0,
-        "shName": 143,
+        "shName": 0,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 67023,
+      "turtleLines": 2155
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/healthdcat-ap/src/public-shapes.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/healthdcat-ap/src/public-shapes_recommended.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/healthdcat-ap/src/range.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/healthdcat-ap/src/mdr-vocabularies.shape.ttl"
+      ],
+      "files": 4,
+      "form": {
+        "complexPathFields": 2,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 5,
+        "editorIds": {
+          "AutoCompleteEditor": 25,
+          "DetailsEditor": 34,
+          "IRIEditor": 29,
+          "NumberFieldEditor": 4,
+          "TextFieldEditor": 47
+        },
+        "fields": 139,
+        "inferred": 47,
+        "nested": 34,
+        "noWidget": 0,
+        "plainTextFallback": 47,
+        "readOnly": 2,
+        "shapesBuilt": 52,
+        "shapesFailed": [],
+        "statedEditorHonoured": 56,
+        "typedWidget": 56
+      },
+      "gaps": [
+        {
+          "count": 25,
+          "kind": "carried",
+          "term": "sh:hasValue",
+          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+        },
+        {
+          "count": 2,
+          "kind": "dropped",
+          "term": "sh:or",
+          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
+        }
+      ],
+      "id": "healthdcat-ap",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 25,
+          "DatatypeConstraintComponent": 4,
+          "HasValueConstraintComponent": 24,
+          "MaxCountConstraintComponent": 17,
+          "MinCountConstraintComponent": 62,
+          "NodeConstraintComponent": 36,
+          "NodeKindConstraintComponent": 85
+        },
+        "conditionals": 0,
+        "described": 6,
+        "editors": {
+          "AutoCompleteEditor": 25,
+          "DetailsEditor": 34,
+          "IRIEditor": 27,
+          "NumberFieldEditor": 4,
+          "TextFieldEditor": 49
+        },
+        "groups": 0,
+        "named": 0,
+        "nodeShapes": 52,
+        "nodeShapesWithProperties": 47,
+        "parameters": {
+          "class": 25,
+          "datatype": 4,
+          "description": 6,
+          "hasValue": 24,
+          "maxCount": 17,
+          "message": 65,
+          "minCount": 62,
+          "node": 36,
+          "nodeKind": 85,
+          "path": 139,
+          "severity": 112
+        },
+        "pathKinds": {
+          "alternative": 2,
+          "predicate": 141
+        },
+        "propertyShapes": 139
+      },
+      "label": "HealthDCAT-AP Release 5 (European Commission)",
+      "note": "The authoritative HealthDCAT-AP, migrated off GitHub to the Commission's code.europa.eu in Sept 2025. Ships THREE sensitivity tiers of the same shapes — public / restricted / non-public. The public tier is measured here; the restricted tier is reported as a variant below.",
+      "origin": "external",
+      "parsed": true,
+      "perFile": [
+        {
+          "fields": 57,
+          "file": "public-shapes.ttl",
+          "nested": 8,
+          "nodeShapes": 13,
+          "plain": 27,
+          "readOnly": 2,
+          "typed": 20
+        },
+        {
+          "fields": 18,
+          "file": "public-shapes_recommended.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 18,
+          "readOnly": 0,
+          "typed": 0
+        },
+        {
+          "fields": 13,
+          "file": "range.ttl",
+          "nested": 0,
+          "nodeShapes": 3,
+          "plain": 1,
+          "readOnly": 0,
+          "typed": 12
+        },
+        {
+          "fields": 51,
+          "file": "mdr-vocabularies.shape.ttl",
+          "nested": 26,
+          "nodeShapes": 35,
+          "plain": 1,
+          "readOnly": 0,
+          "typed": 24
+        }
+      ],
+      "source": {
+        "dashEditor": 0,
+        "langTags": {
+          "en": 17
+        },
+        "shGroup": 0,
+        "shName": 0,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 50711,
+      "turtleLines": 1281
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Agent.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Attribution.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Catalog.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Checksum.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/DataService.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Dataset.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/DatasetSeries.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Distribution.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Identifier.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Kind.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/PeriodOfTime.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/QualityCertificate.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Relationship.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Resource.ttl"
+      ],
+      "files": 14,
+      "form": {
+        "complexPathFields": 0,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 0,
+        "editorIds": {
+          "AutoCompleteEditor": 1,
+          "DateTimePickerEditor": 11,
+          "DetailsEditor": 23,
+          "EnumSelectEditor": 2,
+          "IRIEditor": 74,
+          "NumberFieldEditor": 5,
+          "TextFieldEditor": 27
+        },
+        "fields": 143,
+        "inferred": 27,
+        "nested": 23,
+        "noWidget": 0,
+        "plainTextFallback": 27,
+        "readOnly": 0,
+        "shapesBuilt": 14,
+        "shapesFailed": [],
+        "statedEditorHonoured": 93,
+        "typedWidget": 93
+      },
+      "gaps": [
+        {
+          "count": 141,
+          "kind": "unrendered",
+          "term": "dash:editor",
+          "why": "The DASH editor vocabulary. The engine records the term and does not act on it: only `shui:editor` selects a widget. This is the measured baseline — see the note above the coverage table."
+        },
+        {
+          "count": 141,
+          "kind": "unrendered",
+          "term": "dash:viewer",
+          "why": "See dash:editor."
+        },
+        {
+          "count": 1,
+          "kind": "carried",
+          "term": "sh:minExclusive",
+          "why": "No numeric control here takes an exclusive bound, and no epsilon is right for both xsd:integer and xsd:double. Enforced on commit by the validator, invisible in the UI."
+        }
+      ],
+      "id": "health-ri-core",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 1,
+          "DatatypeConstraintComponent": 20,
+          "InConstraintComponent": 2,
+          "MaxCountConstraintComponent": 67,
+          "MinCountConstraintComponent": 44,
+          "MinExclusiveConstraintComponent": 1,
+          "NodeConstraintComponent": 23,
+          "NodeKindConstraintComponent": 112,
+          "PatternConstraintComponent": 13,
+          "UniqueLangConstraintComponent": 13
+        },
+        "conditionals": 0,
+        "described": 123,
+        "editors": {
+          "AutoCompleteEditor": 1,
+          "DateTimePickerEditor": 11,
+          "DetailsEditor": 23,
+          "EnumSelectEditor": 2,
+          "IRIEditor": 74,
+          "NumberFieldEditor": 5,
+          "TextFieldEditor": 27
+        },
+        "groups": 0,
+        "named": 143,
+        "nodeShapes": 14,
+        "nodeShapesWithProperties": 13,
+        "parameters": {
+          "class": 1,
+          "datatype": 20,
+          "defaultValue": 2,
+          "description": 123,
+          "editor": 141,
+          "in": 2,
+          "maxCount": 67,
+          "minCount": 44,
+          "minExclusive": 1,
+          "name": 143,
+          "node": 23,
+          "nodeKind": 112,
+          "path": 143,
+          "pattern": 13,
+          "uniqueLang": 13,
+          "viewer": 141
+        },
+        "pathKinds": {
+          "predicate": 143
+        },
+        "propertyShapes": 143
+      },
+      "label": "Health-RI Core (HealthDCAT-AP national implementation)",
+      "note": "Per-class shapes with cross-file sh:node references. DASH-annotated.",
+      "origin": "external",
+      "parsed": true,
+      "perFile": [
+        {
+          "fields": 8,
+          "file": "Agent.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 3,
+          "readOnly": 0,
+          "typed": 5
+        },
+        {
+          "fields": 2,
+          "file": "Attribution.ttl",
+          "nested": 1,
+          "nodeShapes": 2,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 1
+        },
+        {
+          "fields": 19,
+          "file": "Catalog.ttl",
+          "nested": 4,
+          "nodeShapes": 4,
+          "plain": 3,
+          "readOnly": 0,
+          "typed": 12
+        },
+        {
+          "fields": 2,
+          "file": "Checksum.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 1,
+          "readOnly": 0,
+          "typed": 1
+        },
+        {
+          "fields": 22,
+          "file": "DataService.ttl",
+          "nested": 4,
+          "nodeShapes": 4,
+          "plain": 4,
+          "readOnly": 0,
+          "typed": 14
+        },
+        {
+          "fields": 47,
+          "file": "Dataset.ttl",
+          "nested": 9,
+          "nodeShapes": 8,
+          "plain": 8,
+          "readOnly": 0,
+          "typed": 30
+        },
+        {
+          "fields": 10,
+          "file": "DatasetSeries.ttl",
+          "nested": 3,
+          "nodeShapes": 4,
+          "plain": 2,
+          "readOnly": 0,
+          "typed": 5
+        },
+        {
+          "fields": 22,
+          "file": "Distribution.ttl",
+          "nested": 2,
+          "nodeShapes": 3,
+          "plain": 3,
+          "readOnly": 0,
+          "typed": 17
+        },
+        {
+          "fields": 2,
+          "file": "Identifier.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 2,
+          "readOnly": 0,
+          "typed": 0
+        },
+        {
+          "fields": 3,
+          "file": "Kind.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 1,
+          "readOnly": 0,
+          "typed": 2
+        },
+        {
+          "fields": 2,
+          "file": "PeriodOfTime.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 2
+        },
+        {
+          "fields": 2,
+          "file": "QualityCertificate.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 2
+        },
+        {
+          "fields": 2,
+          "file": "Relationship.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 2
+        },
+        {
+          "fields": 0,
+          "file": "Resource.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 0
+        }
+      ],
+      "source": {
+        "dashEditor": 141,
         "langTags": {
           "en": 321
-        }
-      },
-      "ir": {
-        "nodeShapes": 14,
-        "propertyShapes": 143,
-        "groups": 0,
-        "pathKinds": {
-          "predicate": 143
         },
-        "components": {
-          "editor": 141,
-          "nodeKind": 112,
-          "path": 143,
-          "viewer": 141,
-          "name": 143,
-          "maxCount": 67,
-          "description": 123,
-          "minCount": 44,
-          "uniqueLang": 13,
-          "datatype": 20,
-          "pattern": 13,
-          "in": 2,
-          "node": 23,
-          "class": 1,
-          "minExclusive": 1,
-          "defaultValue": 2
-        },
-        "editors": {
-          "IRIEditor": 74,
-          "TextFieldEditor": 27,
-          "DateTimePickerEditor": 11,
-          "EnumSelectEditor": 2,
-          "DetailsEditor": 23,
-          "AutoCompleteEditor": 1,
-          "NumberFieldEditor": 5
-        },
-        "conditionals": 0
-      },
-      "form": {
-        "shapesBuilt": 14,
-        "shapesFailed": [],
-        "fields": 143,
-        "widgetKinds": {
-          "reference": 1,
-          "url": 74,
-          "number": 5,
-          "text": 50,
-          "datetime": 11,
-          "select": 2
-        },
-        "plainTextFallback": 50,
-        "complexPathFields": 0,
-        "diagnostics": {},
-        "diagnosticSamples": []
-      }
-    },
-    {
-      "id": "health-ri-fdp",
-      "label": "Health-RI FAIR Data Point",
-      "note": "NOT an independent profile. It declares the same shape IRIs (hri:AgentShape, hri:CatalogShape, …) as PiecesShape, and its 178 sh:path lines collapse to the same 137 distinct (shape, path) pairs — each FDP file is self-contained and redefines the shared shapes, so concatenation merges them by identity. Reported for the record; excluded from the headline table so it cannot inflate n.",
-      "variantOf": "health-ri-core",
-      "files": 6,
-      "turtleLines": 2077,
-      "parsed": true,
-      "source": {
-        "shuiEditor": 0,
-        "dashEditor": 182,
         "shGroup": 0,
-        "shName": 184,
-        "langTags": {
-          "en": 440
-        }
+        "shName": 143,
+        "shuiEditor": 0
       },
-      "ir": {
-        "nodeShapes": 14,
-        "propertyShapes": 143,
-        "groups": 0,
-        "pathKinds": {
-          "predicate": 143
-        },
-        "components": {
-          "path": 143,
-          "minCount": 44,
-          "description": 123,
-          "viewer": 141,
-          "maxCount": 67,
-          "nodeKind": 112,
-          "name": 143,
-          "editor": 141,
-          "datatype": 20,
-          "pattern": 13,
-          "node": 23,
-          "minExclusive": 1,
-          "uniqueLang": 13,
-          "class": 1,
-          "in": 2,
-          "defaultValue": 2
-        },
-        "editors": {
-          "TextFieldEditor": 27,
-          "IRIEditor": 74,
-          "DateTimePickerEditor": 11,
-          "DetailsEditor": 23,
-          "NumberFieldEditor": 5,
-          "AutoCompleteEditor": 1,
-          "EnumSelectEditor": 2
-        },
-        "conditionals": 0
-      },
-      "form": {
-        "shapesBuilt": 14,
-        "shapesFailed": [],
-        "fields": 143,
-        "widgetKinds": {
-          "url": 74,
-          "text": 50,
-          "reference": 1,
-          "number": 5,
-          "datetime": 11,
-          "select": 2
-        },
-        "plainTextFallback": 50,
-        "complexPathFields": 0,
-        "diagnostics": {},
-        "diagnosticSamples": []
-      }
+      "turtleBytes": 84832,
+      "turtleLines": 1819
     },
     {
-      "id": "health-ri-modules",
-      "label": "Health-RI domain modules (health, imaging, omics)",
-      "note": "Small; expected to be mostly rules rather than form-bearing shapes.",
-      "files": 5,
-      "turtleLines": 147,
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-de/src/dcat-ap-spec-german-additions.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-de/src/dcat-ap-spec-german-messages.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-de/src/dcat-ap-konventionen.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-de/src/dcat-ap-de-deprecated.ttl"
+      ],
+      "files": 4,
+      "form": {
+        "complexPathFields": 3,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 17,
+        "editorIds": {
+          "AutoCompleteEditor": 27,
+          "DetailsEditor": 2,
+          "IRIEditor": 22,
+          "TextFieldEditor": 70
+        },
+        "fields": 121,
+        "inferred": 70,
+        "nested": 2,
+        "noWidget": 0,
+        "plainTextFallback": 70,
+        "readOnly": 3,
+        "shapesBuilt": 29,
+        "shapesFailed": [],
+        "statedEditorHonoured": 46,
+        "typedWidget": 46
+      },
+      "gaps": [
+        {
+          "count": 28,
+          "kind": "dropped",
+          "term": "sh:hasValue",
+          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+        },
+        {
+          "count": 19,
+          "kind": "unrendered",
+          "term": "sh:property",
+          "why": "A property shape nested INSIDE another property shape — reached as a constraint parameter (under sh:or, sh:qualifiedValueShape…) rather than from a node shape. Only node-shape properties are built into fields, so these are invisible. (The ordinary node-shape sh:property is the mechanism itself and is of course read; it is filtered out of this count.)"
+        },
+        {
+          "count": 4,
+          "kind": "unrendered",
+          "term": "sh:or",
+          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
+        },
+        {
+          "count": 3,
+          "kind": "dropped",
+          "term": "sh:deactivated",
+          "why": "WRONGLY RENDERED, not merely ignored: the component is recorded but never honoured, so a property the profile switched off still gets a field. A correctness bug, not a missing feature."
+        },
+        {
+          "count": 3,
+          "kind": "unrendered",
+          "term": "sh:qualifiedMinCount",
+          "why": "Parameter of sh:qualifiedValueShape."
+        },
+        {
+          "count": 3,
+          "kind": "unrendered",
+          "term": "sh:qualifiedValueShape",
+          "why": "No slot in the typed IR. 'at least n of the values must match shape S' is a per-value constraint the field, which models one editor for all its values, cannot express."
+        },
+        {
+          "count": 1,
+          "kind": "unrendered",
+          "term": "sh:qualifiedMaxCount",
+          "why": "Parameter of sh:qualifiedValueShape."
+        },
+        {
+          "count": 1,
+          "kind": "dropped",
+          "term": "sh:targetObjectsOf",
+          "why": "Target selector; not used for root-shape resolution."
+        }
+      ],
+      "id": "dcat-ap-de",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 27,
+          "MaxCountConstraintComponent": 19,
+          "MinCountConstraintComponent": 17,
+          "NodeConstraintComponent": 3,
+          "NodeKindConstraintComponent": 30,
+          "OrConstraintComponent": 2,
+          "PatternConstraintComponent": 6,
+          "PropertyConstraintComponent": 19,
+          "QualifiedMaxCountConstraintComponent": 1,
+          "QualifiedMinCountConstraintComponent": 2,
+          "QualifiedValueShapeConstraintComponent": 2
+        },
+        "conditionals": 0,
+        "described": 1,
+        "editors": {
+          "AutoCompleteEditor": 27,
+          "DetailsEditor": 2,
+          "IRIEditor": 19,
+          "TextFieldEditor": 73
+        },
+        "groups": 0,
+        "named": 0,
+        "nodeShapes": 29,
+        "nodeShapesWithProperties": 23,
+        "parameters": {
+          "class": 27,
+          "description": 1,
+          "flags": 3,
+          "maxCount": 19,
+          "message": 102,
+          "minCount": 17,
+          "node": 3,
+          "nodeKind": 30,
+          "or": 2,
+          "path": 121,
+          "pattern": 3,
+          "property": 19,
+          "qualifiedMaxCount": 1,
+          "qualifiedMinCount": 2,
+          "qualifiedValueShape": 2,
+          "severity": 99
+        },
+        "pathKinds": {
+          "alternative": 3,
+          "predicate": 129
+        },
+        "propertyShapes": 121
+      },
+      "label": "DCAT-AP.de 2.0 (national extension, Germany)",
+      "note": "The national extension's OWN shapes. The release also ships a verbatim copy of `dcat-ap_2.1.1_shacl_shapes.ttl`; it is excluded here because DCAT-AP is already counted, and folding it in would double-count the core. The richest profile in the corpus by construct variety.",
+      "origin": "external",
       "parsed": true,
+      "perFile": [
+        {
+          "fields": 87,
+          "file": "dcat-ap-spec-german-additions.ttl",
+          "nested": 2,
+          "nodeShapes": 17,
+          "plain": 43,
+          "readOnly": 2,
+          "typed": 40
+        },
+        {
+          "fields": 0,
+          "file": "dcat-ap-spec-german-messages.ttl",
+          "nested": 0,
+          "nodeShapes": 0,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 0
+        },
+        {
+          "fields": 27,
+          "file": "dcat-ap-konventionen.ttl",
+          "nested": 0,
+          "nodeShapes": 8,
+          "plain": 20,
+          "readOnly": 1,
+          "typed": 6
+        },
+        {
+          "fields": 7,
+          "file": "dcat-ap-de-deprecated.ttl",
+          "nested": 0,
+          "nodeShapes": 4,
+          "plain": 7,
+          "readOnly": 0,
+          "typed": 0
+        }
+      ],
       "source": {
-        "shuiEditor": 0,
         "dashEditor": 0,
+        "langTags": {
+          "de": 251
+        },
+        "shGroup": 0,
+        "shName": 23,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 71266,
+      "turtleLines": 1608
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/fair-data-point/src/defaultNavigationShacl.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/fair-data-point/src/shape-catalog.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/fair-data-point/src/shape-data-service.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/fair-data-point/src/shape-dataset.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/fair-data-point/src/shape-distribution.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/fair-data-point/src/shape-fdp.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/fair-data-point/src/shape-metadata-service.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/fair-data-point/src/shape-resource.ttl"
+      ],
+      "files": 8,
+      "form": {
+        "complexPathFields": 0,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 0,
+        "editorIds": {
+          "DatePickerEditor": 2,
+          "DateTimePickerEditor": 6,
+          "DetailsEditor": 7,
+          "IRIEditor": 14,
+          "TextFieldEditor": 8
+        },
+        "fields": 37,
+        "inferred": 8,
+        "nested": 7,
+        "noWidget": 0,
+        "plainTextFallback": 8,
+        "readOnly": 0,
+        "shapesBuilt": 13,
+        "shapesFailed": [],
+        "statedEditorHonoured": 22,
+        "typedWidget": 22
+      },
+      "gaps": [
+        {
+          "count": 27,
+          "kind": "unrendered",
+          "term": "dash:editor",
+          "why": "The DASH editor vocabulary. The engine records the term and does not act on it: only `shui:editor` selects a widget. This is the measured baseline — see the note above the coverage table."
+        },
+        {
+          "count": 24,
+          "kind": "unrendered",
+          "term": "dash:viewer",
+          "why": "See dash:editor."
+        }
+      ],
+      "id": "fair-data-point",
+      "ir": {
+        "components": {
+          "DatatypeConstraintComponent": 8,
+          "MaxCountConstraintComponent": 27,
+          "MinCountConstraintComponent": 6,
+          "NodeConstraintComponent": 7,
+          "NodeKindConstraintComponent": 22
+        },
+        "conditionals": 0,
+        "described": 0,
+        "editors": {
+          "DatePickerEditor": 2,
+          "DateTimePickerEditor": 6,
+          "DetailsEditor": 7,
+          "IRIEditor": 14,
+          "TextFieldEditor": 8
+        },
+        "groups": 0,
+        "named": 1,
+        "nodeShapes": 13,
+        "nodeShapesWithProperties": 11,
+        "parameters": {
+          "datatype": 8,
+          "defaultValue": 3,
+          "editor": 27,
+          "maxCount": 27,
+          "minCount": 6,
+          "name": 1,
+          "node": 7,
+          "nodeKind": 22,
+          "order": 30,
+          "path": 37,
+          "viewer": 24
+        },
+        "pathKinds": {
+          "predicate": 37
+        },
+        "propertyShapes": 37
+      },
+      "label": "FAIR Data Point (FAIRDataTeam reference implementation)",
+      "note": "Not a specification document but the shapes a running FDP instance ships and serves to its own metadata editor — the closest thing in the corpus to a profile authored FOR a form. DASH-annotated throughout.",
+      "origin": "external",
+      "parsed": true,
+      "perFile": [
+        {
+          "fields": 6,
+          "file": "defaultNavigationShacl.ttl",
+          "nested": 6,
+          "nodeShapes": 5,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 0
+        },
+        {
+          "fields": 4,
+          "file": "shape-catalog.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 4
+        },
+        {
+          "fields": 2,
+          "file": "shape-data-service.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 2
+        },
+        {
+          "fields": 6,
+          "file": "shape-dataset.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 1,
+          "readOnly": 0,
+          "typed": 5
+        },
+        {
+          "fields": 7,
+          "file": "shape-distribution.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 3,
+          "readOnly": 0,
+          "typed": 4
+        },
+        {
+          "fields": 4,
+          "file": "shape-fdp.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 4
+        },
+        {
+          "fields": 0,
+          "file": "shape-metadata-service.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 0
+        },
+        {
+          "fields": 8,
+          "file": "shape-resource.ttl",
+          "nested": 1,
+          "nodeShapes": 2,
+          "plain": 4,
+          "readOnly": 0,
+          "typed": 3
+        }
+      ],
+      "source": {
+        "dashEditor": 27,
+        "langTags": {},
         "shGroup": 0,
         "shName": 1,
-        "langTags": {
-          "en": 15
-        }
+        "shuiEditor": 0
       },
+      "turtleBytes": 9287,
+      "turtleLines": 340
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/sphn/src/shacl_2026-1.ttl"
+      ],
+      "files": 1,
+      "form": {
+        "complexPathFields": 97,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 0,
+        "editorIds": {
+          "AutoCompleteEditor": 725,
+          "DateTimePickerEditor": 160,
+          "IRIEditor": 101,
+          "NumberFieldEditor": 2,
+          "TextFieldEditor": 258
+        },
+        "fields": 1246,
+        "inferred": 258,
+        "nested": 0,
+        "noWidget": 0,
+        "plainTextFallback": 258,
+        "readOnly": 97,
+        "shapesBuilt": 1744,
+        "shapesFailed": [],
+        "statedEditorHonoured": 891,
+        "typedWidget": 891
+      },
+      "gaps": [
+        {
+          "count": 784,
+          "kind": "dropped",
+          "term": "sh:select",
+          "why": "Body of sh:sparql."
+        },
+        {
+          "count": 480,
+          "kind": "dropped",
+          "term": "sh:sparql",
+          "why": "SPARQL-based constraint. Validation-only; there is no affordance a form can derive from a query."
+        },
+        {
+          "count": 233,
+          "kind": "dropped",
+          "term": "sh:closed",
+          "why": "Node-level closedness. A form offers exactly the fields the shape declares, so it cannot violate closedness — but it also cannot show the user that no other property is permitted."
+        },
+        {
+          "count": 233,
+          "kind": "dropped",
+          "term": "sh:ignoredProperties",
+          "why": "Parameter of sh:closed."
+        },
+        {
+          "count": 199,
+          "kind": "unrendered",
+          "term": "sh:or",
+          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
+        },
+        {
+          "count": 96,
+          "kind": "dropped",
+          "term": "sh:target",
+          "why": "SPARQL/custom target; not used for root-shape resolution."
+        },
+        {
+          "count": 1,
+          "kind": "dropped",
+          "term": "sh:entailment",
+          "why": "Entailment regime declaration; ignored."
+        }
+      ],
+      "id": "sphn",
       "ir": {
-        "nodeShapes": 1,
-        "propertyShapes": 6,
+        "components": {
+          "ClassConstraintComponent": 765,
+          "DatatypeConstraintComponent": 256,
+          "InConstraintComponent": 26,
+          "MaxCountConstraintComponent": 962,
+          "MinCountConstraintComponent": 1220,
+          "OrConstraintComponent": 199
+        },
+        "conditionals": 0,
+        "described": 0,
+        "editors": {
+          "AutoCompleteEditor": 765,
+          "DateTimePickerEditor": 160,
+          "EnumSelectEditor": 26,
+          "IRIEditor": 4,
+          "NumberFieldEditor": 2,
+          "TextFieldEditor": 289
+        },
         "groups": 0,
+        "named": 0,
+        "nodeShapes": 1744,
+        "nodeShapesWithProperties": 233,
+        "parameters": {
+          "class": 765,
+          "datatype": 256,
+          "in": 26,
+          "maxCount": 962,
+          "minCount": 1220,
+          "or": 199,
+          "path": 1246
+        },
+        "pathKinds": {
+          "inverse": 26,
+          "predicate": 1377,
+          "sequence": 71
+        },
+        "propertyShapes": 1246
+      },
+      "label": "SPHN 2026.1 (Swiss Personalized Health Network)",
+      "note": "The corpus's non-DCAT health profile, and by two orders of magnitude its largest single file (952 kB). Closed shapes throughout and ~480 SPARQL-based constraints. Included precisely because it is the profile most likely to break something.",
+      "origin": "external",
+      "parsed": true,
+      "source": {
+        "dashEditor": 0,
+        "langTags": {},
+        "shGroup": 0,
+        "shName": 0,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 952178,
+      "turtleLines": 17025
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/bioschemas/src/bioschemas_profiles_shacl.ttl"
+      ],
+      "files": 1,
+      "form": {
+        "complexPathFields": 530,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 2,
+        "editorIds": {
+          "IRIEditor": 530,
+          "TextFieldEditor": 113
+        },
+        "fields": 643,
+        "inferred": 113,
+        "nested": 0,
+        "noWidget": 0,
+        "plainTextFallback": 113,
+        "readOnly": 530,
+        "shapesBuilt": 32,
+        "shapesFailed": [],
+        "statedEditorHonoured": 0,
+        "typedWidget": 0
+      },
+      "gaps": [],
+      "id": "bioschemas",
+      "ir": {
+        "components": {
+          "MinCountConstraintComponent": 353
+        },
+        "conditionals": 0,
+        "described": 643,
+        "editors": {
+          "TextFieldEditor": 643
+        },
+        "groups": 0,
+        "named": 0,
+        "nodeShapes": 32,
+        "nodeShapesWithProperties": 32,
+        "parameters": {
+          "description": 643,
+          "minCount": 353,
+          "path": 643,
+          "severity": 353
+        },
+        "pathKinds": {
+          "alternative": 530,
+          "predicate": 1173
+        },
+        "propertyShapes": 643
+      },
+      "label": "Bioschemas profiles v20250219",
+      "note": "32 life-science profiles in one file, generated from the Bioschemas specifications. Every single path is an sh:alternativePath over the http/https forms of a schema.org term — a complex path used not for expressiveness but to paper over a namespace split. Carries sh:severity and sh:description and NOTHING else: no datatype, no class, no maxCount, no name. The corpus's worst case for type-fact inference, by construction.",
+      "origin": "external",
+      "parsed": true,
+      "source": {
+        "dashEditor": 0,
+        "langTags": {},
+        "shGroup": 0,
+        "shName": 0,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 227639,
+      "turtleLines": 2152
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/spdx-3/src/spdx-model.ttl"
+      ],
+      "files": 1,
+      "form": {
+        "complexPathFields": 0,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 0,
+        "editorIds": {
+          "AutoCompleteEditor": 43,
+          "BooleanEditor": 5,
+          "EnumSelectEditor": 28,
+          "IRIEditor": 13,
+          "NumberFieldEditor": 9,
+          "TextFieldEditor": 95
+        },
+        "fields": 193,
+        "inferred": 95,
+        "nested": 0,
+        "noWidget": 0,
+        "plainTextFallback": 95,
+        "readOnly": 0,
+        "shapesBuilt": 64,
+        "shapesFailed": [],
+        "statedEditorHonoured": 98,
+        "typedWidget": 98
+      },
+      "gaps": [
+        {
+          "count": 12,
+          "kind": "dropped",
+          "term": "sh:hasValue",
+          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+        },
+        {
+          "count": 12,
+          "kind": "unrendered",
+          "term": "sh:not",
+          "why": "Negation has no form affordance; nothing narrows the input."
+        }
+      ],
+      "id": "spdx-3",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 71,
+          "DatatypeConstraintComponent": 113,
+          "InConstraintComponent": 28,
+          "MaxCountConstraintComponent": 134,
+          "MinCountConstraintComponent": 54,
+          "NodeKindConstraintComponent": 184,
+          "NotConstraintComponent": 9,
+          "PatternConstraintComponent": 21
+        },
+        "conditionals": 0,
+        "described": 0,
+        "editors": {
+          "AutoCompleteEditor": 43,
+          "BooleanEditor": 5,
+          "EnumSelectEditor": 28,
+          "IRIEditor": 13,
+          "NumberFieldEditor": 9,
+          "TextFieldEditor": 95
+        },
+        "groups": 0,
+        "named": 0,
+        "nodeShapes": 64,
+        "nodeShapesWithProperties": 52,
+        "parameters": {
+          "class": 71,
+          "datatype": 113,
+          "in": 28,
+          "maxCount": 134,
+          "message": 9,
+          "minCount": 54,
+          "nodeKind": 184,
+          "not": 9,
+          "path": 193,
+          "pattern": 21
+        },
+        "pathKinds": {
+          "predicate": 193
+        },
+        "propertyShapes": 193
+      },
+      "label": "SPDX 3.0.1 model",
+      "note": "Not health, and not a metadata catalogue: the software bill-of-materials model, published by the Linux Foundation as generated SHACL interleaved with OWL axioms in one file. In the corpus as the out-of-domain control — if the coverage number holds here it is not a fact about DCAT.",
+      "origin": "external",
+      "parsed": true,
+      "source": {
+        "dashEditor": 0,
+        "langTags": {
+          "en": 530
+        },
+        "shGroup": 0,
+        "shName": 0,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 183176,
+      "turtleLines": 3331
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Imaging Module/ImagingRules.shape.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Imaging Module/dicomBodyParts.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Imaging Module/dicomScanModality.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Omics Module/omicsRules.shape.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/health Module/healthRules.shape.ttl"
+      ],
+      "files": 5,
+      "form": {
+        "complexPathFields": 0,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 0,
+        "editorIds": {
+          "AutoCompleteEditor": 2,
+          "NumberFieldEditor": 1,
+          "TextFieldEditor": 3
+        },
+        "fields": 6,
+        "inferred": 3,
+        "nested": 0,
+        "noWidget": 0,
+        "plainTextFallback": 3,
+        "readOnly": 0,
+        "shapesBuilt": 1,
+        "shapesFailed": [],
+        "statedEditorHonoured": 3,
+        "typedWidget": 3
+      },
+      "gaps": [],
+      "id": "health-ri-modules",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 2,
+          "DatatypeConstraintComponent": 4,
+          "MinCountConstraintComponent": 6
+        },
+        "conditionals": 0,
+        "described": 0,
+        "editors": {
+          "AutoCompleteEditor": 2,
+          "NumberFieldEditor": 1,
+          "TextFieldEditor": 3
+        },
+        "groups": 0,
+        "named": 0,
+        "nodeShapes": 1,
+        "nodeShapesWithProperties": 1,
+        "parameters": {
+          "class": 2,
+          "datatype": 4,
+          "minCount": 6,
+          "path": 6
+        },
         "pathKinds": {
           "predicate": 6
         },
-        "components": {
-          "path": 6,
-          "class": 2,
-          "minCount": 6,
-          "datatype": 4
-        },
-        "editors": {
-          "AutoCompleteEditor": 2,
-          "TextFieldEditor": 3,
-          "NumberFieldEditor": 1
-        },
-        "conditionals": 0
+        "propertyShapes": 6
       },
-      "form": {
-        "shapesBuilt": 1,
-        "shapesFailed": [],
-        "fields": 6,
-        "widgetKinds": {
-          "text": 3,
-          "reference": 2,
-          "number": 1
-        },
-        "plainTextFallback": 3,
-        "complexPathFields": 0,
-        "diagnostics": {},
-        "diagnosticSamples": []
-      }
-    },
-    {
-      "id": "dcat-ap",
-      "label": "DCAT-AP (as vendored by Health-RI)",
-      "note": "Prefer the upstream SEMIC release once vendored; this is a copy.",
-      "files": 1,
-      "turtleLines": 698,
+      "label": "Health-RI domain modules (health, imaging, omics)",
+      "note": "Small; mostly rules rather than form-bearing shapes. Kept for honesty about size.",
+      "origin": "external",
       "parsed": true,
+      "perFile": [
+        {
+          "fields": 6,
+          "file": "ImagingRules.shape.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 3,
+          "readOnly": 0,
+          "typed": 3
+        },
+        {
+          "fields": 0,
+          "file": "dicomBodyParts.ttl",
+          "nested": 0,
+          "nodeShapes": 0,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 0
+        },
+        {
+          "fields": 0,
+          "file": "dicomScanModality.ttl",
+          "nested": 0,
+          "nodeShapes": 0,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 0
+        },
+        {
+          "fields": 0,
+          "file": "omicsRules.shape.ttl",
+          "nested": 0,
+          "nodeShapes": 0,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 0
+        },
+        {
+          "fields": 0,
+          "file": "healthRules.shape.ttl",
+          "nested": 0,
+          "nodeShapes": 0,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 0
+        }
+      ],
       "source": {
-        "shuiEditor": 0,
         "dashEditor": 0,
+        "langTags": {
+          "en": 15
+        },
         "shGroup": 0,
-        "shName": 14,
-        "langTags": {
-          "en": 16
-        }
+        "shName": 1,
+        "shuiEditor": 0
       },
-      "ir": {
-        "nodeShapes": 21,
-        "propertyShapes": 109,
-        "groups": 0,
-        "pathKinds": {
-          "predicate": 109
-        },
-        "components": {
-          "severity": 109,
-          "nodeKind": 27,
-          "path": 109,
-          "maxCount": 47,
-          "node": 6,
-          "class": 63,
-          "shape": 5,
-          "minCount": 18,
-          "hasValue": 1,
-          "dateTime": 1,
-          "datatype": 5
-        },
-        "editors": {
-          "TextFieldEditor": 37,
-          "DetailsEditor": 6,
-          "AutoCompleteEditor": 63,
-          "NumberFieldEditor": 3
-        },
-        "conditionals": 0
-      },
-      "form": {
-        "shapesBuilt": 21,
-        "shapesFailed": [],
-        "fields": 109,
-        "widgetKinds": {
-          "reference": 63,
-          "text": 43,
-          "number": 3
-        },
-        "plainTextFallback": 43,
-        "complexPathFields": 0,
-        "diagnostics": {},
-        "diagnosticSamples": []
-      }
+      "turtleBytes": 4883,
+      "turtleLines": 147
     },
     {
-      "id": "evidenze-health",
-      "label": "Evidenze HealthDCAT-AP R7 onboarding (ours)",
-      "note": "Pure SHACL 1.2 + SHACL-UI. The deployment.",
+      "fileNames": [
+        "playground/examples/evidenze-health/shapes.ttl"
+      ],
       "files": 1,
-      "turtleLines": 793,
-      "parsed": true,
-      "source": {
-        "shuiEditor": 11,
-        "dashEditor": 0,
-        "shGroup": 47,
-        "shName": 47,
-        "langTags": {
-          "es": 106,
-          "ca": 82
-        }
+      "form": {
+        "complexPathFields": 0,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 0,
+        "editorIds": {
+          "BooleanEditor": 1,
+          "DetailsEditor": 8,
+          "EnumSelectEditor": 15,
+          "IRIEditor": 9,
+          "TextFieldEditor": 8,
+          "TextFieldWithLangEditor": 7
+        },
+        "fields": 48,
+        "inferred": 8,
+        "nested": 8,
+        "noWidget": 0,
+        "plainTextFallback": 8,
+        "readOnly": 0,
+        "shapesBuilt": 10,
+        "shapesFailed": [],
+        "statedEditorHonoured": 32,
+        "typedWidget": 32
       },
+      "gaps": [
+        {
+          "count": 2,
+          "kind": "carried",
+          "term": "sh:hasValue",
+          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+        },
+        {
+          "count": 2,
+          "kind": "dropped",
+          "term": "sh:or",
+          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
+        }
+      ],
+      "id": "evidenze-health",
       "ir": {
-        "nodeShapes": 10,
-        "propertyShapes": 48,
+        "components": {
+          "ClassConstraintComponent": 8,
+          "DatatypeConstraintComponent": 16,
+          "HasValueConstraintComponent": 1,
+          "InConstraintComponent": 15,
+          "MaxCountConstraintComponent": 25,
+          "MinCountConstraintComponent": 25,
+          "NodeConstraintComponent": 8,
+          "NodeKindConstraintComponent": 39,
+          "PatternConstraintComponent": 1
+        },
+        "conditionals": 1,
+        "described": 23,
+        "editors": {
+          "BooleanEditor": 1,
+          "DetailsEditor": 8,
+          "EnumSelectEditor": 15,
+          "IRIEditor": 9,
+          "TextFieldEditor": 8,
+          "TextFieldWithLangEditor": 7
+        },
         "groups": 13,
+        "named": 47,
+        "nodeShapes": 10,
+        "nodeShapesWithProperties": 10,
+        "parameters": {
+          "class": 8,
+          "datatype": 16,
+          "description": 23,
+          "group": 47,
+          "hasValue": 1,
+          "in": 15,
+          "maxCount": 25,
+          "message": 7,
+          "minCount": 25,
+          "name": 47,
+          "node": 8,
+          "nodeKind": 39,
+          "order": 47,
+          "path": 48,
+          "pattern": 1,
+          "type": 47
+        },
         "pathKinds": {
           "predicate": 48
         },
-        "components": {
-          "path": 48,
-          "group": 47,
-          "nodeKind": 39,
-          "maxCount": 25,
-          "type": 47,
-          "name": 47,
-          "order": 47,
-          "minCount": 25,
-          "datatype": 16,
-          "in": 15,
-          "description": 23,
-          "node": 8,
-          "class": 8,
-          "message": 7,
-          "pattern": 1,
-          "hasValue": 1
-        },
-        "editors": {
-          "IRIEditor": 9,
-          "TextFieldWithLangEditor": 7,
-          "EnumSelectEditor": 15,
-          "TextFieldEditor": 8,
-          "DetailsEditor": 8,
-          "BooleanEditor": 1
-        },
-        "conditionals": 1
+        "propertyShapes": 48
       },
-      "form": {
-        "shapesBuilt": 10,
-        "shapesFailed": [],
-        "fields": 48,
-        "widgetKinds": {
-          "text": 16,
-          "lang": 7,
-          "select": 15,
-          "url": 9,
-          "boolean": 1
-        },
-        "plainTextFallback": 16,
-        "complexPathFields": 0,
-        "diagnostics": {},
-        "diagnosticSamples": []
-      }
-    },
-    {
-      "id": "evidenze-dataspace",
-      "label": "Evidenze data space onboarding (ours)",
-      "note": "Pure SHACL 1.2 + SHACL-UI.",
-      "files": 1,
-      "turtleLines": 590,
+      "label": "Evidenze HealthDCAT-AP onboarding (ours)",
+      "note": "Pure SHACL 1.2 + SHACL-UI. The deployment.",
+      "origin": "ours",
       "parsed": true,
       "source": {
-        "shuiEditor": 7,
         "dashEditor": 0,
-        "shGroup": 32,
-        "shName": 32,
         "langTags": {
-          "es": 113,
-          "ca": 87
-        }
+          "ca": 82,
+          "es": 106
+        },
+        "shGroup": 47,
+        "shName": 47,
+        "shuiEditor": 11
       },
+      "turtleBytes": 33566,
+      "turtleLines": 793
+    },
+    {
+      "fileNames": [
+        "playground/examples/evidenze-dataspace/shapes.ttl"
+      ],
+      "files": 1,
+      "form": {
+        "complexPathFields": 0,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 0,
+        "editorIds": {
+          "BooleanEditor": 2,
+          "DetailsEditor": 4,
+          "EnumSelectEditor": 8,
+          "IRIEditor": 5,
+          "NumberFieldEditor": 1,
+          "TextAreaEditor": 3,
+          "TextFieldEditor": 8,
+          "TextFieldWithLangEditor": 2
+        },
+        "fields": 33,
+        "inferred": 8,
+        "nested": 4,
+        "noWidget": 0,
+        "plainTextFallback": 8,
+        "readOnly": 0,
+        "shapesBuilt": 7,
+        "shapesFailed": [],
+        "statedEditorHonoured": 21,
+        "typedWidget": 21
+      },
+      "gaps": [
+        {
+          "count": 1,
+          "kind": "carried",
+          "term": "sh:hasValue",
+          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+        }
+      ],
+      "id": "evidenze-dataspace",
       "ir": {
-        "nodeShapes": 7,
-        "propertyShapes": 33,
+        "components": {
+          "ClassConstraintComponent": 4,
+          "DatatypeConstraintComponent": 16,
+          "HasValueConstraintComponent": 1,
+          "InConstraintComponent": 8,
+          "MaxCountConstraintComponent": 23,
+          "MinCountConstraintComponent": 14,
+          "MinInclusiveConstraintComponent": 1,
+          "NodeConstraintComponent": 4,
+          "NodeKindConstraintComponent": 28,
+          "PatternConstraintComponent": 1
+        },
+        "conditionals": 1,
+        "described": 32,
+        "editors": {
+          "BooleanEditor": 2,
+          "DetailsEditor": 4,
+          "EnumSelectEditor": 8,
+          "IRIEditor": 5,
+          "NumberFieldEditor": 1,
+          "TextAreaEditor": 3,
+          "TextFieldEditor": 8,
+          "TextFieldWithLangEditor": 2
+        },
         "groups": 10,
+        "named": 32,
+        "nodeShapes": 7,
+        "nodeShapesWithProperties": 7,
+        "parameters": {
+          "class": 4,
+          "datatype": 16,
+          "description": 32,
+          "editor": 7,
+          "group": 32,
+          "hasValue": 1,
+          "in": 8,
+          "maxCount": 23,
+          "message": 5,
+          "minCount": 14,
+          "minInclusive": 1,
+          "name": 32,
+          "node": 4,
+          "nodeKind": 28,
+          "order": 32,
+          "path": 33,
+          "pattern": 1,
+          "type": 32
+        },
         "pathKinds": {
           "predicate": 33
         },
-        "components": {
-          "name": 32,
-          "order": 32,
-          "type": 32,
-          "nodeKind": 28,
-          "maxCount": 23,
-          "group": 32,
-          "path": 33,
-          "description": 32,
-          "minCount": 14,
-          "datatype": 16,
-          "hasValue": 1,
-          "minInclusive": 1,
-          "message": 5,
-          "editor": 7,
-          "in": 8,
-          "pattern": 1,
-          "node": 4,
-          "class": 4
-        },
-        "editors": {
-          "IRIEditor": 5,
-          "TextFieldEditor": 8,
-          "BooleanEditor": 2,
-          "NumberFieldEditor": 1,
-          "TextAreaEditor": 3,
-          "EnumSelectEditor": 8,
-          "DetailsEditor": 4,
-          "TextFieldWithLangEditor": 2
-        },
-        "conditionals": 1
+        "propertyShapes": 33
       },
-      "form": {
-        "shapesBuilt": 7,
-        "shapesFailed": [],
-        "fields": 33,
-        "widgetKinds": {
-          "text": 12,
-          "url": 5,
-          "textarea": 3,
-          "select": 8,
-          "boolean": 2,
-          "number": 1,
-          "lang": 2
+      "label": "Evidenze data space onboarding (ours)",
+      "note": "Pure SHACL 1.2 + SHACL-UI.",
+      "origin": "ours",
+      "parsed": true,
+      "source": {
+        "dashEditor": 0,
+        "langTags": {
+          "ca": 87,
+          "es": 113
         },
-        "plainTextFallback": 12,
+        "shGroup": 32,
+        "shName": 32,
+        "shuiEditor": 7
+      },
+      "turtleBytes": 28309,
+      "turtleLines": 590
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-3/src/dcat-ap-SHACL.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/dcat-ap-3/src/ranges.ttl"
+      ],
+      "files": 2,
+      "form": {
         "complexPathFields": 0,
+        "degradedToFallback": 0,
         "diagnostics": {},
-        "diagnosticSamples": []
-      }
+        "diagnosticSamples": [],
+        "duplicatePath": 161,
+        "editorIds": {
+          "AutoCompleteEditor": 85,
+          "NumberFieldEditor": 3,
+          "TextFieldEditor": 204
+        },
+        "fields": 292,
+        "inferred": 204,
+        "nested": 0,
+        "noWidget": 0,
+        "plainTextFallback": 204,
+        "readOnly": 0,
+        "shapesBuilt": 40,
+        "shapesFailed": [],
+        "statedEditorHonoured": 88,
+        "typedWidget": 88
+      },
+      "gaps": [
+        {
+          "count": 292,
+          "kind": "unrendered",
+          "term": "<http://www.w3.org/2000/01/rdf-schema#seeAlso>",
+          "why": "Not in the construct ledger — unclassified, and therefore unread by the form layer."
+        },
+        {
+          "count": 67,
+          "kind": "dropped",
+          "term": "sh:closed",
+          "why": "Node-level closedness. A form offers exactly the fields the shape declares, so it cannot violate closedness — but it also cannot show the user that no other property is permitted."
+        }
+      ],
+      "id": "dcat-ap-3-generated",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 85,
+          "DatatypeConstraintComponent": 6,
+          "MaxCountConstraintComponent": 50,
+          "MinCountConstraintComponent": 20,
+          "NodeKindConstraintComponent": 131
+        },
+        "conditionals": 0,
+        "described": 292,
+        "editors": {
+          "AutoCompleteEditor": 85,
+          "NumberFieldEditor": 3,
+          "TextFieldEditor": 204
+        },
+        "groups": 0,
+        "named": 292,
+        "nodeShapes": 40,
+        "nodeShapesWithProperties": 15,
+        "parameters": {
+          "class": 85,
+          "datatype": 6,
+          "description": 292,
+          "maxCount": 50,
+          "minCount": 20,
+          "name": 292,
+          "nodeKind": 131,
+          "path": 292,
+          "seeAlso": 292
+        },
+        "pathKinds": {
+          "predicate": 292
+        },
+        "propertyShapes": 292
+      },
+      "label": "DCAT-AP 3.0.1 — generated encoding",
+      "note": "The SAME release, second encoding: `releases/3.0.1/shacl/` is generated from the UML model, uses the `shacl:` prefix rather than `sh:`, closes every node shape, and carries sh:name + sh:description on every one of its 290 property shapes — which the hand-maintained `html/shacl/` encoding of the same spec has none of. Excluded from the headline (it is not an independent profile) but the pair is the cleanest natural experiment in the corpus: one spec, two encodings, measurably different forms.",
+      "origin": "external",
+      "parsed": true,
+      "perFile": [
+        {
+          "fields": 290,
+          "file": "dcat-ap-SHACL.ttl",
+          "nested": 0,
+          "nodeShapes": 35,
+          "plain": 204,
+          "readOnly": 0,
+          "typed": 86
+        },
+        {
+          "fields": 91,
+          "file": "ranges.ttl",
+          "nested": 0,
+          "nodeShapes": 240,
+          "plain": 3,
+          "readOnly": 0,
+          "typed": 88
+        }
+      ],
+      "source": {
+        "dashEditor": 0,
+        "langTags": {
+          "en": 762
+        },
+        "shGroup": 0,
+        "shName": 381,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 235795,
+      "turtleLines": 3452,
+      "variantOf": "dcat-ap-3"
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/healthdcat-ap/src/restricted-shapes.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/healthdcat-ap/src/restricted-shapes_recommended.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/healthdcat-ap/src/range.ttl"
+      ],
+      "files": 3,
+      "form": {
+        "complexPathFields": 2,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 4,
+        "editorIds": {
+          "AutoCompleteEditor": 17,
+          "DetailsEditor": 8,
+          "IRIEditor": 13,
+          "NumberFieldEditor": 4,
+          "TextFieldEditor": 45
+        },
+        "fields": 87,
+        "inferred": 45,
+        "nested": 8,
+        "noWidget": 0,
+        "plainTextFallback": 45,
+        "readOnly": 2,
+        "shapesBuilt": 17,
+        "shapesFailed": [],
+        "statedEditorHonoured": 32,
+        "typedWidget": 32
+      },
+      "gaps": [
+        {
+          "count": 1,
+          "kind": "carried",
+          "term": "sh:hasValue",
+          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+        }
+      ],
+      "id": "healthdcat-ap-restricted",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 17,
+          "DatatypeConstraintComponent": 4,
+          "HasValueConstraintComponent": 1,
+          "MaxCountConstraintComponent": 17,
+          "MinCountConstraintComponent": 40,
+          "NodeConstraintComponent": 8,
+          "NodeKindConstraintComponent": 35
+        },
+        "conditionals": 0,
+        "described": 2,
+        "editors": {
+          "AutoCompleteEditor": 17,
+          "DetailsEditor": 8,
+          "IRIEditor": 11,
+          "NumberFieldEditor": 4,
+          "TextFieldEditor": 47
+        },
+        "groups": 0,
+        "named": 0,
+        "nodeShapes": 17,
+        "nodeShapesWithProperties": 16,
+        "parameters": {
+          "class": 17,
+          "datatype": 4,
+          "description": 2,
+          "hasValue": 1,
+          "maxCount": 17,
+          "message": 40,
+          "minCount": 40,
+          "node": 8,
+          "nodeKind": 35,
+          "path": 87,
+          "severity": 83
+        },
+        "pathKinds": {
+          "alternative": 2,
+          "predicate": 89
+        },
+        "propertyShapes": 87
+      },
+      "label": "HealthDCAT-AP Release 5 — restricted tier",
+      "note": "Same shape IRIs as the public tier with different severities/cardinalities for sensitive properties. Reported to show the tiering; not an independent n.",
+      "origin": "external",
+      "parsed": true,
+      "perFile": [
+        {
+          "fields": 56,
+          "file": "restricted-shapes.ttl",
+          "nested": 8,
+          "nodeShapes": 13,
+          "plain": 26,
+          "readOnly": 2,
+          "typed": 20
+        },
+        {
+          "fields": 18,
+          "file": "restricted-shapes_recommended.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 18,
+          "readOnly": 0,
+          "typed": 0
+        },
+        {
+          "fields": 13,
+          "file": "range.ttl",
+          "nested": 0,
+          "nodeShapes": 3,
+          "plain": 1,
+          "readOnly": 0,
+          "typed": 12
+        }
+      ],
+      "source": {
+        "dashEditor": 0,
+        "langTags": {
+          "en": 14
+        },
+        "shGroup": 0,
+        "shName": 0,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 25611,
+      "turtleLines": 684,
+      "variantOf": "healthdcat-ap"
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/ReusedCommunityStandards/dcatap.shapes.ttl"
+      ],
+      "files": 1,
+      "form": {
+        "complexPathFields": 0,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 0,
+        "editorIds": {
+          "AutoCompleteEditor": 63,
+          "DetailsEditor": 6,
+          "NumberFieldEditor": 3,
+          "TextFieldEditor": 37
+        },
+        "fields": 109,
+        "inferred": 37,
+        "nested": 6,
+        "noWidget": 0,
+        "plainTextFallback": 37,
+        "readOnly": 0,
+        "shapesBuilt": 21,
+        "shapesFailed": [],
+        "statedEditorHonoured": 66,
+        "typedWidget": 66
+      },
+      "gaps": [
+        {
+          "count": 5,
+          "kind": "unrendered",
+          "term": "sh:shape",
+          "why": "Not a SHACL 1.2 term at all — a leftover from a pre-REC draft, still shipped by DCAT-AP 3.0.1. It is recorded and ignored."
+        },
+        {
+          "count": 2,
+          "kind": "dropped",
+          "term": "sh:or",
+          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
+        },
+        {
+          "count": 1,
+          "kind": "unrendered",
+          "term": "sh:dateTime",
+          "why": "Not in the construct ledger — unclassified, and therefore unread by the form layer."
+        },
+        {
+          "count": 1,
+          "kind": "carried",
+          "term": "sh:hasValue",
+          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+        }
+      ],
+      "id": "dcat-ap-vendored",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 63,
+          "DatatypeConstraintComponent": 5,
+          "HasValueConstraintComponent": 1,
+          "MaxCountConstraintComponent": 47,
+          "MinCountConstraintComponent": 18,
+          "NodeConstraintComponent": 6,
+          "NodeKindConstraintComponent": 27
+        },
+        "conditionals": 0,
+        "described": 0,
+        "editors": {
+          "AutoCompleteEditor": 63,
+          "DetailsEditor": 6,
+          "NumberFieldEditor": 3,
+          "TextFieldEditor": 37
+        },
+        "groups": 0,
+        "named": 0,
+        "nodeShapes": 21,
+        "nodeShapesWithProperties": 14,
+        "parameters": {
+          "class": 63,
+          "datatype": 5,
+          "dateTime": 1,
+          "hasValue": 1,
+          "maxCount": 47,
+          "minCount": 18,
+          "node": 6,
+          "nodeKind": 27,
+          "path": 109,
+          "severity": 109,
+          "shape": 5
+        },
+        "pathKinds": {
+          "predicate": 109
+        },
+        "propertyShapes": 109
+      },
+      "label": "DCAT-AP as vendored by Health-RI",
+      "note": "Health-RI's in-tree copy of DCAT-AP. Was the E1 'DCAT-AP' row until the upstream SEMIC release was vendored; demoted to a variant so DCAT-AP is counted once. Kept because the drift between a vendored copy and its upstream is itself worth a sentence.",
+      "origin": "external",
+      "parsed": true,
+      "source": {
+        "dashEditor": 0,
+        "langTags": {
+          "en": 16
+        },
+        "shGroup": 0,
+        "shName": 14,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 20344,
+      "turtleLines": 698,
+      "variantOf": "dcat-ap-3"
+    },
+    {
+      "fileNames": [
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Catalog.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/DataService.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Dataset.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/DatasetSeries.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Distribution.ttl",
+        "paper/swat4hcls-2027/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Resource.ttl"
+      ],
+      "files": 6,
+      "form": {
+        "complexPathFields": 0,
+        "degradedToFallback": 0,
+        "diagnostics": {},
+        "diagnosticSamples": [],
+        "duplicatePath": 0,
+        "editorIds": {
+          "AutoCompleteEditor": 1,
+          "DateTimePickerEditor": 11,
+          "DetailsEditor": 23,
+          "EnumSelectEditor": 2,
+          "IRIEditor": 74,
+          "NumberFieldEditor": 5,
+          "TextFieldEditor": 27
+        },
+        "fields": 143,
+        "inferred": 27,
+        "nested": 23,
+        "noWidget": 0,
+        "plainTextFallback": 27,
+        "readOnly": 0,
+        "shapesBuilt": 14,
+        "shapesFailed": [],
+        "statedEditorHonoured": 93,
+        "typedWidget": 93
+      },
+      "gaps": [
+        {
+          "count": 182,
+          "kind": "unrendered",
+          "term": "dash:editor",
+          "why": "The DASH editor vocabulary. The engine records the term and does not act on it: only `shui:editor` selects a widget. This is the measured baseline — see the note above the coverage table."
+        },
+        {
+          "count": 182,
+          "kind": "unrendered",
+          "term": "dash:viewer",
+          "why": "See dash:editor."
+        },
+        {
+          "count": 1,
+          "kind": "carried",
+          "term": "sh:minExclusive",
+          "why": "No numeric control here takes an exclusive bound, and no epsilon is right for both xsd:integer and xsd:double. Enforced on commit by the validator, invisible in the UI."
+        }
+      ],
+      "id": "health-ri-fdp",
+      "ir": {
+        "components": {
+          "ClassConstraintComponent": 1,
+          "DatatypeConstraintComponent": 20,
+          "InConstraintComponent": 2,
+          "MaxCountConstraintComponent": 67,
+          "MinCountConstraintComponent": 44,
+          "MinExclusiveConstraintComponent": 1,
+          "NodeConstraintComponent": 23,
+          "NodeKindConstraintComponent": 112,
+          "PatternConstraintComponent": 13,
+          "UniqueLangConstraintComponent": 13
+        },
+        "conditionals": 0,
+        "described": 123,
+        "editors": {
+          "AutoCompleteEditor": 1,
+          "DateTimePickerEditor": 11,
+          "DetailsEditor": 23,
+          "EnumSelectEditor": 2,
+          "IRIEditor": 74,
+          "NumberFieldEditor": 5,
+          "TextFieldEditor": 27
+        },
+        "groups": 0,
+        "named": 143,
+        "nodeShapes": 14,
+        "nodeShapesWithProperties": 13,
+        "parameters": {
+          "class": 1,
+          "datatype": 20,
+          "defaultValue": 2,
+          "description": 123,
+          "editor": 141,
+          "in": 2,
+          "maxCount": 67,
+          "minCount": 44,
+          "minExclusive": 1,
+          "name": 143,
+          "node": 23,
+          "nodeKind": 112,
+          "path": 143,
+          "pattern": 13,
+          "uniqueLang": 13,
+          "viewer": 141
+        },
+        "pathKinds": {
+          "predicate": 143
+        },
+        "propertyShapes": 143
+      },
+      "label": "Health-RI FAIR Data Point shapes",
+      "note": "NOT an independent profile. It declares the same shape IRIs (hri:AgentShape, hri:CatalogShape, …) as PiecesShape, and its 178 sh:path lines collapse to the same 137 distinct (shape, path) pairs — each FDP file is self-contained and redefines the shared shapes, so concatenation merges them by identity. Unrelated to the FAIRDataTeam `fair-data-point` profile above.",
+      "origin": "external",
+      "parsed": true,
+      "perFile": [
+        {
+          "fields": 32,
+          "file": "Catalog.ttl",
+          "nested": 4,
+          "nodeShapes": 4,
+          "plain": 7,
+          "readOnly": 0,
+          "typed": 21
+        },
+        {
+          "fields": 35,
+          "file": "DataService.ttl",
+          "nested": 4,
+          "nodeShapes": 4,
+          "plain": 10,
+          "readOnly": 0,
+          "typed": 21
+        },
+        {
+          "fields": 68,
+          "file": "Dataset.ttl",
+          "nested": 10,
+          "nodeShapes": 8,
+          "plain": 14,
+          "readOnly": 0,
+          "typed": 44
+        },
+        {
+          "fields": 23,
+          "file": "DatasetSeries.ttl",
+          "nested": 3,
+          "nodeShapes": 4,
+          "plain": 6,
+          "readOnly": 0,
+          "typed": 14
+        },
+        {
+          "fields": 26,
+          "file": "Distribution.ttl",
+          "nested": 2,
+          "nodeShapes": 3,
+          "plain": 4,
+          "readOnly": 0,
+          "typed": 20
+        },
+        {
+          "fields": 0,
+          "file": "Resource.ttl",
+          "nested": 0,
+          "nodeShapes": 1,
+          "plain": 0,
+          "readOnly": 0,
+          "typed": 0
+        }
+      ],
+      "source": {
+        "dashEditor": 182,
+        "langTags": {
+          "en": 440
+        },
+        "shGroup": 0,
+        "shName": 184,
+        "shuiEditor": 0
+      },
+      "turtleBytes": 94599,
+      "turtleLines": 2077,
+      "variantOf": "health-ri-core"
     }
+  ],
+  "widgetRegistry": [
+    "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
+    "http://www.w3.org/ns/shacl-ui#BooleanEditor",
+    "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
+    "http://www.w3.org/ns/shacl-ui#DateTimePickerEditor",
+    "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+    "http://www.w3.org/ns/shacl-ui#IRIEditor",
+    "http://www.w3.org/ns/shacl-ui#InstancesSelectEditor",
+    "http://www.w3.org/ns/shacl-ui#NumberFieldEditor",
+    "http://www.w3.org/ns/shacl-ui#RichTextEditor",
+    "http://www.w3.org/ns/shacl-ui#SubClassEditor",
+    "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
+    "http://www.w3.org/ns/shacl-ui#TextAreaWithLangEditor",
+    "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+    "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor"
   ]
 }
