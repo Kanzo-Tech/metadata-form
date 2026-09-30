@@ -115,6 +115,21 @@ controller is the single handle for everything:
 | `form.report` | derived form state — `{progress, issues, pending, nextField, health}` |
 | `form.subscribe(cb)` | observe changes (autosave, external sync) |
 
+### Public API
+
+The main entry is deliberately small.
+
+| Export | |
+|---|---|
+| `useMetadataForm`, `MetadataForm` | the controller hook and the component that renders it |
+| `ValidationSummary`, `ValidationPanel` | the issue pill and the issue list |
+| `FormAssistant` | the corner companion |
+| `defaultWidgets`, `Editors` | the widget registry and the `shui:` editor IRIs it is keyed by |
+| types | the form model (`FormModel`, `FieldModel`, …), the report (`FormReport`, `FieldError`, …), the widget contract (`Widget`, `WidgetProps`, `WidgetRegistry`, …), `FormAssist`, `Strings` |
+
+Everything else is on a subpath: `metadata-form/rudof` (the engine and the shape
+IR), `metadata-form/ai` (the Vercel AI SDK adapter), `metadata-form/tailwind.css`.
+
 ### Assistance — one seam (`assist`)
 
 All data/AI help goes through a single `assist` object. The library **never calls
@@ -182,7 +197,7 @@ a dependency-free emoji; plug a Lottie/Rive character for something custom:
 <FormAssistant form={form} character={myLottieMascot} />
 ```
 
-Or build a fully custom surface on top of `form.report` (or `useFormReport(form)`).
+Or build a fully custom surface on top of `form.report`.
 
 ### Layout
 
@@ -378,7 +393,9 @@ same IR; the UI doesn't move.
 ### `metadata-form/rudof` — direct engine access
 
 Power-user wiring lives at the `./rudof` subpath: a shared `RudofEngine`, custom
-projection, or a raw graph session, without going through the hook.
+projection, or a raw graph session, without going through the hook. It also
+carries the shape IR types (`ShapeModel`, `NodeShapeIR`, `PropertyShapeIR`,
+`ProjectedForm`, …).
 
 ```ts
 import { createRudofEngine, projectTree } from "metadata-form/rudof";

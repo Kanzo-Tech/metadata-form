@@ -30,3 +30,19 @@ export type {
 export function createRudofEngine(): RudofEngine {
   return new RudofEngine(loadRudof);
 }
+
+// The shape IR the engine returns and the projection consumes.
+export type {
+  ShapeModel,
+  NodeShapeIR,
+  PropertyShapeIR,
+  PathExpr,
+  ValueConstraints,
+  PresentationHints,
+  ComponentIR,
+  TermValue,
+  LangString,
+  ProjectedForm,
+  ProjectedProperty,
+  ProjectedValue,
+} from "../form/ShapeIR.js";

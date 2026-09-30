@@ -58,10 +58,11 @@ export interface RudofReport {
  * per edit).
  */
 export interface RudofSession {
-  /** Parse shapes (SHACL or ShEx) into the IR JSON and retain them. */
-  loadShapes(text: string, mediaType: string): ShapeModelJson;
-  /** Parse a data document as the current graph. */
-  loadData(text: string, mediaType: string): void;
+  /** Parse shapes (SHACL or ShEx) into the IR JSON and retain them. `base` is the
+   *  document base relative IRIs resolve against, when the caller knows it. */
+  loadShapes(text: string, mediaType: string, base?: string): ShapeModelJson;
+  /** Parse a data document as the current graph. `base` as for {@link loadShapes}. */
+  loadData(text: string, mediaType: string, base?: string): void;
   /** Replace the current graph with an empty one. */
   newData(): void;
 

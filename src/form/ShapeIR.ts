@@ -102,6 +102,8 @@ export interface PresentationHints {
   editor?: string;
   /** The SHACL-UI viewer IRI, when stated (read-only display hint). */
   viewer?: string;
+  /** `shui:singleLine`: whether a text editor should be one line or several. */
+  singleLine?: boolean;
 }
 
 /**
@@ -187,7 +189,12 @@ export interface NodeShapeIR {
    * properties reach the form as a reference to a shape that says nothing.
    */
   logical?: LogicalConstraints;
+  /** `sh:closed true` (SHACL §4.8.1): the focus node may carry no property
+   *  beyond those the shape declares. Absent when open. */
   closed?: boolean;
+  /** `sh:ignoredProperties`: the predicates a closed shape permits anyway. Only
+   *  meaningful together with {@link closed}. */
+  ignoredProperties?: string[];
   /** The shape is switched off (SHACL `sh:deactivated true`, §2.1.6). Deactivation
    *  applies to shapes generally, node shapes included: a switched-off node shape
    *  builds no fields at all and is never chosen as a form's root shape. */

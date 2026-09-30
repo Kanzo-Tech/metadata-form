@@ -2,39 +2,27 @@
 // (see "metadata-form/tailwind.css") and put the theme attributes on <html> (see
 // KanzoThemeProvider). There is no wrapper component to render inside: Ark's
 // overlays portal to document.body, so a wrapper could not reach them.
+//
+// Deliberately small: a hook, the components that render it, and the types a
+// consumer writes against. The rudof engine and the shape IR are on the
+// `metadata-form/rudof` subpath, the AI adapter on `metadata-form/ai`.
 
-// React layer — the single, unified API: useMetadataForm() + <MetadataForm>.
 export { useMetadataForm } from "./react/hooks/useMetadataForm.js";
-export type {
-  MetadataFormController,
-  UseMetadataFormOptions,
-} from "./react/hooks/useMetadataForm.js";
+export type { MetadataFormController, UseMetadataFormOptions } from "./react/hooks/useMetadataForm.js";
 export { MetadataForm } from "./react/form/MetadataForm.js";
 export type { MetadataFormProps } from "./react/form/MetadataForm.js";
 export type { FormLayout, GridLayout } from "./react/form/context.js";
 export { ValidationSummary } from "./react/validation/ValidationSummary.js";
 export type { ValidationSummaryProps } from "./react/validation/ValidationSummary.js";
-// The findings, read as a list. The panel half of "a pill summarises, a panel
-// explains" — see the component's own docblock for why it is not the pill.
 export { ValidationPanel } from "./react/validation/ValidationPanel.js";
 export type { ValidationPanelProps, ValidationPanelLabels } from "./react/validation/ValidationPanel.js";
-// Derived form state — the single source for validation + completion + health.
-export { computeFormReport } from "./react/validation/formReport.js";
-export type { FormReport, FormProgress, FormMood, IssueRow, GroupIssues } from "./react/validation/formReport.js";
 export { FormAssistant } from "./react/assistant/FormAssistant.js";
 export type { FormAssistantProps } from "./react/assistant/FormAssistant.js";
-export { defaultMascot } from "./react/assistant/mascot.js";
 export type { MascotCharacter, MascotMood } from "./react/assistant/mascot.js";
-// Widgets — the presentation contract (build a theme = a set of these).
+
+// Widgets — the presentation contract (a theme is a set of these, keyed by editor IRI).
 export { defaultWidgets } from "./react/widgets/defaultWidgets.js";
-export {
-  resolveWidget,
-  optionsFor,
-  stepFor,
-  widgetRender,
-  widgetAssist,
-  widgetMulti,
-} from "./react/widgets/widgets.js";
+export { Editors } from "./form/vocab/shacl-ui.js";
 export type {
   Widget,
   WidgetProps,
@@ -46,14 +34,8 @@ export type {
   AssistSupport,
 } from "./react/widgets/widgets.js";
 export type { WidgetOption, FormAssist, FieldSuggestion } from "./assist.js";
-export { termToPrimitive, primitiveToTerm } from "./form/termBinding.js";
-// Lower-level building blocks (for custom layouts).
-export { NodeForm } from "./react/form/NodeForm.js";
-export { FieldRenderer } from "./react/form/FieldRenderer.js";
-export { useField } from "./react/hooks/useField.js";
-export { useFormContext, useFocusNode } from "./react/form/context.js";
 
-// Schema-agnostic form model
+// The form model and the report derived from it.
 export type {
   FormModel,
   GroupModel,
@@ -66,73 +48,9 @@ export type {
   ReadOnlyCode,
   ReadOnlyReason,
 } from "./form/FormModel.js";
-export { allFields } from "./form/FormModel.js";
-// The write half of a property path — what a shape language defines only for
-// reading. `planWrite` and `chooseBranch` carry the reasoning; a consumer needs
-// the types to read `field.write` / `field.readOnlyReason`.
-export {
-  planWrite,
-  chooseBranch,
-  resolveCarrier,
-  branchValues,
-  statementFor,
-  forwardWrite,
-  writesSubjects,
-} from "./form/writePath.js";
-export type {
-  FieldWrite,
-  WriteBranch,
-  WriteStep,
-  WriteDirection,
-  WritePlan,
-  StepReader,
-  PathReadOnlyCode,
-} from "./form/writePath.js";
-// A value disjunction (`sh:or`): what it does to a field, and which arm of one a
-// value is already on. `planDisjunction` carries the reasoning.
-export { planDisjunction, alternativeFor, nodeDisjunction } from "./form/disjunction.js";
-export type { Disjunction, DisjunctionArgs, DroppedBranch } from "./form/disjunction.js";
-export type {
-  ValidationResult,
-  FieldError,
-  Severity,
-} from "./form/validation.js";
-// Non-fatal build diagnostics (dropped paths, missing shapes).
+export type { FieldError, Severity } from "./form/validation.js";
 export type { Diagnostic, DiagnosticSink } from "./form/buildFormModel.js";
+export type { FormReport, FormProgress, FormMood, IssueRow, GroupIssues } from "./react/validation/formReport.js";
 
-// Built-in UI string catalog (en/es/ca) — pass `strings` to useMetadataForm to
-// override the language-picker chrome or the default validation messages.
-export { resolveStrings, DEFAULTS as defaultStrings } from "./i18n/strings.js";
+// UI string catalog (en/es/ca) — pass `strings` to override any of it.
 export type { Strings, DeepPartial } from "./i18n/strings.js";
-
-// Editors — the SHACL-UI editor IRIs rudof emits + the editor-IRI → widget-kind
-// map (the one UI-specific mapping; editor *selection* lives in rudof).
-export { Editors, type KnownEditorId } from "./form/vocab/shacl-ui.js";
-export {
-  fallbackEditorId,
-} from "./form/editors.js";
-
-// Shape IR (vocabulary-agnostic parsing seam)
-export type {
-  ShapeModel,
-  NodeShapeIR,
-  PropertyShapeIR,
-  PathExpr,
-  ValueConstraints,
-  PresentationHints,
-  ComponentIR,
-  TermValue,
-  LangString,
-  ProjectedForm,
-  ProjectedProperty,
-  ProjectedValue,
-} from "./form/ShapeIR.js";
-
-// The default engine is rudof-over-WASM. Its internals — RudofEngine,
-// createRudofEngine, projectTree, the wasm ABI types, RudofGraphBackend — live on
-// the `metadata-form/rudof` subpath for power-user wiring (shared engine, custom
-// projection), so the main entry stays UI-focused.
-
-// RDF term factory (namedNode/literal/blankNode/quad + the NS base IRIs). All RDF
-// parsing & serialization lives in rudof now — use the engine session for I/O.
-export * as ns from "./form/factory.js";
