@@ -21,6 +21,7 @@ import {
 import { Code2Icon, DownloadIcon, FileTextIcon, ListChecksIcon } from "lucide-react";
 import { PaneHeader } from "./components/PaneHeader.js";
 import { FormAssistant, MetadataForm, useMetadataForm, ValidationPanel, type FormAssist } from "metadata-form";
+import { es, ca } from "metadata-form/i18n";
 import { Preferences, usePreferences } from "./Preferences.js";
 import { Header } from "./components/Header.js";
 import { PresetPicker, ShapePicker } from "./components/ExamplePickers.js";
@@ -51,6 +52,13 @@ const asideSplit = (asides: number) => {
 /** Below this width the asides can't sit beside the form, so the layout switches
  *  to form-only with a single overlay drawer. */
 const NARROW = "(max-width: 1024px)";
+
+/** The languages the shapes speak, beyond the English the library carries: data the
+ *  playground imports from `metadata-form/i18n`, like any consumer. */
+const LANGUAGES = {
+  strings: { es: es.strings, ca: ca.strings },
+  messages: [es.messages, ca.messages],
+};
 
 export function App() {
   // Permalink and workspace live ABOVE the provider, and that is the whole cost of a
@@ -174,6 +182,8 @@ function ThemedApp({
     focusNode: options.focusNode,
     rootShape: options.rootShape,
     locale,
+    strings: LANGUAGES.strings,
+    messages: LANGUAGES.messages,
     assist,
   });
 

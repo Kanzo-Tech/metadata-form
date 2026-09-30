@@ -279,7 +279,7 @@ function tally(shapes: ShapeModel): { fields: number; typed: number; nested: num
   for (const [, shape] of shapes.nodeShapes) {
     let model;
     try {
-      model = buildFormModel({ shapes, focusNode: focus, shape, locale: "en" });
+      model = buildFormModel({ shapes, focusNode: focus, shape, languages: ["en"] });
     } catch { continue; }
     for (const f of allFields(model) as FieldModel[]) {
       acc.fields++;
@@ -401,7 +401,7 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
     const diags: Diagnostic[] = [];
     try {
       const model = buildFormModel({
-        shapes, focusNode: focus, shape, locale: "en",
+        shapes, focusNode: focus, shape, languages: ["en"],
         onDiagnostic: (d) => diags.push(d),
       });
       result.form.shapesBuilt++;

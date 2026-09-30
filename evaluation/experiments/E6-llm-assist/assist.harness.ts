@@ -186,7 +186,7 @@ async function analyse(
     shapes,
     focusNode: namedNode("urn:e6:focus"),
     shape,
-    locale,
+    languages: [locale],
   });
 
   const rows: FieldRow[] = [];

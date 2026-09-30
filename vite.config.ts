@@ -17,6 +17,9 @@ const entries = {
   // Emitted under dist/engine/ so the JS bundle and the dts (which mirrors the
   // src tree) share a path; package.json maps `./rudof` → dist/engine/index.*.
   "engine/index": r("src/engine/index.ts"),
+  // The languages other than English, as data (`metadata-form/i18n`): the core carries
+  // English only, and a consumer imports the rest.
+  "i18n/index": r("src/i18n/index.ts"),
 };
 
 // Anything that must NOT be bundled into the library output: the peers, the

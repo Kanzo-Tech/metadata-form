@@ -102,6 +102,7 @@ async function buildApp(name, entry) {
     optimizeDeps: { exclude: ["@kanzo-tech/rudof-wasm"] },
     resolve: {
       alias: {
+        "metadata-form/i18n": resolve(REPO, "src/i18n/index.ts"),
         "metadata-form/ai": resolve(REPO, "src/ai/index.ts"),
         "metadata-form/rudof": resolve(REPO, "src/engine/index.ts"),
         "metadata-form": resolve(REPO, "src/index.ts"),

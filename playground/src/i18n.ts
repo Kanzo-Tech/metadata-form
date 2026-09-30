@@ -12,9 +12,9 @@ import { createContext, useContext } from "react";
  * them to carry ours. So the playground is a consumer here like any other, and it
  * carries its own catalog.
  *
- * What IS shared is the resolution: the same base-language chain (`es-ES` → `es`
- * → `en`) fed by the same `locale` the form is given, so the pane header and the
- * message inside it can never disagree about which language this is.
+ * What IS shared is the input: the same `locale` the form is given picks this
+ * catalog, so the pane header and the message inside it can never disagree about
+ * which language this is.
  */
 export interface Chrome {
   /** Under the wordmark, on wide viewports. */
@@ -266,7 +266,7 @@ const CA: Chrome = {
 
 const CATALOG: Record<string, Chrome> = { en: EN, es: ES, ca: CA };
 
-/** Same chain as the library's `resolveStrings`: exact tag → base language → en. */
+/** The playground's own fold: base language → en. (The library matches by RFC 4647 basic filtering over an ordered list; the playground offers plain `es`/`ca`/`en`.) */
 export function pickChrome(locale: string | undefined): Chrome {
   return CATALOG[(locale || "en").toLowerCase().split("-")[0]] ?? EN;
 }
