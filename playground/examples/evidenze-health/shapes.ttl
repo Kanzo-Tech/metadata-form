@@ -13,21 +13,32 @@
 @prefix rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh:           <http://www.w3.org/ns/shacl#> .
+@prefix shui:         <http://www.w3.org/ns/shacl-ui#> .
 @prefix skos:         <http://www.w3.org/2004/02/skos/core#> .
 @prefix vcard:        <http://www.w3.org/2006/vcard/ns#> .
 @prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
 
+# NOTE ON sh:if — sh:if / sh:then / sh:else is NOT a SHACL 1.2 constraint
+# component. SHACL 1.2 Core (WD 2026-08-28) defines 43 components and none is
+# conditional; the 1.2 family's conditional construct is shnex:IfExpression, a
+# NODE EXPRESSION in the shnex: namespace, which computes a value rather than
+# requiring a property. The component used below is ours, minted in the sh:
+# namespace deliberately, and validated by exactly one engine (rudof, via
+# @kanzo-tech/rudof-wasm). shui: below, by contrast, is used exactly as W3C
+# specifies it — SHACL 1.2 User Interfaces, FPWD 2026-05-26.
+
 #################################################################
 # Evidenze Data Space — HealthDCAT-AP Release 7 onboarding shape
-# Pure SHACL 1.2 + SHACL-UI (shui:) — no DASH.
+# SHACL 1.2 Core + SHACL-UI (shui:) — no DASH — plus one non-standard
+# conditional component of ours; see the note below.
 #
 # Migrated from the original DASH profile:
 #  · the 4 node shapes with the same sh:targetClass (Health/Public/
 #    NonPublic/Restricted, differing only by a hidden sh:hasValue on
 #    dct:accessRights) collapse into this SINGLE shape with a visible
 #    access-level selector;
-#  · the root sh:or (hasStructuredData ⇒ hasVariables) becomes a SHACL 1.2
-#    sh:if/sh:then: toggling "Datos estructurados" reveals and requires the
+#  · the root sh:or (hasStructuredData ⇒ hasVariables) becomes our
+#    sh:if/sh:then conditional (non-standard, see NOTE): toggling "Datos estructurados" reveals and requires the
 #    variable dictionary — rendered live by the engine;
 #  · DASH editors become shui:editor; hidden constant-stamp fields dropped;
 #  · the huge EU authority enums (language ~8200, file-type ~227) are trimmed
@@ -102,7 +113,7 @@ evds-sh:HealthDatasetOnboardingShape
         evds-sh:dataset-hasCodingSystem,
         evds-sh:dataset-wasGeneratedBy,
         evds-sh:dataset-hasStructuredData ;
-    # SHACL 1.2 conditional (was a root sh:or): if the dataset declares
+    # Conditional (was a root sh:or) — OUR component, not SHACL 1.2's: if the dataset declares
     # structured data, reveal & require the variable dictionary.
     sh:if evds-sh:StructuredDataCondition ;
     sh:then evds-sh:StructuredDataRequirements .
