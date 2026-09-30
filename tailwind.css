@@ -3,7 +3,9 @@
  *
  *     @import "tailwindcss";
  *     @import "@kanzo-tech/ui/tailwind.css";
- *     @import "@kanzo-tech/ai/tailwind.css";
  *     @import "metadata-form/tailwind.css";
+ *
+ * and, only if you use `metadata-form/ai`, `@import "@kanzo-tech/ai/tailwind.css";`
+ * beside `@kanzo-tech/ui`'s.
  */
 @source "./dist/**/*.js";
