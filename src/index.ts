@@ -50,5 +50,5 @@ export type { FieldError, Severity } from "./form/validation.js";
 export type { Diagnostic, DiagnosticSink } from "./form/buildFormModel.js";
 export type { FormReport, FormProgress, FormMood, IssueRow, GroupIssues } from "./react/validation/formReport.js";
 
-// UI string catalog (en/es/ca) — pass `strings` to override any of it.
-export type { Strings, DeepPartial } from "./i18n/strings.js";
+// Interface strings (English built in; other languages from `metadata-form/i18n`).
+export type { Strings, DeepPartial, StringTables, Plural } from "./i18n/strings.js";

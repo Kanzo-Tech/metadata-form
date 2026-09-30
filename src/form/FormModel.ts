@@ -36,8 +36,6 @@ export type ReadOnlyCode =
  *  instead of a dead input with no account of itself. */
 export interface ReadOnlyReason {
   code: ReadOnlyCode;
-  /** One sentence in the form's locale, from the built-in string catalog. */
-  message: string;
   /** What the reason is about, as the engine writes it — the path (`(a/b)`, `^p`)
    *  for a path reason. For a surface that wants to name it. */
   detail?: string;
@@ -167,8 +165,8 @@ export interface FieldModel {
   /** Read-only field: shown disabled, no add/remove. Always accompanied by
    *  {@link readOnlyReason}, so no field is ever dead without an account. */
   readOnly?: boolean;
-  /** Why the field takes no input — a stable code plus a sentence in the form's
-   *  locale, for the UI to show next to the disabled control. */
+  /** Why the field takes no input — a stable code the UI turns into a sentence in
+   *  the reader's language (`strings.readOnly`) next to the disabled control. */
   readOnlyReason?: ReadOnlyReason;
   /** Present when this field comes from a conditional's requirements (the `then`
    *  branch of an `sh:or ( [ sh:not C ] T )` implication). It is only in the model

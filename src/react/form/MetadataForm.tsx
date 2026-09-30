@@ -6,6 +6,7 @@ import { defaultWidgets } from "../widgets/defaultWidgets.js";
 import type { AssistUi } from "../assistUi.js";
 import type { WidgetRegistry } from "../widgets/widgets.js";
 import { ink } from "../styles.js";
+import { fill } from "../../i18n/strings.js";
 
 export interface MetadataFormProps {
   /** A controller from `useMetadataForm`. */
@@ -40,13 +41,15 @@ export function MetadataForm({ form, widgets, assistUi, layout, grid, className 
   );
 
   const ctx = useMemo<FormContextValue | null>(() => {
-    if (!form.graph || !form.model) return null;
+    if (!form.ready || !form.graph || !form.model) return null;
     return {
       graph: form.graph,
       model: form.model,
       widgets: registry,
       locale: form.locale,
+      languages: form.languages,
       strings: form.strings,
+      messageOf: form.messageOf,
       errors: form.errors,
       report: form.report,
       assist: form.assist,
@@ -55,19 +58,19 @@ export function MetadataForm({ form, widgets, assistUi, layout, grid, className 
       grid,
       revealTarget: form._revealTarget,
     };
-  }, [form.graph, form.model, registry, form.locale, form.strings, form.errors, form.report, form.assist, assistUi, layout, grid, form._revealTarget]);
+  }, [form.ready, form.graph, form.model, registry, form.locale, form.languages, form.strings, form.messageOf, form.errors, form.report, form.assist, assistUi, layout, grid, form._revealTarget]);
 
   if (form.error) {
     return (
       <p style={{ color: ink.destructive }} role="alert">
-        Failed to load form: {form.error.message}
+        {fill(form.strings.chrome.loadFailed, { error: form.error.message })}
       </p>
     );
   }
   if (!ctx) {
     return (
       <p style={{ color: ink.muted }} aria-busy="true">
-        Loading…
+        {form.strings.chrome.loading}
       </p>
     );
   }

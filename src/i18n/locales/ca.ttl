@@ -1,0 +1,60 @@
+# Default validation messages, as RDF.
+#
+# What this file is: the wording shown for a constraint violation when the shape's
+# author wrote no `sh:message` in the reader's language. One resource per SHACL
+# constraint component, one `sh:message` literal per language. It is data, not code:
+# a language is added by supplying more triples (`useMetadataForm({ messages })`),
+# never by editing the library.
+#
+# Why `sh:message` on the component. SHACL defines `sh:message` as the wording of
+# the results a constraint produces (SHACL §2.1.5: the values are copied into the
+# results' `sh:resultMessage`), and lets SHACL-SPARQL constraints and
+# component validators declare one too (§5.1, §6.2.2).
+# A constraint component's message is that same statement one level up: "results
+# this component produces read like this, unless the shape says otherwise". No term
+# is minted in a W3C namespace. The alternatives said something else: `rdfs:comment`
+# and `skos:definition` describe the COMPONENT, not the error a reader sees.
+# The W3C `shacl.ttl` cannot serve as this data: it carries `@en` only and describes
+# components. Reading `sh:message` on a component is our convention, not a SHACL rule.
+#
+# `sh:ConstraintComponent` itself (the class of all components) holds the message
+# for any component this file does not name.
+#
+# Language: Catalan.
+
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+sh:MinCountConstraintComponent sh:message "Aquest camp és obligatori"@ca .
+sh:MaxCountConstraintComponent sh:message "Massa valors"@ca .
+sh:DatatypeConstraintComponent sh:message "Tipus de valor no vàlid"@ca .
+sh:NodeKindConstraintComponent sh:message "Classe de valor no vàlida"@ca .
+sh:PatternConstraintComponent sh:message "El valor no coincideix amb el patró requerit"@ca .
+sh:MinLengthConstraintComponent sh:message "El valor és massa curt"@ca .
+sh:MaxLengthConstraintComponent sh:message "El valor és massa llarg"@ca .
+sh:ClassConstraintComponent sh:message "El valor no és del tipus esperat"@ca .
+sh:InConstraintComponent sh:message "El valor no és una opció permesa"@ca .
+sh:NodeConstraintComponent sh:message "Falten dades en aquesta secció"@ca .
+sh:PropertyConstraintComponent sh:message "Hi ha dades no vàlides en aquesta propietat"@ca .
+sh:QualifiedValueShapeConstraintComponent sh:message "Alguns valors no són els esperats aquí"@ca .
+sh:QualifiedMinCountConstraintComponent sh:message "No hi ha prou valors que compleixin allò esperat"@ca .
+sh:QualifiedMaxCountConstraintComponent sh:message "Hi ha massa valors que compleixen allò esperat"@ca .
+sh:ReifierShapeConstraintComponent sh:message "Falten dades sobre aquesta declaració"@ca .
+sh:AndConstraintComponent sh:message "El valor no compleix tots els requisits"@ca .
+sh:OrConstraintComponent sh:message "El valor no compleix cap de les alternatives permeses"@ca .
+sh:XoneConstraintComponent sh:message "El valor ha de complir exactament una de les alternatives"@ca .
+sh:NotConstraintComponent sh:message "Aquest valor no està permès aquí"@ca .
+sh:IfConstraintComponent sh:message "El valor no compleix el requisit que s'aplica aquí"@ca .
+sh:MinInclusiveConstraintComponent sh:message "El valor és massa petit"@ca .
+sh:MinExclusiveConstraintComponent sh:message "El valor és massa petit"@ca .
+sh:MaxInclusiveConstraintComponent sh:message "El valor és massa gran"@ca .
+sh:MaxExclusiveConstraintComponent sh:message "El valor és massa gran"@ca .
+sh:LanguageInConstraintComponent sh:message "Aquest idioma no està permès"@ca .
+sh:UniqueLangConstraintComponent sh:message "Només es permet un valor per idioma"@ca .
+sh:EqualsConstraintComponent sh:message "El valor ha de coincidir amb el del camp relacionat"@ca .
+sh:DisjointConstraintComponent sh:message "El valor ha de ser diferent del camp relacionat"@ca .
+sh:LessThanConstraintComponent sh:message "El valor ha de ser menor que el del camp relacionat"@ca .
+sh:LessThanOrEqualsConstraintComponent sh:message "El valor ha de ser menor o igual que el del camp relacionat"@ca .
+sh:HasValueConstraintComponent sh:message "Falta un valor obligatori"@ca .
+sh:ClosedConstraintComponent sh:message "Aquesta propietat no està permesa aquí"@ca .
+sh:SPARQLConstraintComponent sh:message "El valor no compleix un requisit personalitzat"@ca .
+sh:ConstraintComponent sh:message "Valor no vàlid"@ca .

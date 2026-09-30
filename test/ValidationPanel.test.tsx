@@ -6,6 +6,7 @@ import { fieldKey, type FieldError } from "@/form/validation.js";
 import type { FieldModel, FormModel } from "@/form/FormModel.js";
 import { blankNode, literal, namedNode } from "@/form/factory.js";
 import { resolveStrings } from "@/i18n/strings.js";
+import { es, ca } from "metadata-form/i18n";
 import type { MetadataFormController } from "@/react/hooks/useMetadataForm.js";
 
 const SH = "http://www.w3.org/ns/shacl#";
@@ -19,13 +20,14 @@ const NODE = `${SH}NodeConstraintComponent`;
  */
 function controllerFor(
   rows: IssueRow[],
-  extra: { locale?: string; revealField?: (id: string) => void } = {},
+  extra: { languages?: string[]; revealField?: (id: string) => void } = {},
 ): MetadataFormController {
   return {
     report: {
       issues: { total: rows.length, hasViolations: rows.some((r) => r.severity === "violation"), rows },
     },
-    strings: resolveStrings(extra.locale ?? "en"),
+    strings: resolveStrings(extra.languages ?? ["en"], { es: es.strings, ca: ca.strings }),
+    messageOf: (e: FieldError) => e.messages[0].value,
     revealField: extra.revealField ?? (() => {}),
   } as unknown as MetadataFormController;
 }
@@ -33,7 +35,7 @@ function controllerFor(
 const row = (over: Partial<IssueRow> = {}): IssueRow => ({
   key: "http://example.org/d1|http://purl.org/dc/terms/title",
   label: "Publisher › Name",
-  message: "This field is required",
+  messages: [{ value: "This field is required", language: "" }],
   severity: "violation",
   constraint: MIN_COUNT,
   ...over,
@@ -145,7 +147,7 @@ describe("<ValidationPanel>", () => {
   });
 
   it("takes its own chrome from the locale the messages came through", () => {
-    render(<ValidationPanel form={controllerFor([row()], { locale: "es-ES" })} />);
+    render(<ValidationPanel form={controllerFor([row()], { languages: ["es-ES", "es"] })} />);
 
     // A form whose fields and errors are Spanish and whose badge says "Violation" is
     // a form that is half translated — and that includes the name only a screen
@@ -159,7 +161,7 @@ describe("<ValidationPanel>", () => {
     expect(screen.getByText("Nothing to fix. Every shape this form covers is satisfied.")).toBeInTheDocument();
     expect(slot("diagnostic-list")).toHaveLength(0);
 
-    rerender(<ValidationPanel form={controllerFor([], { locale: "ca" })} />);
+    rerender(<ValidationPanel form={controllerFor([], { languages: ["ca"] })} />);
     expect(screen.getByText("No hi ha res a corregir. El formulari compleix totes les formes.")).toBeInTheDocument();
   });
 });
@@ -209,12 +211,12 @@ describe("the rows the panel is given", () => {
   };
 
   const rollup: FieldError = {
-    message: "Some details in this section are incomplete",
+    messages: [{ value: "Some details in this section are incomplete", language: "" }],
     severity: "violation",
     constraint: NODE,
     value: agent,
   };
-  const cause: FieldError = { message: "This field is required", severity: "violation", constraint: MIN_COUNT };
+  const cause: FieldError = { messages: [{ value: "This field is required", language: "" }], severity: "violation", constraint: MIN_COUNT };
 
   it("drops the sh:node rollup once the nested cause has reported", () => {
     const report = computeFormReport(model, new Map([[rollupKey, [rollup]], [nameKey, [cause]]]));

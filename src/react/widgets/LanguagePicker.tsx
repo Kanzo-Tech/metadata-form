@@ -9,7 +9,7 @@ import {
   createListCollection,
   useFilter,
 } from "@kanzo-tech/ui";
-import { DEFAULTS, type Strings } from "../../i18n/strings.js";
+import { EN, type Strings } from "../../i18n/strings.js";
 
 /** UI chrome, injectable for i18n; standalone (outside a <MetadataForm>, which
  *  otherwise supplies the catalog) it reads the built-in English one. */
@@ -77,7 +77,7 @@ export function LanguagePicker({
   onChange,
   allowed,
   disabled,
-  strings = DEFAULTS.en.languagePicker,
+  strings = EN.languagePicker,
 }: {
   value: string;
   onChange: (tag: string) => void;

@@ -13,7 +13,8 @@ import {
   StepsTrigger,
 } from "@kanzo-tech/ui";
 import type { FormModel } from "../../form/FormModel.js";
-import type { GridLayout } from "../form/context.js";
+import { useStrings, type GridLayout } from "../form/context.js";
+import { fill } from "../../i18n/strings.js";
 import type { GroupIssues } from "../validation/formReport.js";
 import { scrollToField } from "../utils/scrollToField.js";
 import { FieldsGrid } from "./FieldsGrid.js";
@@ -43,6 +44,7 @@ export function StepsLayout({
   activeGroup?: string;
   onActiveGroupChange?: (groupId: string) => void;
 }) {
+  const { chrome } = useStrings();
   const groups = model.groups;
   if (groups.length === 0) return null;
   const found = groups.findIndex((g) => g.id === activeGroup);
@@ -65,7 +67,7 @@ export function StepsLayout({
               <StepsTrigger>
                 <StepsIndicator>{i + 1}</StepsIndicator>
                 <StepsTitle style={{ ...row, gap: "0.375rem" }}>
-                  {group.label || `Step ${i + 1}`}
+                  {group.label || fill(chrome.step, { n: i + 1 })}
                   <GroupIssuesBadge
                     issues={gi}
                     onJump={gi?.firstFieldId ? () => scrollToField(gi.firstFieldId!) : undefined}

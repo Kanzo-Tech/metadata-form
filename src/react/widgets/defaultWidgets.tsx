@@ -38,7 +38,7 @@ import type {
 import { makeDateField } from "./DateField.js";
 import { AsyncCombobox, AsyncMultiCombobox } from "../fieldassist/AsyncCombobox.js";
 import { LanguagePicker } from "./LanguagePicker.js";
-import { useFormContext } from "../form/context.js";
+import { useFormContext, useStrings } from "../form/context.js";
 
 /**
  * Default widgets — dumb presentational inputs over @kanzo-tech/ui, keyed by the
@@ -239,6 +239,7 @@ const IriField = textField("url");
  * autocomplete. Collapsing them is what made that impossible before.
  */
 const ReferenceField: Widget = (p) => {
+  const { chrome } = useStrings();
   // Hook first (stable order), then branch on whether search is wired.
   const inner = IriField(p);
   if (!p.loadOptions) return inner;
@@ -247,7 +248,7 @@ const ReferenceField: Widget = (p) => {
       value={p.value}
       onChange={p.onChange}
       loadItems={p.loadOptions}
-      placeholder="IRI or search…"
+      placeholder={chrome.iriOrSearch}
       // The suggestions are candidates, not the permitted values: an IRI nobody
       // suggested must survive being typed.
       allowCustomValue
@@ -258,21 +259,23 @@ const ReferenceField: Widget = (p) => {
 /** The repeatable form of the same thing: one multi-select over the candidates,
  *  instead of N autocomplete rows each with its own add/remove button. Falls back
  *  to those rows when there is no source to search. */
-const ReferenceMulti: MultiWidget = (p) =>
-  p.loadOptions ? (
+const ReferenceMulti: MultiWidget = (p) => {
+  const { chrome } = useStrings();
+  return p.loadOptions ? (
     <AsyncMultiCombobox
       values={p.values}
       onChange={p.onChange}
       loadItems={p.loadOptions}
-      placeholder="Search…"
+      placeholder={chrome.search}
       max={p.maxCount}
     />
   ) : (
     // Nothing to search: the values are IRIs somebody types, which is the tags
     // input's case exactly — and one control either way, so the field does not
     // change shape when a consumer wires `assist.search` later.
-    <TagsMulti {...p} placeholder="Add an IRI…" />
+    <TagsMulti {...p} placeholder={chrome.addIri} />
   );
+};
 
 /**
  * A textarea over the design system's, with ghost-text completion when the form
@@ -338,7 +341,9 @@ const Area: Widget = (p) => {
  * "+ Add" followed by a click into a fresh empty row. `sh:maxCount` is the
  * machine's `max`, so it stops accepting rather than accepting-then-failing.
  */
-const TagsMulti: MultiWidget = (p) => (
+const TagsMulti: MultiWidget = (p) => {
+  const { chrome } = useStrings();
+  return (
   <TagsInput
     value={p.values}
     max={p.maxCount}
@@ -358,10 +363,11 @@ const TagsMulti: MultiWidget = (p) => (
           ))
         }
       </TagsInputContext>
-      <TagsInputInput placeholder={p.placeholder ?? "Add…"} />
+      <TagsInputInput placeholder={p.placeholder ?? chrome.add} />
     </TagsInputControl>
   </TagsInput>
-);
+  );
+};
 
 /**
  * The segmented form of a small closed set: every option visible, one click, no
@@ -373,19 +379,20 @@ const TagsMulti: MultiWidget = (p) => (
  * would not also read as "this option is wrong" — so the field's error text below
  * carries it alone.
  */
-function segments(items: { value: string; label: string }[], required: boolean) {
+function segments(items: { value: string; label: string }[], required: boolean, notSet: string) {
   // An optional field has one more answer than the shape lists: "not answered".
   // Leaving it off would make the first click unrepeatable — there would be no way
   // back to empty.
-  return required ? items : [...items, { value: NONE, label: "Not set" }];
+  return required ? items : [...items, { value: NONE, label: notSet }];
 }
 
 function SegmentField(p: WidgetProps & { items: { value: string; label: string }[] }) {
   const field = useField();
+  const { chrome } = useStrings();
   return (
     <SegmentGroup
       variant="solid"
-      options={segments(p.items, !!p.required)}
+      options={segments(p.items, !!p.required, chrome.notSet)}
       value={p.value ?? NONE}
       disabled={field?.disabled}
       readOnly={field?.readOnly}
@@ -411,6 +418,7 @@ function SegmentField(p: WidgetProps & { items: { value: string; label: string }
  */
 function makeSelect(choices: (p: WidgetProps) => { value: string; label: string }[]): Widget {
   return (p) => {
+    const { chrome } = useStrings();
     const items = choices(p);
     const search = useMemo(
       () => async (query: string) => {
@@ -425,7 +433,7 @@ function makeSelect(choices: (p: WidgetProps) => { value: string; label: string 
     if (items.length > SELECT_MAX_OPTIONS) {
       // Closed set: the enumeration IS the permitted values, so an unmatched
       // input reverting on blur is correct rather than lossy.
-      return <AsyncCombobox value={p.value} onChange={p.onChange} loadItems={search} placeholder="Search…" />;
+      return <AsyncCombobox value={p.value} onChange={p.onChange} loadItems={search} placeholder={chrome.search} />;
     }
     return (
       <NativeSelect
@@ -447,6 +455,7 @@ function makeSelect(choices: (p: WidgetProps) => { value: string; label: string 
 /** A repeatable `sh:in`: the enumeration as one multi-select over a local filter,
  *  which is the same `AsyncCombobox` body with a synchronous source. */
 const EnumMulti: MultiWidget = (p) => {
+  const { chrome } = useStrings();
   const items: WidgetOption[] = p.options ?? [];
   const search = useMemo(
     () => async (query: string) => {
@@ -460,7 +469,7 @@ const EnumMulti: MultiWidget = (p) => {
       values={p.values}
       onChange={p.onChange}
       loadItems={search}
-      placeholder="Choose…"
+      placeholder={chrome.choose}
       max={p.maxCount}
     />
   );
@@ -476,10 +485,11 @@ const EnumMulti: MultiWidget = (p) => {
  * control could not represent "unanswered" is data the user never entered.
  */
 const BooleanField: Widget = (p) => {
+  const { chrome } = useStrings();
   const settled = !!p.required || p.defaultValue != null;
   const items = [
-    { value: "true", label: "Yes" },
-    { value: "false", label: "No" },
+    { value: "true", label: chrome.yes },
+    { value: "false", label: chrome.no },
   ];
   // The branch is safe because `SegmentField` is a component, not a call: its
   // `useField` belongs to its own render, not to this one.

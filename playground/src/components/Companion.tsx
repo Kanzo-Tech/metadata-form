@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Card, CardContent } from "@kanzo-tech/ui";
 import { XIcon } from "lucide-react";
 import type { FormMood, FormReport } from "metadata-form";
+import { fill, useChrome } from "../i18n.js";
 
 /** One emoji per mood, on a halo tinted by the theme's own status colours. */
 const FACE: Record<FormMood, { face: string; halo: string }> = {
@@ -29,10 +30,15 @@ export function Companion({
   /** How far the companion sits above the bottom edge. */
   offset: string;
 }) {
+  const { companion } = useChrome();
   const [dismissed, setDismissed] = useState(false);
   if (dismissed) return null;
 
   const { face, halo } = FACE[health.mood];
+  const line =
+    health.mood === "warning" || health.mood === "guiding"
+      ? fill(companion[health.mood], { n: health.count })
+      : companion[health.mood];
   const activate = nextField ? () => onReveal(nextField.id) : undefined;
 
   return (
@@ -53,19 +59,19 @@ export function Companion({
             {face}
           </span>
           <div className="flex min-w-0 flex-col gap-1">
-            <p className="text-sm font-medium">{health.message}</p>
+            <p className="text-sm font-medium">{line}</p>
             {nextField ? (
-              <p className="text-xs text-muted-foreground">Next: {nextField.label} →</p>
+              <p className="text-xs text-muted-foreground">{fill(companion.next, { field: nextField.label })}</p>
             ) : (
               progress.total > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  {progress.filled}/{progress.total} filled
+                  {fill(companion.filled, { filled: progress.filled, total: progress.total })}
                 </p>
               )
             )}
           </div>
           <Button
-            aria-label="Dismiss assistant"
+            aria-label={companion.dismiss}
             size="sm"
             variant="ghost"
             onClick={(e) => {

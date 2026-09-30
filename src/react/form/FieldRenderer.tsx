@@ -30,13 +30,14 @@ import {
   widgetRender,
 } from "../widgets/widgets.js";
 import { useFocusNode, useFormContext } from "./context.js";
+import { fill } from "../../i18n/strings.js";
 import { useField } from "../hooks/useField.js";
 import { NodeForm } from "./NodeForm.js";
 import { column, fieldGap, ink, labelRow } from "../styles.js";
 
 /** Renders a single field: label, help, value rows (multi-value), errors. */
 export function FieldRenderer({ field }: { field: FieldModel }) {
-  const { widgets, assist, assistUi, graph, locale } = useFormContext();
+  const { widgets, assist, assistUi, graph, locale, strings } = useFormContext();
   const focus = useFocusNode();
   const ops = useField(field);
 
@@ -243,7 +244,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
       <div style={column}>
         <NativeSelect
           className="w-full"
-          aria-label={`${field.label} — kind of value`}
+          aria-label={fill(strings.chrome.kindOfValue, { field: field.label })}
           data-alternatives={field.id}
           value={altAt(i)!.id}
           onChange={(e) => pickAlternative(i, e.target.value)}
@@ -336,6 +337,7 @@ function FieldShell({
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const { strings, messageOf } = useFormContext();
   const violations = errors.filter((e) => e.severity === "violation");
   const rest = errors.filter((e) => e.severity !== "violation");
   return (
@@ -364,16 +366,16 @@ function FieldShell({
           style={{ color: ink.muted, fontSize: "0.75rem" }}
           data-readonly-reason={field.readOnlyReason.code}
         >
-          {field.readOnlyReason.message}
+          {strings.readOnly[field.readOnlyReason.code]}
         </p>
       )}
       {children}
       {violations.map((e, i) => (
-        <FieldError key={i}>{e.message}</FieldError>
+        <FieldError key={i}>{messageOf(e)}</FieldError>
       ))}
       {rest.map((e, i) => (
         <p key={i} style={{ color: ink.warning, fontSize: "0.75rem" }} data-severity={e.severity}>
-          {e.message}
+          {messageOf(e)}
         </p>
       ))}
     </Field>

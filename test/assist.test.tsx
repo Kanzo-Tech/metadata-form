@@ -231,10 +231,10 @@ describe("the playground companion", () => {
       issues: { total: 0, hasViolations: false, rows: [], byField: new Map(), byGroup: new Map() },
       pending: [{ id: "f1", label: "Title" }],
       nextField: { id: "f1", label: "Title" },
-      health: { mood: "guiding", message: "2 required fields left" },
+      health: { mood: "guiding", count: 2 },
     };
     render(<Companion report={report} onReveal={(id) => revealed.push(id)} onDismiss={() => {}} offset="1rem" />);
-    expect(screen.getByText("2 required fields left")).toBeInTheDocument();
+    expect(screen.getByText("Required fields left: 2")).toBeInTheDocument();
     fireEvent.click(screen.getByText(/Next: Title/));
     expect(revealed).toEqual(["f1"]);
   });

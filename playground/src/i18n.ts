@@ -12,9 +12,9 @@ import { createContext, useContext } from "react";
  * them to carry ours. So the playground is a consumer here like any other, and it
  * carries its own catalog.
  *
- * What IS shared is the resolution: the same base-language chain (`es-ES` → `es`
- * → `en`) fed by the same `locale` the form is given, so the pane header and the
- * message inside it can never disagree about which language this is.
+ * What IS shared is the input: the same `locale` the form is given picks this
+ * catalog, so the pane header and the message inside it can never disagree about
+ * which language this is.
  */
 export interface Chrome {
   /** Under the wordmark, on wide viewports. */
@@ -85,6 +85,20 @@ export interface Chrome {
     showKey: string;
     hideKey: string;
   };
+  /** The corner companion's lines: one per `report.health` mood, then its footer. */
+  companion: {
+    /** `{n}` violations. */
+    warning: string;
+    /** `{n}` required fields left. */
+    guiding: string;
+    celebrating: string;
+    idle: string;
+    /** `{field}` is the next required field's label. */
+    next: string;
+    /** `{filled}` of `{total}`. */
+    filled: string;
+    dismiss: string;
+  };
 }
 
 const EN: Chrome = {
@@ -143,6 +157,15 @@ const EN: Chrome = {
     apiKey: "Anthropic API key",
     showKey: "Show the key",
     hideKey: "Hide the key",
+  },
+  companion: {
+    warning: "Things to fix: {n}",
+    guiding: "Required fields left: {n}",
+    celebrating: "All set — looks complete!",
+    idle: "Let's fill this in",
+    next: "Next: {field} →",
+    filled: "{filled}/{total} filled",
+    dismiss: "Dismiss assistant",
   },
 };
 
@@ -203,6 +226,15 @@ const ES: Chrome = {
     showKey: "Mostrar la clave",
     hideKey: "Ocultar la clave",
   },
+  companion: {
+    warning: "Cosas por corregir: {n}",
+    guiding: "Campos obligatorios pendientes: {n}",
+    celebrating: "¡Todo listo, parece completo!",
+    idle: "Vamos a rellenarlo",
+    next: "Siguiente: {field} →",
+    filled: "{filled}/{total} rellenados",
+    dismiss: "Cerrar el asistente",
+  },
 };
 
 const CA: Chrome = {
@@ -262,11 +294,20 @@ const CA: Chrome = {
     showKey: "Mostra la clau",
     hideKey: "Amaga la clau",
   },
+  companion: {
+    warning: "Coses per corregir: {n}",
+    guiding: "Camps obligatoris pendents: {n}",
+    celebrating: "Tot a punt, sembla complet!",
+    idle: "Anem a omplir-lo",
+    next: "Següent: {field} →",
+    filled: "{filled}/{total} omplerts",
+    dismiss: "Tanca l'assistent",
+  },
 };
 
 const CATALOG: Record<string, Chrome> = { en: EN, es: ES, ca: CA };
 
-/** Same chain as the library's `resolveStrings`: exact tag → base language → en. */
+/** The playground's own fold: base language → en. (The library matches by RFC 4647 basic filtering over an ordered list; the playground offers plain `es`/`ca`/`en`.) */
 export function pickChrome(locale: string | undefined): Chrome {
   return CATALOG[(locale || "en").toLowerCase().split("-")[0]] ?? EN;
 }

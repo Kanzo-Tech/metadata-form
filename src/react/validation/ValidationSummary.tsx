@@ -9,6 +9,7 @@ import {
 import type { Severity } from "../../form/validation.js";
 import { column, ink, row } from "../styles.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
+import { count } from "../../i18n/strings.js";
 
 /** Severity is a domain word; on the surface the design system spells the same
  *  three families `destructive` / `warning` / `info`, and `destructive` is what
@@ -22,7 +23,7 @@ const MSG_INK: Record<Severity, string> = {
 
 export interface ValidationSummaryProps {
   form: MetadataFormController;
-  /** Text for the valid state. */
+  /** Text for the valid state; defaults to the form's own word for it. */
   validLabel?: string;
 }
 
@@ -37,13 +38,14 @@ export interface ValidationSummaryProps {
  * "summary now, inline on touch"; a findings panel over `DiagnosticList` is a
  * different component, and worth having separately.
  */
-export function ValidationSummary({ form, validLabel = "Valid" }: ValidationSummaryProps) {
+export function ValidationSummary({ form, validLabel }: ValidationSummaryProps) {
   const { rows } = form.report.issues;
+  const { chrome } = form.strings;
 
   if (rows.length === 0) {
     return (
       <Badge variant="success" pill>
-        {validLabel}
+        {validLabel ?? chrome.valid}
       </Badge>
     );
   }
@@ -54,7 +56,7 @@ export function ValidationSummary({ form, validLabel = "Valid" }: ValidationSumm
     <HoverCard openDelay={120}>
       <HoverCardTrigger>
         <Badge variant={variant} pill style={{ cursor: "default" }}>
-          {rows.length} issue{rows.length === 1 ? "" : "s"}
+          {count(form.strings, chrome.issues, rows.length)}
         </Badge>
       </HoverCardTrigger>
       {/* An explicit width, not a max: a shrink-to-fit box collapses because the
@@ -73,7 +75,7 @@ export function ValidationSummary({ form, validLabel = "Valid" }: ValidationSumm
                 >
                   {r.label}
                 </Button>
-                <span style={{ textAlign: "end", fontSize: "0.75rem", color: MSG_INK[r.severity] }}>{r.message}</span>
+                <span style={{ textAlign: "end", fontSize: "0.75rem", color: MSG_INK[r.severity] }}>{form.messageOf(r)}</span>
               </div>
             ))}
           </div>

@@ -32,7 +32,7 @@ async function open(shapesTtl: string, rootShape: string) {
   const shapes = await engine.loadShapes(shapesTtl);
   const session = await engine.createGraph(shapes, undefined, undefined, undefined, namedNode(rootShape));
   const focus = session.focusNode;
-  const rebuild = async (locale = "es") => {
+  const rebuild = async () => {
     const tree = projectTree((f, s) => engine.projectFormSync(f, s), shapes, session.rootShapeId, focus);
     const model = buildFormModel({
       shapes,
@@ -40,10 +40,10 @@ async function open(shapesTtl: string, rootShape: string) {
       shape: shapes.nodeShapes.get(session.rootShapeId)!,
       values: tree.values,
       satisfied: tree.satisfied,
-      locale,
+      languages: ["es"],
     });
     const results = await engine.validateTree(tree.nodes);
-    return { tree, model, results, report: computeFormReport(model, mapResults(results, locale)) };
+    return { tree, model, results, report: computeFormReport(model, mapResults(results)) };
   };
   return { engine, shapes, session, focus, rebuild };
 }
@@ -77,7 +77,7 @@ describe("conditional rendering as a SHACL Core implication — real rudof wasm"
   it("RESTRICTED without a justification: one inline MinCount with the author's message, no sh:or rollup", async () => {
     const { session, focus, rebuild } = await open(evidenzeShapes, evidenzeRootShape);
     session.backend.add(focus, namedNode(ACCESS), namedNode(RESTRICTED));
-    const { tree, results, report } = await rebuild("es");
+    const { tree, results, report } = await rebuild();
 
     expect(tree.nodes.filter((n) => n.branchOf)).toHaveLength(1);
     const onJustification = results.filter((r) => r.pathKey === JUSTIFICATION);
@@ -88,7 +88,7 @@ describe("conditional rendering as a SHACL Core implication — real rudof wasm"
 
     const rows = report.issues.rows.filter((r) => r.key === `${focus.value}|${JUSTIFICATION}`);
     expect(rows).toHaveLength(1);
-    expect(rows[0].message).toMatch(/motivo del acceso restringido/);
+    expect(rows[0].messages.find((m) => m.language === "es")?.value).toMatch(/motivo del acceso restringido/);
   });
 
   it("HealthDCAT-AP: structured data without a variable dictionary reports on the dictionary field only", async () => {
@@ -96,13 +96,13 @@ describe("conditional rendering as a SHACL Core implication — real rudof wasm"
     expect(allFields((await rebuild()).model).map((f) => f.path.value)).not.toContain(VARIABLES);
 
     session.backend.add(focus, namedNode(STRUCTURED), literal("true", namedNode(XSD_BOOLEAN)));
-    const { model, results, report } = await rebuild("es");
+    const { model, results, report } = await rebuild();
     expect(allFields(model).map((f) => f.path.value)).toContain(VARIABLES);
     const onVariables = results.filter((r) => r.pathKey === VARIABLES);
     expect(onVariables).toHaveLength(1);
     expect(onVariables[0].constraint).toBe(`${SH}MinCountConstraintComponent`);
     expect(results.filter((r) => r.constraint === `${SH}OrConstraintComponent` && !r.pathKey)).toEqual([]);
-    expect(report.issues.rows.find((r) => r.key === `${focus.value}|${VARIABLES}`)?.message).toMatch(/diccionario de variables/i);
+    expect(report.issues.rows.find((r) => r.key === `${focus.value}|${VARIABLES}`)?.messages.find((m) => m.language === "es")?.value).toMatch(/diccionario de variables/i);
   });
 
   it("an anonymous-branch implication validates its branch through the blank-node thenId", async () => {

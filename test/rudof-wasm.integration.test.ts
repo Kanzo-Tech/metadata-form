@@ -6,7 +6,9 @@ import { dirname, join } from "node:path";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
 import { namedNode, literal } from "@/form/factory.js";
-import { mapResults } from "@/form/validation.js";
+import { mapResults, type FieldError } from "@/form/validation.js";
+import { catalogFromTriples, englishMessages, mergeCatalogs, resolveMessage, type MessageCatalog } from "@/i18n/messages.js";
+import { es, ca } from "metadata-form/i18n";
 import { computeFormReport } from "@/react/validation/formReport.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import { projectTree } from "@/engine/projectTree.js";
@@ -50,6 +52,9 @@ const valuesFor = (form: ProjectedForm, key: string) =>
 describe("RudofEngine over the REAL wasm", () => {
   let engine: RudofEngine;
   let wasmModule: RudofModule;
+  let catalog: MessageCatalog;
+  /** The text of a failure for a reader of `languages`, as the form would show it. */
+  const say = (e: Pick<FieldError, "messages" | "constraint">, ...languages: string[]) => resolveMessage(e, catalog, languages);
 
   beforeAll(async () => {
     const mod = await import("@kanzo-tech/rudof-wasm");
@@ -57,6 +62,8 @@ describe("RudofEngine over the REAL wasm", () => {
     wasmModule = { newSession: () => new mod.Session() as unknown as RudofSession };
     engine = new RudofEngine(async () => wasmModule);
     await engine.ready();
+    const graphs = await Promise.all([englishMessages, es.messages, ca.messages].map((d) => engine.parseQuads(d)));
+    catalog = mergeCatalogs(graphs.map(catalogFromTriples));
   });
 
   it("parses shapes into the IR (full paths + presentation)", async () => {
@@ -95,7 +102,7 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(await engine.validate()).toHaveLength(0);
   });
 
-  it("carries multilingual sh:message through the report and mapResults picks by locale", async () => {
+  it("carries multilingual sh:message through the report and resolveMessage picks by language", async () => {
     // A minCount constraint with author messages in es + ca. The wasm merges the
     // engine's untagged default with these lang-tagged entries; the ABI must keep
     // the tags (not flatten), so mapResults can select the locale's wording.
@@ -116,10 +123,10 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(langs).toEqual(expect.arrayContaining(["ca", "es"]));
 
     const key = `${EX}dave|${EX}name`;
-    expect(mapResults(results, "es").get(key)?.[0].message).toBe("El nombre es obligatorio");
-    expect(mapResults(results, "ca").get(key)?.[0].message).toBe("El nom és obligatori");
+    expect(say(mapResults(results).get(key)![0], "es")).toBe("El nombre es obligatorio");
+    expect(say(mapResults(results).get(key)![0], "ca")).toBe("El nom és obligatori");
     // No author message for en → localized catalog default.
-    expect(mapResults(results, "en").get(key)?.[0].message).toBe("This field is required");
+    expect(say(mapResults(results).get(key)![0], "en")).toBe("This field is required");
   });
 
   it("validateFocus scopes validation to a single focus node (the spine's validate_focus)", async () => {
@@ -163,7 +170,7 @@ describe("RudofEngine over the REAL wasm", () => {
       shapes: model,
       focusNode: namedNode("http://example.org/d1"),
       shape,
-      locale: "en",
+      languages: ["en"],
     });
 
     // Groups (labels read from the shapes graph by the wasm) flow through.
@@ -211,7 +218,7 @@ describe("RudofEngine over the REAL wasm", () => {
       shapes: model,
       focusNode: dataset,
       shape: model.nodeShapes.get(healthDcatApRootShape)!,
-      locale: "en",
+      languages: ["en"],
       values,
       satisfied,
     });
@@ -237,7 +244,7 @@ describe("RudofEngine over the REAL wasm", () => {
         data: healthDcatApSampleData,
         engine: liveEngine,
         rootShape: healthDcatApRootShape,
-        locale: "en",
+        locale: ["en"],
         validateOn: "off",
       }),
     );
@@ -325,12 +332,12 @@ describe("RudofEngine over the REAL wasm", () => {
       shapes: model,
       focusNode: d1,
       shape: model.nodeShapes.get(`${EX}DatasetShape`)!,
-      locale: "en",
+      languages: ["en"],
       values: tree.values,
       satisfied: tree.satisfied,
     });
-    const report = computeFormReport(form, mapResults(results, "en"));
-    expect(report.issues.rows.map((r) => r.message)).toEqual(["This field is required"]);
+    const report = computeFormReport(form, mapResults(results));
+    expect(report.issues.rows.map((r) => say(r, "en"))).toEqual(["This field is required"]);
     expect(report.issues.rows[0].label).toBe("Publisher › Name");
     expect(report.issues.rows[0].constraint).toBe("http://www.w3.org/ns/shacl#MinCountConstraintComponent");
   });
@@ -343,7 +350,7 @@ describe("RudofEngine over the REAL wasm", () => {
    * components, on exactly the path the i18n work was built for.
    *
    * Two halves, both pinned here because nothing else pins either:
-   *  - the author's messages arrive lang-TAGGED, so `friendly()` can pick by
+   *  - the author's messages arrive lang-TAGGED, so `resolveMessage` can pick by
    *    locale (untagged engine text is excluded from that choice by design);
    *  - `sh:node`'s own untagged default names the shape's ID and no longer
    *    `Display`s the whole `IRShape`. The dump M6 reported verbatim
@@ -380,9 +387,9 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(result.messages.filter((m) => !m.language)).toEqual([]);
 
     // And that is what a reader gets, per locale.
-    const es = mapResults([result], "es").get(`${EX}d1|${EX}publisher`)![0];
-    expect(es.message).toBe("El publicador está incompleto");
-    expect(mapResults([result], "en").get(`${EX}d1|${EX}publisher`)![0].message)
+    const publisher = mapResults([result]).get(`${EX}d1|${EX}publisher`)![0];
+    expect(say(publisher, "es")).toBe("El publicador está incompleto");
+    expect(say(publisher, "en"))
       .toBe("The publisher is incomplete");
   });
 
@@ -419,7 +426,7 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(result.pathKey).toBe(`^${EX}owns`);
 
     // And that is what makes it land on a field instead of on the node.
-    const byField = mapResults([result], "en");
+    const byField = mapResults([result]);
     expect([...byField.keys()]).toEqual([`${EX}thing|^${EX}owns`]);
     expect([...byField.keys()]).not.toContain(`${EX}thing|`);
   });

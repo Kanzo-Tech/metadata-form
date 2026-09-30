@@ -23,6 +23,7 @@ export default defineConfig({
   resolve: {
     alias: {
       // More specific first — "metadata-form/ai" must win over "metadata-form".
+      "metadata-form/i18n": lib("src/i18n/index.ts"),
       "metadata-form/ai": lib("src/ai/index.ts"),
       "metadata-form": lib("src/index.ts"),
       "@": lib("src"),

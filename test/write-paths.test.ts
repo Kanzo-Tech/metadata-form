@@ -9,6 +9,8 @@ import { Editors } from "@/form/vocab/shacl-ui.js";
 import { SH_IRI } from "@/form/vocab/shacl.js";
 import { literal, namedNode } from "@/form/factory.js";
 import type { PathExpr } from "@/form/ShapeIR.js";
+import { EN, resolveStrings } from "@/i18n/strings.js";
+import { es, ca } from "metadata-form/i18n";
 
 /**
  * Writing through a property path.
@@ -35,7 +37,7 @@ const prefix = `
 
 /** One rudof session holding both the shapes and the data, with the live editable
  *  graph over it — the arrangement `useMetadataForm` runs, minus React. */
-async function form(shapesBody: string, dataTtl = "", locale = "en") {
+async function form(shapesBody: string, dataTtl = "") {
   const engine = createRudofEngine();
   const shapes = await engine.loadShapes(`${prefix}
     ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
@@ -49,13 +51,12 @@ async function form(shapesBody: string, dataTtl = "", locale = "en") {
     namedNode(SHAPE),
   );
   const graph = new GraphState(session.backend);
-  const build = (buildLocale = locale) => {
+  const build = () => {
     const { values, satisfied } = engine.projectValues(shapes, session.focusNode, session.rootShapeId);
     return buildFormModel({
       shapes,
       focusNode: session.focusNode,
       shape: shapes.nodeShapes.get(session.rootShapeId)!,
-      locale: buildLocale,
       values,
       satisfied,
       readStep: graph.readStep,
@@ -282,16 +283,19 @@ describe("the kinds that stay read-only, each pinned with its reason", () => {
       expect(field.readOnly).toBe(true);
       expect(field.write).toBeUndefined();
       expect(field.readOnlyReason?.code).toBe(code);
-      expect(field.readOnlyReason?.message.length).toBeGreaterThan(20);
+      expect(EN.readOnly[field.readOnlyReason!.code].length).toBeGreaterThan(20);
       expect(field.readOnlyReason?.detail).toBeTruthy();
     });
   }
 
-  it("gives the reason in the form's locale, like every other sentence in the UI", async () => {
+  it("carries the reason as a code alone; each language's sentence is in its strings table", async () => {
     const { build } = await form(`sh:property [ sh:path [ sh:zeroOrMorePath ex:p ] ] .`);
-    expect(only(build("es")).readOnlyReason?.message).toMatch(/camino repetitivo/);
-    expect(only(build("ca")).readOnlyReason?.message).toMatch(/camí repetitiu/);
-    expect(only(build("en")).readOnlyReason?.message).toMatch(/repeating path/);
+    const reason = only(build()).readOnlyReason!;
+    expect(Object.keys(reason).sort()).toEqual(["code", "detail"]);
+    const tables = { es: es.strings, ca: ca.strings };
+    expect(resolveStrings(["es"], tables).readOnly[reason.code]).toMatch(/camino repetitivo/);
+    expect(resolveStrings(["ca"], tables).readOnly[reason.code]).toMatch(/camí repetitiu/);
+    expect(resolveStrings(["en"], tables).readOnly[reason.code]).toMatch(/repeating path/);
   });
 });
 

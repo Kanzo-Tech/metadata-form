@@ -14,6 +14,7 @@ import { FieldRenderer } from "@/react/form/FieldRenderer.js";
 import { FormContext, NodeContext, type FormContextValue } from "@/react/form/context.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { resolveStrings } from "@/i18n/strings.js";
+import { es, ca } from "metadata-form/i18n";
 import type { Term } from "@rdfjs/types";
 import type { NodeShapeIR, PropertyShapeIR, ShapeIR, ShapeModel } from "@/form/ShapeIR.js";
 
@@ -79,7 +80,7 @@ const XSD_STRING = `${XSD}string`;
 /** Build one field from one property shape, optionally with helper node shapes. */
 function build(
   ps: PropertyShapeIR,
-  opts: { nodeShapes?: NodeShapeIR[]; locale?: string; onDiagnostic?: (d: Diagnostic) => void } = {},
+  opts: { nodeShapes?: NodeShapeIR[]; languages?: string[]; onDiagnostic?: (d: Diagnostic) => void } = {},
 ): FieldModel {
   const shape: NodeShapeIR = {
     id: `${EX}Shape`,
@@ -96,7 +97,7 @@ function build(
     shapes,
     focusNode: focus,
     shape,
-    locale: opts.locale ?? "en",
+    languages: opts.languages ?? ["en"],
     onDiagnostic: opts.onDiagnostic,
   });
   const fields = allFields(model);
@@ -187,7 +188,7 @@ describe("branches that differ in KIND become alternatives the user picks", () =
         ],
       },
     });
-    expect(build(named, { locale: "es" }).alternatives?.[0].label).toBe("Medida");
+    expect(build(named, { languages: ["es"] }).alternatives?.[0].label).toBe("Medida");
   });
 });
 
@@ -303,14 +304,16 @@ describe("a disjunction of structures is refused, with a reason", () => {
     expect(field.readOnlyReason?.detail).toBe(`${DCT}spatial`);
   });
 
-  it("says why, in the form's locale", () => {
-    expect(build(ps, { locale: "en" }).readOnlyReason?.message).toBe(
+  it("says why, in each language's strings", () => {
+    const { code } = build(ps).readOnlyReason!;
+    const tables = { es: es.strings, ca: ca.strings };
+    expect(resolveStrings(["en"], tables).readOnly[code]).toBe(
       "Shown for reference. The profile accepts several alternatives here, and every one of " +
         "them describes a related resource with a structure of its own rather than a value that " +
         "can be typed in.",
     );
-    expect(build(ps, { locale: "es" }).readOnlyReason?.message).toContain("estructura propia");
-    expect(build(ps, { locale: "ca" }).readOnlyReason?.message).toContain("estructura pròpia");
+    expect(resolveStrings(["es"], tables).readOnly[code]).toContain("estructura propia");
+    expect(resolveStrings(["ca"], tables).readOnly[code]).toContain("estructura pròpia");
   });
 
   it("leaves a control the property already had rather than refusing over it", () => {
@@ -456,13 +459,15 @@ describe("the picker a user sees", () => {
       model,
       widgets: defaultWidgets,
       locale: "en",
-      strings: resolveStrings("en"),
+      languages: ["en"],
+      strings: resolveStrings(["en"]),
+      messageOf: () => "",
       errors: new Map(),
       report: {
         progress: { filled: 0, total: 0, ratio: 0 },
         issues: { total: 0, hasViolations: false, rows: [], byField: new Map(), byGroup: new Map() },
         pending: [],
-        health: { mood: "ok", message: "" },
+        health: { mood: "ok", count: 0 },
       },
     } as unknown as FormContextValue;
     render(

@@ -1,16 +1,20 @@
 /**
- * Built-in UI string catalog (en / es / ca), selected by the same `locale` that
- * drives shape labels/descriptions, and overridable per-consumer. Deliberately
- * dependency-free and NOT under `src/react/`: the core validation layer
- * (`src/form/validation.ts`) imports it for localized fallback messages, so it
- * must sit below the React layer. Locale resolution mirrors `pickByLanguage`'s
- * base-language chain (`es-ES` → `es` → `en`).
+ * The words of the interface itself — everything the library prints that no shape
+ * and no message graph says. English is built in; every other language is data a
+ * consumer imports (`metadata-form/i18n`) or writes, and passes as `strings`.
+ *
+ * What is NOT here: field labels, descriptions and group names (the profile's
+ * `sh:name`/`sh:description`/`rdfs:label`, picked by language) and the wording of
+ * a validation failure (the profile's `sh:message`, else the message graph in
+ * `messages.ts`). This file is the third and last source, the chrome around them.
  */
 
 import type { ReadOnlyCode } from "../form/FormModel.js";
+import { matchesLanguage } from "../form/terms.js";
 
-/** SHACL constraint-component IRIs used as keys of `validationDefaults`. */
-const SH = "http://www.w3.org/ns/shacl#";
+/** A message that depends on a count: one template per CLDR plural category the
+ *  language uses (`Intl.PluralRules`), `other` mandatory. `{n}` is the count. */
+export type Plural = Partial<Record<Intl.LDMLPluralRule, string>> & { other: string };
 
 export interface Strings {
   /** UI chrome of the `rdf:langString` language-tag picker. */
@@ -26,12 +30,6 @@ export interface Strings {
     /** Hint shown when a typed free tag can be committed with Enter. */
     enterToUse: string;
   };
-  /**
-   * Default validation wording keyed by constraint-component IRI, used when the
-   * shape author did not provide a locale-matching `sh:message`. `_fallback` is
-   * the last resort for any other/unknown constraint.
-   */
-  validationDefaults: Record<string, string>;
   /** Chrome of the findings panel — the words AROUND a message, not the message.
    *  A form whose fields and errors are Spanish and whose severity badge says
    *  "Violation" is a form that is half translated. */
@@ -49,8 +47,7 @@ export interface Strings {
     /** Precedes the offending term. */
     reportedValue: string;
     /** Accessible name of the disclosure that opens one finding. `{field}` is the
-     *  field's hierarchical label — the only interpolation in this catalog, and it
-     *  is a name substituted verbatim, not a quantity that would need a formatter. */
+     *  field's hierarchical label, substituted verbatim. */
     detailsOf: string;
   };
   /**
@@ -61,6 +58,35 @@ export interface Strings {
    * than the SHACL construct.
    */
   readOnly: Record<ReadOnlyCode, string>;
+  /** Every other word the form prints: placeholders, boolean and empty options,
+   *  counts, progress, loading. `{name}` marks a substituted value. */
+  chrome: {
+    /** Placeholder of a reference field that takes an IRI or a search. */
+    iriOrSearch: string;
+    search: string;
+    addIri: string;
+    add: string;
+    choose: string;
+    /** The empty option of an optional select. */
+    notSet: string;
+    yes: string;
+    no: string;
+    noMatches: string;
+    remove: string;
+    /** Accessible name of the value-kind selector. `{field}` is the field label. */
+    kindOfValue: string;
+    loading: string;
+    /** `{error}` is the failure's own message. */
+    loadFailed: string;
+    /** Label of an unnamed group in a tabbed layout; `{n}` is its 1-based position. */
+    group: string;
+    /** Same, in a stepped layout. */
+    step: string;
+    /** "n issues". */
+    issues: Plural;
+    /** The summary pill of a clean form. */
+    valid: string;
+  };
 }
 
 /** A recursive partial for consumer overrides. */
@@ -68,56 +94,22 @@ export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends Record<string, unknown> ? DeepPartial<T[K]> : T[K];
 };
 
-const EN: Strings = {
+/** Strings keyed by BCP 47 language tag — the shape of the `strings` option. */
+export type StringTables = Record<string, DeepPartial<Strings>>;
+
+/** The strings for one language, plus the language they are in (which the plural
+ *  rules need). */
+export interface ResolvedStrings extends Strings {
+  language: string;
+}
+
+export const EN: Strings = {
   languagePicker: {
     label: "Language",
     searchPlaceholder: "Search or type a tag…",
     filterPlaceholder: "Filter…",
     noMatches: "No matches",
     enterToUse: "Press Enter to use this tag",
-  },
-  validationDefaults: {
-    // Verbatim from the previous English-only FRIENDLY map (test-asserted).
-    [`${SH}MinCountConstraintComponent`]: "This field is required",
-    [`${SH}MaxCountConstraintComponent`]: "Too many values",
-    [`${SH}DatatypeConstraintComponent`]: "Invalid value type",
-    [`${SH}NodeKindConstraintComponent`]: "Invalid value kind",
-    [`${SH}PatternConstraintComponent`]: "Value does not match the required pattern",
-    [`${SH}MinLengthConstraintComponent`]: "Value is too short",
-    [`${SH}MaxLengthConstraintComponent`]: "Value is too long",
-    [`${SH}ClassConstraintComponent`]: "Value is not of the expected type",
-    [`${SH}InConstraintComponent`]: "Value is not an allowed option",
-    // Shape-based components. rudof renders these by Display-ing the internal
-    // shape, so without an entry here the report shows an AST dump.
-    [`${SH}NodeConstraintComponent`]: "Some details in this section are incomplete",
-    [`${SH}PropertyConstraintComponent`]: "Some details of this property are not valid",
-    [`${SH}QualifiedValueShapeConstraintComponent`]: "Some values are not what is expected here",
-    [`${SH}QualifiedMinCountConstraintComponent`]: "Not enough matching values",
-    [`${SH}QualifiedMaxCountConstraintComponent`]: "Too many matching values",
-    [`${SH}ReifierShapeConstraintComponent`]: "Details about this statement are incomplete",
-    // Logical components (SHACL 1.2 adds sh:if).
-    [`${SH}AndConstraintComponent`]: "Value does not meet all the requirements",
-    [`${SH}OrConstraintComponent`]: "Value does not meet any of the allowed alternatives",
-    [`${SH}XoneConstraintComponent`]: "Value must meet exactly one of the alternatives",
-    [`${SH}NotConstraintComponent`]: "This value is not allowed here",
-    [`${SH}IfConstraintComponent`]: "Value does not meet the requirement that applies here",
-    // Value range.
-    [`${SH}MinInclusiveConstraintComponent`]: "Value is too small",
-    [`${SH}MinExclusiveConstraintComponent`]: "Value is too small",
-    [`${SH}MaxInclusiveConstraintComponent`]: "Value is too large",
-    [`${SH}MaxExclusiveConstraintComponent`]: "Value is too large",
-    // Language and property pairs.
-    [`${SH}LanguageInConstraintComponent`]: "This language is not allowed",
-    [`${SH}UniqueLangConstraintComponent`]: "Only one value per language is allowed",
-    [`${SH}EqualsConstraintComponent`]: "Value must match the related field",
-    [`${SH}DisjointConstraintComponent`]: "Value must differ from the related field",
-    [`${SH}LessThanConstraintComponent`]: "Value must be less than the related field",
-    [`${SH}LessThanOrEqualsConstraintComponent`]: "Value must be less than or equal to the related field",
-    // Everything else the validator can raise.
-    [`${SH}HasValueConstraintComponent`]: "A required value is missing",
-    [`${SH}ClosedConstraintComponent`]: "This property is not allowed here",
-    [`${SH}SPARQLConstraintComponent`]: "Value does not meet a custom requirement",
-    _fallback: "Invalid value",
   },
   validationPanel: {
     empty: "Nothing to fix. Every shape this form covers is satisfied.",
@@ -144,182 +136,68 @@ const EN: Strings = {
     "unsatisfiable-conjunction":
       "Shown for reference. Several rules in the profile apply to this field and contradict one another, so no value could satisfy all of them.",
   },
-};
-
-const ES: Strings = {
-  languagePicker: {
-    label: "Idioma",
-    searchPlaceholder: "Buscar o escribir tag…",
-    filterPlaceholder: "Filtrar…",
-    noMatches: "Sin coincidencias",
-    enterToUse: "Pulsa Enter para usar este tag",
-  },
-  validationDefaults: {
-    [`${SH}MinCountConstraintComponent`]: "Este campo es obligatorio",
-    [`${SH}MaxCountConstraintComponent`]: "Demasiados valores",
-    [`${SH}DatatypeConstraintComponent`]: "Tipo de valor no válido",
-    [`${SH}NodeKindConstraintComponent`]: "Clase de valor no válida",
-    [`${SH}PatternConstraintComponent`]: "El valor no coincide con el patrón requerido",
-    [`${SH}MinLengthConstraintComponent`]: "El valor es demasiado corto",
-    [`${SH}MaxLengthConstraintComponent`]: "El valor es demasiado largo",
-    [`${SH}ClassConstraintComponent`]: "El valor no es del tipo esperado",
-    [`${SH}InConstraintComponent`]: "El valor no es una opción permitida",
-    [`${SH}NodeConstraintComponent`]: "Faltan datos en esta sección",
-    [`${SH}PropertyConstraintComponent`]: "Hay datos no válidos en esta propiedad",
-    [`${SH}QualifiedValueShapeConstraintComponent`]: "Algunos valores no son los esperados aquí",
-    [`${SH}QualifiedMinCountConstraintComponent`]: "No hay suficientes valores que cumplan lo esperado",
-    [`${SH}QualifiedMaxCountConstraintComponent`]: "Hay demasiados valores que cumplen lo esperado",
-    [`${SH}ReifierShapeConstraintComponent`]: "Faltan datos sobre esta declaración",
-    [`${SH}AndConstraintComponent`]: "El valor no cumple todos los requisitos",
-    [`${SH}OrConstraintComponent`]: "El valor no cumple ninguna de las alternativas permitidas",
-    [`${SH}XoneConstraintComponent`]: "El valor debe cumplir exactamente una de las alternativas",
-    [`${SH}NotConstraintComponent`]: "Este valor no está permitido aquí",
-    [`${SH}IfConstraintComponent`]: "El valor no cumple el requisito que se aplica aquí",
-    [`${SH}MinInclusiveConstraintComponent`]: "El valor es demasiado pequeño",
-    [`${SH}MinExclusiveConstraintComponent`]: "El valor es demasiado pequeño",
-    [`${SH}MaxInclusiveConstraintComponent`]: "El valor es demasiado grande",
-    [`${SH}MaxExclusiveConstraintComponent`]: "El valor es demasiado grande",
-    [`${SH}LanguageInConstraintComponent`]: "Este idioma no está permitido",
-    [`${SH}UniqueLangConstraintComponent`]: "Solo se permite un valor por idioma",
-    [`${SH}EqualsConstraintComponent`]: "El valor debe coincidir con el del campo relacionado",
-    [`${SH}DisjointConstraintComponent`]: "El valor debe ser distinto del campo relacionado",
-    [`${SH}LessThanConstraintComponent`]: "El valor debe ser menor que el del campo relacionado",
-    [`${SH}LessThanOrEqualsConstraintComponent`]: "El valor debe ser menor o igual que el del campo relacionado",
-    [`${SH}HasValueConstraintComponent`]: "Falta un valor obligatorio",
-    [`${SH}ClosedConstraintComponent`]: "Esta propiedad no está permitida aquí",
-    [`${SH}SPARQLConstraintComponent`]: "El valor no cumple un requisito personalizado",
-    _fallback: "Valor no válido",
-  },
-  validationPanel: {
-    empty: "No hay nada que corregir. El formulario cumple todas las formas.",
-    violation: "Infracción",
-    warning: "Aviso",
-    info: "Información",
-    violationDetail: "Los datos no cumplen la forma mientras esto no se resuelva.",
-    warningDetail: "Los datos siguen siendo válidos; conviene revisarlo.",
-    infoDetail: "Solo a título informativo.",
-    reportedValue: "Valor recibido",
-    detailsOf: "Detalles de la incidencia en {field}",
-  },
-  readOnly: {
-    "variable-length-path":
-      "Se muestra a título informativo. El perfil llega a estos valores por un camino repetitivo, que no indica dónde se guardaría uno nuevo.",
-    "compound-path":
-      "Se muestra a título informativo. El perfil llega a estos valores combinando varias propiedades, y eso no se puede editar declaración a declaración.",
-    "intermediate-missing":
-      "Se muestra a título informativo. Este valor pertenece a un recurso relacionado que aún no existe: complétalo primero y este campo se podrá editar.",
-    "intermediate-ambiguous":
-      "Se muestra a título informativo. Este valor podría pertenecer a más de un recurso relacionado, así que no hay un único sitio donde guardar el cambio.",
-    "disjunction-of-shapes":
-      "Se muestra a título informativo. El perfil admite varias alternativas aquí, y todas ellas describen un recurso relacionado con estructura propia, no un valor que se pueda escribir.",
-    "unsatisfiable-conjunction":
-      "Se muestra a título informativo. Varias reglas del perfil se aplican a este campo y se contradicen entre sí, así que ningún valor podría cumplirlas todas.",
+  chrome: {
+    iriOrSearch: "IRI or search…",
+    search: "Search…",
+    addIri: "Add an IRI…",
+    add: "Add…",
+    choose: "Choose…",
+    notSet: "Not set",
+    yes: "Yes",
+    no: "No",
+    noMatches: "No matches",
+    remove: "Remove",
+    kindOfValue: "{field} — kind of value",
+    loading: "Loading…",
+    loadFailed: "Failed to load form: {error}",
+    group: "Group {n}",
+    step: "Step {n}",
+    issues: { one: "{n} issue", other: "{n} issues" },
+    valid: "Valid",
   },
 };
 
-const CA: Strings = {
-  languagePicker: {
-    label: "Idioma",
-    searchPlaceholder: "Cerca o escriu un tag…",
-    filterPlaceholder: "Filtra…",
-    noMatches: "Sense coincidències",
-    enterToUse: "Prem Enter per usar aquest tag",
-  },
-  validationDefaults: {
-    [`${SH}MinCountConstraintComponent`]: "Aquest camp és obligatori",
-    [`${SH}MaxCountConstraintComponent`]: "Massa valors",
-    [`${SH}DatatypeConstraintComponent`]: "Tipus de valor no vàlid",
-    [`${SH}NodeKindConstraintComponent`]: "Classe de valor no vàlida",
-    [`${SH}PatternConstraintComponent`]: "El valor no coincideix amb el patró requerit",
-    [`${SH}MinLengthConstraintComponent`]: "El valor és massa curt",
-    [`${SH}MaxLengthConstraintComponent`]: "El valor és massa llarg",
-    [`${SH}ClassConstraintComponent`]: "El valor no és del tipus esperat",
-    [`${SH}InConstraintComponent`]: "El valor no és una opció permesa",
-    [`${SH}NodeConstraintComponent`]: "Falten dades en aquesta secció",
-    [`${SH}PropertyConstraintComponent`]: "Hi ha dades no vàlides en aquesta propietat",
-    [`${SH}QualifiedValueShapeConstraintComponent`]: "Alguns valors no són els esperats aquí",
-    [`${SH}QualifiedMinCountConstraintComponent`]: "No hi ha prou valors que compleixin allò esperat",
-    [`${SH}QualifiedMaxCountConstraintComponent`]: "Hi ha massa valors que compleixen allò esperat",
-    [`${SH}ReifierShapeConstraintComponent`]: "Falten dades sobre aquesta declaració",
-    [`${SH}AndConstraintComponent`]: "El valor no compleix tots els requisits",
-    [`${SH}OrConstraintComponent`]: "El valor no compleix cap de les alternatives permeses",
-    [`${SH}XoneConstraintComponent`]: "El valor ha de complir exactament una de les alternatives",
-    [`${SH}NotConstraintComponent`]: "Aquest valor no està permès aquí",
-    [`${SH}IfConstraintComponent`]: "El valor no compleix el requisit que s'aplica aquí",
-    [`${SH}MinInclusiveConstraintComponent`]: "El valor és massa petit",
-    [`${SH}MinExclusiveConstraintComponent`]: "El valor és massa petit",
-    [`${SH}MaxInclusiveConstraintComponent`]: "El valor és massa gran",
-    [`${SH}MaxExclusiveConstraintComponent`]: "El valor és massa gran",
-    [`${SH}LanguageInConstraintComponent`]: "Aquest idioma no està permès",
-    [`${SH}UniqueLangConstraintComponent`]: "Només es permet un valor per idioma",
-    [`${SH}EqualsConstraintComponent`]: "El valor ha de coincidir amb el del camp relacionat",
-    [`${SH}DisjointConstraintComponent`]: "El valor ha de ser diferent del camp relacionat",
-    [`${SH}LessThanConstraintComponent`]: "El valor ha de ser menor que el del camp relacionat",
-    [`${SH}LessThanOrEqualsConstraintComponent`]: "El valor ha de ser menor o igual que el del camp relacionat",
-    [`${SH}HasValueConstraintComponent`]: "Falta un valor obligatori",
-    [`${SH}ClosedConstraintComponent`]: "Aquesta propietat no està permesa aquí",
-    [`${SH}SPARQLConstraintComponent`]: "El valor no compleix un requisit personalitzat",
-    _fallback: "Valor no vàlid",
-  },
-  validationPanel: {
-    empty: "No hi ha res a corregir. El formulari compleix totes les formes.",
-    violation: "Infracció",
-    warning: "Avís",
-    info: "Informació",
-    violationDetail: "Les dades no compleixen la forma mentre això no es resolgui.",
-    warningDetail: "Les dades continuen sent vàlides; convé revisar-ho.",
-    infoDetail: "Només a títol informatiu.",
-    reportedValue: "Valor rebut",
-    detailsOf: "Detalls de la incidència a {field}",
-  },
-  readOnly: {
-    "variable-length-path":
-      "Es mostra a títol informatiu. El perfil arriba a aquests valors per un camí repetitiu, que no indica on es desaria un de nou.",
-    "compound-path":
-      "Es mostra a títol informatiu. El perfil arriba a aquests valors combinant diverses propietats, i això no es pot editar declaració a declaració.",
-    "intermediate-missing":
-      "Es mostra a títol informatiu. Aquest valor pertany a un recurs relacionat que encara no existeix: completa'l primer i aquest camp es podrà editar.",
-    "intermediate-ambiguous":
-      "Es mostra a títol informatiu. Aquest valor podria pertànyer a més d'un recurs relacionat, així que no hi ha un únic lloc on desar el canvi.",
-    "disjunction-of-shapes":
-      "Es mostra a títol informatiu. El perfil admet diverses alternatives aquí, i totes descriuen un recurs relacionat amb estructura pròpia, no un valor que es pugui escriure.",
-    "unsatisfiable-conjunction":
-      "Es mostra a títol informatiu. Diverses regles del perfil s'apliquen a aquest camp i es contradiuen entre elles, així que cap valor no les podria complir totes.",
-  },
-};
+/** Substitute `{name}` placeholders. Values go in verbatim: they are names and
+ *  numbers, never text that would itself need translating. */
+export function fill(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (m, k: string) => (k in values ? String(values[k]) : m));
+}
 
-/** Built-in tables. English is the ultimate fallback for any missing key. */
-export const DEFAULTS: Record<"en" | "es" | "ca", Strings> = { en: EN, es: ES, ca: CA };
+/** The template of `forms` for `n` in the strings' language, filled with `n`. */
+export function count(s: ResolvedStrings, forms: Plural, n: number): string {
+  const category = new Intl.PluralRules(s.language).select(n);
+  return fill(forms[category] ?? forms.other, { n });
+}
+
+function merge<T>(base: T, over: DeepPartial<T> | undefined): T {
+  if (!over) return base;
+  const out: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+  for (const [k, v] of Object.entries(over)) {
+    if (v == null) continue;
+    const b = out[k];
+    out[k] =
+      typeof v === "object" && typeof b === "object" && !Array.isArray(v) ? merge(b, v as DeepPartial<typeof b>) : v;
+  }
+  return out as T;
+}
 
 /**
- * Resolve the string catalog for `locale`, layering (English base → locale table
- * → consumer `override`). Base-language fold matches `pickByLanguage`
- * (`es-ES` → `es`); unknown locales fall back to English.
+ * The strings for the reader: English, overlaid with the table of the most
+ * preferred language that has one. `languages` is ordered and matched by basic
+ * filtering, like every other language choice here; `tables` holds whatever the
+ * consumer supplied (`es`/`ca` from `metadata-form/i18n`, their own, or a partial
+ * override of `en`). A string missing from the chosen table stays English.
  */
-export function resolveStrings(locale: string | undefined, override?: DeepPartial<Strings>): Strings {
-  const base = (locale || "en").toLowerCase().split("-")[0];
-  const table = DEFAULTS[base as "en" | "es" | "ca"] ?? DEFAULTS.en;
-  const validationDefaults: Record<string, string> = { ...EN.validationDefaults, ...table.validationDefaults };
-  // Copy only defined overrides (the partial's index signature is `string | undefined`).
-  for (const [k, v] of Object.entries(override?.validationDefaults ?? {})) {
-    if (v != null) validationDefaults[k] = v;
+export function resolveStrings(languages: readonly string[], tables: StringTables = {}): ResolvedStrings {
+  const tags = Object.keys(tables);
+  let language = "en";
+  for (const range of languages) {
+    const tag = tags.find((t) => matchesLanguage(t, range));
+    if (tag) {
+      language = tag;
+      break;
+    }
   }
-  return {
-    languagePicker: {
-      ...EN.languagePicker,
-      ...table.languagePicker,
-      ...override?.languagePicker,
-    },
-    validationDefaults,
-    validationPanel: {
-      ...EN.validationPanel,
-      ...table.validationPanel,
-      ...override?.validationPanel,
-    },
-    readOnly: {
-      ...EN.readOnly,
-      ...table.readOnly,
-      ...override?.readOnly,
-    },
-  };
+  const en = merge(EN, tables.en);
+  return { ...(language.toLowerCase() === "en" ? en : merge(en, tables[language])), language };
 }

@@ -1,6 +1,7 @@
 import { Card, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from "@kanzo-tech/ui";
 import type { FormModel } from "../../form/FormModel.js";
-import type { GridLayout } from "../form/context.js";
+import { useStrings, type GridLayout } from "../form/context.js";
+import { fill } from "../../i18n/strings.js";
 import type { GroupIssues } from "../validation/formReport.js";
 import { FieldsGrid } from "./FieldsGrid.js";
 import { GroupIssuesBadge } from "./GroupIssuesBadge.js";
@@ -20,6 +21,7 @@ export function TabsLayout({
   activeGroup?: string;
   onActiveGroupChange?: (groupId: string) => void;
 }) {
+  const { chrome } = useStrings();
   const groups = model.groups;
   if (groups.length === 0) return null;
   return (
@@ -30,7 +32,7 @@ export function TabsLayout({
       <TabsList className="w-full justify-start">
         {groups.map((group, i) => (
           <TabsTrigger key={group.id} value={group.id}>
-            {group.label || `Group ${i + 1}`}
+            {group.label || fill(chrome.group, { n: i + 1 })}
             <GroupIssuesBadge issues={issues.get(group.id)} />
           </TabsTrigger>
         ))}

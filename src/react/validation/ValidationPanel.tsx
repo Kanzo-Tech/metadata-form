@@ -14,7 +14,7 @@ import {
   DiagnosticTrigger,
 } from "@kanzo-tech/ui";
 import type { Severity } from "../../form/validation.js";
-import type { Strings } from "../../i18n/strings.js";
+import type { ResolvedStrings } from "../../i18n/strings.js";
 import type { IssueRow } from "./formReport.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { ink } from "../styles.js";
@@ -42,7 +42,7 @@ export interface ValidationPanelLabels {
  *  the active locale — the same one the messages themselves came through. A form
  *  whose fields and errors are Spanish and whose badge says "Violation" is a form
  *  that is half translated. `labels` still wins, per consumer. */
-function wordsFor(strings: Strings, labels: ValidationPanelLabels | undefined) {
+function wordsFor(strings: ResolvedStrings, labels: ValidationPanelLabels | undefined) {
   const p = strings.validationPanel;
   return {
     empty: labels?.empty ?? p.empty,
@@ -162,7 +162,7 @@ export function ValidationPanel({ form, openId, onOpenChange, labels }: Validati
                 {/* The chevron alone; the name it carries is what `aria-label` is for. */}
                 <DiagnosticTrigger aria-label={words.detailsOf.replace("{field}", row.label)} />
               </DiagnosticActions>
-              <DiagnosticTitle className="basis-full">{row.message}</DiagnosticTitle>
+              <DiagnosticTitle className="basis-full">{form.messageOf(row)}</DiagnosticTitle>
             </DiagnosticHeader>
             <DiagnosticContent>
               <DiagnosticDescription>

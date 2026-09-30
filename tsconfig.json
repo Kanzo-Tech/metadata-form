@@ -8,6 +8,7 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
+      "metadata-form/i18n": ["./src/i18n/index.ts"],
       "metadata-form/ai": ["./src/ai/index.ts"],
       "metadata-form": ["./src/index.ts"],
       "@/*": ["./src/*"],

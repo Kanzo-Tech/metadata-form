@@ -145,7 +145,7 @@ async function inventory(label: string, ttl: string) {
   for (const [shapeId, shape] of shapes.nodeShapes) {
     let model;
     try {
-      model = buildFormModel({ shapes, focusNode: focus, shape, locale: "en" });
+      model = buildFormModel({ shapes, focusNode: focus, shape, languages: ["en"] });
     } catch (err) {
       failed.push(`${shapeId}: ${String((err as Error)?.message ?? err).slice(0, 120)}`);
       continue;

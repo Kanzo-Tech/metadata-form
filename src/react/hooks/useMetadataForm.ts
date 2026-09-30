@@ -2,7 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode } from "../../form/factory.js";
 import { mapResults } from "../../form/validation.js";
-import { resolveStrings, type DeepPartial, type Strings } from "../../i18n/strings.js";
+import { resolveStrings, type ResolvedStrings, type StringTables } from "../../i18n/strings.js";
+import { resolveLanguages } from "../../i18n/languages.js";
+import { catalogFromTriples, englishMessages, mergeCatalogs, resolveMessage, type MessageCatalog } from "../../i18n/messages.js";
 import type { FormModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
 import type { ShapeModel } from "../../form/ShapeIR.js";
@@ -25,11 +27,19 @@ export interface UseMetadataFormOptions {
   focusNode?: string;
   /** Explicit root shape IRI. */
   rootShape?: string;
-  /** UI locale for label/description language selection. */
-  locale?: string;
-  /** Override the built-in UI string catalog (language picker chrome, default
-   *  validation messages). Layered over the locale's built-in table. */
-  strings?: DeepPartial<Strings>;
+  /** The reader's language, or an ordered list of them, most preferred first.
+   *  Labels, descriptions, the author's `sh:message` and the default messages are
+   *  picked from it by RFC 4647 basic filtering (`en-US` matches `en`, not the
+   *  reverse). Defaults to `navigator.languages`, else `en`. */
+  locale?: string | readonly string[];
+  /** Interface strings by language tag (`{ es: es.strings }` from
+   *  `metadata-form/i18n`, or your own). English is built in; a table may be partial. */
+  strings?: StringTables;
+  /** Extra default validation messages, as Turtle documents of
+   *  `<constraint component> sh:message "…"@lang` triples — how a language is added
+   *  (`es.messages` from `metadata-form/i18n`, or your own). Layered over the
+   *  built-in English graph. */
+  messages?: string | readonly string[];
   validateOn?: "change" | "manual" | "off";
   validationDebounceMs?: number;
   /** The single assistance seam (reference search · suggestions · completion).
@@ -62,9 +72,17 @@ export interface MetadataFormController {
   reset(): void;
   /** Observe graph changes (autosave, external sync). Returns an unsubscribe. */
   subscribe(listener: () => void): () => void;
+  /** The most preferred of {@link languages}. */
   locale: string;
-  /** The resolved UI string catalog for the active locale (+ any override). */
-  strings: Strings;
+  /** The reader's ordered language ranges. */
+  languages: readonly string[];
+  /** The interface strings, in the reader's language. */
+  strings: ResolvedStrings;
+  /** The text of one validation failure, in the reader's language: the author's
+   *  `sh:message`, else the message graph's wording for its constraint component.
+   *  Re-evaluated against the current language, so a change of `locale` re-words
+   *  errors already reported. */
+  messageOf(error: Pick<FieldError, "messages" | "constraint">): string;
   /** The underlying editable graph (mutable, observable). */
   graph?: GraphState;
   assist?: FormAssist;
@@ -86,6 +104,7 @@ interface Prepared {
 }
 
 const NOOP_UNSUB = () => () => {};
+const EMPTY_CATALOG: MessageCatalog = new Map();
 
 /** Turtle vs JSON-LD by a cheap leading-char sniff (rudof parses by media type). */
 function detectMediaType(text: string): string {
@@ -100,8 +119,9 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     engine: providedEngine,
     focusNode,
     rootShape,
-    locale = "en",
+    locale: localeOption,
     strings: stringsOption,
+    messages: messagesOption,
     validateOn = "change",
     validationDebounceMs = 300,
     assist,
@@ -109,7 +129,31 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   } = options;
 
   const engine = useMemo(() => providedEngine ?? createRudofEngine(), [providedEngine]);
-  const strings = useMemo(() => resolveStrings(locale, stringsOption), [locale, stringsOption]);
+  const languagesKey = typeof localeOption === "string" ? localeOption : localeOption?.join("\0");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const languages = useMemo(() => resolveLanguages(localeOption), [languagesKey]);
+  const locale = languages[0];
+  const strings = useMemo(() => resolveStrings(languages, stringsOption), [languages, stringsOption]);
+
+  // The message graph: the built-in English plus the consumer's documents, parsed
+  // by rudof like every other RDF the form reads.
+  const documents = [englishMessages, ...(typeof messagesOption === "string" ? [messagesOption] : (messagesOption ?? []))];
+  const documentsKey = documents.join("\0");
+  const [catalog, setCatalog] = useState<MessageCatalog>();
+  useEffect(() => {
+    let active = true;
+    Promise.all(documents.map((d) => engine.parseQuads(d)))
+      .then((parsed) => active && setCatalog(mergeCatalogs(parsed.map(catalogFromTriples))))
+      .catch((e) => active && setError(e instanceof Error ? e : new Error(String(e))));
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engine, documentsKey]);
+  const messageOf = useCallback(
+    (error: Pick<FieldError, "messages" | "constraint">) => resolveMessage(error, catalog ?? EMPTY_CATALOG, languages),
+    [catalog, languages],
+  );
 
   const [prepared, setPrepared] = useState<Prepared | null>(null);
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -175,19 +219,18 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       shapes: prepared.shapes,
       focusNode: prepared.focusNode,
       shape: prepared.shapes.nodeShapes.get(prepared.rootShapeId)!,
-      locale,
+      languages,
       onDiagnostic,
       values,
       satisfied,
       // The live graph, for the one question the shapes cannot answer: whether a
       // sequence path's intermediate resource exists and is unique (see BuildArgs).
       readStep: prepared.graph.readStep,
-      strings,
     });
     return { model, nodes };
     // `version` re-projects field values from the graph after each edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, prepared, version, locale, onDiagnostic, strings]);
+  }, [engine, prepared, version, languages, onDiagnostic]);
 
   const model: FormModel | undefined = projected?.model;
 
@@ -200,12 +243,12 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       // Validate the live session in place (no reload) — every node of the
       // projected tree, not only the root: see `RudofEngine.validateTree`.
       const results = await engine.validateTree(projected?.nodes ?? []);
-      setErrors(mapResults(results, locale, strings));
+      setErrors(mapResults(results));
     }, validationDebounceMs);
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
-  }, [engine, prepared, projected, version, validateOn, validationDebounceMs, locale, strings]);
+  }, [engine, prepared, projected, version, validateOn, validationDebounceMs]);
 
   const isValid = useMemo(() => {
     for (const list of errors.values()) {
@@ -236,14 +279,14 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const validate = useCallback(async () => {
     if (!prepared) return [];
     const results = await engine.validateTree(projected?.nodes ?? []);
-    const map = mapResults(results, locale, strings);
+    const map = mapResults(results);
     setErrors(map);
     return [...map.values()].flat();
-  }, [engine, prepared, projected, locale, strings]);
+  }, [engine, prepared, projected]);
 
   return useMemo<MetadataFormController>(
     () => ({
-      ready: !!model,
+      ready: !!model && !!catalog,
       error,
       model,
       focusNode: model?.focusNode,
@@ -252,7 +295,9 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       isValid,
       report,
       locale,
+      languages,
       strings,
+      messageOf,
       graph,
       // rudof serializes just the focus's subgraph (one record), prefixes retained.
       toTurtle: () => (model ? engine.serializeFocus(model.focusNode, "text/turtle") : Promise.resolve("")),
@@ -265,6 +310,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       revealField,
       _revealTarget: revealTarget,
     }),
-    [model, error, getQuads, errors, isValid, report, locale, strings, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
+    [model, catalog, error, getQuads, errors, isValid, report, locale, languages, strings, messageOf, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
   );
 }

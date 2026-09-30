@@ -9,6 +9,7 @@ import { allFields } from "@/form/FormModel.js";
 import { computeFormReport } from "@/react/validation/formReport.js";
 import type { FieldError, ValidationResult } from "@/form/validation.js";
 import { mapResults } from "@/form/validation.js";
+import { EN } from "@/i18n/strings.js";
 import { namedNode } from "@/form/factory.js";
 import type { ShapeModel } from "@/form/ShapeIR.js";
 import { healthDcatApShapes, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
@@ -33,7 +34,7 @@ function buildFrom(
 ) {
   const shape = shapes.nodeShapes.get(rootIri);
   if (!shape) throw new Error(`No node shape ${rootIri}`);
-  return buildFormModel({ shapes, focusNode, shape, locale: "en", onDiagnostic });
+  return buildFormModel({ shapes, focusNode, shape, languages: ["en"], onDiagnostic });
 }
 
 /** Build a FormModel whose values come from a real rudof session: load shapes AND
@@ -51,7 +52,7 @@ async function buildWithData(
   await engine.loadData(dataTtl);
   const shape = model.nodeShapes.get(rootIri)!;
   const { values, satisfied } = projectTree((f, s) => engine.projectFormSync(f, s), model, rootIri, focusNode);
-  return buildFormModel({ shapes: model, focusNode, shape, values, satisfied, locale: "en" });
+  return buildFormModel({ shapes: model, focusNode, shape, values, satisfied, languages: ["en"] });
 }
 
 /** Validate a data graph (Turtle string) against shapes, in rudof-over-WASM. */
@@ -167,8 +168,8 @@ describe("SHACL → FormModel", () => {
     expect(field).toBeDefined();
     expect(field?.readOnly).toBe(true);
     expect(field?.readOnlyReason?.code).toBe("intermediate-missing");
-    expect(field?.readOnlyReason?.message).toMatch(/does not exist yet/);
-    expect(field?.readOnlyReason?.detail).toBe("(http://example.org/a/http://example.org/b)");
+    expect(EN.readOnly[field!.readOnlyReason!.code]).toMatch(/does not exist yet/);
+        expect(field?.readOnlyReason?.detail).toBe("(http://example.org/a/http://example.org/b)");
     expect(field?.values.map((v) => v.value?.value)).toEqual(["deep"]);
   });
 
@@ -192,7 +193,7 @@ describe("computeFormReport (single derived state)", () => {
     const { model } = build();
     const title = allFields(model).find((f) => f.path.value.endsWith("/title"))!;
     const errors = new Map<string, FieldError[]>([
-      [title.id, [{ message: "Required", severity: "violation" } as FieldError]],
+      [title.id, [{ messages: [{ value: "Required", language: "" }], severity: "violation" } as FieldError]],
     ]);
 
     const report = computeFormReport(model, errors);

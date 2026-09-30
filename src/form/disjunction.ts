@@ -103,7 +103,7 @@ export interface DisjunctionArgs {
   own: FieldConstraints;
   /** Field id, for alternative ids the profile left anonymous. */
   fieldId: string;
-  locale?: string;
+  languages: readonly string[];
   /**
    * Whether the property already offers a usable control without the disjunction
    * — that is, whether its own facts (or a stated `shui:editor`) resolved to
@@ -298,8 +298,8 @@ function mergeGroup(group: FieldConstraints[]): FieldConstraints {
  * reason: the vocabulary term is what the author wrote, and an invented English
  * gloss for it would be a second taxonomy to keep in step with the first.
  */
-function labelOf(b: ShapeIR, c: FieldConstraints, locale: string | undefined, index: number): string {
-  const stated = pickByLanguage(b.presentation.names, locale)?.value;
+function labelOf(b: ShapeIR, c: FieldConstraints, languages: readonly string[], index: number): string {
+  const stated = pickByLanguage(b.presentation.names, languages)?.value;
   if (stated) return stated;
   if (c.datatype) return localName(c.datatype);
   const classes = c.classIn ?? (c.classIri ? [c.classIri] : []);
@@ -314,7 +314,7 @@ function labelOf(b: ShapeIR, c: FieldConstraints, locale: string | undefined, in
 
 /** Decide what a property's `sh:or` does to its field. */
 export function planDisjunction(args: DisjunctionArgs): Disjunction {
-  const { branches, own, fieldId, locale, ownControl } = args;
+  const { branches, own, fieldId, languages, ownControl } = args;
   const dropped: DroppedBranch[] = [];
   const kept: { shape: ShapeIR; index: number; constraints: FieldConstraints }[] = [];
 
@@ -350,7 +350,7 @@ export function planDisjunction(args: DisjunctionArgs): Disjunction {
     const head = members[0];
     alternatives.push({
       id: head.shape.id ?? `${fieldId}#or${head.index}`,
-      label: labelOf(head.shape, constraints, locale, head.index),
+      label: labelOf(head.shape, constraints, languages, head.index),
       editorId: editorForConstraints(constraints),
       constraints,
     });

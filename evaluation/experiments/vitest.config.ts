@@ -15,6 +15,7 @@ const r = (p: string) => resolve(__dirname, "../..", p);
 export default defineConfig({
   resolve: {
     alias: {
+      "metadata-form/i18n": r("src/i18n/index.ts"),
       "metadata-form/ai": r("src/ai/index.ts"),
       "metadata-form": r("src/index.ts"),
       "@": r("src"),
