@@ -75,6 +75,8 @@ export interface Chrome {
     dismiss: string;
   };
   prefs: {
+    /** The Claude model the assistance calls. */
+    model: string;
     apiKey: string;
     showKey: string;
     hideKey: string;
@@ -140,6 +142,7 @@ const EN: Chrome = {
     dismiss: "Dismiss",
   },
   prefs: {
+    model: "Claude model",
     apiKey: "Anthropic API key",
     showKey: "Show the key",
     hideKey: "Hide the key",
@@ -200,6 +203,7 @@ const ES: Chrome = {
     dismiss: "Descartar",
   },
   prefs: {
+    model: "Modelo de Claude",
     apiKey: "Clave de API de Anthropic",
     showKey: "Mostrar la clave",
     hideKey: "Ocultar la clave",
@@ -260,6 +264,7 @@ const CA: Chrome = {
     dismiss: "Descarta",
   },
   prefs: {
+    model: "Model de Claude",
     apiKey: "Clau d'API d'Anthropic",
     showKey: "Mostra la clau",
     hideKey: "Amaga la clau",

@@ -95,49 +95,71 @@ export function useMascot(): [boolean, (on: boolean) => void] {
 }
 
 const KEY_STORAGE = "mf_claude_key";
+const MODEL_STORAGE = "mf_claude_model";
 const listeners = new Set<() => void>();
 
-/** The consumer's own key, never the library's business — metadata-form imports
- *  no LLM SDK. */
-export function useClaudeKey(): [string, (key: string) => void] {
-  const key = useSyncExternalStore(
+/** What the model is called until the reader names another. A model id is the
+ *  consumer's to choose, so it is a preference and the call site names none. */
+export const DEFAULT_MODEL = "claude-sonnet-5-5";
+
+/** A string kept in `localStorage`, read by every component that shows it. */
+function useStored(storageKey: string, fallback = ""): [string, (value: string) => void] {
+  const value = useSyncExternalStore(
     (notify) => {
       listeners.add(notify);
       return () => listeners.delete(notify);
     },
-    () => localStorage.getItem(KEY_STORAGE) ?? "",
+    () => localStorage.getItem(storageKey) ?? fallback,
   );
   return [
-    key,
+    value,
     (next) => {
-      localStorage.setItem(KEY_STORAGE, next);
+      localStorage.setItem(storageKey, next);
       listeners.forEach((notify) => notify());
     },
   ];
+}
+
+/** The consumer's own key, never the library's business — metadata-form imports
+ *  no LLM SDK. */
+export const useClaudeKey = () => useStored(KEY_STORAGE);
+
+/** The model the assistance calls; a blank field means {@link DEFAULT_MODEL}. */
+export function useClaudeModel(): [string, (model: string) => void] {
+  const [model, setModel] = useStored(MODEL_STORAGE, DEFAULT_MODEL);
+  return [model.trim() || DEFAULT_MODEL, setModel];
 }
 
 /** Masked by default: this is a credential sitting in a panel that a screen share
  *  can be pointed at. */
 function ClaudeKeySection() {
   const [key, setKey] = useClaudeKey();
+  const [model, setModel] = useClaudeModel();
   const [shown, setShown] = useState(false);
   const t = useChrome().prefs;
   return (
-    <PreferencesField label={t.apiKey}>
-      <InputGroup>
-        <InputGroupInput
-          type={shown ? "text" : "password"}
-          placeholder="sk-ant-…"
-          autoComplete="off"
-          spellCheck={false}
-          value={key}
-          onChange={(e) => setKey(e.target.value)}
-        />
-        <InputGroupButton aria-label={shown ? t.hideKey : t.showKey} onClick={() => setShown((s) => !s)}>
-          {shown ? <EyeOffIcon /> : <EyeIcon />}
-        </InputGroupButton>
-      </InputGroup>
-    </PreferencesField>
+    <>
+      <PreferencesField label={t.model}>
+        <InputGroup>
+          <InputGroupInput autoComplete="off" spellCheck={false} value={model} onChange={(e) => setModel(e.target.value)} />
+        </InputGroup>
+      </PreferencesField>
+      <PreferencesField label={t.apiKey}>
+        <InputGroup>
+          <InputGroupInput
+            type={shown ? "text" : "password"}
+            placeholder="sk-ant-…"
+            autoComplete="off"
+            spellCheck={false}
+            value={key}
+            onChange={(e) => setKey(e.target.value)}
+          />
+          <InputGroupButton aria-label={shown ? t.hideKey : t.showKey} onClick={() => setShown((s) => !s)}>
+            {shown ? <EyeOffIcon /> : <EyeIcon />}
+          </InputGroupButton>
+        </InputGroup>
+      </PreferencesField>
+    </>
   );
 }
 

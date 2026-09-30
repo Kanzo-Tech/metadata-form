@@ -7,10 +7,10 @@ import type { FormAssist } from "metadata-form";
  * streaming ghost-text (`complete`) and typed ✨ suggestions (`suggest`) for free.
  * `dangerous-direct-browser-access` is only needed because this demo calls Anthropic
  * straight from the browser. */
-export function makeAssist(apiKey: string): FormAssist {
+export function makeAssist(apiKey: string, model: string): FormAssist {
   const provider = createAnthropic({
     apiKey,
     headers: { "anthropic-dangerous-direct-browser-access": "true" },
   });
-  return createFormAssist(provider("claude-opus-4-8"));
+  return createFormAssist(provider(model));
 }

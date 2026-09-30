@@ -3,7 +3,9 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import type { Term } from "@rdfjs/types";
-import { assistUi, fieldContext, siblingValues } from "@/ai/index.js";
+import { simulateReadableStream } from "ai";
+import { MockLanguageModelV3 } from "ai/test";
+import { assistUi, createFormAssist, fieldContext, siblingValues } from "@/ai/index.js";
 import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { Companion } from "@playground/components/Companion.js";
@@ -213,6 +215,43 @@ describe("fieldContext", () => {
     expect(text).toContain("Value type: Concept");
     expect(text).toContain("Cardinality: at least 1, at most 5 values");
     expect(text).toContain("Values already entered: http://e/x");
+  });
+});
+
+describe("the bounds of a prompt are options", () => {
+  const many = field({
+    values: [{ id: "a", value: literal("y".repeat(30)) }],
+    repeatable: true,
+    constraints: { options: ["A", "B", "C", "D"].map((l) => ({ value: namedNode(`http://e/${l}`), label: l })) },
+  });
+
+  it("lists as many options and characters as asked, and says how many were left out", () => {
+    const text = fieldContext(many, { maxOptions: 2, maxValue: 10 });
+    expect(text).toContain("Allowed values: A, B, … (2 more)");
+    expect(text).toContain(`Values already entered: ${"y".repeat(10)}…`);
+    expect(fieldContext(many)).toContain("Allowed values: A, B, C, D");
+  });
+
+  it("stops at maxSiblings", () => {
+    const me = namedNode("http://example.org/d1");
+    const graph = {
+      allQuads: () => ["a", "b", "c"].map((n) => ({ subject: me, predicate: namedNode(`http://e/${n}`), object: literal(n) })),
+    } as unknown as GraphState;
+    expect(siblingValues({ graph, focus: me, field: field({}) }, { maxSiblings: 2 }).split("\n")).toEqual(["a: a", "b: b"]);
+  });
+
+  it("reaches the default prompts through createFormAssist", async () => {
+    let prompt = "";
+    const model = new MockLanguageModelV3({
+      doStream: async (options) => {
+        prompt = JSON.stringify(options.prompt);
+        return { stream: simulateReadableStream({ chunks: [{ type: "text-start", id: "1" }, { type: "text-delta", id: "1", delta: "x" }, { type: "text-end", id: "1" }, { type: "finish", finishReason: "stop", usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 } }] as never }) };
+      },
+    });
+    const graph = { allQuads: () => [] } as unknown as GraphState;
+    const args = { field: many, focus: namedNode("http://example.org/d1"), graph, locale: "en", signal: new AbortController().signal, value: "", position: 0 };
+    for await (const _ of createFormAssist(model, { limits: { maxOptions: 1 } }).complete!(args)) void _;
+    expect(prompt).toContain("Allowed values: A, … (3 more)");
   });
 });
 

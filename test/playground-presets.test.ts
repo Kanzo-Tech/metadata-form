@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { EXAMPLES } from "@playground/presets.js";
 import { fill, pickChrome } from "@playground/i18n.js";
+import { tenant } from "@playground/instance.js";
 
 /**
  * The regression this pins: `options` used to be `useState(seed.options)` with no
@@ -75,5 +76,20 @@ describe("the playground's chrome catalog", () => {
   it("fills a slot by name and leaves an unknown one alone", () => {
     expect(fill("{blocking} of {total}", { blocking: 1, total: 3 })).toBe("1 of 3");
     expect(fill("{nope}", {})).toBe("{nope}");
+  });
+});
+
+describe("a client instance is what its examples declare", () => {
+  it("ships the examples that name it, opens on the one flagged, and wears their identity", () => {
+    const evidenze = tenant("evidenze")!;
+    expect(evidenze.shapeSets.map((e) => e.id)).toEqual(["evidenze-dataspace", "evidenze-health"]);
+    expect(evidenze.defaultShapeSet).toBe("evidenze-health");
+    expect(evidenze.themes.map((t) => t.value)).toEqual(["bank", "night"]);
+    expect(evidenze.defaultTheme).toEqual({ light: "bank", dark: "night" });
+    expect(evidenze.branding?.name).toBe("Evidenze");
+  });
+
+  it("is the showcase when no example names it", () => {
+    expect(tenant("nobody")).toBeUndefined();
   });
 });

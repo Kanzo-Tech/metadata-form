@@ -31,7 +31,7 @@ export function Header({
     // its own and only whatever the shell gave it.
     <div className="flex items-center px-3 text-xs" style={{ height: "2.75rem", gap: "0.625rem" }}>
       {branding?.logoUrl ? (
-        <BrandLogo url={branding.logoUrl} ratio={branding.logoRatio ?? 4} height={20} label="Evidenze" />
+        <BrandLogo url={branding.logoUrl} ratio={branding.logoRatio ?? 4} height={20} label={branding.name} />
       ) : (
         <>
           <ScrollTextIcon aria-hidden size={14} className="shrink-0 text-muted-foreground" />

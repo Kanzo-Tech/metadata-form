@@ -261,8 +261,11 @@ not state: label, description, value type (`sh:datatype` / `sh:nodeKind` /
 `sh:class`), `sh:in` options, `sh:pattern` (+ flags), length and numeric bounds,
 allowed language tags (`sh:languageIn`), cardinality, and the values a repeatable
 field already holds — plus `siblingValues(…)`: the literals already entered on the
-same resource (predicate local name and value, up to 12, each cut at 200
-characters). For a completion the text before and after the caret is added. The
+same resource (predicate local name and value). Both are bounded, and the bounds are
+options: `createFormAssist(model, { limits: { maxOptions, maxSiblings, maxValue } })`,
+defaulting to 25 listed `sh:in` values, 12 sibling values and 200 characters per value
+(`DEFAULT_CONTEXT_LIMITS`; the same object is the last argument of `fieldContext` and
+`siblingValues`). For a completion the text before and after the caret is added. The
 model is asked to satisfy the constraints; the shape still validates whatever is
 committed. Override the prompts with `createFormAssist(model, { suggestPrompt,
 completePrompt })` — `fieldContext` and `siblingValues` are exported for that.

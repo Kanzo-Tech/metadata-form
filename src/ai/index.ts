@@ -4,6 +4,6 @@
 // The core imports none of it; peers: @kanzo-tech/ai, ai, zod.
 
 export { assistUi } from "./ui.js";
-export { fieldContext, siblingValues } from "./context.js";
+export { DEFAULT_CONTEXT_LIMITS, fieldContext, siblingValues, type ContextLimits } from "./context.js";
 export { createFormAssist } from "./adapter.js";
 export type { CreateFormAssistOptions } from "./adapter.js";

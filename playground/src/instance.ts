@@ -56,22 +56,29 @@ const PLAYGROUND: Instance = {
   defaultShapeSet: EXAMPLES[0].id,
 };
 
-/** A client instance: their shapes, their two themes, their name on the tab. The
- *  branding is not repeated here — it is the example's, and this reads it. */
-const EVIDENZE: Instance = {
-  id: "evidenze",
-  themes: themesNamed("bank", "night"),
-  defaultTheme: { light: "bank", dark: "night" },
-  branding: EXAMPLES.find((e) => e.id === "evidenze-dataspace")?.branding,
-  shapeSets: EXAMPLES.filter((e) => e.id.startsWith("evidenze-")),
-  defaultShapeSet: "evidenze-health",
-};
-
-const REGISTRY: Record<string, Instance> = { playground: PLAYGROUND, evidenze: EVIDENZE };
+/**
+ * A client instance, read off the examples that name it as their `tenant`: their
+ * shapes, their identity, their two themes, their name on the tab. Nothing here knows
+ * a client's name — adding one is declaring `tenant` on its examples.
+ */
+export function tenant(name: string): Instance | undefined {
+  const own = EXAMPLES.filter((e) => e.tenant === name);
+  if (own.length === 0) return undefined;
+  const branding = own.find((e) => e.branding)?.branding;
+  const theme = branding?.theme;
+  return {
+    id: name,
+    themes: theme ? themesNamed(theme.light, theme.dark) : ALL_THEMES,
+    defaultTheme: theme ?? PLAYGROUND.defaultTheme,
+    branding,
+    shapeSets: own,
+    defaultShapeSet: (own.find((e) => e.tenantDefault) ?? own[0]).id,
+  };
+}
 
 /** This deployment. `VITE_MF_INSTANCE` is read at build time, so an unknown name is a
  *  typo in a deploy config — fall back to the showcase rather than to a blank page. */
-export const INSTANCE: Instance = REGISTRY[import.meta.env.VITE_MF_INSTANCE ?? ""] ?? PLAYGROUND;
+export const INSTANCE: Instance = tenant(import.meta.env.VITE_MF_INSTANCE ?? "") ?? PLAYGROUND;
 
 /** The examples this deployment ships, and the state it opens on. */
 export const shapeSets = INSTANCE.shapeSets;

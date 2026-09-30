@@ -25,7 +25,7 @@ import { PaneHeader } from "./components/PaneHeader.js";
 import { MetadataForm, useMetadataForm, ValidationPanel, type FormAssist } from "metadata-form";
 import { assistUi } from "metadata-form/ai";
 import { es, ca } from "metadata-form/i18n";
-import { PLAYGROUND_SECTION, PreferencesPanelContent, useClaudeKey, useLayoutPrefs, useMascot } from "./Preferences.js";
+import { PLAYGROUND_SECTION, PreferencesPanelContent, useClaudeKey, useClaudeModel, useLayoutPrefs, useMascot } from "./Preferences.js";
 import { Header } from "./components/Header.js";
 import { PresetPicker, ShapePicker } from "./components/ExamplePickers.js";
 import { LocaleSelect } from "./components/LocaleSelect.js";
@@ -112,11 +112,12 @@ function ThemedApp({
   branding: ExampleBranding | undefined;
 }) {
   const [apiKey] = useClaudeKey();
+  const [model] = useClaudeModel();
   const layoutPrefs = useLayoutPrefs();
   const [mascot, setMascot] = useMascot();
 
   // The assistance seam is wired only when an API key is present.
-  const assist = useMemo<FormAssist | undefined>(() => (apiKey ? makeAssist(apiKey) : undefined), [apiKey]);
+  const assist = useMemo<FormAssist | undefined>(() => (apiKey ? makeAssist(apiKey, model) : undefined), [apiKey, model]);
 
   const { share, status: shareStatus, decoded } = url;
   const { shapeText, dataText, setShapeText, setDataText, applied, shape, options } = workspace;

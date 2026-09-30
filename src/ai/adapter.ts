@@ -4,7 +4,7 @@ import type { Term } from "@rdfjs/types";
 import type { GraphState } from "../engine/GraphState.js";
 import type { FieldModel } from "../form/FormModel.js";
 import type { CompletionRequest, FormAssist } from "../assist.js";
-import { fieldContext, siblingValues } from "./context.js";
+import { fieldContext, siblingValues, type ContextLimits } from "./context.js";
 
 /** What a prompt is written from: the field, and where it sits. */
 interface PromptArgs {
@@ -15,6 +15,10 @@ interface PromptArgs {
 }
 
 export interface CreateFormAssistOptions {
+  /** How much of the field and its record the default prompts carry (see
+   *  {@link ContextLimits}); what is left out defaults to 25 options, 12 sibling
+   *  values, 200 characters per value. */
+  limits?: Partial<ContextLimits>;
   /** Override the prompt used for value suggestions. */
   suggestPrompt?(args: PromptArgs): string;
   /** Override the prompt used for inline ghost-text completion. */
@@ -25,16 +29,16 @@ export interface CreateFormAssistOptions {
 const SUGGESTION = z.object({ value: z.string(), rationale: z.string().optional() });
 
 /** The field's constraints, then the rest of the record it belongs to. */
-function context(args: PromptArgs): string {
-  const record = siblingValues(args);
-  return `${fieldContext(args.field)}${record ? `\n\nAlready entered for the same record:\n${record}` : ""}`;
+function context(args: PromptArgs, limits?: Partial<ContextLimits>): string {
+  const record = siblingValues(args, limits);
+  return `${fieldContext(args.field, limits)}${record ? `\n\nAlready entered for the same record:\n${record}` : ""}`;
 }
 
-const suggestPrompt = (args: PromptArgs) =>
-  `You are filling in a metadata form.\n\n${context(args)}\n\nPropose up to 8 distinct, realistic values for this field, written in ${args.locale} unless the field allows other language tags, best first. They stream in and the user keeps a few, so give variety and never repeat one. Every value must satisfy the constraints above. For short fields give concise values; for long free text a single well-written value is fine. Each has a "value" (the exact text to put in the field) and a brief "rationale".`;
+const suggestPrompt = (args: PromptArgs, limits?: Partial<ContextLimits>) =>
+  `You are filling in a metadata form.\n\n${context(args, limits)}\n\nPropose up to 8 distinct, realistic values for this field, written in ${args.locale} unless the field allows other language tags, best first. They stream in and the user keeps a few, so give variety and never repeat one. Every value must satisfy the constraints above. For short fields give concise values; for long free text a single well-written value is fine. Each has a "value" (the exact text to put in the field) and a brief "rationale".`;
 
-const completePrompt = (args: PromptArgs & CompletionRequest) =>
-  `You are autocompleting a metadata form field.\n\n${context(args)}\n\nText before the cursor:\n${args.value.slice(0, args.position)}\n\nText after the cursor:\n${args.value.slice(args.position)}\n\nReply with ONLY the text to insert at the cursor, written in ${args.locale}, so that the whole reads naturally and satisfies the constraints above. Do not repeat the text before it, and add no preamble, quotes or explanation. If a separating space is needed, make it the first character of your reply.`;
+const completePrompt = (args: PromptArgs & CompletionRequest, limits?: Partial<ContextLimits>) =>
+  `You are autocompleting a metadata form field.\n\n${context(args, limits)}\n\nText before the cursor:\n${args.value.slice(0, args.position)}\n\nText after the cursor:\n${args.value.slice(args.position)}\n\nReply with ONLY the text to insert at the cursor, written in ${args.locale}, so that the whole reads naturally and satisfies the constraints above. Do not repeat the text before it, and add no preamble, quotes or explanation. If a separating space is needed, make it the first character of your reply.`;
 
 /**
  * Turn a Vercel AI SDK `LanguageModel` into a {@link FormAssist}: streamed
@@ -56,7 +60,7 @@ export function createFormAssist(model: LanguageModel, opts?: CreateFormAssistOp
         abortSignal: args.signal,
         output: "array",
         schema: SUGGESTION,
-        prompt: (opts?.suggestPrompt ?? suggestPrompt)(args),
+        prompt: opts?.suggestPrompt ? opts.suggestPrompt(args) : suggestPrompt(args, opts?.limits),
       });
       yield* elementStream;
     },
@@ -64,7 +68,7 @@ export function createFormAssist(model: LanguageModel, opts?: CreateFormAssistOp
       streamText({
         model,
         abortSignal: args.signal,
-        prompt: (opts?.completePrompt ?? completePrompt)(args),
+        prompt: opts?.completePrompt ? opts.completePrompt(args) : completePrompt(args, opts?.limits),
       }).textStream,
   };
 }

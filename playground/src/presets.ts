@@ -11,6 +11,8 @@ import type { PermalinkOptions, PermalinkState } from "./lib/permalink.js";
  *  is what reads this: an instance and a branded example are the same declaration
  *  seen from two distances. Layout and density stay owned by the user's Preferences. */
 export interface ExampleBranding {
+  /** The brand's name, for the wordmark's accessible name. */
+  name?: string;
   /** Bundled asset URL of the (white) wordmark shown in the app title. */
   logoUrl?: string;
   /** Intrinsic width/height ratio of the wordmark, for crisp sizing. */
@@ -56,6 +58,14 @@ export interface ShapeExample {
   presets: Preset[];
   /** Optional identity the playground wears while this example is active. */
   branding?: ExampleBranding;
+  /**
+   * The deployment this example belongs to — the value of `VITE_MF_INSTANCE` that ships
+   * it (see `instance.ts`). A build for that name ships these examples, wears their
+   * branding and publishes their theme pair; a build for none ships them all.
+   */
+  tenant?: string;
+  /** The example that tenant opens on; without one, its first. */
+  tenantDefault?: boolean;
 }
 
 // Each example declares its root shape explicitly, so focus/root resolution is
@@ -70,6 +80,7 @@ const PAPER_MAPPING_OPTIONS: PermalinkOptions = { validateOn: "change", rootShap
 
 /** Evidenze branding, shared by both Evidenze examples. */
 const EVIDENZE_BRANDING: ExampleBranding = {
+  name: "Evidenze",
   logoUrl: evidenzeLogo,
   logoRatio: 677 / 115,
   theme: { light: "bank", dark: "night" },
@@ -160,6 +171,7 @@ export const EXAMPLES: ShapeExample[] = [
     // Evidenze's own identity (colours from their site: navy #091a40, blue
     // #1d4ebd, green #27b564) — the app wears it while this example is active.
     branding: EVIDENZE_BRANDING,
+    tenant: "evidenze",
     presets: [
       {
         id: "empty",
@@ -182,6 +194,8 @@ export const EXAMPLES: ShapeExample[] = [
     id: "evidenze-health",
     label: "Evidenze · HealthDCAT-AP (R7)",
     branding: { ...EVIDENZE_BRANDING, docTitle: "Evidenze · HealthDCAT-AP" },
+    tenant: "evidenze",
+    tenantDefault: true,
     presets: [
       {
         id: "empty",
