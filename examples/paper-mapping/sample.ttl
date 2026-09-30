@@ -1,0 +1,11 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ex:   <http://example.org/> .
+
+ex:item a ex:Item ;
+  ex:code "A-001" ;
+  ex:status "draft" ;
+  ex:note "A first note"@en .
+
+# The individuals ex:owner may point at.
+ex:ada  a ex:Person ; rdfs:label "Ada Lovelace" .
+ex:alan a ex:Person ; rdfs:label "Alan Turing" .

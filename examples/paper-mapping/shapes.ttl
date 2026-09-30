@@ -1,0 +1,75 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ex:   <http://example.org/> .
+
+# The paper's mapping figure, one property per row: what a shape says about a
+# value decides the field the reader gets.
+
+ex:valuesGroup a sh:PropertyGroup ; rdfs:label "Values"@en , "Valores"@es ; sh:order 1 .
+ex:textGroup   a sh:PropertyGroup ; rdfs:label "Text"@en , "Texto"@es ; sh:order 2 .
+ex:linksGroup  a sh:PropertyGroup ; rdfs:label "References"@en , "Referencias"@es ; sh:order 3 .
+ex:partGroup   a sh:PropertyGroup ; rdfs:label "Structure"@en , "Estructura"@es ; sh:order 4 .
+
+ex:ItemShape a sh:NodeShape ;
+  sh:targetClass ex:Item ;
+  sh:property ex:status , ex:active , ex:day , ex:moment , ex:count ,
+              ex:note , ex:code , ex:keyword , ex:summary ,
+              ex:owner , ex:homepage , ex:part .
+
+ex:status sh:path ex:status ; sh:group ex:valuesGroup ; sh:order 1 ;
+  sh:name "Status (sh:in)"@en , "Estado (sh:in)"@es ;
+  sh:in ( "draft" "published" "retired" ) ; sh:maxCount 1 .
+
+ex:active sh:path ex:active ; sh:group ex:valuesGroup ; sh:order 2 ;
+  sh:name "Active (xsd:boolean)"@en , "Activo (xsd:boolean)"@es ;
+  sh:datatype xsd:boolean ; sh:maxCount 1 .
+
+ex:day sh:path ex:day ; sh:group ex:valuesGroup ; sh:order 3 ;
+  sh:name "Day (xsd:date)"@en , "Día (xsd:date)"@es ;
+  sh:datatype xsd:date ; sh:maxCount 1 .
+
+ex:moment sh:path ex:moment ; sh:group ex:valuesGroup ; sh:order 4 ;
+  sh:name "Moment (xsd:dateTime)"@en , "Instante (xsd:dateTime)"@es ;
+  sh:datatype xsd:dateTime ; sh:maxCount 1 .
+
+ex:count sh:path ex:count ; sh:group ex:valuesGroup ; sh:order 5 ;
+  sh:name "Count (xsd:integer)"@en , "Cantidad (xsd:integer)"@es ;
+  sh:datatype xsd:integer ; sh:maxCount 1 .
+
+ex:note sh:path ex:note ; sh:group ex:textGroup ; sh:order 1 ;
+  sh:name "Note (rdf:langString)"@en , "Nota (rdf:langString)"@es ;
+  sh:datatype rdf:langString .
+
+ex:code sh:path ex:code ; sh:group ex:textGroup ; sh:order 2 ;
+  sh:name "Code (xsd:string, required)"@en , "Código (xsd:string, obligatorio)"@es ;
+  sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ;
+  sh:message "An item needs a code."@en , "El elemento necesita un código."@es .
+
+ex:keyword sh:path ex:keyword ; sh:group ex:textGroup ; sh:order 3 ;
+  sh:name "Keywords (xsd:string, repeatable)"@en , "Palabras clave (xsd:string, repetible)"@es ;
+  sh:datatype xsd:string .
+
+ex:summary sh:path ex:summary ; sh:group ex:textGroup ; sh:order 4 ;
+  sh:name "Summary (shui:TextAreaEditor)"@en , "Resumen (shui:TextAreaEditor)"@es ;
+  sh:datatype xsd:string ; sh:maxCount 1 ;
+  shui:editor shui:TextAreaEditor .
+
+ex:owner sh:path ex:owner ; sh:group ex:linksGroup ; sh:order 1 ;
+  sh:name "Owner (sh:nodeKind sh:IRI, sh:class)"@en , "Responsable (sh:nodeKind sh:IRI, sh:class)"@es ;
+  sh:nodeKind sh:IRI ; sh:class ex:Person ; sh:maxCount 1 .
+
+ex:homepage sh:path ex:homepage ; sh:group ex:linksGroup ; sh:order 2 ;
+  sh:name "Homepage (sh:nodeKind sh:IRI)"@en , "Página web (sh:nodeKind sh:IRI)"@es ;
+  sh:nodeKind sh:IRI ; sh:maxCount 1 .
+
+ex:part sh:path ex:part ; sh:group ex:partGroup ; sh:order 1 ;
+  sh:name "Part (sh:node)"@en , "Parte (sh:node)"@es ;
+  sh:node ex:PartShape ; sh:maxCount 1 .
+
+ex:PartShape a sh:NodeShape ;
+  sh:property [ sh:path ex:label ; sh:order 1 ;
+                sh:name "Label"@en , "Etiqueta"@es ;
+                sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] .

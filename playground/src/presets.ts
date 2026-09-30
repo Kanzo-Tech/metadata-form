@@ -1,6 +1,9 @@
 import { healthDcatApShapes, healthDcatApSampleData, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
 import { evidenzeShapes, evidenzeSampleData, evidenzeLogo, evidenzeIcon, evidenzeRootShape } from "@examples/evidenze-dataspace/index.js";
 import { evidenzeHealthShapes, evidenzeHealthSampleData, evidenzeHealthRootShape } from "@examples/evidenze-health/index.js";
+import { paperConditionalShapes, paperConditionalSampleData, paperConditionalRootShape } from "@examples/paper-conditional/index.js";
+import { paperTargetWhereShapes, paperTargetWhereSampleData, paperTargetWhereRootShape } from "@examples/paper-target-where/index.js";
+import { paperMappingShapes, paperMappingSampleData, paperMappingRootShape } from "@examples/paper-mapping/index.js";
 import type { PermalinkOptions, PermalinkState } from "./lib/permalink.js";
 
 /** Optional per-example branding — lets a bundled example wear its own identity
@@ -64,6 +67,18 @@ const HEALTH_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: heal
 const EVIDENZE_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: evidenzeRootShape };
 const EVIDENZE_HEALTH_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: evidenzeHealthRootShape };
 
+const PAPER_CONDITIONAL_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: paperConditionalRootShape };
+const PAPER_TARGET_WHERE_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: paperTargetWhereRootShape };
+const PAPER_MAPPING_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: paperMappingRootShape };
+
+/** The paper's examples speak English and Spanish; English first, the library's own. */
+const PAPER_LOCALES = ["en", "es"];
+
+/** Whether the installed engine reads `sh:targetWhere` (`@kanzo-tech/rudof-wasm`
+ *  0.3.9 does not; 0.3.10 does). While it is false the example is registered but
+ *  not offered: a reader would open a form that silently lacks its conditional. */
+export const SH_TARGET_WHERE_SUPPORTED = false;
+
 /** Evidenze branding, shared by both Evidenze examples. */
 const EVIDENZE_BRANDING: ExampleBranding = {
   logoUrl: evidenzeLogo,
@@ -78,7 +93,60 @@ const EVIDENZE_BRANDING: ExampleBranding = {
  *  the URL — the exact same path as opening a shared link. The content is authored
  *  as the Turtle files under `examples/` and embedded into the presets
  *  here, so there is one runtime representation (a `PermalinkState`) for both. */
+const PAPER_TARGET_WHERE: ShapeExample = {
+  id: "paper-target-where",
+  label: "Paper example: the same condition with sh:targetWhere",
+  uiLocales: PAPER_LOCALES,
+  presets: [
+    {
+      id: "listing",
+      label: "Dataset with structured data",
+      state: {
+        exampleId: "paper-target-where",
+        shapesText: paperTargetWhereShapes,
+        dataText: paperTargetWhereSampleData,
+        options: PAPER_TARGET_WHERE_OPTIONS,
+      },
+    },
+  ],
+};
+
 export const EXAMPLES: ShapeExample[] = [
+  {
+    id: "paper-conditional",
+    label: "Paper example: a conditional field",
+    uiLocales: PAPER_LOCALES,
+    presets: [
+      {
+        id: "listing-1",
+        label: "Listing 1: a dataset with structured data",
+        state: {
+          exampleId: "paper-conditional",
+          shapesText: paperConditionalShapes,
+          dataText: paperConditionalSampleData,
+          options: PAPER_CONDITIONAL_OPTIONS,
+        },
+      },
+    ],
+  },
+  ...(SH_TARGET_WHERE_SUPPORTED ? [PAPER_TARGET_WHERE] : []),
+  {
+    id: "paper-mapping",
+    label: "Paper example: from shapes to fields",
+    uiLocales: PAPER_LOCALES,
+    presets: [
+      {
+        id: "mapping",
+        label: "One property per row of the mapping",
+        state: {
+          exampleId: "paper-mapping",
+          shapesText: paperMappingShapes,
+          dataText: paperMappingSampleData,
+          options: PAPER_MAPPING_OPTIONS,
+        },
+      },
+    ],
+  },
   {
     id: "health-dcat-ap",
     label: "HealthDCAT-AP",

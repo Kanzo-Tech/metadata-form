@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { EXAMPLES } from "@playground/presets.js";
+import { EXAMPLES, SH_TARGET_WHERE_SUPPORTED } from "@playground/presets.js";
 import { fill, pickChrome } from "@playground/i18n.js";
 
 /**
@@ -27,6 +27,18 @@ describe("example presets", () => {
         expect(preset.state.exampleId, `${ex.id}/${preset.id}`).toBe(ex.id);
       }
     }
+  });
+});
+
+describe("the paper's examples", () => {
+  it("open the playground, in English first and Spanish second", () => {
+    expect(EXAMPLES[0].label).toBe("Paper example: a conditional field");
+    expect(EXAMPLES[0].uiLocales).toEqual(["en", "es"]);
+    expect(EXAMPLES.some((e) => e.id === "paper-mapping")).toBe(true);
+  });
+
+  it("keep the sh:targetWhere variant out of the list until the engine reads it", () => {
+    expect(EXAMPLES.some((e) => e.id === "paper-target-where")).toBe(SH_TARGET_WHERE_SUPPORTED);
   });
 });
 

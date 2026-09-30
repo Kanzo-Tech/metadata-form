@@ -1,0 +1,9 @@
+@prefix dcat:         <http://www.w3.org/ns/dcat#> .
+@prefix dct:          <http://purl.org/dc/terms/> .
+@prefix healthdcatap: <http://healthdataportal.eu/ns/health#> .
+@prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex:           <http://example.org/> .
+
+ex:dataset a dcat:Dataset ;
+  dct:title "COVID-19 registry"@en ;
+  healthdcatap:hasStructuredData false .

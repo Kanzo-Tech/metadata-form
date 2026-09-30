@@ -1,0 +1,38 @@
+@prefix sh:           <http://www.w3.org/ns/shacl#> .
+@prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dcat:         <http://www.w3.org/ns/dcat#> .
+@prefix dct:          <http://purl.org/dc/terms/> .
+@prefix csvw:         <http://www.w3.org/ns/csvw#> .
+@prefix healthdcatap: <http://healthdataportal.eu/ns/health#> .
+@prefix ex:           <http://example.org/> .
+
+ex:DatasetShape a sh:NodeShape ;
+  sh:targetClass dcat:Dataset ;
+  sh:property ex:title , ex:structured ;
+  sh:or ( [ sh:not ex:HasStructuredData ] ex:DescribesVariables ) .
+
+ex:title sh:path dct:title ;
+  sh:name "Title"@en , "Título"@es ;
+  sh:datatype rdf:langString ; sh:minCount 1 ;
+  sh:message "A dataset needs a title."@en ,
+             "El dataset necesita un título."@es .
+
+ex:structured sh:path healthdcatap:hasStructuredData ;
+  sh:name "Structured data"@en , "Datos estructurados"@es ;
+  sh:datatype xsd:boolean ; sh:maxCount 1 .
+
+ex:HasStructuredData a sh:NodeShape ;        # the condition, C
+  sh:property [ sh:path healthdcatap:hasStructuredData ;
+                sh:hasValue true ] .
+
+ex:DescribesVariables a sh:NodeShape ;       # the consequence, T
+  sh:property [ sh:path healthdcatap:hasVariables ;
+    sh:name "Variables"@en , "Variables"@es ;
+    sh:node ex:VariableShape ; sh:minCount 1 ;
+    sh:message "Describe the variables of a structured dataset."@en ,
+               "Describe las variables de un dataset estructurado."@es ] .
+
+ex:VariableShape a sh:NodeShape ;
+  sh:property [ sh:path csvw:name ; sh:name "Name"@en , "Nombre"@es ;
+                sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] .
