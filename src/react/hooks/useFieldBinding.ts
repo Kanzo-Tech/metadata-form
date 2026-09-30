@@ -6,7 +6,7 @@ import { forwardWrite, type FieldWrite } from "../../form/writePath.js";
 import type { FieldModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
 
-export interface UseFieldResult {
+export interface FieldBinding {
   errors: FieldError[];
   setValue: (oldValue: Term | null, newValue: Term | null) => void;
   addValue: (value: Term) => void;
@@ -16,8 +16,10 @@ export interface UseFieldResult {
   createNested: () => Term;
 }
 
-/** Low-level field operations bound to the current focus node and path. */
-export function useField(field: FieldModel): UseFieldResult {
+/** A field model bound to the graph: its findings, and the writes at the current
+ *  focus node and the field's path. Not Kanzo UI's `useField`, which is the state
+ *  of the enclosing `Field`. */
+export function useFieldBinding(field: FieldModel): FieldBinding {
   const { graph, errors } = useFormContext();
   const focusNode = useFocusNode();
 

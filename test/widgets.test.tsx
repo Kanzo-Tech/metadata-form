@@ -138,3 +138,27 @@ describe("the language tag of a langString", () => {
     await waitFor(() => expect(form.quads.some((q) => q.predicate.value === `${ex}title` && (q.object as { language?: string }).language === "es")).toBe(true));
   });
 });
+
+describe("the findings a value survives", () => {
+  const advisory = `
+    @prefix sh: <http://www.w3.org/ns/shacl#> . @prefix ex: <${ex}> .
+    ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
+      sh:property [ sh:path ex:note ; sh:name "Note" ; sh:maxCount 1 ; sh:minLength 5 ; sh:severity sh:Warning ] .
+  `;
+
+  it("are the field's helper, toned by severity, and do not invalidate the field", async () => {
+    render(<Form shapes={advisory} validateOn="change" validationDebounceMs={0} />);
+    await waitFor(() => expect(screen.getByText("Note")).toBeInTheDocument());
+
+    type(inputOf("note"), "hi");
+    fireEvent.blur(inputOf("note"));
+    const helper = await waitFor(() => {
+      const h = fieldOf("note").querySelector('[data-slot="field-helper"]');
+      expect(h).not.toBeNull();
+      return h!;
+    }, { timeout: 3000 });
+    expect(helper).toHaveAttribute("data-tone", "warning");
+    expect(helper.querySelector('[data-severity="warning"]')).not.toBeNull();
+    expect(fieldOf("note")).not.toHaveAttribute("data-invalid");
+  });
+});

@@ -4,6 +4,7 @@ import {
   FieldArray,
   FieldDescription,
   FieldError,
+  FieldHelper,
   FieldLabel,
   FieldRequiredIndicator,
   NativeSelect,
@@ -31,15 +32,14 @@ import {
 } from "../widgets/widgets.js";
 import { useFocusNode, useFormContext } from "./context.js";
 import { fill } from "../../i18n/strings.js";
-import { useField } from "../hooks/useField.js";
+import { useFieldBinding } from "../hooks/useFieldBinding.js";
 import { NodeForm } from "./NodeForm.js";
-import { column, fieldGap, ink, labelRow } from "../styles.js";
 
 /** Renders a single field: label, help, value rows (multi-value), errors. */
 export function FieldRenderer({ field }: { field: FieldModel }) {
   const { widgets, assist, assistUi, graph, locale, strings } = useFormContext();
   const focus = useFocusNode();
-  const ops = useField(field);
+  const ops = useFieldBinding(field);
 
   // `shui:BlankNodeEditor` is `DetailsEditor`'s twin: both say "this value is a
   // resource with a shape of its own", and the difference — whether it gets an IRI
@@ -241,7 +241,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     // below, so reading it after the control would be reading the answer before the
     // question.
     return (
-      <div style={column}>
+      <div className="flex flex-col gap-2">
         <NativeSelect
           className="w-full"
           aria-label={fill(strings.chrome.kindOfValue, { field: field.label })}
@@ -322,9 +322,10 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
  * them to every input beneath by context, so no widget threads them itself.
  *
  * Only **violations** set `invalid`: they are what the library models as a
- * boolean. Warnings and info are real to SHACL but not to `Field`, so they are
- * rendered as our own nodes rather than pushed through an error channel that
- * would also paint the input red.
+ * boolean. Warnings and info are real to SHACL but not to `Field`, so they are the
+ * `FieldHelper` — the message a value survives, which takes a `tone` — rather than
+ * an error that would also paint the input red. Ark gives every helper one id, so
+ * a field has one: its non-violation findings share it, one line each.
  */
 function FieldShell({
   field,
@@ -333,7 +334,7 @@ function FieldShell({
   children,
 }: {
   field: FieldModel;
-  errors: ReturnType<typeof useField>["errors"];
+  errors: ReturnType<typeof useFieldBinding>["errors"];
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
@@ -342,13 +343,13 @@ function FieldShell({
   const rest = errors.filter((e) => e.severity !== "violation");
   return (
     <Field
-      style={{ gap: fieldGap }}
+      className="gap-1.5"
       data-field={field.id}
       required={field.required}
       disabled={field.readOnly ?? false}
       invalid={violations.length > 0}
     >
-      <div style={{ ...labelRow, justifyContent: "space-between" }}>
+      <div className="flex min-h-6 items-center justify-between gap-2">
         <FieldLabel>
           {field.label}
           {field.required && <FieldRequiredIndicator />}
@@ -357,27 +358,26 @@ function FieldShell({
       </div>
       {field.description && <FieldDescription>{field.description}</FieldDescription>}
       {/* A disabled control with no account of itself reads as a broken form; this
-          is the account. Not a second `FieldDescription` — Ark links that one to
-          the input by id, and two would be two ids for one relationship. The
-          field's own description keeps that slot; this sits beside it, like the
-          non-violation findings below. */}
+          is the account. A second line of description, since the helper is the
+          findings' — see above. */}
       {field.readOnlyReason && (
-        <p
-          style={{ color: ink.muted, fontSize: "0.75rem" }}
-          data-readonly-reason={field.readOnlyReason.code}
-        >
+        <FieldDescription data-readonly-reason={field.readOnlyReason.code}>
           {strings.readOnly[field.readOnlyReason.code]}
-        </p>
+        </FieldDescription>
       )}
       {children}
       {violations.map((e, i) => (
         <FieldError key={i}>{messageOf(e)}</FieldError>
       ))}
-      {rest.map((e, i) => (
-        <p key={i} style={{ color: ink.warning, fontSize: "0.75rem" }} data-severity={e.severity}>
-          {messageOf(e)}
-        </p>
-      ))}
+      {rest.length > 0 && (
+        <FieldHelper tone={rest.some((e) => e.severity === "warning") ? "warning" : "info"}>
+          {rest.map((e, i) => (
+            <span className="block" data-severity={e.severity} key={i}>
+              {messageOf(e)}
+            </span>
+          ))}
+        </FieldHelper>
+      )}
     </Field>
   );
 }
