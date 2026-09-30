@@ -1,6 +1,6 @@
 # E2 — the encoding the ecosystem ships, and its SHACL 1.2 equivalent
 
-**Status: done (2026-08-27; re-run 2026-09-02 under rudof 0.3.8).** Result:
+**Status: done (2026-08-27; re-run 2026-09-30 under rudof 0.3.10, six encodings).** Result:
 `results/migration.md` → Tab. 1, Tab. 2, Listing 1 of §6. Raw output:
 `results/metrics.json`, `results/equivalence-rudof.json`.
 
@@ -18,15 +18,23 @@ test, not a paragraph.
 the form, and it is the only SHACL implementation in this experiment. An earlier
 revision cross-checked the SHACL 1.0 encodings against a second implementation;
 that cross-check is withdrawn. What E2 claims now is that **rudof accepts and
-rejects the same data under both encodings** — a demonstration in the engine that
+rejects the same data under the three conditional encodings** (SHACL 1.0 implication, SHACL 1.2 `sh:if`, SHACL 1.2 `sh:targetWhere`) — a demonstration in the engine that
 matters, not a cross-validated proof. §7 of `results/migration.md` states what
 that costs, and the "Threats" section below repeats it.
 
-Re-running under `@kanzo-tech/rudof-wasm@0.3.8` (stricter than the `0.3.5` that
-produced the first results: malformed IRIs are now parse errors, and
-`sh:targetClass` now selects through the `rdfs:subClassOf` closure) moved
-**nothing** on this corpus — all 55 verdicts, every base-shape result signature,
-and every structural count are identical to the 0.3.5 run.
+Re-running under `@kanzo-tech/rudof-wasm@0.3.10` (0.3.5 produced the first
+results, 0.3.8 the second) changed **no verdict**: all 66 verdicts (11 cases × 6
+encodings) are as expected, and every base-shape result signature agrees between
+the encodings. The re-run added the sixth encoding, `sh:targetWhere`
+(`data/after/overlay-05-targetwhere.ttl`).
+
+**What agrees across encodings, precisely.** The conformance verdict on all 11
+cases; the base-shape result tuples `(focus node, path, constraint component)`;
+and the set of cases on which the conditional fires. **What differs** is the
+conditional's own result tuples: the implication (one node-level
+`sh:OrConstraintComponent`) reports one result on the focus node, `sh:targetWhere`
+reports the consequent's own path-level results (`hasLegalBasis`, `hasPurpose`),
+one per missing property. `results/migration.md` §4 tabulates them per case.
 
 ## The reframe, and why it is better than the original plan
 
@@ -49,17 +57,16 @@ Evidenze original ever turns up it becomes a corroborating second data point.
 2. Measure the shipped encoding (`report.py`).
 3. Take **one requirement the profile states in prose and does not enforce** —
    *a dataset declaring `dpv:hasPersonalData` must state `dpv:hasLegalBasis` and
-   `dpv:hasPurpose`* — and encode it five ways, as overlays merged with the
+   `dpv:hasPurpose`* — and encode it six ways, as overlays merged with the
    verbatim profile: not at all, two SHACL 1.0 shape partitions, the SHACL 1.0
-   implication, and SHACL 1.2 `sh:if`/`sh:then`.
+   implication, SHACL 1.2 `sh:if`/`sh:then`, and SHACL 1.2 `sh:targetWhere`.
 4. Migrate the whole profile's UI vocabulary mechanically (`migrate.py`:
    `dash:editor` → `shui:editor`, `dash:viewer` dropped) and prove the non-UI
    subgraph is **isomorphic** before and after.
-5. Validate 11 data graphs × 5 encodings and compare conformance *and* the exact
+5. Validate 11 data graphs × 6 encodings and compare conformance *and* the exact
    base-shape result signatures — encoding against encoding, in one engine.
 
-Engine, pinned: **rudof `@kanzo-tech/rudof-wasm@0.3.8`** (the fork; SHACL 1.2
-`sh:if` lives in `shacl/src/validator/constraints/core/logical/if_.rs`). The venv
+Engine, pinned: **rudof `@kanzo-tech/rudof-wasm@0.3.10`** (the fork). The venv
 holds **rdflib 7.6.0** (Python 3.13) for measurement — counting shapes, comparing
 subgraphs for isomorphism. It validates nothing.
 
@@ -74,7 +81,7 @@ is not specified at all.
 
 **The rewrite is behaviour-preserving in the engine that drives the form.** rudof
 gives the same verdict — and the same base-shape violations — for the SHACL 1.0
-implication and the SHACL 1.2 conditional on all 11 cases. Both encodings also
+implication, the SHACL 1.2 `sh:if` and `sh:targetWhere` on all 11 cases. All three also
 match the verdicts the requirement demands, fixed in `report.py` before any run,
 so the agreement is not two encodings agreeing on the same mistake. And the
 conditional overlay leaves the profile's base-shape results untouched. That is a
@@ -98,8 +105,8 @@ data model.
 ## Threats
 
 **The equivalence is demonstrated in one engine only.** An encoding difference
-that both encodings happen to hit the same way in rudof would not be detected
-here: if rudof's `sh:if` and its `sh:or ( [ sh:not C ] T )` shared a bug, the two
+that the encodings happen to hit the same way in rudof would not be detected
+here: if rudof's `sh:if` and its `sh:or ( [ sh:not C ] T )` shared a bug, the
 rows of Tab. 2 would agree and this experiment would call that equivalence. What
 it rules out is divergence *between the encodings under rudof*, not divergence
 from the SHACL specification.
@@ -140,4 +147,4 @@ conditionals, and the isomorphism of the non-UI subgraph before and after.
   The behaviour is already covered by `test/conditionals.integration.test.ts`;
   the figure is a capture job, not an experiment.
 - If the Evidenze DASH original surfaces, add it as `data/before/evidenze/` and
-  a sixth row — the harness takes a new overlay without changes.
+  a seventh row — the harness takes a new overlay without changes.

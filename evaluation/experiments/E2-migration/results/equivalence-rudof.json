@@ -1,7 +1,7 @@
 {
   "validator": "rudof (wasm)",
   "package": "@kanzo-tech/rudof-wasm",
-  "version": "0.3.8",
+  "version": "0.3.10",
   "shapes": {
     "verbatim_core_files": [
       "Agent.ttl",
@@ -24,7 +24,8 @@
       "partition-subjectsof": "overlay-01-partition-subjectsof.ttl",
       "partition-sparql": "overlay-02-partition-sparql.ttl",
       "implication": "overlay-03-implication.ttl",
-      "shacl12-if": "overlay-04-shacl12-if.ttl"
+      "shacl12-if": "overlay-04-shacl12-if.ttl",
+      "shacl12-targetwhere": "overlay-05-targetwhere.ttl"
     }
   },
   "cases": {
@@ -54,6 +55,12 @@
         "conforms": true
       },
       "shacl12-if": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "shacl12-targetwhere": {
         "base": [],
         "conditional": [],
         "conditional_fired": false,
@@ -90,6 +97,12 @@
         "conditional": [],
         "conditional_fired": false,
         "conforms": true
+      },
+      "shacl12-targetwhere": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
       }
     },
     "03-personal-data-complete": {
@@ -118,6 +131,12 @@
         "conforms": true
       },
       "shacl12-if": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "shacl12-targetwhere": {
         "base": [],
         "conditional": [],
         "conditional_fired": false,
@@ -160,6 +179,14 @@
         ],
         "conditional_fired": true,
         "conforms": false
+      },
+      "shacl12-targetwhere": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasLegalBasis"
+        ],
+        "conditional_fired": true,
+        "conforms": false
       }
     },
     "05-personal-data-no-purpose": {
@@ -195,6 +222,14 @@
         "base": [],
         "conditional": [
           "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "shacl12-targetwhere": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasPurpose"
         ],
         "conditional_fired": true,
         "conforms": false
@@ -237,6 +272,15 @@
         ],
         "conditional_fired": true,
         "conforms": false
+      },
+      "shacl12-targetwhere": {
+        "base": [],
+        "conditional": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasLegalBasis",
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasPurpose"
+        ],
+        "conditional_fired": true,
+        "conforms": false
       }
     },
     "07-personal-data-multivalued": {
@@ -265,6 +309,12 @@
         "conforms": true
       },
       "shacl12-if": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "shacl12-targetwhere": {
         "base": [],
         "conditional": [],
         "conditional_fired": false,
@@ -300,6 +350,12 @@
         "conforms": true
       },
       "shacl12-if": {
+        "base": [],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": true
+      },
+      "shacl12-targetwhere": {
         "base": [],
         "conditional": [],
         "conditional_fired": false,
@@ -346,6 +402,14 @@
         "conditional": [],
         "conditional_fired": false,
         "conforms": false
+      },
+      "shacl12-targetwhere": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
       }
     },
     "10-base-violation-bad-access-rights": {
@@ -382,6 +446,14 @@
         "conforms": false
       },
       "shacl12-if": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/accessRights\thttp://www.w3.org/ns/shacl#InConstraintComponent"
+        ],
+        "conditional": [],
+        "conditional_fired": false,
+        "conforms": false
+      },
+      "shacl12-targetwhere": {
         "base": [
           "http://example.org/e2/dataset\thttp://purl.org/dc/terms/accessRights\thttp://www.w3.org/ns/shacl#InConstraintComponent"
         ],
@@ -434,6 +506,17 @@
         ],
         "conditional": [
           "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "conditional_fired": true,
+        "conforms": false
+      },
+      "shacl12-targetwhere": {
+        "base": [
+          "http://example.org/e2/dataset\thttp://purl.org/dc/terms/title\thttp://www.w3.org/ns/shacl#MinCountConstraintComponent"
+        ],
+        "conditional": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasLegalBasis",
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasPurpose"
         ],
         "conditional_fired": true,
         "conforms": false

@@ -50,6 +50,7 @@ ENCODINGS = OrderedDict(
         ("partition-sparql", (os.path.join(BEFORE, "overlay-02-partition-sparql.ttl"), "1.0 + AF", "node-shape partition, `sh:SPARQLTarget`")),
         ("implication", (os.path.join(BEFORE, "overlay-03-implication.ttl"), "1.0", "`sh:or ( [ sh:not C ] T )`")),
         ("shacl12-if", (os.path.join(AFTER, "overlay-04-shacl12-if.ttl"), "1.2", "`sh:if` / `sh:then` / `sh:else`")),
+        ("shacl12-targetwhere", (os.path.join(AFTER, "overlay-05-targetwhere.ttl"), "1.2", "`sh:targetWhere`")),
     ]
 )
 
@@ -128,7 +129,7 @@ def overlay_metrics() -> dict:
         # dcat:Dataset independently of hri:DatasetShape.
         targets = set(g.subjects(SH.targetClass, None)) | set(g.subjects(SH.targetSubjectsOf, None)) | set(
             g.subjects(SH.target, None)
-        )
+        ) | set(g.subjects(SH["targetWhere"], None))
         named_shapes = {s for s in set(g.subjects()) if isinstance(s, URIRef) and (
             (s, RDF.type, SH.NodeShape) in g
         )}
@@ -150,6 +151,7 @@ def overlay_metrics() -> dict:
             "sh_or": len(list(g.triples((None, SH["or"], None)))),
             "sh_not": len(list(g.triples((None, SH["not"], None)))),
             "sh_if": len(list(g.triples((None, SH["if"], None)))),
+            "sh_targetwhere": len(list(g.triples((None, SH["targetWhere"], None)))),
             "sparql_chars": sum(len(s) for s in sparql),
         }
     return out
@@ -242,6 +244,11 @@ def equivalence() -> dict:
     checks["rudof(shacl12-if) base results == rudof(shipped) base results"] = agree(
         "shipped", "shacl12-if", base_only=True
     )
+    checks["rudof(implication) == rudof(shacl12-targetwhere)"] = agree("implication", "shacl12-targetwhere")
+    checks["rudof(shacl12-targetwhere) == expected"] = as_expected("shacl12-targetwhere")
+    checks["rudof(shacl12-targetwhere) base results == rudof(shipped) base results"] = agree(
+        "shipped", "shacl12-targetwhere", base_only=True
+    )
 
     # Divergences that must NOT hold — each is a finding in its own right.
     diverge = OrderedDict()
@@ -251,7 +258,24 @@ def equivalence() -> dict:
     )
     diverge["rudof(partition-sparql) != rudof(implication)"] = agree("partition-sparql", "implication")
 
+    # What does NOT agree between the encodings: the conditional's own result
+    # tuples. The implication is one node-level sh:OrConstraintComponent result on
+    # the focus node; sh:targetWhere reports the consequent's own path-level
+    # results (one per missing property). Verdicts agree; tuples are compared
+    # here, per case, so the difference is a number and not a sentence.
+    def cond(enc, c):
+        return sorted(ru["cases"][c][enc].get("conditional", []))
+    firing = [c for c in cases if ru["cases"][c]["implication"].get("conditional_fired")]
+    tuple_diff = {
+        c: {
+            "implication": cond("implication", c),
+            "shacl12-if": cond("shacl12-if", c),
+            "shacl12-targetwhere": cond("shacl12-targetwhere", c),
+        }
+        for c in firing
+    }
     return {
+        "conditional_tuples": tuple_diff,
         "engine": f"{ru['validator']} {ru['package']}@{ru['version']}",
         "measurement_toolkit": f"rdflib {rdflib.__version__}, Python {sys.version.split()[0]} (measurement only — not a validator)",
         "cases": cases,
@@ -307,15 +331,10 @@ def render(m: dict) -> str:
     A(f"- Engine: {e['engine']} — the engine this library ships and the one that")
     A("  drives the form. It is the only SHACL implementation in this experiment.")
     A(f"- Measurement toolkit: {e['measurement_toolkit']}")
-    A("- Re-run: an earlier revision of this experiment ran rudof `0.3.5` and used a")
-    A("  second SHACL implementation as an independent cross-check. The cross-check is")
-    A("  withdrawn (§7); the engine version above is the one every number below comes")
-    A("  from. `0.3.8` is the stricter engine — malformed IRIs are parse errors rather")
-    A("  than silently dropped triples, and `sh:targetClass` selects through the")
-    A("  `rdfs:subClassOf` closure — and on this corpus **no number moved**: all")
-    A(f"  {len(e['cases']) * len(ENCODINGS)} verdicts in Tab. 2 and every base-shape result signature behind")
-    A("  them are unchanged, as are all the structural counts, which never involved an")
-    A("  engine at all.")
+    A("- Re-run: rudof `0.3.5` produced the first results, `0.3.8` the second, and every")
+    A("  number below comes from the engine version above. An earlier revision used a")
+    A("  second SHACL implementation as an independent cross-check; it is withdrawn (§7).")
+    A("  The sixth encoding, `sh:targetWhere`, was added for the re-run on `0.3.10`.")
     A("- Subject: Health-RI Core (HealthDCAT-AP), commit `acec1359` (2026-08-25), CC-BY-4.0,")
     A(f"  vendored verbatim in `data/before/health-ri-core/` — {c['files']} files, {c['lines_before']} lines,")
     A(f"  {c['node_shapes']} node shapes, {c['property_shapes_before']} property shapes.")
@@ -356,19 +375,19 @@ def render(m: dict) -> str:
     A("distinct constraint — E1 establishes that the copies collapse by shape identity.)")
     A("")
 
-    A("## 2. Tab. 1 — one requirement, five encodings")
+    A("## 2. Tab. 1 — one requirement, six encodings")
     A("")
     A("*A dataset that declares `dpv:hasPersonalData` must state `dpv:hasLegalBasis`")
     A("and `dpv:hasPurpose`.* Each row is an overlay merged with the verbatim profile;")
     A("only the overlay differs.")
     A("")
-    A("| Encoding | SHACL | Entry points on `dcat:Dataset` | Node shapes added | Anon. shapes | Hidden `dash:hidden` stamps | `sh:or`/`sh:not` | `sh:if` | SPARQL chars | Lines | Triples |")
-    A("|---|:--:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+    A("| Encoding | SHACL | Entry points on `dcat:Dataset` | Node shapes added | Anon. shapes | Hidden `dash:hidden` stamps | `sh:or`/`sh:not` | `sh:if` | `sh:targetWhere` | SPARQL chars | Lines | Triples |")
+    A("|---|:--:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
     for name, r in o.items():
         A(
             f"| {r['label']} | {r['version']} | {r['entry_points_on_dataset']} | {r['named_node_shapes_added']} | "
             f"{r['anonymous_shapes_added']} | {r['hidden_stamp_fields']} | {r['sh_or']}/{r['sh_not']} | "
-            f"{r['sh_if']} | {r['sparql_chars']} | {r['lines']} | {r['triples']} |"
+            f"{r['sh_if']} | {r['sh_targetwhere']} | {r['sparql_chars']} | {r['lines']} | {r['triples']} |"
         )
     A("")
     A("*Entry points* = node shapes that can fire on a `dcat:Dataset` on their own")
@@ -421,11 +440,12 @@ def render(m: dict) -> str:
 
     A("## 4. Tab. 2 — behavioural equivalence")
     A("")
-    A("Eleven data graphs, five encodings, one engine. `C` = conforms, `V` =")
+    A("Eleven data graphs, six encodings, one engine. `C` = conforms, `V` =")
     A("violation, `E` = the engine could not run the encoding.")
     A("")
     A("What this table shows is that **rudof accepts and rejects the same data under")
-    A("both encodings** — the SHACL 1.0 implication and the SHACL 1.2 conditional. It")
+    A("all three conditional encodings** — the SHACL 1.0 implication, the SHACL 1.2")
+    A("`sh:if` and the SHACL 1.2 `sh:targetWhere`. It")
     A("is a demonstration in the engine that drives the form, not a cross-validated")
     A("proof against a second implementation. §7 says what that costs.")
     A("")
@@ -453,6 +473,9 @@ def render(m: dict) -> str:
     established = {
         "rudof(implication) == rudof(shacl12-if)": f"the migration is behaviour-preserving: same verdict, same base-shape results, all {len(e['cases'])} cases",
         "rudof(shacl12-if) == expected": "and the behaviour preserved is the *right* one — the 1.2 encoding matches the requirement fixed in advance",
+        "rudof(implication) == rudof(shacl12-targetwhere)": "the sixth encoding, `sh:targetWhere`, gives the same verdict and the same base-shape results on all cases (its conditional result tuples differ, see below)",
+        "rudof(shacl12-targetwhere) == expected": "and the `sh:targetWhere` verdicts are the right ones",
+        "rudof(shacl12-targetwhere) base results == rudof(shipped) base results": "the `sh:targetWhere` overlay disturbs nothing else in the profile",
         "rudof(implication) == expected": "the 1.0 encoding it is compared against is itself correct, so the equivalence is not two engines agreeing on a mistake",
         "rudof(shacl12-if) base results == rudof(shipped) base results": "the conditional overlay adds a conditional and disturbs nothing else in the profile",
     }
@@ -477,7 +500,32 @@ def render(m: dict) -> str:
             f"{v['first_divergence'] or '—'} ({v['on'] or '—'}) | {why.get(k, '')} |"
         )
     A("")
-    A("The last row is a limit of this experiment and of our own engine, stated")
+    A("### What agrees across the encodings, and what does not")
+    A("")
+    A("**Agrees:** the conformance verdict on all "
+      f"{len(e['cases'])} cases in the three conditional encodings (`implication`, "
+      "`shacl12-if`, `shacl12-targetwhere`), the *base-shape* result tuples "
+      "`(focus node, path, constraint component)` on every case, and the set of "
+      "cases on which a conditional result fires.")
+    A("")
+    A("**Differs:** the conditional's own result tuples. The implication reports one "
+      "node-level `sh:OrConstraintComponent` result on the focus node; `sh:targetWhere` "
+      "reports the consequent's own path-level results, one per missing property. "
+      "Per firing case (conditional result tuples as the harness records them, "
+      "`<node-level>` = no path):")
+    A("")
+    A("| Case | implication | `sh:if` | `sh:targetWhere` |")
+    A("|---|---|---|---|")
+    def fmt(rows):
+        out = []
+        for r in rows:
+            f, p = r.split("\t")
+            out.append(p.rsplit("#", 1)[-1] if p != "<node-level>" else p)
+        return ", ".join(f"`{x}`" for x in out) or "—"
+    for c, t in e["conditional_tuples"].items():
+        A(f"| `{c[:2]}` | {fmt(t['implication'])} | {fmt(t['shacl12-if'])} | {fmt(t['shacl12-targetwhere'])} |")
+    A("")
+    A("The last row of the previous table is a limit of this experiment and of our own engine, stated")
     A("plainly: rudof does not implement `sh:SPARQLTarget`, so the")
     A("`partition-sparql` row of Tab. 2 records silence, not a verdict. It is in")
     A("Tab. 1 for its *structural* cost — the size of the SPARQL string a correct")
@@ -606,13 +654,13 @@ def render(m: dict) -> str:
     A("independently of which engine validates, and nothing above weakens them.")
     A("")
     A("**One profile, one requirement.** The subject is a single published profile and")
-    A("a single conditional requirement drawn from it. The five encodings are ours, so")
+    A("a single conditional requirement drawn from it. The six encodings are ours, so")
     A("they are as fair as we made them; the overlay files are in the repository to be")
     A("read and disagreed with.")
     A("")
     A("## 8. Provenance")
     A("")
-    A("`data/before/health-ri-core/` is verbatim third-party Turtle. The five overlays")
+    A("`data/before/health-ri-core/` is verbatim third-party Turtle. The six overlays")
     A("and the eleven data graphs are ours. Full statement in `data/PROVENANCE.md`;")
     A("regenerate everything with `make`.")
     A("")

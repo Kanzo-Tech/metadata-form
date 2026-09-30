@@ -58,6 +58,7 @@
       "sh_or": 0,
       "sh_not": 0,
       "sh_if": 0,
+      "sh_targetwhere": 0,
       "sparql_chars": 0
     },
     "partition-subjectsof": {
@@ -74,6 +75,7 @@
       "sh_or": 0,
       "sh_not": 0,
       "sh_if": 0,
+      "sh_targetwhere": 0,
       "sparql_chars": 0
     },
     "partition-sparql": {
@@ -90,6 +92,7 @@
       "sh_or": 0,
       "sh_not": 0,
       "sh_if": 0,
+      "sh_targetwhere": 0,
       "sparql_chars": 117
     },
     "implication": {
@@ -106,6 +109,7 @@
       "sh_or": 1,
       "sh_not": 1,
       "sh_if": 0,
+      "sh_targetwhere": 0,
       "sparql_chars": 0
     },
     "shacl12-if": {
@@ -122,6 +126,24 @@
       "sh_or": 0,
       "sh_not": 0,
       "sh_if": 1,
+      "sh_targetwhere": 0,
+      "sparql_chars": 0
+    },
+    "shacl12-targetwhere": {
+      "version": "1.2",
+      "label": "`sh:targetWhere`",
+      "file": "overlay-05-targetwhere.ttl",
+      "lines": 41,
+      "triples": 22,
+      "entry_points_on_dataset": 2,
+      "named_node_shapes_added": 2,
+      "anonymous_shapes_added": 1,
+      "hidden_stamp_fields": 0,
+      "dash_triples": 0,
+      "sh_or": 0,
+      "sh_not": 0,
+      "sh_if": 0,
+      "sh_targetwhere": 1,
       "sparql_chars": 0
     }
   },
@@ -145,7 +167,55 @@
     ]
   },
   "equivalence": {
-    "engine": "rudof (wasm) @kanzo-tech/rudof-wasm@0.3.8",
+    "conditional_tuples": {
+      "04-personal-data-no-legal-basis": {
+        "implication": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "shacl12-if": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "shacl12-targetwhere": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasLegalBasis"
+        ]
+      },
+      "05-personal-data-no-purpose": {
+        "implication": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "shacl12-if": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "shacl12-targetwhere": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasPurpose"
+        ]
+      },
+      "06-personal-data-neither": {
+        "implication": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "shacl12-if": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "shacl12-targetwhere": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasLegalBasis",
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasPurpose"
+        ]
+      },
+      "11-personal-data-plus-base-violation": {
+        "implication": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "shacl12-if": [
+          "http://example.org/e2/dataset\t<node-level>"
+        ],
+        "shacl12-targetwhere": [
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasLegalBasis",
+          "http://example.org/e2/dataset\thttps://w3id.org/dpv#hasPurpose"
+        ]
+      }
+    },
+    "engine": "rudof (wasm) @kanzo-tech/rudof-wasm@0.3.10",
     "measurement_toolkit": "rdflib 7.6.0, Python 3.13.12 (measurement only \u2014 not a validator)",
     "cases": [
       "01-no-personal-data",
@@ -166,77 +236,88 @@
         "partition-subjectsof": "C",
         "partition-sparql": "C",
         "implication": "C",
-        "shacl12-if": "C"
+        "shacl12-if": "C",
+        "shacl12-targetwhere": "C"
       },
       "02-no-personal-data-with-legal-basis": {
         "shipped": "C",
         "partition-subjectsof": "C",
         "partition-sparql": "C",
         "implication": "C",
-        "shacl12-if": "C"
+        "shacl12-if": "C",
+        "shacl12-targetwhere": "C"
       },
       "03-personal-data-complete": {
         "shipped": "C",
         "partition-subjectsof": "C",
         "partition-sparql": "C",
         "implication": "C",
-        "shacl12-if": "C"
+        "shacl12-if": "C",
+        "shacl12-targetwhere": "C"
       },
       "04-personal-data-no-legal-basis": {
         "shipped": "C",
         "partition-subjectsof": "V",
         "partition-sparql": "C",
         "implication": "V",
-        "shacl12-if": "V"
+        "shacl12-if": "V",
+        "shacl12-targetwhere": "V"
       },
       "05-personal-data-no-purpose": {
         "shipped": "C",
         "partition-subjectsof": "V",
         "partition-sparql": "C",
         "implication": "V",
-        "shacl12-if": "V"
+        "shacl12-if": "V",
+        "shacl12-targetwhere": "V"
       },
       "06-personal-data-neither": {
         "shipped": "C",
         "partition-subjectsof": "V",
         "partition-sparql": "C",
         "implication": "V",
-        "shacl12-if": "V"
+        "shacl12-if": "V",
+        "shacl12-targetwhere": "V"
       },
       "07-personal-data-multivalued": {
         "shipped": "C",
         "partition-subjectsof": "C",
         "partition-sparql": "C",
         "implication": "C",
-        "shacl12-if": "C"
+        "shacl12-if": "C",
+        "shacl12-targetwhere": "C"
       },
       "08-personal-data-on-non-dataset": {
         "shipped": "C",
         "partition-subjectsof": "V",
         "partition-sparql": "C",
         "implication": "C",
-        "shacl12-if": "C"
+        "shacl12-if": "C",
+        "shacl12-targetwhere": "C"
       },
       "09-base-violation-missing-title": {
         "shipped": "V",
         "partition-subjectsof": "V",
         "partition-sparql": "V",
         "implication": "V",
-        "shacl12-if": "V"
+        "shacl12-if": "V",
+        "shacl12-targetwhere": "V"
       },
       "10-base-violation-bad-access-rights": {
         "shipped": "V",
         "partition-subjectsof": "V",
         "partition-sparql": "V",
         "implication": "V",
-        "shacl12-if": "V"
+        "shacl12-if": "V",
+        "shacl12-targetwhere": "V"
       },
       "11-personal-data-plus-base-violation": {
         "shipped": "V",
         "partition-subjectsof": "V",
         "partition-sparql": "V",
         "implication": "V",
-        "shacl12-if": "V"
+        "shacl12-if": "V",
+        "shacl12-targetwhere": "V"
       }
     },
     "checks": {
@@ -256,6 +337,21 @@
         "on": null
       },
       "rudof(shacl12-if) base results == rudof(shipped) base results": {
+        "holds": true,
+        "first_divergence": null,
+        "on": null
+      },
+      "rudof(implication) == rudof(shacl12-targetwhere)": {
+        "holds": true,
+        "first_divergence": null,
+        "on": null
+      },
+      "rudof(shacl12-targetwhere) == expected": {
+        "holds": true,
+        "first_divergence": null,
+        "on": null
+      },
+      "rudof(shacl12-targetwhere) base results == rudof(shipped) base results": {
         "holds": true,
         "first_divergence": null,
         "on": null
