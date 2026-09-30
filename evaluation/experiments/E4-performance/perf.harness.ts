@@ -435,8 +435,6 @@ interface EditResult {
   commitToDom: Stats;
   /** Debounce the text widgets add before the commit above even starts. */
   textCommitDebounceMs: number;
-  /** Debounce before validation runs (`validationDebounceMs` default). */
-  validationDebounceMs: number;
   fieldsRendered: number;
 }
 
@@ -607,7 +605,6 @@ async function measureEdits(
     commitToModel: stats(modelSamples),
     commitToDom: stats(domSamples),
     textCommitDebounceMs: 250,
-    validationDebounceMs: 300,
     fieldsRendered,
   };
 }
@@ -691,7 +688,7 @@ function markdown(
   L.push("  rather than in front of the user. The earlier Health-RI-only corpus topped out");
   L.push("  at 83 kB and did not show this at all.");
   L.push(`- **Validation is off the visibility path.** \`validate()\` is ${ms(Math.max(...validateP95))} ms at worst`);
-  L.push("  here, and runs on its own 300 ms debounce, so it never gates a field appearing.");
+  L.push("  here, and runs after the edit is drawn (a deferred render), so it never gates a field appearing.");
   L.push(`- **The payload is the weak point.** ${kb(sizes.wasmBrotli)} of brotli-compressed wasm plus`);
   L.push(`  ${bundle ? kb((bundle as { withLib: { jsBrotli: number } }).withLib.jsBrotli - (bundle as { baseline: { jsBrotli: number } }).baseline.jsBrotli) : "the library's JS"} of JS. That is the honest cost of putting a SHACL engine in`);
   L.push("  the browser, and it is a first-load cost, not a per-edit one.");
@@ -812,14 +809,14 @@ function markdown(
   L.push("browser must do. It is therefore neither an upper nor a lower bound on browser");
   L.push("latency — it is a different quantity, and the paper should quote the first column");
   L.push("for the engine claim rather than the second.", "");
-  L.push("Two deliberate debounces sit *outside* this number and are not engine cost:", "");
+  L.push("Two deliberate delays sit *outside* this number and are not engine cost:", "");
   L.push(`- free-text widgets buffer keystrokes locally and commit after **${edits[0]?.textCommitDebounceMs ?? 250} ms**`);
   L.push("  (`useCommit` in `defaultWidgets.tsx`), so typing is never blocked by the engine.");
   L.push("  Discrete widgets — the kind a `sh:if` keys off — commit immediately, with no debounce.");
-  L.push(`- validation runs on a separate **${edits[0]?.validationDebounceMs ?? 300} ms** debounce`);
-  L.push("  (`validationDebounceMs`), so it never sits on the visibility path at all.", "");
+  L.push("- validation runs in the render React defers behind the edit (`useDeferredValue`),");
+  L.push("  with no timer, so it never sits on the visibility path at all.", "");
   L.push("So a user typing into a text field sees their character echoed immediately, the");
-  L.push("form re-shape ~250 ms after they stop, and errors ~300 ms after that. A user");
+  L.push("form re-shape ~250 ms after they stop, and errors as soon as React has drawn it. A user");
   L.push("picking from a select sees the form re-shape within the figure above.", "");
 
   L.push("## Payload", "");

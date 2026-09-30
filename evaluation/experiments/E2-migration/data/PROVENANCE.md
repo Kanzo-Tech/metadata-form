@@ -36,6 +36,7 @@ measured under each encoding:
 | `before/overlay-02-partition-sparql.ttl` | node-shape partition, `sh:SPARQLTarget`, `dash:hidden` stamps | 1.0 (advanced) |
 | `before/overlay-03-implication.ttl` | `sh:or ( [ sh:not C ] T )` | 1.0 |
 | `after/overlay-04-shacl12-if.ttl` | `sh:if` / `sh:then` / `sh:else` | 1.2 |
+| `after/overlay-05-targetwhere.ttl` | `sh:targetWhere` selector plus the two required properties | 1.2 |
 
 `after/health-ri-core-shacl12/` is generated from `before/health-ri-core/` by
 `migrate.py` (a deterministic rewrite: `dash:editor` → `shui:editor`,

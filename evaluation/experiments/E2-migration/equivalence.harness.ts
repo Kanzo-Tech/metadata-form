@@ -1,7 +1,7 @@
 /**
  * E2 — the behavioural-equivalence run.
  *
- * Eleven data graphs × five encodings of one conditional requirement, validated
+ * Eleven data graphs × six encodings of one conditional requirement, validated
  * by the engine this paper is about and the one that drives the form: rudof,
  * compiled to WebAssembly (`@kanzo-tech/rudof-wasm`).
  *
@@ -45,17 +45,19 @@ const ENCODINGS: { id: string; overlay: string }[] = [
   { id: "partition-sparql", overlay: join(BEFORE, "overlay-02-partition-sparql.ttl") },
   { id: "implication", overlay: join(BEFORE, "overlay-03-implication.ttl") },
   { id: "shacl12-if", overlay: join(AFTER, "overlay-04-shacl12-if.ttl") },
+  { id: "shacl12-targetwhere", overlay: join(AFTER, "overlay-05-targetwhere.ttl") },
 ];
 
 /** Reduce a report to a comparable signature — base results compared exactly,
  *  conditional results compared as the set of focus nodes they fire on, because
  *  each encoding necessarily names a different source shape and constraint
- *  component for the same failure. */
+ *  component for the same failure — the implication reports one node-level
+ *  `sh:or` result, `sh:targetWhere` the consequent's own path-level ones. */
 function summarise(results: readonly ValidationResult[]) {
   const base = new Set<string>();
   const conditional = new Set<string>();
   for (const r of results) {
-    const path = r.path?.value;
+    const path = r.pathKey;
     const comp = r.constraint ?? "";
     const focus = r.focusNode.value;
     if (path && CONDITIONAL_PATHS.has(path)) conditional.add(`${focus}\t${path}`);

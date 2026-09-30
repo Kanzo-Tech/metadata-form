@@ -34,7 +34,7 @@ import { allFields, type FieldModel } from "@/form/FormModel.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { namedNode } from "@/form/factory.js";
-import type { ShapeModel, PathExpr, PropertyShapeIR } from "@/form/ShapeIR.js";
+import type { EditorSource, ShapeModel, PathExpr, PropertyShapeIR } from "@/form/ShapeIR.js";
 import { PROFILES, type ProfileSpec } from "./profiles.js";
 import {
   ENGINE_DROP_REASON,
@@ -244,9 +244,13 @@ interface ProfileResult {
     shapesFailed: { shape: string; error: string }[];
     fields: number;
     editorIds: Record<string, number>;
-    /** Fields whose stated `shui:editor` the registry could honour directly. */
+    /** Fields by where the engine took their editor from: a `shui:editor` the
+     *  profile declared, the SHACL-UI score function, the first `sh:or` branch, or
+     *  the engine's own fallback (the last two are not SHACL-UI). */
+    editorSources: Record<EditorSource, number>;
+    /** Fields whose declared `shui:editor` the registry could honour directly. */
     statedEditorHonoured: number;
-    /** Fields whose editor was inferred from type facts (no `shui:editor`). */
+    /** Fields whose editor the engine chose (scored, branch or fallback). */
     inferred: number;
     /** Editor stated but unregistered — degraded to the type-fact fallback. */
     degradedToFallback: number;
@@ -322,7 +326,7 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
     turtleBytes: Buffer.byteLength(ttl, "utf8"),
     parsed: false,
     source: {
-      shuiEditor: count(/shui:editor|shacl-ui/editor/g),
+      shuiEditor: count(/shui:editor|shacl-ui\/editor/g),
       dashEditor: count(/dash:editor|dash#editor/g),
       // Word boundaries matter: `sh:name` is a prefix of `sh:namespace`, which
       // DCAT-AP.de uses 23 times for its SPARQL prefix declarations. Counting
@@ -340,6 +344,7 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
     },
     form: {
       shapesBuilt: 0, shapesFailed: [], fields: 0, editorIds: {},
+      editorSources: { declared: 0, scored: 0, branch: 0, fallback: 0 },
       statedEditorHonoured: 0, inferred: 0, degradedToFallback: 0,
       nested: 0, typedWidget: 0, plainTextFallback: 0, readOnly: 0, noWidget: 0,
       complexPathFields: 0, duplicatePath: 0, diagnostics: {}, diagnosticSamples: [],
@@ -455,6 +460,7 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
  */
 function classify(f: FieldModel, r: ProfileResult): void {
   bump(r.form.editorIds, localName(f.editorId));
+  r.form.editorSources[f.editorSource]++;
 
   if (f.pathKind === "complex") r.form.complexPathFields++;
   if (f.readOnly) { r.form.readOnly++; return; }
@@ -464,9 +470,9 @@ function classify(f: FieldModel, r: ProfileResult): void {
   const stated = REGISTERED.has(f.editorId);
   const effective = REGISTERED.has(f.editorId) ? f.editorId : REGISTERED.has(Editors.TextField) ? Editors.TextField : undefined;
 
-  // rudof always emits an editor; TextFieldEditor is what it emits when the type
-  // facts said nothing, so it is inference, not an author's statement.
-  if (f.editorId === Editors.TextField) r.form.inferred++;
+  // rudof always emits an editor and says where it came from: only a declared
+  // one is the author's statement.
+  if (f.editorSource !== "declared") r.form.inferred++;
   else if (stated) r.form.statedEditorHonoured++;
   else r.form.degradedToFallback++;
 
@@ -558,8 +564,8 @@ function markdown(results: ProfileResult[], stamp: string): string {
 
   // ---- Tab. 3 ----------------------------------------------------------
   L.push("## Tab. 3 — coverage", "");
-  L.push("| Profile | Node shapes | Property shapes | Groups | Labelled | Fields | Typed widget | Nested form | Plain-text floor | Read-only | No widget | **Zero-code control** |");
-  L.push("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
+  L.push("| Profile | Node shapes | Property shapes | Groups | Labelled | Fields | Typed widget | Nested form | Plain-text floor | Read-only | No widget | **Zero-code control** | Declared | Scored | Branch | Fallback |");
+  L.push("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
   for (const r of primary) L.push(row(r));
   L.push("");
   L.push("*Labelled* = property shapes carrying an `sh:name`; the rest fall back to the");
@@ -570,7 +576,10 @@ function markdown(results: ProfileResult[], stamp: string): string {
   L.push("an `sh:node` reference, rendered as a sub-form. *Plain-text floor* = the engine");
   L.push("could say nothing better than a bare text input. *Read-only* = the path is not");
   L.push("a simple predicate, so values are shown but not editable. *No widget* = nothing");
-  L.push("rendered at all.", "");
+  L.push("rendered at all. *Declared* / *Scored* / *Branch* / *Fallback* count the fields by");
+  L.push("where the engine took the editor from: a `shui:editor` the profile states, the");
+  L.push("SHACL-UI score function, the first `sh:or` branch, or the engine's own fallback");
+  L.push("(the last two are not SHACL-UI).", "");
   L.push("**Zero-code control** = (typed widget + nested form) / fields: the share that");
   L.push("gets a control reflecting what the property actually *is*, with no per-profile");
   L.push("code and no edit to the profile. The plain-text floor and the read-only column");
@@ -730,7 +739,8 @@ function markdown(results: ProfileResult[], stamp: string): string {
     L.push(`- carrying sh:name: ${r.ir.named} (${pct(r.ir.named, r.ir.propertyShapes)}); sh:description: ${r.ir.described} (${pct(r.ir.described, r.ir.propertyShapes)})`);
     L.push(`- conditionals stated as an implication (\`sh:or ( [ sh:not C ] T )\`): ${r.source.conditionals} in the source, ${r.ir.conditionals} reported by the engine`);
     if (r.form.duplicatePath) L.push(`- property shapes sharing a path with a sibling on the same node shape: ${r.form.duplicatePath} (they collapse into one control)`);
-    L.push(`- editor resolution: ${r.form.statedEditorHonoured} from a stated \`shui:editor\`, ${r.form.inferred} inferred, ${r.form.degradedToFallback} degraded to the type-fact fallback`);
+    L.push(`- editor resolution: ${r.form.statedEditorHonoured} from a declared \`shui:editor\`, ${r.form.inferred} chosen by the engine, ${r.form.degradedToFallback} declared but unregistered (rendered as a text field)`);
+    L.push(`- editor source: ${(["declared", "scored", "branch", "fallback"] as const).map((s) => `${s}=${r.form.editorSources[s]}`).join(", ")}`);
     L.push("");
     const eds = Object.entries(r.form.editorIds).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
     if (eds.length) L.push(`**Editors resolved:** ${eds.map(([k, n]) => `${k}=${n}`).join(", ")}`, "");
@@ -766,10 +776,10 @@ function markdown(results: ProfileResult[], stamp: string): string {
 }
 
 function row(r: ProfileResult): string {
-  if (!r.parsed) return `| ${r.label} | **parse failed** | — | — | — | — | — | — | — | — | — | — |`;
+  if (!r.parsed) return `| ${r.label} | **parse failed** | — | — | — | — | — | — | — | — | — | — | — | — | — | — |`;
   const f = r.form;
   const usable = f.typedWidget + f.nested;
-  return `| ${r.label} | ${r.ir.nodeShapes} | ${r.ir.propertyShapes} | ${r.ir.groups} | ${r.ir.named} (${pct(r.ir.named, r.ir.propertyShapes)}) | ${f.fields} | ${f.typedWidget} | ${f.nested} | ${f.plainTextFallback} | ${f.readOnly} | ${f.noWidget} | **${pct(usable, f.fields)}** |`;
+  return `| ${r.label} | ${r.ir.nodeShapes} | ${r.ir.propertyShapes} | ${r.ir.groups} | ${r.ir.named} (${pct(r.ir.named, r.ir.propertyShapes)}) | ${f.fields} | ${f.typedWidget} | ${f.nested} | ${f.plainTextFallback} | ${f.readOnly} | ${f.noWidget} | **${pct(usable, f.fields)}** | ${f.editorSources.declared} | ${f.editorSources.scored} | ${f.editorSources.branch} | ${f.editorSources.fallback} |`;
 }
 
 /** A short column header: the label up to its first parenthesis or dash. */
