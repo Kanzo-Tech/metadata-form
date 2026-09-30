@@ -192,26 +192,31 @@ describe("useMetadataForm + <MetadataForm>", () => {
     expect(field).not.toBeNull();
     expect(field!.querySelector('[data-slot="tags-input"]')).not.toBeNull();
 
-    const input = field!.querySelector<HTMLInputElement>('[data-slot="tags-input-input"]')!;
+    const keywords = () =>
+      form.quads
+        .filter((q) => q.predicate.value === "http://www.w3.org/ns/dcat#keyword")
+        .map((q) => q.object.value)
+        .sort();
     // The machine only accepts Enter once it has processed the focus it queued in a
     // microtask, and it tracks the draft through React's `onInput` — `change` never
-    // reaches it.
-    input.focus();
-    fireEvent.focus(input);
+    // reaches it. Each tag waits for the previous commit to land, and the input is
+    // read afresh, since that commit re-renders the field.
     for (const tag of ["health", "registry"]) {
+      const input = document
+        .querySelector('[data-field$="|http://www.w3.org/ns/dcat#keyword"]')!
+        .querySelector<HTMLInputElement>('[data-slot="tags-input-input"]')!;
+      input.focus();
+      fireEvent.focus(input);
       await act(() => Promise.resolve());
       fireEvent.input(input, { target: { value: tag } });
       await act(() => Promise.resolve());
       fireEvent.keyDown(input, { key: "Enter" });
+      await waitFor(() => expect(keywords()).toContain(tag));
+      // The machine empties its draft once it has taken the tag.
+      await waitFor(() => expect(input.value).toBe(""));
     }
 
-    await waitFor(() => {
-      const kws = form.quads
-        .filter((q) => q.predicate.value === "http://www.w3.org/ns/dcat#keyword")
-        .map((q) => q.object.value)
-        .sort();
-      expect(kws).toEqual(["health", "registry"]);
-    });
+    expect(keywords()).toEqual(["health", "registry"]);
   });
 
   it("writes edits into the controller's graph", async () => {
