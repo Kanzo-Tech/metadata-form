@@ -27,7 +27,6 @@ import {
   type DebouncedCommit,
 } from "@kanzo-tech/ui";
 import { Editors } from "../../form/vocab/shacl-ui.js";
-import { column, grow } from "../styles.js";
 import type {
   MultiWidget,
   Widget,
@@ -108,7 +107,6 @@ function textField(type: string): Widget {
     const { draft, change, flush } = useText(p.value, p.onChange);
     return (
       <Input
-        style={grow}
         type={type}
         step={p.step}
         min={p.min}
@@ -182,7 +180,7 @@ function LangSlot(p: WidgetProps & { text: string }) {
 const LangField: Widget = (p) => {
   const text = useText(p.value, (v) => p.onChange(v, p.language || ""));
   return (
-    <InputGroup style={grow}>
+    <InputGroup>
       <InputGroupInput
         value={text.draft ?? ""}
         onChange={(e) => text.change(e.target.value)}
@@ -200,9 +198,9 @@ const LangField: Widget = (p) => {
 const LangArea: Widget = (p) => {
   const text = useText(p.value, (v) => p.onChange(v, p.language || ""));
   return (
-    <div style={{ ...column, ...grow, gap: "0.25rem" }}>
+    <div className="flex flex-col gap-1">
       <AssistedTextarea text={text} complete={p.complete} placeholder={p.placeholder} />
-      <div style={{ marginInlineStart: "auto", width: "fit-content" }}>
+      <div className="ms-auto w-fit">
         <LangSlot {...p} text={text.draft ?? ""} />
       </div>
     </div>
@@ -283,7 +281,6 @@ function AssistedTextarea({
   if (!complete || !ghost) {
     return (
       <Textarea
-        style={{ flex: 1 }}
         value={text.draft ?? ""}
         placeholder={placeholder}
         onChange={(e) => text.change(e.target.value)}
@@ -293,9 +290,6 @@ function AssistedTextarea({
   }
   return (
     <ghost.Root
-      // `className`, not `style`: the root takes no style prop. `flex-1` is a
-      // class the design system's own sheet ships, which the guard test checks.
-      className="flex-1"
       value={text.draft ?? ""}
       onValueChange={text.change}
       complete={complete}
