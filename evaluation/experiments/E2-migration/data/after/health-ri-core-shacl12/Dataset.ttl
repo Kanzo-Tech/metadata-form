@@ -28,7 +28,7 @@
 @prefix dpv-pd: <https://w3id.org/dpv/dpv-pd#> .
 @prefix shacl-play: <https://shacl-play.sparna.fr/ontology#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+@prefix shui: <http://www.w3.org/ns/shacl-ui/> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 
 hri:DatasetShape a owl:Ontology, sh:NodeShape;

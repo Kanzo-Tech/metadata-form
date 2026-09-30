@@ -274,12 +274,12 @@ describe("useMetadataForm + <MetadataForm>", () => {
     // Other required fields are empty (invalid) → the summary counts them...
     await waitFor(() => expect(screen.getByText(/issue/)).toBeInTheDocument());
     // ...but none shows its inline error, because the user hasn't touched them.
-    expect(screen.queryByText(/This field is required/)).toBeNull();
+    expect(screen.queryByText(/At least 1 value\(s\) required/)).toBeNull();
 
     // Clearing Title touches it and leaves it invalid → its error now appears.
     const input = document.querySelector<HTMLInputElement>("input")!;
     fireEvent.change(input, { target: { value: "" } });
-    await waitFor(() => expect(screen.getByText(/This field is required/)).toBeInTheDocument(), {
+    await waitFor(() => expect(screen.getByText(/At least 1 value\(s\) required/)).toBeInTheDocument(), {
       timeout: 3000,
     });
   });

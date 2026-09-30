@@ -2,7 +2,7 @@
 @prefix hri:  <http://data.health-ri.nl/core/p2/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh:   <http://www.w3.org/ns/shacl#> .
-@prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+@prefix shui: <http://www.w3.org/ns/shacl-ui/> .
 
 # Overlay 04 — SHACL 1.2.
 #

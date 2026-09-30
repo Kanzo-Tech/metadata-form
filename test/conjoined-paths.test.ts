@@ -125,7 +125,7 @@ describe("property shapes sharing a path (SHACL conjunction)", () => {
     expect(algorithm.constraints.nodeKind).toBe("http://www.w3.org/ns/shacl#BlankNodeOrIRI");
     // The editor is re-derived from the merged facts: rudof resolved a text box
     // for the three shapes that state no type, and a class is a reference.
-    expect(algorithm.editorId).toBe(Editors.AutoComplete);
+    expect(algorithm.editorId).toBe(Editors.InstancesSelect);
     expect(algorithm.readOnly).toBeFalsy();
     expect(algorithm.write).toBeDefined();
 

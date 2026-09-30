@@ -279,7 +279,7 @@ vocabulary. Annotate a property shape with `shui:editor` to pick one explicitly:
 
 ```turtle
 @prefix sh:   <http://www.w3.org/ns/shacl#> .
-@prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+@prefix shui: <http://www.w3.org/ns/shacl-ui/> .
 @prefix ex:   <http://example.org/> .
 
 ex:DatasetShape a sh:NodeShape ;

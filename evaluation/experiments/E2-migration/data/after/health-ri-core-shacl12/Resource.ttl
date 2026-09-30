@@ -25,7 +25,7 @@
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 @prefix shacl-play: <https://shacl-play.sparna.fr/ontology#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+@prefix shui: <http://www.w3.org/ns/shacl-ui/> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 
 hri:ResourceShape a owl:Ontology, sh:NodeShape;

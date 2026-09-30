@@ -32,7 +32,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "data", "before", "health-ri-core")
 DST = os.path.join(HERE, "data", "after", "health-ri-core-shacl12")
 
-SHUI_NS = "http://www.w3.org/ns/shacl-ui#"
+SHUI_NS = "http://www.w3.org/ns/shacl-ui/"
 
 # dash: editor term -> SHACL-UI term. Every editor kind this profile uses has a
 # SHACL-UI counterpart; `dash:URIEditor` is the only rename.

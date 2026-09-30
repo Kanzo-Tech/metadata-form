@@ -337,7 +337,7 @@ describe("RudofEngine over the REAL wasm", () => {
       satisfied: tree.satisfied,
     });
     const report = computeFormReport(form, mapResults(results));
-    expect(report.issues.rows.map((r) => say(r, "en"))).toEqual(["This field is required"]);
+    expect(report.issues.rows.map((r) => say(r, "en"))).toEqual(["At least 1 value(s) required"]);
     expect(report.issues.rows[0].label).toBe("Publisher › Name");
     expect(report.issues.rows[0].constraint).toBe("http://www.w3.org/ns/shacl#MinCountConstraintComponent");
   });
@@ -437,15 +437,15 @@ describe("RudofEngine over the REAL wasm", () => {
    *
    * The reported defect was an engine dump reaching a person —
    * "Node(NodeShape Targets: - targetClass(...) Property Shapes: [22, 13, 23])"
-   * — because `sh:node` printed `Display for IRShape`. It prints the shape's id
-   * now.
+   * — because `sh:node` printed `Display for IRShape`. The engine's catalog words
+   * it in every language now, and names no shape at all.
    *
    * That guard used to live in the test above, which is exactly where it could
    * not survive: once §2.1.5 was honoured, a shape declaring its own messages
    * stopped carrying any generated text, so there was no default left to
    * inspect. The guard was not wrong, it was attached to the wrong case.
    */
-  it("names the shape rather than dumping it when the shape declares no message", async () => {
+  it("words a shape-based failure in the catalog rather than dumping the shape", async () => {
     await engine.loadShapes(`
       @prefix sh: <http://www.w3.org/ns/shacl#> .
       @prefix ex: <${EX}> .
@@ -460,9 +460,9 @@ describe("RudofEngine over the REAL wasm", () => {
     );
 
     const [result] = await engine.validate();
-    const generated = result.messages.find((m) => !m.language)?.value ?? "";
+    const generated = result.messages.find((m) => m.language === "en")?.value ?? "";
 
-    expect(generated).toContain(`${EX}QuietAgentShape`);
+    expect(generated).toBe("Value does not meet the requirements of the referenced shape");
     expect(generated).not.toContain("NodeShape Targets");
     expect(generated).not.toContain("Property Shapes:");
   });

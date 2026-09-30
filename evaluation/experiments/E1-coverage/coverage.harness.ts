@@ -324,7 +324,7 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
     turtleBytes: Buffer.byteLength(ttl, "utf8"),
     parsed: false,
     source: {
-      shuiEditor: count(/shui:editor|shacl-ui#editor/g),
+      shuiEditor: count(/shui:editor|shacl-ui/editor/g),
       dashEditor: count(/dash:editor|dash#editor/g),
       // Word boundaries matter: `sh:name` is a prefix of `sh:namespace`, which
       // DCAT-AP.de uses 23 times for its SPARQL prefix declarations. Counting
@@ -823,7 +823,7 @@ it("E1: the measured baseline — dash:editor is ignored, shui:editor is honoure
   const shapes = await createRudofEngine().loadShapes(`
     @prefix sh: <http://www.w3.org/ns/shacl#> .
     @prefix dash: <http://datashapes.org/dash#> .
-    @prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+    @prefix shui: <http://www.w3.org/ns/shacl-ui/> .
     @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
     @prefix ex: <http://example.org/> .
     ex:S a sh:NodeShape ; sh:targetClass ex:C ;

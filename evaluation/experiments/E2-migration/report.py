@@ -32,7 +32,7 @@ from rdflib.compare import to_isomorphic
 
 SH = Namespace("http://www.w3.org/ns/shacl#")
 DASH = Namespace("http://datashapes.org/dash#")
-SHUI = Namespace("http://www.w3.org/ns/shacl-ui#")
+SHUI = Namespace("http://www.w3.org/ns/shacl-ui/")
 DCAT = Namespace("http://www.w3.org/ns/dcat#")
 
 HERE = os.path.dirname(os.path.abspath(__file__))

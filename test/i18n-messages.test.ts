@@ -174,12 +174,12 @@ describe("a language the library does not ship is data, not code", () => {
     });
     const before = result.current.errors;
     const [error] = [...before.values()].flat();
-    expect(result.current.messageOf(error)).toBe("This field is required");
+    expect(result.current.messageOf(error)).toBe("At least 1 value(s) required");
 
     rerender(["es"]);
     await waitFor(() => expect(result.current.locale).toBe("es"));
     expect(result.current.errors).toBe(before); // the same results, not a new pass
-    expect(result.current.messageOf(error)).toBe("Este campo es obligatorio");
+    expect(result.current.messageOf(error)).toBe("Se requieren al menos 1 valor(es)");
   });
 });
 

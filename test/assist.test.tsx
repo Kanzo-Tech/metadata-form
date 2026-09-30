@@ -39,7 +39,7 @@ describe("the core carries no AI layer", () => {
 
 const SHAPES = `
 @prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix shui: <http://www.w3.org/ns/shacl-ui#> .
+@prefix shui: <http://www.w3.org/ns/shacl-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix ex: <http://example.org/> .
@@ -135,7 +135,7 @@ function field(over: Partial<FieldModel> & { constraints?: FieldModel["constrain
     path: namedNode("http://example.org/p"),
     pathKind: "predicate",
     label: "Field",
-    editorId: "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+    editorId: "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
     required: false,
     repeatable: false,
     minCount: 0,
