@@ -13,9 +13,9 @@ import {
   DatePickerInput,
   DatePickerTimer,
   parseDate,
+  parseDateTime as toCalendarDateTime,
   type DateValue,
 } from "@kanzo-tech/ui";
-import { useId } from "react";
 import { formatDate, formatDateTime, parseDateTime } from "../../form/dateTime.js";
 import { useStrings } from "../form/context.js";
 import type { WidgetProps } from "./widgets.js";
@@ -29,18 +29,20 @@ import type { WidgetProps } from "./widgets.js";
  * both representations), and putting a *stored* one back is the half that costs
  * anything.
  *
- * The picker is date-only, so `xsd:dateTime` is a date plus `DatePickerTimer` rather
- * than a second machine. What is committed is always a valid lexical form of the
+ * `xsd:dateTime` is the picker's own date-and-time field (`granularity="minute"`):
+ * one segmented input you can type into, and a `DatePickerTimer` under the calendar.
+ * The picker holds minutes; what is committed is always a valid lexical form of the
  * datatype (`form/dateTime`): seconds are there, a date picked with no time is
- * midnight, and the zone of a stored value is kept.
+ * midnight, and the zone and the seconds of a stored value are kept until the
+ * minute they belong to is changed.
  */
 
 /** A stored value the picker cannot parse must leave the calendar empty, never
  *  throw: one bad row would otherwise take down the whole form. */
-function toDateValues(iso: string): DateValue[] {
+function toDateValues(iso: string, time?: string): DateValue[] {
   if (!iso) return [];
   try {
-    return [parseDate(iso)];
+    return [time === undefined ? parseDate(iso) : toCalendarDateTime(`${iso}T${time.slice(0, 5) || "00:00"}`)];
   } catch {
     return [];
   }
@@ -49,24 +51,27 @@ function toDateValues(iso: string): DateValue[] {
 export function makeDateField(withTime: boolean) {
   return function DateField(p: WidgetProps) {
     const parts = parseDateTime(p.value ?? "") ?? { date: "", time: "", zone: "" };
-    const { date, time } = parts;
     const { chrome } = useStrings();
-    const timeId = useId();
 
-    const commit = (nextDate: string, nextTime: string) => {
-      if (!nextDate) return p.onChange(null);
-      const next = { ...parts, date: nextDate, time: nextTime };
+    // The picker's value is `YYYY-MM-DD` or `YYYY-MM-DDThh:mm[:ss]`. Only the
+    // minute comes back from the time field, so the stored seconds (and fraction)
+    // are kept while the minute they follow is unchanged.
+    const commit = (picked: string) => {
+      if (!picked) return p.onChange(null);
+      const date = picked.slice(0, 10);
+      const time = picked.slice(11, 16);
+      const next = { ...parts, date, time: time === parts.time.slice(0, 5) ? parts.time : time };
       p.onChange(withTime ? formatDateTime(next) : formatDate(next));
     };
 
-    const picker = (
+    return (
       <DatePicker
-        className="min-w-0 flex-1"
-        value={toDateValues(date)}
-        onValueChange={(d) => commit(d.valueAsString[0] ?? "", time)}
+        granularity={withTime ? "minute" : undefined}
+        value={toDateValues(parts.date, withTime ? parts.time : undefined)}
+        onValueChange={(d) => commit(d.value[0]?.toString() ?? "")}
         positioning={{ placement: "bottom-end" }}
       >
-        <DatePickerInput />
+        <DatePickerInput aria-label={p.label} />
         <DatePickerContent>
           <CalendarView view="day">
             <CalendarViewControl>
@@ -80,24 +85,9 @@ export function makeDateField(withTime: boolean) {
               <CalendarTableDays />
             </CalendarTable>
           </CalendarView>
+          {withTime && <DatePickerTimer aria-label={chrome.time} />}
         </DatePickerContent>
       </DatePicker>
-    );
-    if (!withTime) return picker;
-
-    return (
-      <div className="flex items-center gap-2">
-        {picker}
-        <label className="sr-only" htmlFor={timeId}>
-          {chrome.time}
-        </label>
-        <DatePickerTimer
-          className="w-auto shrink-0"
-          id={timeId}
-          value={time}
-          onChange={(e) => commit(date, e.target.value)}
-        />
-      </div>
     );
   };
 }

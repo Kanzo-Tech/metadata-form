@@ -78,6 +78,9 @@ export interface WidgetProps {
    *  empty field is genuinely unanswered (a boolean's third state) or just off. */
   defaultValue?: string | null;
   placeholder?: string;
+  /** The field's label, for a control its own `<label>` cannot name — the segmented
+   *  date-and-time input is several editable parts, not one input. */
+  label?: string;
 }
 
 export type Widget = (props: WidgetProps) => ReactNode;

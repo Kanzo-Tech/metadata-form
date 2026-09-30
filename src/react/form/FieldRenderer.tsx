@@ -235,6 +235,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
         maxCount={field.maxCount}
         repeatable={field.repeatable}
         defaultValue={termToPrimitive(c.defaultValue ?? null)}
+        label={rowField.label}
       />
     );
     if (!alts) return control;

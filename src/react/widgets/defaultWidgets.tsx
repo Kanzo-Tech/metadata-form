@@ -299,7 +299,7 @@ function AssistedTextarea({
       <ghost.Textarea>
         <Textarea placeholder={placeholder} onBlur={text.flush} />
       </ghost.Textarea>
-      <ghost.Hint />
+      <ghost.Hint acceptLabel={strings.assist.completeAccept} dismissLabel={strings.assist.completeDismiss} />
     </ghost.Root>
   );
 }

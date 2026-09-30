@@ -56,8 +56,8 @@
     "lint": "eslint ."
   },
   "peerDependencies": {
-    "@kanzo-tech/ai": "^0.12.0",
-    "@kanzo-tech/ui": "^0.12.0",
+    "@kanzo-tech/ai": "^0.13.0",
+    "@kanzo-tech/ui": "^0.13.0",
     "ai": ">=5",
     "lucide-react": ">=1",
     "react": ">=19",
@@ -91,9 +91,9 @@
     "@codemirror/state": "^6.7.1",
     "@codemirror/view": "^6.43.9",
     "@eslint/js": "^9.39.4",
-    "@kanzo-tech/ai": "^0.12.0",
-    "@kanzo-tech/theme": "^0.12.0",
-    "@kanzo-tech/ui": "^0.12.0",
+    "@kanzo-tech/ai": "^0.13.0",
+    "@kanzo-tech/theme": "^0.13.0",
+    "@kanzo-tech/ui": "^0.13.0",
     "@lezer/highlight": "^1.2.3",
     "@tailwindcss/vite": "^4.1.0",
     "@testing-library/dom": "^10.4.1",

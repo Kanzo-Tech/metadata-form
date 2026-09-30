@@ -35,11 +35,27 @@ const datatypeErrors = async () => {
   return errors.filter((e) => e.constraint === DATATYPE);
 };
 
+/** The time field lives in the popover, under the calendar: open it, then read it. */
+async function timeField() {
+  await waitFor(() => expect(document.querySelector('[data-slot="date-picker-trigger"]')).not.toBeNull());
+  fireEvent.click(document.querySelector('[data-slot="date-picker-trigger"]')!);
+  await waitFor(() => expect(document.querySelector('input[type="time"]')).not.toBeNull());
+  return document.querySelector<HTMLInputElement>('input[type="time"]')!;
+}
+
 describe("the date and time control writes a valid xsd:dateTime", () => {
+  it("is one field: a segmented input named by the field label, the time inside the popover", async () => {
+    render(<Form datatype="xsd:dateTime" data={`"2026-03-14T18:30:00+02:00"^^xsd:dateTime`} />);
+    await waitFor(() => expect(document.querySelector('[data-slot="date-picker-segments"]')).not.toBeNull());
+    expect(document.querySelector('[data-slot="date-picker-segments"] [aria-label="When"]')).not.toBeNull();
+    expect(document.querySelector('input[type="time"]')).toBeNull();
+    expect(document.querySelectorAll('[data-slot="date-picker-segment"]').length).toBeGreaterThanOrEqual(5);
+  });
+
   it("keeps the zone of a stored value when only the time is edited, and completes the seconds", async () => {
     render(<Form datatype="xsd:dateTime" data={`"2026-03-14T18:30:00+02:00"^^xsd:dateTime`} />);
-    await waitFor(() => expect(document.querySelector('input[type="time"]')).not.toBeNull());
-    const time = document.querySelector<HTMLInputElement>('input[type="time"]')!;
+    const time = await timeField();
+    expect(time.value).toBe("18:30");
     fireEvent.change(time, { target: { value: "19:45" } });
     await waitFor(() => expect(whenLiteral()?.value).toBe("2026-03-14T19:45:00+02:00"));
     expect(whenLiteral()).toMatchObject({ datatype: { value: `${XSD}dateTime` } });
@@ -48,18 +64,23 @@ describe("the date and time control writes a valid xsd:dateTime", () => {
 
   it("corrects a value an earlier version truncated to hh:mm on the next edit", async () => {
     render(<Form datatype="xsd:dateTime" data={`"2026-09-30T14:30"^^xsd:dateTime`} />);
-    await waitFor(() => expect(document.querySelector('input[type="time"]')).not.toBeNull());
+    const time = await timeField();
     expect(await datatypeErrors()).toHaveLength(1); // the stored value itself is invalid
-    fireEvent.change(document.querySelector<HTMLInputElement>('input[type="time"]')!, { target: { value: "14:30:15" } });
-    await waitFor(() => expect(whenLiteral()?.value).toBe("2026-09-30T14:30:15"));
+    fireEvent.change(time, { target: { value: "14:31" } });
+    await waitFor(() => expect(whenLiteral()?.value).toBe("2026-09-30T14:31:00"));
     expect(await datatypeErrors()).toEqual([]);
   });
 
-  it("keeps fractional seconds while the time is not changed", async () => {
-    render(<Form datatype="xsd:dateTime" data={`"2026-03-14T18:30:00.125Z"^^xsd:dateTime`} />);
-    await waitFor(() => expect(document.querySelector('input[type="time"]')).not.toBeNull());
+  it("keeps the seconds and fraction of a stored value while its minute is not changed", async () => {
+    render(<Form datatype="xsd:dateTime" data={`"2026-03-14T18:30:15.125Z"^^xsd:dateTime`} />);
+    const time = await timeField();
     expect(await datatypeErrors()).toEqual([]);
-    expect(document.querySelector<HTMLInputElement>('input[type="time"]')!.value).toBe("18:30:00.125");
+    expect(time.value).toBe("18:30");
+    expect(whenLiteral()?.value).toBe("2026-03-14T18:30:15.125Z");
+    fireEvent.change(time, { target: { value: "18:30" } });
+    expect(whenLiteral()?.value).toBe("2026-03-14T18:30:15.125Z");
+    fireEvent.change(time, { target: { value: "18:31" } });
+    await waitFor(() => expect(whenLiteral()?.value).toBe("2026-03-14T18:31:00Z"));
   });
 
   it("does not throw on a stored xsd:date with a zone, and leaves it as it is", async () => {
