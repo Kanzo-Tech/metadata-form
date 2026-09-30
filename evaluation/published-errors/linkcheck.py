@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E5 — probe one distribution link per sampled record.
+"""Published errors — probe one distribution link per sampled record.
 
 This exists to keep the "preventable at entry" share honest. Every constraint a
 SHACL profile can state is, by construction, one a shape-driven form can enforce
@@ -49,7 +49,7 @@ OUT = DATA / "linkcheck.csv"
 DCAT = Namespace("http://www.w3.org/ns/dcat#")
 
 USER_AGENT = (
-    "keasy-metadata-form-E5/1.0 "
+    "keasy-metadata-form-published-errors/1.0 "
     "(academic metadata-quality study; HEAD only; one request per record)"
 )
 GLOBAL_INTERVAL = 0.8

@@ -1,4 +1,4 @@
-# E1 — coverage across published SHACL profiles
+# Coverage across published SHACL profiles
 
 Generated 2026-09-30 by `coverage.harness.ts`. Do not edit by hand.
 
@@ -197,9 +197,9 @@ same problem:
 
 **Diagnostics:** conflicting-constraint=2, conjoined-property=1
 
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status
-- [conflicting-constraint] Property shapes on this path disagree on sh:node: kept http://data.europa.eu/r5r#StatusRestriction, not carried http://data.europa.eu/r5r#StatusRestrictionADMS. The validator still checks all of them. — http://www.w3.org/ns/adms#status
 - [conflicting-constraint] Property shapes on this path disagree on sh:description: kept A non EU managed concept is used to indicate the status of the distribution. If no corresponding can be found inform the maintainer of the adms:status codelist., not carried The codelist of adms:status has changed from DCAT-AP 2.1 to DCAT-AP 3.0.0. — http://www.w3.org/ns/adms#status
+- [conflicting-constraint] Property shapes on this path disagree on sh:node: kept http://data.europa.eu/r5r#StatusRestriction, not carried http://data.europa.eu/r5r#StatusRestrictionADMS. The validator still checks all of them. — http://www.w3.org/ns/adms#status
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
@@ -235,11 +235,11 @@ same problem:
 
 **Diagnostics:** conjoined-property=5
 
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
@@ -315,17 +315,17 @@ same problem:
 **Diagnostics:** conjoined-property=17, unrenderable-alternative=2
 
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
-- [unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Catalog_dct_spatial_v_IRIorClass
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#algorithm
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/plannedAvailability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingURI
-- [unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Dataset_dct_spatial_v_IRIorClass
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#granularity
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/qualityProcessURI
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
@@ -536,18 +536,18 @@ same problem:
 
 **Diagnostics:** conjoined-property=119
 
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#centroid
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/locn#geometry
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#bbox
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/title
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#hadRole
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/relation
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#mediaType
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/format
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#checksum
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#spatialResolutionInMeters
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/odrl/2/hasPolicy
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/creator
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/description
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/description
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
@@ -579,9 +579,9 @@ same problem:
 
 **Diagnostics:** conjoined-property=4
 
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
@@ -598,7 +598,7 @@ same problem:
 
 ## DCAT-AP as vendored by Health-RI *(variant of `dcat-ap-3` — excluded from headline)*
 
-> Health-RI's in-tree copy of DCAT-AP. Was the E1 'DCAT-AP' row until the upstream SEMIC release was vendored; demoted to a variant so DCAT-AP is counted once. Kept because the drift between a vendored copy and its upstream is itself worth a sentence.
+> Health-RI's in-tree copy of DCAT-AP. Was the coverage experiment's 'DCAT-AP' row until the upstream SEMIC release was vendored; demoted to a variant so DCAT-AP is counted once. Kept because the drift between a vendored copy and its upstream is itself worth a sentence.
 
 - source: 1 file(s), 698 lines, 20 kB
 - node shapes: 21 (14 carry property shapes)

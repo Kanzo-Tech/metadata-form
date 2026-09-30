@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E5 — build the layer-2 shapes: controlled-vocabulary conformance.
+"""Published errors — build the layer-2 shapes: controlled-vocabulary conformance.
 
 DCAT-AP 3.0.1 *says*, in prose, that a handful of properties must take their
 values from a named EU authority table. Its published SHACL file does not say
@@ -34,7 +34,7 @@ VOCAB_DIR = HERE / "data" / "vocab"
 OUT = HERE / "data" / "vocab-shapes.ttl"
 
 USER_AGENT = (
-    "keasy-metadata-form-E5/1.0 "
+    "keasy-metadata-form-published-errors/1.0 "
     "(academic metadata-quality study; single-threaded; <=1 req/s)"
 )
 

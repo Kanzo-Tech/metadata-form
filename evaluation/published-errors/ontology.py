@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E5 — assemble the class hierarchy the `sh:class` constraints need.
+"""Published errors — assemble the class hierarchy the `sh:class` constraints need.
 
 `sh:class C` holds when a value node has `rdf:type/rdfs:subClassOf* C` **in the
 data graph**. A record that says its contact point is a `vcard:Individual`
@@ -33,7 +33,7 @@ CACHE = HERE / "data" / "ontologies"
 OUT = HERE / "data" / "class-hierarchy.ttl"
 
 USER_AGENT = (
-    "keasy-metadata-form-E5/1.0 "
+    "keasy-metadata-form-published-errors/1.0 "
     "(academic metadata-quality study; single-threaded; <=1 req/s)"
 )
 

@@ -1,10 +1,10 @@
 /**
- * E5 — what the form ACTUALLY renders for the profile this experiment validates.
+ * Published errors — what the form ACTUALLY renders for the profile this experiment validates.
  *
  * `validate.py` used to assert that L1 and L2 defects are "preventable at entry
  * by construction — a shape-driven form cannot submit a graph that violates a
  * shape it is generated from". That is a piece of reasoning, not a measurement,
- * and E1 already showed it is too strong: some constructs reach the IR and no
+ * and the coverage experiment already showed it is too strong: some constructs reach the IR and no
  * widget reads them.
  *
  * So this harness measures the form instead of arguing about it. It loads the
@@ -27,8 +27,8 @@
  * only, so it is committed too.
  *
  * Run:
- *   npx vitest run --config evaluation/experiments/vitest.config.ts \
- *     evaluation/experiments/E5-errors-in-the-wild
+ *   npx vitest run --config evaluation/vitest.config.ts \
+ *     evaluation/published-errors
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve, join } from "node:path";
@@ -199,7 +199,7 @@ async function inventory(label: string, ttl: string) {
   };
 }
 
-it("E5 — form field inventory for the validated profile", async () => {
+it("published errors — form field inventory for the validated profile", async () => {
   const l1Path = join(HERE, "data/dcat-ap-3.0.1/dcat-ap-SHACL.ttl");
   const l2Path = join(HERE, "data/vocab-shapes.ttl");
   const l1 = readFileSync(l1Path, "utf8");
@@ -236,12 +236,12 @@ it("E5 — form field inventory for the validated profile", async () => {
   //
   // The shapes this experiment validates against use 302 `sh:path` values and
   // every one of them is a plain predicate IRI: no sequence, inverse or
-  // alternative paths, no `sh:node`, no `sh:or`. So E1's two largest "cannot
+  // alternative paths, no `sh:node`, no `sh:or`. So the coverage experiment's two largest "cannot
   // render" classes cannot appear here, and — the reason this is an assertion
   // rather than a comment — a change to how the form treats complex paths
-  // cannot move E5's numbers either. When `src/form/writePath.ts` made inverse,
-  // alternative and resolvable-sequence paths writable, E1's read-only count
-  // fell sharply and E5's did not move, because E5's is 0 both before and
+  // cannot move this experiment's numbers either. When `src/form/writePath.ts` made inverse,
+  // alternative and resolvable-sequence paths writable, the coverage read-only count
+  // fell sharply and this experiment's did not move, because its own is 0 both before and
   // after. If a future revision of these shapes introduces a complex path this
   // fails, and preventability.py's buckets have to be revisited.
   expect(merged.complexPath).toBe(0);

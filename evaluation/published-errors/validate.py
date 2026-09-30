@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E5 — validate the harvested records and classify every defect.
+"""Published errors — validate the harvested records and classify every defect.
 
 Engine: rudof, through the published `@kanzo-tech/rudof-wasm` package, loaded
 exactly as `src/engine/RudofEngine.ts` loads it. This is the engine the library

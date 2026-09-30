@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E5 — harvest a sample of published health dataset records from data.europa.eu.
+"""Published errors — harvest a sample of published health dataset records from data.europa.eu.
 
 Everything goes through the public SPARQL endpoint (https://data.europa.eu/sparql).
 Nothing here scrapes HTML and nothing here touches a path that
@@ -68,7 +68,7 @@ ENDPOINT = "https://data.europa.eu/sparql"
 THEME = "http://publications.europa.eu/resource/authority/data-theme/HEAL"
 
 USER_AGENT = (
-    "keasy-metadata-form-E5/1.0 "
+    "keasy-metadata-form-published-errors/1.0 "
     "(academic metadata-quality study; single-threaded; <=1 req/s)"
 )
 

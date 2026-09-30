@@ -1,4 +1,4 @@
-# E1 — Coverage across published SHACL profiles
+# Coverage across published SHACL profiles
 
 Spec: `~/dev/kanzo/papers/swat4hcls2027/EVIDENCE.md`.
 
@@ -7,7 +7,7 @@ independent profiles, 9 of those externally authored. The spec asked for ≥4,
 preferably 6.
 
 ```sh
-npx vitest run --config evaluation/experiments/vitest.config.ts
+npx vitest run --config evaluation/vitest.config.ts
 ```
 
 Outputs `results/coverage.json` and `results/coverage.md`; both are committed,
@@ -142,7 +142,7 @@ encoding still has no `sh:node` composition (0 nested sub-forms; the hand-writte
 one has 24) and flattens the spec into a closed, documented list.
 
 This is a controlled comparison — same spec, same release, same day — and it is
-the strongest single piece of evidence in E1.
+the strongest single piece of evidence in this experiment.
 
 ### F5 — a profile is not a graph until someone concatenates it, and that is where its coverage lives
 
@@ -214,7 +214,7 @@ language tags at all.
 The shapes meant to onboard health data holders across the EU are published in
 one language. DCAT-AP.de is the counter-example that shows it is achievable, and
 it does it in the place that matters most — 143 lang-tagged `sh:message`s. Feed
-this to §5 and E3, and note that a validator which flattens lang tags removes the
+this to §5, and note that a validator which flattens lang tags removes the
 only incentive to write them.
 
 ### F10 — nothing broke the engine
@@ -318,8 +318,8 @@ counting anything.
   the 48–81% figures: the reference-heavy profiles (DCAT-AP: 84 `sh:class`)
   lean on it hardest.
 - **`sh:sourceConstraintComponent` is derived statically** from the parameters a
-  profile uses, since E1 validates nothing. The histogram is what a report *would*
-  cite. E5 measures the observed distribution.
+  profile uses, since this experiment validates nothing. The histogram is what a report *would*
+  cite. The published-errors experiment measures the observed distribution.
 - **Profile boundaries are a judgement call** and they move the numbers.
   `dcat-ap-3` is the whole published SHACL set of the release (47.5%); the
   `dcat-ap-vendored` variant, which is `shapes.ttl` alone as Health-RI copied it,

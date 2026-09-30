@@ -1,4 +1,4 @@
-// E5 — validate the staged record graphs with rudof, the engine this project ships.
+// Published errors — validate the staged record graphs with rudof, the engine this project ships.
 //
 // The engine harness. `validate.py` builds each record's validation graph once,
 // serializes it to the stage directory, and this script parses that file. The

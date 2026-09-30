@@ -1,5 +1,5 @@
 /**
- * E1 — the profile corpus.
+ * The profile corpus.
  *
  * One entry per vendored SHACL profile. Kept apart from the harness so the
  * corpus can be read (and reviewed) without reading the measurement code.
@@ -29,15 +29,15 @@ export interface ProfileSpec {
   variantOf?: string;
 }
 
-const E1 = "evaluation/experiments/E1-coverage/data";
-const HRI = `${E1}/health-ri/src/Formalisation(shacl)`;
-const DCATAP = `${E1}/dcat-ap-3/src`;
-const HDCAT = `${E1}/healthdcat-ap/src`;
-const DEDE = `${E1}/dcat-ap-de/src`;
-const FDP = `${E1}/fair-data-point/src`;
-const SPHN = `${E1}/sphn/src`;
-const BIO = `${E1}/bioschemas/src`;
-const SPDX = `${E1}/spdx-3/src`;
+const DATA = "evaluation/coverage/data";
+const HRI = `${DATA}/health-ri/src/Formalisation(shacl)`;
+const DCATAP = `${DATA}/dcat-ap-3/src`;
+const HDCAT = `${DATA}/healthdcat-ap/src`;
+const DEDE = `${DATA}/dcat-ap-de/src`;
+const FDP = `${DATA}/fair-data-point/src`;
+const SPHN = `${DATA}/sphn/src`;
+const BIO = `${DATA}/bioschemas/src`;
+const SPDX = `${DATA}/spdx-3/src`;
 
 export const PROFILES: ProfileSpec[] = [
   // ---------------------------------------------------------------- external
@@ -193,7 +193,7 @@ export const PROFILES: ProfileSpec[] = [
     variantOf: "dcat-ap-3",
     sources: [`${HRI}/Core/ReusedCommunityStandards/dcatap.shapes.ttl`],
     note:
-      "Health-RI's in-tree copy of DCAT-AP. Was the E1 'DCAT-AP' row until the " +
+      "Health-RI's in-tree copy of DCAT-AP. Was the coverage experiment's 'DCAT-AP' row until the " +
       "upstream SEMIC release was vendored; demoted to a variant so DCAT-AP is " +
       "counted once. Kept because the drift between a vendored copy and its " +
       "upstream is itself worth a sentence.",

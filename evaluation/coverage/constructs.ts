@@ -1,5 +1,5 @@
 /**
- * E1 — the construct ledger.
+ * The construct ledger.
  *
  * Two tables, both hand-checked against the SHACL 1.2 Core spec and against what
  * `buildFormModel` / the widget layer actually read. They are the machinery
@@ -19,7 +19,7 @@ const RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 /** SHACL parameter → the constraint component it is a parameter of.
  *  This is what a validation report would cite as `sh:sourceConstraintComponent`;
- *  E1 measures it statically, from the profile, since it has no data to validate.
+ *  The coverage experiment measures it statically, from the profile, since it has no data to validate.
  *  Terms absent from this map are annotations or shape structure, not components. */
 export const PARAM_TO_COMPONENT: Record<string, string> = {
   [`${SH}class`]: "ClassConstraintComponent",
@@ -70,7 +70,7 @@ export const LEDGER: Record<string, { how: Consumption; why: string }> = {
   [`${SH}targetClass`]: { how: "consumed", why: "Root-shape resolution and the rdf:type stamped on new nested resources." },
   [`${SHUI}editor`]: { how: "consumed", why: "Selects the widget directly." },
   [`${SHUI}viewer`]: { how: "carried", why: "Read-only display hint; no read-only mode is implemented, so it changes nothing." },
-  [`${SH}message`]: { how: "consumed", why: "Validation message shown on the field (lang-tagged; see E3)." },
+  [`${SH}message`]: { how: "consumed", why: "Validation message shown on the field (lang-tagged)." },
   [`${SH}severity`]: { how: "consumed", why: "Routes a violation to error vs warning display." },
   // --- value constraints that pick or configure a widget ---
   [`${SH}datatype`]: { how: "consumed", why: "Primary editor inference (date, dateTime, boolean, numeric, langString) and the term binding on commit." },

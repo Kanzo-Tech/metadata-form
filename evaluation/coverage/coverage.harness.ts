@@ -1,5 +1,5 @@
 /**
- * E1 — coverage of shape-driven form generation across published SHACL profiles.
+ * Coverage of shape-driven form generation across published SHACL profiles.
  *
  * Question: how much of a real, published profile renders as a usable form with
  * no per-profile code and no modification to the profile?
@@ -23,7 +23,7 @@
  * Emits results/coverage.json (machine) and results/coverage.md (paper).
  *
  * Run:
- *   npx vitest run --config evaluation/experiments/vitest.config.ts
+ *   npx vitest run --config evaluation/vitest.config.ts
  */
 import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync } from "node:fs";
 import { resolve, join, relative } from "node:path";
@@ -46,7 +46,7 @@ import {
 } from "./constructs.js";
 
 const HERE = __dirname;
-const REPO = resolve(HERE, "../../..");
+const REPO = resolve(HERE, "../..");
 
 /** Editor IRIs that render as a nested sub-form rather than through the widget
  *  registry, so their absence from the registry is not a gap. `FieldRenderer`
@@ -430,11 +430,12 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
     }
     for (const d of diags) {
       bump(result.form.diagnostics, d.code);
-      if (result.form.diagnosticSamples.length < 12) {
-        result.form.diagnosticSamples.push(`[${d.code}] ${d.message}${d.detail ? ` — ${d.detail}` : ""}`);
-      }
+      result.form.diagnosticSamples.push(`[${d.code}] ${d.message}${d.detail ? ` — ${d.detail}` : ""}`);
     }
   }
+  // The engine hands shapes back in no fixed order, so the first twelve are not a
+  // stable sample; the first twelve *sorted* are.
+  result.form.diagnosticSamples = result.form.diagnosticSamples.sort().slice(0, 12);
 
   result.gaps = gapsFor(prose, irTerms, carriers);
 
@@ -551,7 +552,7 @@ function markdown(results: ProfileResult[], stamp: string): string {
   const variants = results.filter((r) => r.variantOf);
   const external = primary.filter((r) => r.origin === "external");
 
-  L.push("# E1 — coverage across published SHACL profiles", "");
+  L.push("# Coverage across published SHACL profiles", "");
   L.push(`Generated ${stamp} by \`coverage.harness.ts\`. Do not edit by hand.`, "");
   L.push("**Baseline measured:** rudof reads only `shui:editor`, so the `dash:editor`");
   L.push("hints most published profiles carry are recorded and ignored, and every");
@@ -792,10 +793,10 @@ function short(r: ProfileResult): string {
 
 // ---------------------------------------------------------------------- run
 
-it("E1: measure coverage across published SHACL profiles", async () => {
+it("coverage: measure coverage across published SHACL profiles", async () => {
   const results: ProfileResult[] = [];
   for (const spec of PROFILES) {
-    console.log(`[E1] ${spec.id}…`);
+    console.log(`[coverage] ${spec.id}…`);
     results.push(await analyse(spec));
   }
   const stamp = new Date().toISOString().slice(0, 10);
@@ -820,7 +821,7 @@ it("E1: measure coverage across published SHACL profiles", async () => {
     }, stable, 2),
   );
   writeFileSync(join(out, "coverage.md"), markdown(results, stamp));
-  console.log(`[E1] wrote ${join(out, "coverage.md")}`);
+  console.log(`[coverage] wrote ${join(out, "coverage.md")}`);
 });
 
 /**
@@ -829,7 +830,7 @@ it("E1: measure coverage across published SHACL profiles", async () => {
  * ever starts honouring DASH, every percentage above changes meaning, so it is
  * asserted here rather than described in prose that could go stale.
  */
-it("E1: the measured baseline — dash:editor is ignored, shui:editor is honoured", async () => {
+it("coverage: the measured baseline — dash:editor is ignored, shui:editor is honoured", async () => {
   const shapes = await createRudofEngine().loadShapes(`
     @prefix sh: <http://www.w3.org/ns/shacl#> .
     @prefix dash: <http://datashapes.org/dash#> .

@@ -1,6 +1,6 @@
-# E5 — errors in published health metadata
+# Errors in published health metadata
 
-Spec: `~/dev/kanzo/papers/swat4hcls2027/EVIDENCE.md`, §E5.
+Spec: `~/dev/kanzo/papers/swat4hcls2027/EVIDENCE.md` (the errors-in-the-wild experiment).
 
 **Claim it supports:** post-hoc validation is failing in practice; entry-time
 validation would have prevented much of it.
@@ -310,7 +310,7 @@ was a fixed-seed shuffle of the manifest row order; both inputs are committed �
 the seed was a constant in `validate.py`, the row order *is* `data/manifest.csv`
 — so anyone with the repository could invert it and recover, for all 372
 records, the dataset IRI and source catalogue beside that record's exact defect
-list. That is precisely the per-publisher leaderboard §E5 forbids, and
+list. That is precisely the per-publisher leaderboard the spec forbids, and
 `wild-errors.md` asserted the file "cannot be joined back to a record, a
 catalogue or a publisher". The claim was false. **An anonymisation scheme whose
 key material is committed beside the data is not an anonymisation scheme.**
@@ -398,7 +398,7 @@ None of these is an error any shipped DCAT-AP validator will report.
 the aggregator produced after the fact, tagged `-t-…-t0-mt…`. Meanwhile 15.9% of
 records carry a `dct:title` with no language tag at all. Post-hoc translation of
 a monolingual record is the same move as post-hoc validation of an invalid one:
-repair downstream, because nothing upstream asked. Feeds §5 and E3.
+repair downstream, because nothing upstream asked. Feeds §5.
 
 ### Finding 4 — four harness bugs that changed the answer
 
@@ -483,7 +483,7 @@ above. The two that are still ours to fix are `primitiveToTerm` treating only
 `sh:nodeKind sh:IRI` as IRI-producing (97 defects) and `sh:minCount` not
 blocking removal of the last array value (40).
 
-**Two things E1's "cannot render" list predicted, that do not materialise here.**
+**Two things the coverage experiment's "cannot render" list predicted, that do not materialise here.**
 `sh:or` and complex paths rendering read-only contribute nothing, because these
 shapes use neither: **302 `sh:path` values, every one a plain predicate IRI** —
 0 complex paths, 0 `sh:node`, 0 `sh:or`, 0 `sh:hasValue`, 0 `sh:minExclusive`.
@@ -585,7 +585,7 @@ a reviewer will reach for first:
 ## Inputs and how to reproduce
 
 ```sh
-cd evaluation/experiments/E5-errors-in-the-wild
+cd evaluation/published-errors
 uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python rdflib
 .venv/bin/python harvest.py all      # frame, sample, fetch, reference types
 .venv/bin/python ontology.py         # class-hierarchy.ttl
@@ -598,8 +598,8 @@ uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python rdflib
 .venv/bin/python version_delta.py    # results/version-delta.{json,md}
 
 # the form's field inventory, then the preventability measurement
-npx vitest run --config evaluation/experiments/vitest.config.ts \
-  evaluation/experiments/E5-errors-in-the-wild   # form-fields.json
+npx vitest run --config evaluation/vitest.config.ts \
+  evaluation/published-errors   # form-fields.json
 .venv/bin/python preventability.py   # results/preventability.{json,md}
 
 .venv/bin/python ethics_check.py     # the binding rule, as a gate
@@ -608,7 +608,7 @@ npx vitest run --config evaluation/experiments/vitest.config.ts \
 The venv is rdflib only. There is no SHACL engine in it: the engine is
 `@kanzo-tech/rudof-wasm` from the repository's own `node_modules`, and
 `version_delta.py` fetches the one previous release it compares against into a
-work directory (`E5_WORK`, default a temp dir).
+work directory (`PUBLISHED_ERRORS_WORK`, default a temp dir).
 
 `validate.py` writes `data/stage/` — the staged validation graphs, `keys.json`,
 `meta.json` and rudof's raw report — and must run before `conformance.py`,

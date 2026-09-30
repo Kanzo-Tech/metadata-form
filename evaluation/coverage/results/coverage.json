@@ -5,11 +5,11 @@
   "results": [
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/deprecateduris.ttl",
-        "evaluation/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/mdr-vocabularies.shape.ttl",
-        "evaluation/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/range.ttl",
-        "evaluation/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/shapes.ttl",
-        "evaluation/experiments/E1-coverage/data/dcat-ap-3/src/html-shacl/shapes_recommended.ttl"
+        "evaluation/coverage/data/dcat-ap-3/src/html-shacl/deprecateduris.ttl",
+        "evaluation/coverage/data/dcat-ap-3/src/html-shacl/mdr-vocabularies.shape.ttl",
+        "evaluation/coverage/data/dcat-ap-3/src/html-shacl/range.ttl",
+        "evaluation/coverage/data/dcat-ap-3/src/html-shacl/shapes.ttl",
+        "evaluation/coverage/data/dcat-ap-3/src/html-shacl/shapes_recommended.ttl"
       ],
       "files": 5,
       "form": {
@@ -20,9 +20,9 @@
           "conjoined-property": 1
         },
         "diagnosticSamples": [
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status",
+          "[conflicting-constraint] Property shapes on this path disagree on sh:description: kept A non EU managed concept is used to indicate the status of the distribution. If no corresponding can be found inform the maintainer of the adms:status codelist., not carried The codelist of adms:status has changed from DCAT-AP 2.1 to DCAT-AP 3.0.0. — http://www.w3.org/ns/adms#status",
           "[conflicting-constraint] Property shapes on this path disagree on sh:node: kept http://data.europa.eu/r5r#StatusRestriction, not carried http://data.europa.eu/r5r#StatusRestrictionADMS. The validator still checks all of them. — http://www.w3.org/ns/adms#status",
-          "[conflicting-constraint] Property shapes on this path disagree on sh:description: kept A non EU managed concept is used to indicate the status of the distribution. If no corresponding can be found inform the maintainer of the adms:status codelist., not carried The codelist of adms:status has changed from DCAT-AP 2.1 to DCAT-AP 3.0.0. — http://www.w3.org/ns/adms#status"
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status"
         ],
         "duplicatePath": 0,
         "editorIds": {
@@ -183,10 +183,10 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/healthdcat-ap/src/public-shapes.ttl",
-        "evaluation/experiments/E1-coverage/data/healthdcat-ap/src/public-shapes_recommended.ttl",
-        "evaluation/experiments/E1-coverage/data/healthdcat-ap/src/range.ttl",
-        "evaluation/experiments/E1-coverage/data/healthdcat-ap/src/mdr-vocabularies.shape.ttl"
+        "evaluation/coverage/data/healthdcat-ap/src/public-shapes.ttl",
+        "evaluation/coverage/data/healthdcat-ap/src/public-shapes_recommended.ttl",
+        "evaluation/coverage/data/healthdcat-ap/src/range.ttl",
+        "evaluation/coverage/data/healthdcat-ap/src/mdr-vocabularies.shape.ttl"
       ],
       "files": 4,
       "form": {
@@ -196,11 +196,11 @@
           "conjoined-property": 5
         },
         "diagnosticSamples": [
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column"
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme"
         ],
         "duplicatePath": 0,
         "editorIds": {
@@ -345,20 +345,20 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Agent.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Attribution.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Catalog.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Checksum.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/DataService.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Dataset.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/DatasetSeries.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Distribution.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Identifier.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Kind.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/PeriodOfTime.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/QualityCertificate.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Relationship.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Resource.ttl"
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Agent.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Attribution.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Catalog.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Checksum.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/DataService.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Dataset.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/DatasetSeries.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Distribution.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Identifier.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Kind.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/PeriodOfTime.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/QualityCertificate.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Relationship.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/PiecesShape/Resource.ttl"
       ],
       "files": 14,
       "form": {
@@ -614,10 +614,10 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/dcat-ap-de/src/dcat-ap-spec-german-additions.ttl",
-        "evaluation/experiments/E1-coverage/data/dcat-ap-de/src/dcat-ap-spec-german-messages.ttl",
-        "evaluation/experiments/E1-coverage/data/dcat-ap-de/src/dcat-ap-konventionen.ttl",
-        "evaluation/experiments/E1-coverage/data/dcat-ap-de/src/dcat-ap-de-deprecated.ttl"
+        "evaluation/coverage/data/dcat-ap-de/src/dcat-ap-spec-german-additions.ttl",
+        "evaluation/coverage/data/dcat-ap-de/src/dcat-ap-spec-german-messages.ttl",
+        "evaluation/coverage/data/dcat-ap-de/src/dcat-ap-konventionen.ttl",
+        "evaluation/coverage/data/dcat-ap-de/src/dcat-ap-de-deprecated.ttl"
       ],
       "files": 4,
       "form": {
@@ -629,17 +629,17 @@
         },
         "diagnosticSamples": [
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
-          "[unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Catalog_dct_spatial_v_IRIorClass",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#algorithm",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/plannedAvailability",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingURI",
-          "[unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Dataset_dct_spatial_v_IRIorClass",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#granularity",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability"
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/qualityProcessURI",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher"
         ],
         "duplicatePath": 0,
         "editorIds": {
@@ -819,14 +819,14 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/fair-data-point/src/defaultNavigationShacl.ttl",
-        "evaluation/experiments/E1-coverage/data/fair-data-point/src/shape-catalog.ttl",
-        "evaluation/experiments/E1-coverage/data/fair-data-point/src/shape-data-service.ttl",
-        "evaluation/experiments/E1-coverage/data/fair-data-point/src/shape-dataset.ttl",
-        "evaluation/experiments/E1-coverage/data/fair-data-point/src/shape-distribution.ttl",
-        "evaluation/experiments/E1-coverage/data/fair-data-point/src/shape-fdp.ttl",
-        "evaluation/experiments/E1-coverage/data/fair-data-point/src/shape-metadata-service.ttl",
-        "evaluation/experiments/E1-coverage/data/fair-data-point/src/shape-resource.ttl"
+        "evaluation/coverage/data/fair-data-point/src/defaultNavigationShacl.ttl",
+        "evaluation/coverage/data/fair-data-point/src/shape-catalog.ttl",
+        "evaluation/coverage/data/fair-data-point/src/shape-data-service.ttl",
+        "evaluation/coverage/data/fair-data-point/src/shape-dataset.ttl",
+        "evaluation/coverage/data/fair-data-point/src/shape-distribution.ttl",
+        "evaluation/coverage/data/fair-data-point/src/shape-fdp.ttl",
+        "evaluation/coverage/data/fair-data-point/src/shape-metadata-service.ttl",
+        "evaluation/coverage/data/fair-data-point/src/shape-resource.ttl"
       ],
       "files": 8,
       "form": {
@@ -1006,7 +1006,7 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/sphn/src/shacl_2026-1.ttl"
+        "evaluation/coverage/data/sphn/src/shacl_2026-1.ttl"
       ],
       "files": 1,
       "form": {
@@ -1141,7 +1141,7 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/bioschemas/src/bioschemas_profiles_shacl.ttl"
+        "evaluation/coverage/data/bioschemas/src/bioschemas_profiles_shacl.ttl"
       ],
       "files": 1,
       "form": {
@@ -1221,7 +1221,7 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/spdx-3/src/spdx-model.ttl"
+        "evaluation/coverage/data/spdx-3/src/spdx-model.ttl"
       ],
       "files": 1,
       "form": {
@@ -1333,11 +1333,11 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Imaging Module/ImagingRules.shape.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Imaging Module/dicomBodyParts.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Imaging Module/dicomScanModality.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Omics Module/omicsRules.shape.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/health Module/healthRules.shape.ttl"
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Imaging Module/ImagingRules.shape.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Imaging Module/dicomBodyParts.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Imaging Module/dicomScanModality.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/Omics Module/omicsRules.shape.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Modules(Leaves_Petals)/health Module/healthRules.shape.ttl"
       ],
       "files": 5,
       "form": {
@@ -1728,8 +1728,8 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/dcat-ap-3/src/dcat-ap-SHACL.ttl",
-        "evaluation/experiments/E1-coverage/data/dcat-ap-3/src/ranges.ttl"
+        "evaluation/coverage/data/dcat-ap-3/src/dcat-ap-SHACL.ttl",
+        "evaluation/coverage/data/dcat-ap-3/src/ranges.ttl"
       ],
       "files": 2,
       "form": {
@@ -1739,18 +1739,18 @@
           "conjoined-property": 119
         },
         "diagnosticSamples": [
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#centroid",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/locn#geometry",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#bbox",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/title",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#hadRole",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/relation",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#mediaType",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/format",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#checksum",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#spatialResolutionInMeters",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/odrl/2/hasPolicy",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status"
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r/applicableLegislation",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/creator",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/description",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/description"
         ],
         "duplicatePath": 0,
         "editorIds": {
@@ -1867,9 +1867,9 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/healthdcat-ap/src/restricted-shapes.ttl",
-        "evaluation/experiments/E1-coverage/data/healthdcat-ap/src/restricted-shapes_recommended.ttl",
-        "evaluation/experiments/E1-coverage/data/healthdcat-ap/src/range.ttl"
+        "evaluation/coverage/data/healthdcat-ap/src/restricted-shapes.ttl",
+        "evaluation/coverage/data/healthdcat-ap/src/restricted-shapes_recommended.ttl",
+        "evaluation/coverage/data/healthdcat-ap/src/range.ttl"
       ],
       "files": 3,
       "form": {
@@ -1879,9 +1879,9 @@
           "conjoined-property": 4
         },
         "diagnosticSamples": [
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column"
         ],
         "duplicatePath": 0,
@@ -2013,7 +2013,7 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/ReusedCommunityStandards/dcatap.shapes.ttl"
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/ReusedCommunityStandards/dcatap.shapes.ttl"
       ],
       "files": 1,
       "form": {
@@ -2113,7 +2113,7 @@
         "propertyShapes": 109
       },
       "label": "DCAT-AP as vendored by Health-RI",
-      "note": "Health-RI's in-tree copy of DCAT-AP. Was the E1 'DCAT-AP' row until the upstream SEMIC release was vendored; demoted to a variant so DCAT-AP is counted once. Kept because the drift between a vendored copy and its upstream is itself worth a sentence.",
+      "note": "Health-RI's in-tree copy of DCAT-AP. Was the coverage experiment's 'DCAT-AP' row until the upstream SEMIC release was vendored; demoted to a variant so DCAT-AP is counted once. Kept because the drift between a vendored copy and its upstream is itself worth a sentence.",
       "origin": "external",
       "parsed": true,
       "source": {
@@ -2134,12 +2134,12 @@
     },
     {
       "fileNames": [
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Catalog.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/DataService.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Dataset.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/DatasetSeries.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Distribution.ttl",
-        "evaluation/experiments/E1-coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Resource.ttl"
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Catalog.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/DataService.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Dataset.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/DatasetSeries.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Distribution.ttl",
+        "evaluation/coverage/data/health-ri/src/Formalisation(shacl)/Core/FairDataPointShape/Resource.ttl"
       ],
       "files": 6,
       "form": {

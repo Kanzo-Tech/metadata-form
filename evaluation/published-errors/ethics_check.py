@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""E5 — mechanically check the binding ethics rule over everything in results/.
+"""Published errors — mechanically check the binding ethics rule over everything in results/.
 
-§E5 of the evidence spec makes this binding: aggregates only, no publisher
+The evidence spec makes this binding: aggregates only, no publisher
 named, no identifying record excerpt. The README asserted this had been
 "checked by script"; there was no script. This is it, so the claim and the check
 are the same object and the check runs again whenever a new result file is
