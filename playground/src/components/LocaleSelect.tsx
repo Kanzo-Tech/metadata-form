@@ -2,8 +2,8 @@ import { NativeSelect, NativeSelectOption } from "@kanzo-tech/ui";
 import { useChrome } from "../i18n.js";
 
 /** The UI-language selector — switches the language of the form's labels and
- *  descriptions (`useMetadataForm({ locale })`). Shown only for examples whose
- *  shape provides labels in more than one language.
+ *  descriptions (`useMetadataForm({ locale })`). It lists the languages the shapes
+ *  are written in, and is there only when there is a choice to make.
  *
  *  A native select: a handful of languages, flat, no icons — so the platform's own
  *  keyboard and mobile picker are worth more than a styled listbox. */
@@ -19,6 +19,7 @@ export function LocaleSelect({
   // Its own accessible name follows the language it is currently selecting — this
   // said "Idioma" in every locale, which is the defect this control invites.
   const chrome = useChrome();
+  if (locales.length < 2) return null;
   return (
     <NativeSelect
       size="sm"

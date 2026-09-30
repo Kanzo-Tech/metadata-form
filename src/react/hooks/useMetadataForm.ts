@@ -3,6 +3,7 @@ import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode } from "../../form/factory.js";
 import { mapResults } from "../../form/validation.js";
 import { pickByLanguage } from "../../form/terms.js";
+import { shapeLanguages } from "../../form/languages.js";
 import { resolveStrings, type ResolvedStrings, type StringTables } from "../../i18n/strings.js";
 import { resolveLanguages } from "../../i18n/languages.js";
 import type { FormModel } from "../../form/FormModel.js";
@@ -80,6 +81,11 @@ export interface MetadataFormController {
   locale: string;
   /** The reader's ordered language ranges. */
   languages: readonly string[];
+  /** The languages the shapes are written in — the tags on their `sh:name`,
+   *  `sh:description`, `sh:message` and the `rdfs:label`s of groups and predicates —
+   *  most written first. What a language selector should offer; empty when nothing
+   *  is tagged. */
+  availableLanguages: string[];
   /** The interface strings, in the reader's language. */
   strings: ResolvedStrings;
   /** The text of one validation failure, in the reader's language: the message the
@@ -194,6 +200,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   }, [engine, shapes, data, focusNode, rootShape, documentsKey]);
 
   const graph = prepared?.graph;
+  const availableLanguages = useMemo(() => (prepared ? shapeLanguages(prepared.shapes) : []), [prepared]);
 
   const subscribe = useCallback(
     (cb: () => void) => (graph ? graph.subscribe(cb) : NOOP_UNSUB()),
@@ -292,6 +299,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       report,
       locale,
       languages,
+      availableLanguages,
       strings,
       messageOf,
       graph,
@@ -306,6 +314,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       revealField,
       _revealTarget: revealTarget,
     }),
-    [model, error, getQuads, errors, isValid, report, locale, languages, strings, messageOf, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
+    [model, error, getQuads, errors, isValid, report, locale, languages, availableLanguages, strings, messageOf, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
   );
 }

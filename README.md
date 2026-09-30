@@ -175,6 +175,11 @@ component is the engine's convention, not a rule of the SHACL recommendation;
 `sh:ConstraintComponent` holds the message for any component the catalog does not name. A
 reader whose language has no message gets English.
 
+**Which languages the shapes are written in** is data too: `form.availableLanguages` lists the
+tags found on the shapes' `sh:name`, `sh:description`, `sh:message` and on the `rdfs:label`s of
+groups and predicates, most written first (untagged literals count for none). A language
+selector offers exactly these, so it follows a shape edited live.
+
 **Adding a language** is supplying data, with no code change: triples for the messages
 (`messages: "@prefix sh: <http://www.w3.org/ns/shacl#> . sh:MinCountConstraintComponent sh:message \"Ce champ est obligatoire\"@fr ."`,
 handed to the engine's `Session.loadMessages`; later documents win per component and language,

@@ -29,6 +29,7 @@ import { PLAYGROUND_SECTION, PreferencesPanelContent, useClaudeKey, useLayoutPre
 import { Header } from "./components/Header.js";
 import { PresetPicker, ShapePicker } from "./components/ExamplePickers.js";
 import { LocaleSelect } from "./components/LocaleSelect.js";
+import { initialLanguage } from "./lib/language.js";
 import { ShareButton } from "./components/ShareButton.js";
 import { Companion } from "./components/Companion.js";
 import { PanelRail } from "./components/PanelRail.js";
@@ -119,12 +120,15 @@ function ThemedApp({
 
   const { share, status: shareStatus, decoded } = url;
   const { shapeText, dataText, setShapeText, setDataText, applied, shape, options } = workspace;
-  // UI-language selector: the shape's label languages, defaulting to the first.
-  // Reset when the example changes so we land on its default language.
-  const localeOptions = shape.uiLocales ?? [];
+  // UI-language selector: the languages the loaded shapes are written in, which the
+  // form reports once it has read them. The reader's own choice wins; before that,
+  // the browser's preference among them, else the most written. Reset when the
+  // example changes so we land on its default language.
+  const [languages, setLanguages] = useState<string[]>([]);
   const [uiLocale, setUiLocale] = useState<string | undefined>(undefined);
   useEffect(() => setUiLocale(undefined), [workspace.shapeId]);
-  const locale = uiLocale ?? localeOptions[0] ?? options.locale;
+  const locale =
+    uiLocale && languages.includes(uiLocale) ? uiLocale : initialLanguage(languages, navigator.languages) ?? options.locale;
   // The workspace's own words follow the form's language, from the playground's
   // catalog rather than the library's — see `i18n.ts` for where that line is drawn.
   // A pane header reading "Issues · 3 blocking of 3" over a Spanish panel is the
@@ -194,6 +198,8 @@ function ThemedApp({
     strings: STRINGS,
     assist,
   });
+
+  useEffect(() => setLanguages(form.availableLanguages), [form.availableLanguages]);
 
   const outputs = useFormOutputs(form);
 
@@ -388,9 +394,7 @@ function ThemedApp({
             branding={branding}
             actions={
               <>
-                {localeOptions.length > 1 && locale && (
-                  <LocaleSelect value={locale} locales={localeOptions} onChange={setUiLocale} />
-                )}
+                {locale && <LocaleSelect value={locale} locales={languages} onChange={setUiLocale} />}
                 <ShareButton
                   status={shareStatus}
                   onShare={async () => {

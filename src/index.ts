@@ -50,5 +50,8 @@ export type { FieldError, Severity } from "./form/validation.js";
 export type { Diagnostic, DiagnosticSink } from "./form/buildFormModel.js";
 export type { FormReport, FormProgress, FormMood, IssueRow, GroupIssues } from "./react/validation/formReport.js";
 
+// The language picker every localised string goes through (RFC 4647 basic filtering).
+export { pickByLanguage } from "./form/terms.js";
+
 // Interface strings (English built in; other languages from `metadata-form/i18n`).
 export type { Strings, DeepPartial, StringTables, Plural } from "./i18n/strings.js";

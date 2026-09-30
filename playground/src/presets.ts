@@ -56,9 +56,6 @@ export interface ShapeExample {
   presets: Preset[];
   /** Optional identity the playground wears while this example is active. */
   branding?: ExampleBranding;
-  /** Label languages the shape provides — drives the UI-language selector. The
-   *  first is the default. Omit (or ≤1) to hide the selector. */
-  uiLocales?: string[];
 }
 
 // Each example declares its root shape explicitly, so focus/root resolution is
@@ -70,9 +67,6 @@ const EVIDENZE_HEALTH_OPTIONS: PermalinkOptions = { validateOn: "change", rootSh
 const PAPER_CONDITIONAL_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: paperConditionalRootShape };
 const PAPER_TARGET_WHERE_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: paperTargetWhereRootShape };
 const PAPER_MAPPING_OPTIONS: PermalinkOptions = { validateOn: "change", rootShape: paperMappingRootShape };
-
-/** The paper's examples speak English and Spanish; English first, the library's own. */
-const PAPER_LOCALES = ["en", "es"];
 
 /** Evidenze branding, shared by both Evidenze examples. */
 const EVIDENZE_BRANDING: ExampleBranding = {
@@ -91,7 +85,6 @@ const EVIDENZE_BRANDING: ExampleBranding = {
 const PAPER_TARGET_WHERE: ShapeExample = {
   id: "paper-target-where",
   label: "Paper example: the same condition with sh:targetWhere",
-  uiLocales: PAPER_LOCALES,
   presets: [
     {
       id: "listing",
@@ -110,7 +103,6 @@ export const EXAMPLES: ShapeExample[] = [
   {
     id: "paper-conditional",
     label: "Paper example: a conditional field",
-    uiLocales: PAPER_LOCALES,
     presets: [
       {
         id: "listing-1",
@@ -128,7 +120,6 @@ export const EXAMPLES: ShapeExample[] = [
   {
     id: "paper-mapping",
     label: "Paper example: from shapes to fields",
-    uiLocales: PAPER_LOCALES,
     presets: [
       {
         id: "mapping",
@@ -169,7 +160,6 @@ export const EXAMPLES: ShapeExample[] = [
     // Evidenze's own identity (colours from their site: navy #091a40, blue
     // #1d4ebd, green #27b564) — the app wears it while this example is active.
     branding: EVIDENZE_BRANDING,
-    uiLocales: ["es", "ca"],
     presets: [
       {
         id: "empty",
@@ -192,7 +182,6 @@ export const EXAMPLES: ShapeExample[] = [
     id: "evidenze-health",
     label: "Evidenze · HealthDCAT-AP (R7)",
     branding: { ...EVIDENZE_BRANDING, docTitle: "Evidenze · HealthDCAT-AP" },
-    uiLocales: ["es", "ca"],
     presets: [
       {
         id: "empty",

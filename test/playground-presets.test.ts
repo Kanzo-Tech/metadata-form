@@ -31,9 +31,8 @@ describe("example presets", () => {
 });
 
 describe("the paper's examples", () => {
-  it("open the playground, in English first and Spanish second", () => {
+  it("include the mapping example", () => {
     expect(EXAMPLES[0].label).toBe("Paper example: a conditional field");
-    expect(EXAMPLES[0].uiLocales).toEqual(["en", "es"]);
     expect(EXAMPLES.some((e) => e.id === "paper-mapping")).toBe(true);
   });
 
