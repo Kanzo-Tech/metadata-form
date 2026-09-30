@@ -1,0 +1,7 @@
+# @kanzo-tech/rudof-wasm@0.3.10
+OK   (a) three author messages, exactly: identifier -> ["ca","en","es"] (3 messages)
+OK   (a) no engine text next to the author messages: ["Un conjunto de datos debe tener un identificador.","A dataset must have an identifier.","Un conjunt de dades ha de tenir un identificador."]
+OK   (a) one untagged author message kept as is: [{"value":"Issue date must be an xsd:date.","language":""}]
+OK   (b) generated messages in en, es, ca (identifier): ["ca","en","es"]: ["en:At least 1 value(s) required","es:Se requieren al menos 1 valor(es)","ca:Calen com a mínim 1 valor(s)"]
+OK   (b) generated messages in en, es, ca (issued): ["ca","en","es"]: ["es:«March 2026» no es del tipo xsd:date","ca:«March 2026» no és del tipus xsd:date","en:“March 2026” is not of type xsd:date"]
+ALL HOLD

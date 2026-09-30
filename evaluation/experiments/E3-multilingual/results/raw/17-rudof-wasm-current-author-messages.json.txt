@@ -1,0 +1,57 @@
+### @kanzo-tech/rudof-wasm@0.3.10 (node v23.9.0)
+{
+  "conforms": false,
+  "results": [
+    {
+      "focusNode": {
+        "termType": "NamedNode",
+        "value": "http://example.org/d1"
+      },
+      "path": {
+        "termType": "NamedNode",
+        "value": "http://example.org/identifier"
+      },
+      "pathKey": "http://example.org/identifier",
+      "message": [
+        {
+          "value": "Un conjunto de datos debe tener un identificador.",
+          "language": "es"
+        },
+        {
+          "value": "A dataset must have an identifier.",
+          "language": "en"
+        },
+        {
+          "value": "Un conjunt de dades ha de tenir un identificador.",
+          "language": "ca"
+        }
+      ],
+      "severity": "http://www.w3.org/ns/shacl#Violation",
+      "sourceConstraintComponent": "http://www.w3.org/ns/shacl#MinCountConstraintComponent"
+    },
+    {
+      "focusNode": {
+        "termType": "NamedNode",
+        "value": "http://example.org/d1"
+      },
+      "path": {
+        "termType": "NamedNode",
+        "value": "http://example.org/issued"
+      },
+      "pathKey": "http://example.org/issued",
+      "value": {
+        "termType": "Literal",
+        "value": "March 2026",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      "message": [
+        {
+          "value": "Issue date must be an xsd:date.",
+          "language": ""
+        }
+      ],
+      "severity": "http://www.w3.org/ns/shacl#Violation",
+      "sourceConstraintComponent": "http://www.w3.org/ns/shacl#DatatypeConstraintComponent"
+    }
+  ]
+}

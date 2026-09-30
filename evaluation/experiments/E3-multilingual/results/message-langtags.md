@@ -1,7 +1,8 @@
 # E3 — Does a lang-tagged `sh:message` survive to the consumer?
 
-Re-run 2026-09-02. Every number below is produced by `../run.sh`; the raw output
-it wrote is in `raw/`, referenced per row. No third-party SHACL validator is
+Re-run 2026-09-02 (`../run.sh`, `raw/00`-`16`); current-engine check 2026-09-30
+(`../run-current.sh`, `raw/17`-`20`). Every number below is produced by one of
+them; the raw output is in `raw/`, referenced per row. No third-party SHACL validator is
 involved in any number on this page.
 
 ---
@@ -203,7 +204,9 @@ grades. **Tags kept** = the language tag is recoverable by the consumer.
 | rudof CLI (upstream) | 0.3.14 | table (`-r details`) | yes (`es:`/`en:`/`ca:`) | 3 of 3 | n/a (rendering) | `raw/10` |
 | rudof CLI (upstream) | 0.3.14 | JSON (`-r json`) | — | — | `todo!()` panic | `raw/11` |
 | **rudof-wasm — before** | **@kanzo-tech/rudof-wasm@0.3.4** | **JS ABI (`message`)** | **no — `string[]`** | 3 of 3, **indistinguishable** | n/a (binding) | `raw/12` |
-| **rudof-wasm — after** | **@kanzo-tech/rudof-wasm@0.3.5** | **JS ABI (`message`)** | **yes — `{value, language}[]`** | 3 of 3 | n/a (binding) | `raw/13` |
+| **rudof-wasm — after** | **@kanzo-tech/rudof-wasm@0.3.5** | **JS ABI (`message`)** | **yes — `{value, language}[]`** | 3 of 3, plus one untagged engine message | n/a (binding) | `raw/13` |
+| **rudof-wasm — current** | **@kanzo-tech/rudof-wasm@0.3.10** | **JS ABI (`message`)** | **yes — `{value, language}[]`** | 3 of 3, **exactly** the author's | yes | `raw/17` |
+| **rudof-wasm — current, no author message** | **@kanzo-tech/rudof-wasm@0.3.10** | **JS ABI (`message`)** | **yes** | engine-generated, **en, es and ca** | permitted (§3.6.2.7) | `raw/18` |
 
 The engine never lost a tag. The default CLI renderer never shows one, and our
 own JavaScript binding used to destroy one. Neither of those is a spec
@@ -251,10 +254,9 @@ each into its own tree and runs the same input through both.
 
 **The fix has shipped in every release since 0.3.5.** `raw/00` records the
 package's full published history rather than leaving it to be hand-typed: the
-published versions are 0.3.4, 0.3.5, 0.3.6, 0.3.7 and 0.3.8, `latest` is
-**0.3.8**, and 0.3.4 is the only one that lacks the tags. The 0.3.4/0.3.5 pair
-in the table is the before/after; it is not a description of the current
-package, which is 0.3.8 and carries the tags.
+published versions are 0.3.4 to 0.3.10 (`raw/20`), `latest` is **0.3.10**, and
+0.3.4 is the only one that lacks the tags. The 0.3.4/0.3.5 pair in the table is
+the before/after; the current package (0.3.10) carries the tags.
 
 **Two things this row does not let us claim.** First, the loss was in *our*
 binding, not in rudof's engine, so it is evidence that a language binding is a
@@ -263,17 +265,30 @@ anyone else's binding does the same. Second, the fix is the *precondition* for
 locale selection, not the selection itself; picking the right message for the
 reader is still the form's job.
 
-### Where rudof is itself not conformant, and we should say so
+### Where rudof was not conformant, and what the current engine does
 
-Both rudof versions add an engine-generated message —
+Both pinned builds (0.3.4 and 0.3.5) add an engine-generated message —
 `"MinCount(1) not satisfied"` — to a result whose shape already declares three
 `sh:message` values. §2.1.5 says such a result will have **exactly** the shape's
 messages, and §3.6.2.7 permits an engine-generated message only "in cases where
 a constraint does not have any values for `sh:message`". Emitting both is
 outside what the spec allows, in the upstream CLI's Turtle report (`raw/09`) as
-well as in the wasm ABI. It is a small defect and it is ours to fix; the 0.3.5
-ABI at least tags it `language: ""` so a consumer can exclude it from a locale
-choice rather than have it shadow a localised message.
+well as in those two wasm builds. It was a small defect and ours to fix; the
+0.3.5 ABI at least tagged it `language: ""` so a consumer could exclude it.
+
+**It is fixed in the engine we ship.** With `@kanzo-tech/rudof-wasm@0.3.10`
+(`raw/17`, and the assertions in `raw/19`, written by `../run-current.sh`):
+
+- a result whose shape declares `sh:message` carries **exactly** those messages —
+  three, tagged `ca`/`en`/`es`, for C1, and the single untagged message for the
+  control C2 — and no engine text;
+- a result whose shape declares **none** (`../data/shapes-nomsg.ttl`, `raw/18`)
+  carries engine-generated messages in **en, es and ca**, each tagged, drawn from
+  an RDF catalog of `sh:message` templates on the constraint components (e.g.
+  `en: At least 1 value(s) required`, `es: Se requieren al menos 1 valor(es)`,
+  `ca: Calen com a mínim 1 valor(s)` for `sh:minCount`). §3.6.2.7 permits this.
+
+The upstream CLI 0.3.14 still shows the old behaviour (`raw/09`; not re-run).
 
 Two further rudof 0.3.14 observations, recorded because they are facts about the
 current published version: the default `compact` renderer has a `Details` column
@@ -330,7 +345,8 @@ Darwin 25.2.0 arm64
 Python 3.13.12         rdflib 7.6.0 (pinned directly; W3C-suite parsing only)
 node v23.9.0
 rudof 0.3.14 (crates.io rudof_cli, upstream)
-@kanzo-tech/rudof-wasm 0.3.4 and 0.3.5 (published: 0.3.4 … 0.3.8; latest 0.3.8)
+@kanzo-tech/rudof-wasm 0.3.4 and 0.3.5 (run.sh, 2026-09-02; published then: 0.3.4 … 0.3.8)
+@kanzo-tech/rudof-wasm 0.3.10 (run-current.sh, 2026-09-30; published: 0.3.4 … 0.3.10; latest 0.3.10)
 ```
 
 Two environment lines moved between the 2026-08-27 round and the 2026-09-02

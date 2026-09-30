@@ -1,0 +1,10 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex:   <http://example.org/> .
+
+# The same two constraints as shapes.ttl, with no author-written sh:message at
+# all: SHACL 1.0 s3.6.2.7 lets the processor generate messages here.
+ex:DatasetShape a sh:NodeShape ;
+    sh:targetClass ex:Dataset ;
+    sh:property [ sh:path ex:identifier ; sh:minCount 1 ] ;
+    sh:property [ sh:path ex:issued ; sh:datatype xsd:date ] .

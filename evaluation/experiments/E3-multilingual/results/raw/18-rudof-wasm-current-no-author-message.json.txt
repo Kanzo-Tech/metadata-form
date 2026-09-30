@@ -1,0 +1,65 @@
+### @kanzo-tech/rudof-wasm@0.3.10 (node v23.9.0)
+{
+  "conforms": false,
+  "results": [
+    {
+      "focusNode": {
+        "termType": "NamedNode",
+        "value": "http://example.org/d1"
+      },
+      "path": {
+        "termType": "NamedNode",
+        "value": "http://example.org/identifier"
+      },
+      "pathKey": "http://example.org/identifier",
+      "message": [
+        {
+          "value": "At least 1 value(s) required",
+          "language": "en"
+        },
+        {
+          "value": "Se requieren al menos 1 valor(es)",
+          "language": "es"
+        },
+        {
+          "value": "Calen com a mínim 1 valor(s)",
+          "language": "ca"
+        }
+      ],
+      "severity": "http://www.w3.org/ns/shacl#Violation",
+      "sourceConstraintComponent": "http://www.w3.org/ns/shacl#MinCountConstraintComponent"
+    },
+    {
+      "focusNode": {
+        "termType": "NamedNode",
+        "value": "http://example.org/d1"
+      },
+      "path": {
+        "termType": "NamedNode",
+        "value": "http://example.org/issued"
+      },
+      "pathKey": "http://example.org/issued",
+      "value": {
+        "termType": "Literal",
+        "value": "March 2026",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      "message": [
+        {
+          "value": "«March 2026» no es del tipo xsd:date",
+          "language": "es"
+        },
+        {
+          "value": "«March 2026» no és del tipus xsd:date",
+          "language": "ca"
+        },
+        {
+          "value": "“March 2026” is not of type xsd:date",
+          "language": "en"
+        }
+      ],
+      "severity": "http://www.w3.org/ns/shacl#Violation",
+      "sourceConstraintComponent": "http://www.w3.org/ns/shacl#DatatypeConstraintComponent"
+    }
+  ]
+}
