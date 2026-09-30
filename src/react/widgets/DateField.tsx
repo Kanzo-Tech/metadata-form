@@ -16,6 +16,7 @@ import {
   type DateValue,
 } from "@kanzo-tech/ui";
 import { useId } from "react";
+import { formatDate, formatDateTime, parseDateTime } from "../../form/dateTime.js";
 import { useStrings } from "../form/context.js";
 import type { WidgetProps } from "./widgets.js";
 
@@ -29,14 +30,10 @@ import type { WidgetProps } from "./widgets.js";
  * anything.
  *
  * The picker is date-only, so `xsd:dateTime` is a date plus `DatePickerTimer` rather
- * than a second machine. `null` for either half means the value is not a dateTime
- * yet, and midnight is the only defensible completion of a date the user did pick.
+ * than a second machine. What is committed is always a valid lexical form of the
+ * datatype (`form/dateTime`): seconds are there, a date picked with no time is
+ * midnight, and the zone of a stored value is kept.
  */
-
-const splitIso = (iso: string | null) => {
-  const [date = "", time = ""] = (iso ?? "").split("T");
-  return { date, time: time.slice(0, 5) };
-};
 
 /** A stored value the picker cannot parse must leave the calendar empty, never
  *  throw: one bad row would otherwise take down the whole form. */
@@ -51,18 +48,20 @@ function toDateValues(iso: string): DateValue[] {
 
 export function makeDateField(withTime: boolean) {
   return function DateField(p: WidgetProps) {
-    const { date, time } = splitIso(p.value);
+    const parts = parseDateTime(p.value ?? "") ?? { date: "", time: "", zone: "" };
+    const { date, time } = parts;
     const { chrome } = useStrings();
     const timeId = useId();
 
     const commit = (nextDate: string, nextTime: string) => {
       if (!nextDate) return p.onChange(null);
-      p.onChange(withTime ? `${nextDate}T${nextTime || "00:00"}` : nextDate);
+      const next = { ...parts, date: nextDate, time: nextTime };
+      p.onChange(withTime ? formatDateTime(next) : formatDate(next));
     };
 
     const picker = (
       <DatePicker
-        className="flex-1"
+        className="min-w-0 flex-1"
         value={toDateValues(date)}
         onValueChange={(d) => commit(d.valueAsString[0] ?? "", time)}
         positioning={{ placement: "bottom-end" }}
@@ -87,13 +86,13 @@ export function makeDateField(withTime: boolean) {
     if (!withTime) return picker;
 
     return (
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         {picker}
         <label className="sr-only" htmlFor={timeId}>
           {chrome.time}
         </label>
         <DatePickerTimer
-          className="w-32"
+          className="w-auto shrink-0"
           id={timeId}
           value={time}
           onChange={(e) => commit(date, e.target.value)}

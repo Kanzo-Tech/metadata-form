@@ -57,7 +57,7 @@ export function primitiveToTerm(
   if (dt === `${XSD}boolean`) return literal(raw === "true" ? "true" : "false", namedNode(`${XSD}boolean`));
   if (dt === RDF_LANGSTRING) return literal(raw, language ?? "");
   if (dt && NUMERIC.has(dt)) return literal(raw, namedNode(dt));
-  if (c.nodeKind === SH_IRI || dt === `${XSD}anyURI` || (!dt && c.classIri)) return namedNode(raw);
+  if (c.nodeKind === SH_IRI || (!dt && c.classIri)) return namedNode(raw);
   if (dt && dt !== `${XSD}string`) return literal(raw, namedNode(dt));
   return literal(raw);
 }
