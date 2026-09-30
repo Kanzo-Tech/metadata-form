@@ -33,7 +33,7 @@ export interface PermalinkState {
  *
  * **Two forms, one envelope.** A link to an unedited bundled example carries its id
  * and nothing else — 40-odd characters instead of the 15.5 KB the embedded form
- * measured on the Evidenze example, which is past what chat and mail carry intact.
+ * measured on a full profile, which is past what chat and mail carry intact.
  * The moment anything is edited the link embeds, because there is then nothing on
  * the other end to reference.
  *

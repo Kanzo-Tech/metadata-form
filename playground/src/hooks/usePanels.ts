@@ -7,9 +7,9 @@ export interface Panel {
 }
 
 /** The panels this workspace has. Adding one is adding a member here. */
-export type PanelId = "source" | "issues" | "output";
+export type PanelId = "source" | "output";
 
-const IDS: PanelId[] = ["source", "issues", "output"];
+const IDS: PanelId[] = ["source", "output"];
 
 /**
  * The side panels as one state machine.

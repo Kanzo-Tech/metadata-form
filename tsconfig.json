@@ -29,7 +29,7 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
   },
-  "//": "The playground app is its own project (playground/tsconfig.json). This (lib + tests) keeps only the shared example fixtures the tests import via @examples, plus their ?raw ambient and the playground env typing (a test imports its instance module).",
+  "//": "The playground app is its own project (playground/tsconfig.json). This (lib + tests) keeps only the shared example fixtures the tests import via @examples, plus their ?raw ambient and the playground env typing (tests import playground modules).",
   "include": [
     "src",
     "test",

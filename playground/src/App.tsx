@@ -10,8 +10,6 @@ import {
   DownloadTrigger,
   JsonTreeView,
   KanzoThemeProvider,
-  NativeSelect,
-  NativeSelectOption,
   PreferencesRoot,
   PreferencesTrigger,
   ShellAside,
@@ -19,31 +17,30 @@ import {
   ShellHeader,
   ShellMain,
   ShellRoot,
+  type ThemeOption,
 } from "@kanzo-tech/ui";
-import { Code2Icon, DownloadIcon, FileTextIcon, ListChecksIcon } from "lucide-react";
-import { PaneHeader } from "./components/PaneHeader.js";
-import { MetadataForm, useMetadataForm, ValidationPanel, type FormAssist } from "metadata-form";
+import { themeIndex } from "@kanzo-tech/theme";
+import { Code2Icon, DownloadIcon, FileTextIcon } from "lucide-react";
+import { MetadataForm, useMetadataForm, type FormAssist } from "metadata-form";
 import { assistUi } from "metadata-form/ai";
 import { es, ca } from "metadata-form/i18n";
 import { PLAYGROUND_SECTION, PreferencesPanelContent, useClaudeKey, useClaudeModel, useLayoutPrefs, useMascot } from "./Preferences.js";
 import { Header } from "./components/Header.js";
-import { PresetPicker, ShapePicker } from "./components/ExamplePickers.js";
+import { ExamplePickers } from "./components/ExamplePickers.js";
 import { LocaleSelect } from "./components/LocaleSelect.js";
 import { initialLanguage } from "./lib/language.js";
 import { ShareButton } from "./components/ShareButton.js";
 import { Companion } from "./components/Companion.js";
 import { PanelRail } from "./components/PanelRail.js";
 import { WorkspaceColumns, type WorkspaceColumn } from "./components/Workspace.js";
-import { CodePanel, CodeEditor } from "./components/CodePanel.js";
+import { DocumentPane, CodeEditor } from "./components/DocumentPane.js";
 import { useMediaQuery } from "./hooks/useMediaQuery.js";
 import { usePanels } from "./hooks/usePanels.js";
 import { useHotkey } from "./hooks/useHotkey.js";
 import { useFormOutputs } from "./hooks/useFormOutputs.js";
 import { useUrlState } from "./hooks/useUrlState.js";
 import { useWorkspace } from "./state/useWorkspace.js";
-import { INSTANCE, brandingFor, defaultThemeFor, policyFor } from "./instance.js";
 import { ChromeContext, fill, pickChrome } from "./i18n.js";
-import type { ExampleBranding } from "./presets.js";
 import { makeAssist } from "./lib/assist.js";
 
 /** The form keeps what the panels do not take: 24% each, down to a floor of 34%.
@@ -62,40 +59,29 @@ const NARROW = "(max-width: 1024px)";
  *  the playground imports from `metadata-form/i18n`, like any consumer. */
 const STRINGS = { es: es.strings, ca: ca.strings };
 
+/** Every published theme, as the Preferences colour section wants them. Generated
+ *  from the directory upstream, so this list cannot drift from what the sheet paints. */
+const THEMES: ThemeOption[] = themeIndex.map((t) => ({ value: t.name, label: t.name }));
+
+/** What each side defers to while nobody has chosen — a deferral target, never a
+ *  preference, so it cannot overwrite a reader's saved theme. */
+const DEFAULT_THEME = { light: "kanzo", dark: "kanzo-dark" };
+
 export function App() {
-  // Permalink and workspace live ABOVE the provider, and that is the whole cost of a
-  // branded example: the theme it wears is a provider prop, so which example is open
-  // has to be known before the provider mounts. The URL is read once, synchronously,
-  // so there is no flash of the wrong brand.
+  // The URL is read once, synchronously, so the workspace seeds from it before
+  // first paint.
   const url = useUrlState();
   const workspace = useWorkspace(url.initial, url.writeUrl);
-  const branding = brandingFor(workspace.shape);
-  // Memoized because it is an object: a fresh literal every render would re-resolve
-  // the theme — and therefore re-run every consumer of the theme context — on every
-  // keystroke in the source editors.
-  const defaultTheme = useMemo(() => defaultThemeFor(workspace.shape), [workspace.shape]);
-  const policy = useMemo(() => policyFor(workspace.shape), [workspace.shape]);
 
   return (
     // The theme lives on <html>, not on a wrapper element: Ark's overlays portal
     // to document.body, outside anything a wrapper could reach, and density sets
     // the root font-size the whole rem scale resolves against.
-    //
-    // `themes` is what this deployment PUBLISHES and `defaultTheme` is what each side
-    // defers to while nobody has chosen — a deferral target, never a preference, so a
-    // branded example cannot overwrite a reader's saved theme. Publishing fewer than
-    // two would hide the colour section, which is also the page's only light/dark
-    // control; pinning would hide it outright. See `instance.ts`.
-    <KanzoThemeProvider
-      themes={INSTANCE.themes}
-      defaultTheme={defaultTheme}
-      policy={policy}
-      sections={[PLAYGROUND_SECTION]}
-    >
+    <KanzoThemeProvider themes={THEMES} defaultTheme={DEFAULT_THEME} sections={[PLAYGROUND_SECTION]}>
       {/* `p`, opt-in: a design system must not claim an unmodified key in its
           host's keymap without being asked. */}
       <PreferencesRoot hotkey="p">
-        <ThemedApp url={url} workspace={workspace} branding={branding} />
+        <ThemedApp url={url} workspace={workspace} />
       </PreferencesRoot>
     </KanzoThemeProvider>
   );
@@ -105,11 +91,9 @@ export function App() {
 function ThemedApp({
   url,
   workspace,
-  branding,
 }: {
   url: ReturnType<typeof useUrlState>;
   workspace: ReturnType<typeof useWorkspace>;
-  branding: ExampleBranding | undefined;
 }) {
   const [apiKey] = useClaudeKey();
   const [model] = useClaudeModel();
@@ -120,7 +104,8 @@ function ThemedApp({
   const assist = useMemo<FormAssist | undefined>(() => (apiKey ? makeAssist(apiKey, model) : undefined), [apiKey, model]);
 
   const { share, status: shareStatus, decoded } = url;
-  const { shapeText, dataText, setShapeText, setDataText, applied, shape, options } = workspace;
+  const { shapeText, dataText, setShapeText, setDataText, applied, shape } = workspace;
+  const { options } = applied;
   // UI-language selector: the languages the loaded shapes are written in, which the
   // form reports once it has read them. The reader's own choice wins; before that,
   // the browser's preference among them, else the most written. Reset when the
@@ -136,27 +121,6 @@ function ThemedApp({
   // half-translated page this exists to stop.
   const chrome = useMemo(() => pickChrome(locale), [locale]);
 
-  // Branded examples take over the browser tab: title + favicon (the brand mark),
-  // restored to the playground defaults when a plain example is active.
-  useEffect(() => {
-    document.title = branding?.docTitle ?? "metadata-form playground";
-  }, [branding?.docTitle]);
-  useEffect(() => {
-    const id = "mf-brand-favicon";
-    let link = document.getElementById(id) as HTMLLinkElement | null;
-    if (branding?.faviconUrl) {
-      if (!link) {
-        link = document.createElement("link");
-        link.id = id;
-        link.rel = "icon";
-        document.head.appendChild(link);
-      }
-      link.href = branding.faviconUrl;
-    } else {
-      link?.remove();
-    }
-  }, [branding?.faviconUrl]);
-
   // What the fragment turned out to be, when it was not a document.
   const [dismissed, setDismissed] = useState(false);
   const notice =
@@ -171,23 +135,17 @@ function ThemedApp({
 
   const isNarrow = useMediaQuery(NARROW);
   const { panels, open, setOpen } = usePanels({ narrow: isNarrow });
-  const { source, issues, output } = panels;
+  const { source, output } = panels;
 
-  // Keyboard toggles (S / I / O). Preferences owns the "P" shortcut.
-  useHotkey(
-    useMemo(
-      () => ({ S: source.toggle, I: issues.toggle, O: output.toggle }),
-      [source.toggle, issues.toggle, output.toggle],
-    ),
-  );
+  // Keyboard toggles (S / O). Preferences owns the "P" shortcut.
+  useHotkey(useMemo(() => ({ S: source.toggle, O: output.toggle }), [source.toggle, output.toggle]));
 
-  // Which output document the pane is showing, and which finding is expanded.
-  // Both live HERE, above `ShellBody`, and that is not a preference: opening any
-  // panel re-keys the splitter, the re-key remounts every column, and state held
-  // inside a column would reset as the reader used it — a finding whose frame
-  // opens Source would close itself on the way.
+  // Which document each pane is showing. They live HERE, above `ShellBody`, and
+  // that is not a preference: opening any panel re-keys the splitter, the re-key
+  // remounts every column, and state held inside a column would reset as the
+  // reader used it.
+  const [sourceDoc, setSourceDoc] = useState<"shape" | "data">("shape");
   const [outputDoc, setOutputDoc] = useState<"turtle" | "jsonld">("turtle");
-  const [openIssue, setOpenIssue] = useState<string | null>(null);
 
   const form = useMetadataForm({
     shapes: applied.shapes,
@@ -203,11 +161,6 @@ function ThemedApp({
   useEffect(() => setLanguages(form.availableLanguages), [form.availableLanguages]);
 
   const outputs = useFormOutputs(form);
-
-  // The tally the Issues pane's header carries. The pill in the page header counts
-  // the same rows — one report, two readings of it.
-  const issueCount = form.report.issues.rows.length;
-  const violations = form.report.issues.rows.filter((r) => r.severity === "violation").length;
 
   /**
    * The other half of "shareable by reference": the form's graph is still the one the
@@ -230,124 +183,74 @@ function ThemedApp({
   }, [form, baseline]);
 
   // Panel content defined once and reused by the docked aside (wide) and the drawer
-  // (narrow). Each panel carries its own header: what it is, how it is doing, and a
-  // close. A control that REPLACES a document sits against that document — which for
-  // Source means beside its tab, not in the header over both of them.
+  // (narrow). Each panel carries its own header: what it is, which of its documents
+  // it is showing, and a close.
   const sourcePanel = (
-    <>
-      <PaneHeader icon={FileTextIcon} title={chrome.panes.source} onClose={source.toggle} />
-      <CodePanel
-        tabs={[
-          {
-            value: "shape",
-            label: chrome.source.shapeTab,
-            node: <CodeEditor value={shapeText} onChange={setShapeText} lang="turtle" />,
-            action: (
-              <ShapePicker examples={workspace.examples} shapeId={workspace.shapeId} onPick={workspace.pickShape} />
-            ),
-          },
-          {
-            value: "data",
-            label: chrome.source.dataTab,
-            node: <CodeEditor value={dataText} onChange={setDataText} lang="turtle" />,
-            action: <PresetPicker presets={shape.presets} presetId={workspace.presetId} onPick={workspace.pickPreset} />,
-          },
-        ]}
-      />
-    </>
+    <DocumentPane
+      icon={FileTextIcon}
+      title={chrome.panes.source}
+      onClose={source.toggle}
+      value={sourceDoc}
+      onValueChange={setSourceDoc}
+      tabs={[
+        {
+          value: "shape",
+          label: chrome.source.shapeTab,
+          node: <CodeEditor value={shapeText} onChange={setShapeText} lang="turtle" />,
+        },
+        {
+          value: "data",
+          label: chrome.source.dataTab,
+          node: <CodeEditor value={dataText} onChange={setDataText} lang="turtle" />,
+        },
+      ]}
+    />
   );
 
-  // What validation found, read as a list rather than counted. The panel body is the
-  // library's — an instance that is not this playground needs the findings without
-  // copying a playground to get them — and the chrome around it is ours.
-  const issuesPanel = (
-    <>
-      <PaneHeader
-        icon={ListChecksIcon}
-        title={chrome.panes.issues}
-        onClose={issues.toggle}
-        detail={
-          issueCount === 0
-            ? chrome.issues.clean
-            : fill(chrome.issues.blocking, { blocking: violations, total: issueCount })
-        }
-        tone={violations > 0 ? "destructive" : issueCount > 0 ? "warning" : "success"}
-      />
-      <div className="min-h-0 flex-1 overflow-auto p-3">
-        <ValidationPanel form={form} openId={openIssue} onOpenChange={setOpenIssue} />
-        {/* What the form noticed about the profile, not the data: the texts it wrote
-            only in another language, the paths it cannot render. Collapsed, because a
-            profile in one language read in another names every field once. */}
-        {form.diagnostics.length > 0 && (
-          <details className="text-muted-foreground" style={{ marginTop: "1rem", fontSize: "0.8125rem" }}>
-            <summary>{fill(chrome.issues.notes, { n: form.diagnostics.length })}</summary>
-            <ul style={{ margin: "0.5rem 0 0", paddingInlineStart: "1.25rem" }}>
-              {form.diagnostics.map((d) => (
-                <li key={`${d.code}|${d.detail}|${d.message}`}>{d.message}</li>
-              ))}
-            </ul>
-          </details>
-        )}
-      </div>
-    </>
-  );
-
-  // One document at a time, chosen in the panel's own header — the showcase's rule for
-  // every panel it has, and the reason this stopped being a tab strip: Turtle and
-  // JSON-LD are two renderings of one graph, not two things to read against each other
-  // (which IS what Source's two documents are, and why that one keeps its tabs).
-  //
-  // JSON-LD is a tree, not text: the object survives all the way here now, so the
-  // reader can collapse a node instead of scrolling past it.
+  // Two renderings of one graph, chosen like Source's two documents are. JSON-LD is
+  // a tree, not text: the object survives all the way here, so the reader can
+  // collapse a node instead of scrolling past it.
+  const outputFormat = outputDoc === "turtle" ? "Turtle" : "JSON-LD";
   const outputPanel = (
-    <>
-      <PaneHeader
-        icon={Code2Icon}
-        title={chrome.panes.output}
-        onClose={output.toggle}
-        actions={
-          <span className="flex min-w-0 items-center" style={{ gap: "0.375rem" }}>
-            <NativeSelect
-              aria-label={chrome.output.which}
-              onChange={(e) => setOutputDoc(e.target.value as "turtle" | "jsonld")}
-              size="sm"
-              style={{ height: "1.5rem", width: "7rem", minWidth: 0 }}
-              value={outputDoc}
-            >
-              <NativeSelectOption value="turtle">Turtle</NativeSelectOption>
-              <NativeSelectOption value="jsonld">JSON-LD</NativeSelectOption>
-            </NativeSelect>
-            {/* `data` is deferred, so the graph is serialized when somebody asks for
-                the file and not on every keystroke — and there is no object URL of
-                ours to build, revoke or leak. */}
-            <DownloadTrigger
-              asChild
-              data={outputDoc === "turtle" ? () => form.toTurtle() : () => form.toJsonLd().then((j) => JSON.stringify(j, null, 2))}
-              fileName={outputDoc === "turtle" ? "metadata.ttl" : "metadata.jsonld"}
-              mimeType={outputDoc === "turtle" ? "text/turtle" : "application/ld+json"}
-            >
-              <Button
-                aria-label={fill(chrome.output.download, { format: outputDoc === "turtle" ? "Turtle" : "JSON-LD" })}
-                className="size-6 shrink-0 text-muted-foreground"
-                size="icon-sm"
-                variant="ghost"
-              >
-                <DownloadIcon />
-              </Button>
-            </DownloadTrigger>
-          </span>
-        }
-      />
-      {outputDoc === "turtle" ? (
-        <div className="min-h-0 flex-1">
-          <CodeEditor value={outputs.turtle} lang="turtle" readOnly />
-        </div>
-      ) : (
-        <div className="min-h-0 flex-1 overflow-auto p-3">
-          {outputs.jsonld ? <JsonTreeView data={outputs.jsonld} defaultExpandedDepth={2} /> : null}
-        </div>
-      )}
-    </>
+    <DocumentPane
+      icon={Code2Icon}
+      title={chrome.panes.output}
+      onClose={output.toggle}
+      value={outputDoc}
+      onValueChange={setOutputDoc}
+      tabs={[
+        { value: "turtle", label: "Turtle", node: <CodeEditor value={outputs.turtle} lang="turtle" readOnly /> },
+        {
+          value: "jsonld",
+          label: "JSON-LD",
+          node: (
+            <div className="min-h-0 flex-1 overflow-auto p-3">
+              {outputs.jsonld ? <JsonTreeView data={outputs.jsonld} defaultExpandedDepth={2} /> : null}
+            </div>
+          ),
+        },
+      ]}
+      actions={
+        // `data` is deferred, so the graph is serialized when somebody asks for the
+        // file and not on every keystroke — and there is no object URL of ours to
+        // build, revoke or leak.
+        <DownloadTrigger
+          asChild
+          data={outputDoc === "turtle" ? () => form.toTurtle() : () => form.toJsonLd().then((j) => JSON.stringify(j, null, 2))}
+          fileName={outputDoc === "turtle" ? "metadata.ttl" : "metadata.jsonld"}
+          mimeType={outputDoc === "turtle" ? "text/turtle" : "application/ld+json"}
+        >
+          <Button
+            aria-label={fill(chrome.output.download, { format: outputFormat })}
+            className="bg-card text-muted-foreground"
+            size="icon-sm"
+            variant="outline"
+          >
+            <DownloadIcon />
+          </Button>
+        </DownloadTrigger>
+      }
+    />
   );
 
   const formColumn = (
@@ -367,8 +270,9 @@ function ThemedApp({
   );
 
   // Wide: the open panels sit beside the form as columns of one draggable row, in
-  // reading order — the shapes that define the form, the form, what it found and
-  // what it produces. Narrow: the form fills and the single active panel is an
+  // reading order — the shapes that define the form, the form, and what it
+  // produces. What validation found is not a column: the tally in the header lists
+  // it and marks it on the fields, which is where a finding is fixed. Narrow: the form fills and the single active panel is an
   // overlay aside.
   const aside = (id: string, label: string, side: "start" | "end", body: React.ReactNode) => ({
     id,
@@ -384,12 +288,11 @@ function ThemedApp({
   const columns: WorkspaceColumn[] = [
     ...(source.show ? [aside("source", chrome.panes.source, "start", sourcePanel)] : []),
     { id: "form", minSize: 34, node: formColumn },
-    ...(issues.show ? [aside("issues", chrome.panes.issues, "end", issuesPanel)] : []),
     ...(output.show ? [aside("output", chrome.panes.output, "end", outputPanel)] : []),
   ];
   const split = asideSplit(Math.max(1, columns.length - 1));
 
-  const activePanel = source.show ? sourcePanel : issues.show ? issuesPanel : outputPanel;
+  const activePanel = source.show ? sourcePanel : outputPanel;
   const overlay = isNarrow && open.length > 0;
 
   return (
@@ -398,14 +301,19 @@ function ThemedApp({
     // its root sits above it.
     <ChromeContext.Provider value={chrome}>
       <ShellRoot>
-        {/* Brand-tinted top edge — a thin line of the theme's primary. The height
-            is inline: `h-[3px]` is an arbitrary-value class, and nothing compiles
-            Tailwind here, so it painted a 0px-tall line until this was noticed. */}
-        {branding?.tint && <div className="bg-primary" style={{ height: "3px", flex: "none" }} />}
         <ShellHeader>
           <Header
             form={form}
-            branding={branding}
+            pickers={
+              <ExamplePickers
+                examples={workspace.examples}
+                shapeId={workspace.shapeId}
+                onPickShape={workspace.pickShape}
+                presets={shape.presets}
+                presetId={workspace.presetId}
+                onPickPreset={workspace.pickPreset}
+              />
+            }
             actions={
               <>
                 {locale && <LocaleSelect value={locale} locales={languages} onChange={setUiLocale} />}
@@ -454,7 +362,6 @@ function ThemedApp({
             onValueChange={setOpen}
             panels={[
               { icon: FileTextIcon, label: `${chrome.panes.source} — ${chrome.panes.sourceHint} (S)`, value: "source" },
-              { icon: ListChecksIcon, label: `${chrome.panes.issues} — ${chrome.panes.issuesHint} (I)`, value: "issues" },
               { icon: Code2Icon, label: `${chrome.panes.output} — ${chrome.panes.outputHint} (O)`, value: "output" },
             ]}
             value={open}
@@ -476,7 +383,7 @@ function ThemedApp({
                   overlay
                   className="bg-card"
                   side={source.show ? "start" : "end"}
-                  aria-label={source.show ? chrome.panes.source : issues.show ? chrome.panes.issues : chrome.panes.output}
+                  aria-label={source.show ? chrome.panes.source : chrome.panes.output}
                 >
                   {activePanel}
                 </ShellAside>

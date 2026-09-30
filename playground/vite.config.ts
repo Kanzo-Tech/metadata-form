@@ -10,10 +10,7 @@ const root = __dirname;
 const lib = (p: string) => resolve(root, "..", p);
 
 // The theme attributes land on <html> before first paint, so a reader's saved theme,
-// density and radius are there when the page is, not a frame after it. Not given the
-// tenant policy: which example is open — and so whose brand is the default — is only
-// known once the permalink has been read, so a branded default still arrives with
-// the app; what the reader chose does not.
+// density and radius are there when the page is, not a frame after it.
 const themeInit: Plugin = {
   name: "theme-init",
   transformIndexHtml: () => [{ tag: "script", children: themeScript(), injectTo: "head-prepend" }],

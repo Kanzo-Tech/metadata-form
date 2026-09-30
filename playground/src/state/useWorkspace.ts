@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { defaultState, shapeSets } from "../instance.js";
+import { EXAMPLES as shapeSets, defaultState } from "../presets.js";
 import { useDebounced } from "../hooks/useDebounced.js";
 import type { PermalinkOptions, PermalinkState } from "../lib/permalink.js";
 
@@ -64,7 +64,12 @@ export function useWorkspace(
 
   // Live, debounced — apply edits 350ms after typing stops. Memoize the snapshot so
   // unrelated re-renders don't reset the debounce timer.
-  const pending = useMemo(() => ({ shapes: shapeText, data: dataText }), [shapeText, dataText]);
+  //
+  // The options ride in the same snapshot as the text they belong to. Handed over
+  // live beside debounced shapes, a pick gave the form the NEW example's
+  // `rootShape` over the OLD example's shapes for those 350ms, and the engine
+  // threw "shape not found in shapes graph" on every switch.
+  const pending = useMemo(() => ({ shapes: shapeText, data: dataText, options }), [shapeText, dataText, options]);
   const applied = useDebounced(pending, 350);
 
   // The current state: the base Share captures (the Share handler swaps in the
@@ -95,7 +100,6 @@ export function useWorkspace(
     pickShape,
     pickPreset,
     applied,
-    options,
     permalink,
     sourcePristine,
   };

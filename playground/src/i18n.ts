@@ -17,10 +17,6 @@ import { createContext, useContext } from "react";
  * which language this is.
  */
 export interface Chrome {
-  /** Under the wordmark, on wide viewports. */
-  tagline: string;
-  /** Beside the `P` key hint in the header. */
-  preferences: string;
   /** Accessible name of the UI-language select. */
   language: string;
   share: {
@@ -35,34 +31,24 @@ export interface Chrome {
     /** Accessible name of the activity rail. */
     rail: string;
     source: string;
-    issues: string;
     output: string;
     /** What each rail switch opens, after the pane's name. */
     sourceHint: string;
-    issuesHint: string;
     outputHint: string;
     /** `{pane}` — accessible name of a pane's close button. */
     close: string;
   };
+  /** Accessible names of the header's two pickers, which have no visible label. */
+  pickers: {
+    example: string;
+    preset: string;
+  };
+  /** The Source pane's two documents. */
   source: {
     shapeTab: string;
     dataTab: string;
-    /** Accessible names of the two pickers, which have no visible label. */
-    shapePicker: string;
-    dataPicker: string;
-  };
-  issues: {
-    /** The pane header's detail when the report is clean. */
-    clean: string;
-    /** `{blocking}`, `{total}` — the detail when it is not. */
-    blocking: string;
-    /** `{n}` — the heading over what the form noticed about the profile itself (a
-     *  text lacking the reader's language, a path it cannot render), not the data. */
-    notes: string;
   };
   output: {
-    /** Accessible name of the format select. */
-    which: string;
     /** `{format}` — accessible name of the download button. */
     download: string;
   };
@@ -98,8 +84,6 @@ export interface Chrome {
 }
 
 const EN: Chrome = {
-  tagline: "SHACL shapes → editable RDF form → Turtle & JSON-LD",
-  preferences: "Preferences",
   language: "Language",
   share: {
     idle: "Share",
@@ -110,26 +94,20 @@ const EN: Chrome = {
   panes: {
     rail: "Panels",
     source: "Source",
-    issues: "Issues",
     output: "Output",
     sourceHint: "the shapes and the data",
-    issuesHint: "what validation found",
     outputHint: "Turtle and JSON-LD",
     close: "Close {pane}",
   },
-  source: {
-    shapeTab: "SHACL shape",
-    dataTab: "Data graph",
-    shapePicker: "Shape",
-    dataPicker: "Data",
+  pickers: {
+    example: "Example",
+    preset: "Data preset",
   },
-  issues: {
-    clean: "Nothing found",
-    blocking: "{blocking} blocking of {total}",
-    notes: "Notes on the profile · {n}",
+  source: {
+    shapeTab: "Shapes",
+    dataTab: "Data",
   },
   output: {
-    which: "Which output",
     download: "Download the {format}",
   },
   notice: {
@@ -159,8 +137,6 @@ const EN: Chrome = {
 };
 
 const ES: Chrome = {
-  tagline: "Formas SHACL → formulario RDF editable → Turtle y JSON-LD",
-  preferences: "Preferencias",
   language: "Idioma",
   share: {
     idle: "Compartir",
@@ -171,26 +147,20 @@ const ES: Chrome = {
   panes: {
     rail: "Paneles",
     source: "Fuente",
-    issues: "Incidencias",
     output: "Salida",
     sourceHint: "las formas y los datos",
-    issuesHint: "lo que encontró la validación",
     outputHint: "Turtle y JSON-LD",
     close: "Cerrar {pane}",
   },
-  source: {
-    shapeTab: "Forma SHACL",
-    dataTab: "Grafo de datos",
-    shapePicker: "Forma",
-    dataPicker: "Datos",
+  pickers: {
+    example: "Ejemplo",
+    preset: "Datos de ejemplo",
   },
-  issues: {
-    clean: "Sin incidencias",
-    blocking: "bloqueantes: {blocking} de {total}",
-    notes: "Notas sobre el perfil · {n}",
+  source: {
+    shapeTab: "Formas",
+    dataTab: "Datos",
   },
   output: {
-    which: "Qué salida",
     download: "Descargar el {format}",
   },
   notice: {
@@ -220,8 +190,6 @@ const ES: Chrome = {
 };
 
 const CA: Chrome = {
-  tagline: "Formes SHACL → formulari RDF editable → Turtle i JSON-LD",
-  preferences: "Preferències",
   language: "Idioma",
   share: {
     idle: "Comparteix",
@@ -232,26 +200,20 @@ const CA: Chrome = {
   panes: {
     rail: "Panells",
     source: "Font",
-    issues: "Incidències",
     output: "Sortida",
     sourceHint: "les formes i les dades",
-    issuesHint: "què ha trobat la validació",
     outputHint: "Turtle i JSON-LD",
     close: "Tanca {pane}",
   },
-  source: {
-    shapeTab: "Forma SHACL",
-    dataTab: "Graf de dades",
-    shapePicker: "Forma",
-    dataPicker: "Dades",
+  pickers: {
+    example: "Exemple",
+    preset: "Dades d'exemple",
   },
-  issues: {
-    clean: "Sense incidències",
-    blocking: "bloquejants: {blocking} de {total}",
-    notes: "Notes sobre el perfil · {n}",
+  source: {
+    shapeTab: "Formes",
+    dataTab: "Dades",
   },
   output: {
-    which: "Quina sortida",
     download: "Descarrega el {format}",
   },
   notice: {

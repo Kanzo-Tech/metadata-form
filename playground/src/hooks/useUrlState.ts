@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { decodeState, encodeState, type Decoded, type PermalinkState } from "../lib/permalink.js";
-import { resolveReference } from "../instance.js";
+import { resolveReference } from "../presets.js";
 
 export type ShareStatus = "idle" | "copied" | "uncopied";
 

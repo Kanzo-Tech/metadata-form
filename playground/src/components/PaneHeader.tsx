@@ -1,39 +1,31 @@
 import type { ComponentType, ReactNode } from "react";
-import { Button, Status } from "@kanzo-tech/ui";
+import { Button } from "@kanzo-tech/ui";
 import { XIcon } from "lucide-react";
 import { fill, useChrome } from "../i18n.js";
 
 /**
- * A panel's own header: what the panel is, a control that governs its document,
- * and a way to close it. `h-9` — the same height as the page header's row.
+ * A panel's own header: what the panel is, whatever governs its document, and a
+ * way to close it. `h-9` — the same height as the page header's row.
  *
- * Adapted from the design system's showcases, and it carries their rule about
- * where a control belongs: `actions` is for something that acts on **this
- * panel's document** — the shape and data pickers replace what Source is
- * showing, so they sit here against it. A control that acts on the whole page
- * (Share, the validation tally) stays in the page header — or, for the toggles
- * that open these panels, on the rail against the edge they open on.
+ * `children` is for something that acts on **this panel's document**: the tabs
+ * that choose which one it shows, the button that downloads it. A control that
+ * acts on the whole page (the example, Share, the validation tally) stays in the
+ * page header — which is also why this carries no count of its own: the tally is
+ * one number, and it is already up there.
  */
 export function PaneHeader({
-  actions,
-  detail,
+  children,
   icon: Icon,
   onClose,
   title,
-  tone,
 }: {
-  actions?: ReactNode;
-  detail?: string;
+  children?: ReactNode;
   // `size` rather than a `size-3.5` class: that class is not in the design
   // system's sheet, and every icon we pass here is a lucide component, which
   // takes the number directly.
   icon: ComponentType<{ "aria-hidden"?: boolean; className?: string; size?: number }>;
   onClose?: () => void;
   title: string;
-  /** How the panel's document is doing, as a dot before `detail`. A count says
-   *  how many; the dot says whether any of them matter, which is the half a
-   *  reader takes in without reading. */
-  tone?: "destructive" | "info" | "success" | "warning";
 }) {
   // `title` arrives already translated (it is the pane's name); the sentence built
   // around it for the close button is this component's, so it is resolved here.
@@ -42,29 +34,18 @@ export function PaneHeader({
     <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border px-3">
       <Icon aria-hidden size={14} className="shrink-0 text-muted-foreground" />
       <span className="shrink-0 font-medium text-xs">{title}</span>
-      {actions}
-      <span className="ms-auto flex min-w-0 items-center" style={{ gap: "0.375rem" }}>
-        {/* 6px, the size the showcase draws it at beside 12px type. Inline, because
-            `size-1.5` is not in the compiled sheet and `Status`'s own steps stop at
-            8px (`sm`); the recipe's default `md` would paint 10px. */}
-        {tone ? <Status className="shrink-0" variant={tone} style={{ width: "0.375rem", height: "0.375rem" }} /> : null}
-        {detail ? (
-          <span className="truncate text-muted-foreground text-xs" title={detail}>
-            {detail}
-          </span>
-        ) : null}
-        {onClose ? (
-          <Button
-            aria-label={fill(chrome.panes.close, { pane: title })}
-            className="size-6 shrink-0 text-muted-foreground"
-            onClick={onClose}
-            size="icon-sm"
-            variant="ghost"
-          >
-            <XIcon />
-          </Button>
-        ) : null}
-      </span>
+      {children}
+      {onClose ? (
+        <Button
+          aria-label={fill(chrome.panes.close, { pane: title })}
+          className="ms-auto size-6 shrink-0 text-muted-foreground"
+          onClick={onClose}
+          size="icon-sm"
+          variant="ghost"
+        >
+          <XIcon />
+        </Button>
+      ) : null}
     </div>
   );
 }

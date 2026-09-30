@@ -4,6 +4,8 @@ import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { LocaleSelect } from "@playground/components/LocaleSelect.js";
 import { initialLanguage } from "@playground/lib/language.js";
 import { EXAMPLES } from "@playground/presets.js";
+import { evidenzeShapes, evidenzeRootShape } from "@examples/evidenze-dataspace/index.js";
+import { evidenzeHealthShapes, evidenzeHealthRootShape } from "@examples/evidenze-health/index.js";
 
 /** The languages the form reports for each example's shapes: detected, not listed. */
 async function languagesOf(shapes: string, rootShape?: string) {
@@ -20,9 +22,13 @@ describe("the languages a shapes graph is written in", () => {
     expect(await languagesOf(state.shapesText, state.options.rootShape)).toEqual(["en", "es"]);
   });
 
-  it.each(["evidenze-dataspace", "evidenze-health"])("are Spanish and Catalan for %s, the more written first", async (id) => {
-    const state = shapesOf(id);
-    expect(await languagesOf(state.shapesText, state.options.rootShape)).toEqual(["es", "ca"]);
+  // Not in the playground's catalogue; still the fixtures that are written in two
+  // languages, which is what this is about.
+  it.each([
+    ["evidenze-dataspace", evidenzeShapes, evidenzeRootShape],
+    ["evidenze-health", evidenzeHealthShapes, evidenzeHealthRootShape],
+  ])("are Spanish and Catalan for %s, the more written first", async (_id, shapes, rootShape) => {
+    expect(await languagesOf(shapes, rootShape)).toEqual(["es", "ca"]);
   });
 
   it("are none when nothing is tagged, and then the selector is not there", async () => {

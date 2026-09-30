@@ -1,13 +1,5 @@
 import shapes from "./shapes.ttl?raw";
 import sample from "./sample.ttl?raw";
-import logo from "./logo-white.webp";
-import icon from "./icon.png";
-
-/** Evidenze's wordmark (their official white wordmark) — a bundled asset URL, shown
- *  recoloured in the app title so it reads on the light or dark chrome. */
-export const evidenzeLogo: string = logo;
-/** Evidenze's brand mark (the tri-bar symbol) — used as the browser-tab favicon. */
-export const evidenzeIcon: string = icon;
 
 /**
  * Evidenze Data Space — dataset onboarding, authored in pure SHACL Core + SHACL-UI

@@ -4,23 +4,22 @@ import { useChrome } from "../i18n.js";
 import type { Preset, ShapeExample } from "../presets.js";
 
 /**
- * The Shape and Data pickers, and they are two components rather than one row.
+ * Which example is open, and which of its data presets: `example / preset`, in the
+ * page header beside the wordmark.
  *
- * They used to sit together in the Source pane's header. That is the right half of
- * the design system's rule — a control belongs against the thing it acts on, not in
- * the page header beside Share — but it stopped one step short: the Source pane
- * shows **two** documents, and each of these replaces exactly one of them. So each
- * goes beside the tab whose document it swaps, which is what the showcase does with
- * every panel it has.
+ * They were in the Source pane, each against the document it swaps. But picking an
+ * example replaces the shapes, the data, the form and everything the other panels
+ * say about it — it acts on the whole page, which by the same rule puts it in the
+ * page header. And there it is visible: the page opens with Source closed, so a
+ * visitor had no sign that there was more than one example to open.
  *
- * No visible labels: at this size the strip has room for the values or for two
- * words naming what everyone can already see. The accessible names carry them.
+ * No visible labels: the values say what they are. The accessible names carry them.
  *
  * Each is drawn only when it has a choice to offer. An instance that ships one shape
  * set — a client's, carrying their shapes and nothing else — would otherwise get a
  * picker whose single option is the name of the product they are already using.
  */
-function PaneSelect({
+function HeaderSelect({
   children,
   label,
   onChange,
@@ -31,17 +30,15 @@ function PaneSelect({
   onChange: (value: string) => void;
   value: string;
 }) {
-  // The flex basis is on a wrapper, not on the select: `NativeSelect`'s own box is
-  // `w-fit`, so a width set on the control is a floor the strip cannot squeeze past
-  // — and this strip shares its row with the tabs.
+  // The control is as wide as its value (`w-fit` is the recipe's own) and the
+  // wrapper is what may shrink, so a long label gives way before the actions do.
   return (
-    <div style={{ flex: "0 1 8rem", minWidth: "4.5rem" }}>
+    <div className="min-w-0">
       <NativeSelect
         aria-label={label}
-        className="w-full"
         onChange={(e) => onChange(e.target.value)}
         size="sm"
-        style={{ width: "100%", minWidth: 0 }}
+        style={{ maxWidth: "100%" }}
         value={value}
       >
         {children}
@@ -50,50 +47,54 @@ function PaneSelect({
   );
 }
 
-/** Which shape set the whole Source panel is showing. It replaces the data graph
- *  too — a shape set arrives with the sample that fits it — which is why it sits
- *  with the shape and not between the two. */
-export function ShapePicker({
+const Slash = () => (
+  <span aria-hidden className="shrink-0 text-muted-foreground">
+    /
+  </span>
+);
+
+export function ExamplePickers({
   examples,
-  onPick,
+  onPickPreset,
+  onPickShape,
+  presetId,
+  presets,
   shapeId,
 }: {
   examples: ShapeExample[];
-  onPick: (id: string) => void;
+  onPickPreset: (id: string) => void;
+  onPickShape: (id: string) => void;
+  presetId: string;
+  presets: Preset[];
   shapeId: string;
 }) {
   const chrome = useChrome();
-  if (examples.length < 2) return null;
   return (
-    <PaneSelect label={chrome.source.shapePicker} onChange={onPick} value={shapeId}>
-      {examples.map((e) => (
-        <NativeSelectOption key={e.id} value={e.id}>
-          {e.label}
-        </NativeSelectOption>
-      ))}
-    </PaneSelect>
-  );
-}
-
-/** Which sample data the form starts from, within the active shape set. */
-export function PresetPicker({
-  onPick,
-  presetId,
-  presets,
-}: {
-  onPick: (id: string) => void;
-  presetId: string;
-  presets: Preset[];
-}) {
-  const chrome = useChrome();
-  if (presets.length < 2) return null;
-  return (
-    <PaneSelect label={chrome.source.dataPicker} onChange={onPick} value={presetId}>
-      {presets.map((p) => (
-        <NativeSelectOption key={p.id} value={p.id}>
-          {p.label}
-        </NativeSelectOption>
-      ))}
-    </PaneSelect>
+    <>
+      {examples.length > 1 && (
+        <>
+          <Slash />
+          <HeaderSelect label={chrome.pickers.example} onChange={onPickShape} value={shapeId}>
+            {examples.map((e) => (
+              <NativeSelectOption key={e.id} value={e.id}>
+                {e.label}
+              </NativeSelectOption>
+            ))}
+          </HeaderSelect>
+        </>
+      )}
+      {presets.length > 1 && (
+        <>
+          <Slash />
+          <HeaderSelect label={chrome.pickers.preset} onChange={onPickPreset} value={presetId}>
+            {presets.map((p) => (
+              <NativeSelectOption key={p.id} value={p.id}>
+                {p.label}
+              </NativeSelectOption>
+            ))}
+          </HeaderSelect>
+        </>
+      )}
+    </>
   );
 }
