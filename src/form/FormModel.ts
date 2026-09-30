@@ -170,10 +170,10 @@ export interface FieldModel {
   /** Why the field takes no input — a stable code plus a sentence in the form's
    *  locale, for the UI to show next to the disabled control. */
   readOnlyReason?: ReadOnlyReason;
-  /** Present when this field comes from a SHACL 1.2 conditional branch
-   *  (`sh:then`/`sh:else`). It is only in the model when its branch is active for
-   *  the current focus, so it needs no per-render gate; carried for validation
-   *  routing and inspection. */
+  /** Present when this field comes from a conditional's requirements (the `then`
+   *  branch of an `sh:or ( [ sh:not C ] T )` implication). It is only in the model
+   *  when its branch is active for the current focus, so it needs no per-render
+   *  gate; carried for validation routing and inspection. */
   guard?: { conditionId: string; branch: "then" | "else" };
   /** Shape reference for nested node shapes (sh:node), if any. */
   nodeShape?: NamedNode | null;

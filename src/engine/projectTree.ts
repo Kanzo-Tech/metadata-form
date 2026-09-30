@@ -8,9 +8,13 @@ import type { NodeShapeIR, ProjectedForm, PropertyShapeIR, ShapeModel } from "..
 export interface ProjectedNode {
   focus: Term;
   shapeId: string;
+  /** Set when the node is a conditional's `then` branch: the node shape that
+   *  declares the conditional. The branch is validated on its own so its
+   *  path-level results reach the fields; see `RudofEngine.validateTree`. */
+  branchOf?: string;
 }
 
-/** The whole projected tree: field values plus, per focus, the set of SHACL-1.2
+/** The whole projected tree: field values plus, per focus, the set of
  *  conditional `conditionId`s the focus conforms to (keyed by `focus.value`). Both
  *  are produced in one recursive pass so `buildFormModel` reads them synchronously. */
 export interface ProjectedTree {
@@ -71,7 +75,14 @@ function recurse(
   if (!node || node.deactivated) return;
   tree.nodes.push({ focus, shapeId });
   const form = project(focus, shapeId);
-  tree.satisfied.set(focus.value, new Set(form.satisfied ?? []));
+  const satisfied = new Set(form.satisfied ?? []);
+  tree.satisfied.set(focus.value, satisfied);
+  // A satisfied conditional's `then` shape is validated as a node of its own:
+  // validating the parent yields only one pathless `sh:or` result, whereas the
+  // branch yields the path-level results the conditional fields show inline.
+  for (const c of node.conditionals ?? []) {
+    if (c.thenId && satisfied.has(c.conditionId)) tree.nodes.push({ focus, shapeId: c.thenId, branchOf: shapeId });
+  }
   const propShapes = projectedPropertyShapes(node);
   for (const prop of form.properties) {
     tree.values.set(

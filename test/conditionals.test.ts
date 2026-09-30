@@ -5,9 +5,9 @@ import { allFields } from "@/form/FormModel.js";
 import type { NodeShapeIR, PropertyShapeIR, ShapeModel } from "@/form/ShapeIR.js";
 
 /**
- * Pure (no-wasm) test of SHACL-1.2 conditional rendering in `buildFormModel`:
- * a node shape's `sh:then` fields appear only when the projection reports the
- * condition satisfied; the `sh:else` fields appear otherwise. Locks the TS gate
+ * Pure (no-wasm) test of conditional rendering in `buildFormModel`:
+ * a conditional's `then` fields appear only when the projection reports the
+ * condition satisfied; the `else` fields appear otherwise. Locks the TS gate
  * independently of the rudof conformance evaluation (mirrored via `satisfied`).
  */
 
@@ -55,8 +55,8 @@ function pathsOf(satisfied: Map<string, Set<string>>): string[] {
   return allFields(model).map((f) => f.path.value);
 }
 
-describe("SHACL 1.2 conditional rendering (buildFormModel)", () => {
-  it("shows the sh:then field (required) when the condition is satisfied", () => {
+describe("conditional rendering (buildFormModel)", () => {
+  it("shows the then field (required) when the condition is satisfied", () => {
     const satisfied = new Map([[focus.value, new Set([CONDITION_ID])]]);
     const model = buildFormModel({ shapes, focusNode: focus, shape, satisfied });
     const paths = allFields(model).map((f) => f.path.value);
@@ -68,7 +68,7 @@ describe("SHACL 1.2 conditional rendering (buildFormModel)", () => {
     expect(justification.guard).toEqual({ conditionId: CONDITION_ID, branch: "then" });
   });
 
-  it("shows the sh:else field when the condition is NOT satisfied", () => {
+  it("shows the else field when the condition is NOT satisfied", () => {
     const paths = pathsOf(new Map([[focus.value, new Set()]]));
     expect(paths).toContain(`${EX}publicNote`);
     expect(paths).not.toContain(`${EX}accessJustification`);

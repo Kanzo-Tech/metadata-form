@@ -10,9 +10,9 @@ export const evidenzeLogo: string = logo;
 export const evidenzeIcon: string = icon;
 
 /**
- * Evidenze Data Space — dataset onboarding, authored in pure SHACL 1.2 + SHACL-UI
+ * Evidenze Data Space — dataset onboarding, authored in pure SHACL Core + SHACL-UI
  * (`shui:`), no DASH. Shows conditional rendering: choosing "Restringido" for
- * access rights reveals (and requires) a justification field via `sh:if`/`sh:then`.
+ * access rights reveals (and requires) a justification field, stated as the implication `sh:or ( [ sh:not C ] T )`.
  * See `shapes.ttl`.
  */
 export const evidenzeShapes: string = shapes;

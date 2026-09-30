@@ -102,7 +102,7 @@ export const EXAMPLES: ShapeExample[] = [
   },
   {
     id: "evidenze-dataspace",
-    label: "Evidenze Data Space (SHACL 1.2)",
+    label: "Evidenze Data Space (SHACL Core + SHACL-UI)",
     // Evidenze's own identity (colours from their site: navy #091a40, blue
     // #1d4ebd, green #27b564) — the app wears it while this example is active.
     branding: EVIDENZE_BRANDING,

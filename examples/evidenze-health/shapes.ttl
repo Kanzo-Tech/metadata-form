@@ -18,28 +18,18 @@
 @prefix vcard:        <http://www.w3.org/2006/vcard/ns#> .
 @prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
 
-# NOTE ON sh:if — sh:if / sh:then / sh:else is NOT a SHACL 1.2 constraint
-# component. SHACL 1.2 Core (WD 2026-08-28) defines 43 components and none is
-# conditional; the 1.2 family's conditional construct is shnex:IfExpression, a
-# NODE EXPRESSION in the shnex: namespace, which computes a value rather than
-# requiring a property. The component used below is ours, minted in the sh:
-# namespace deliberately, and validated by exactly one engine (rudof, via
-# @kanzo-tech/rudof-wasm). shui: below, by contrast, is used exactly as W3C
-# specifies it — SHACL 1.2 User Interfaces, FPWD 2026-05-26.
-
 #################################################################
 # Evidenze Data Space — HealthDCAT-AP Release 7 onboarding shape
-# SHACL 1.2 Core + SHACL-UI (shui:) — no DASH — plus one non-standard
-# conditional component of ours; see the note below.
+# SHACL Core + SHACL-UI (shui:) — no DASH.
 #
 # Migrated from the original DASH profile:
 #  · the 4 node shapes with the same sh:targetClass (Health/Public/
 #    NonPublic/Restricted, differing only by a hidden sh:hasValue on
 #    dct:accessRights) collapse into this SINGLE shape with a visible
 #    access-level selector;
-#  · the root sh:or (hasStructuredData ⇒ hasVariables) becomes our
-#    sh:if/sh:then conditional (non-standard, see NOTE): toggling "Datos estructurados" reveals and requires the
-#    variable dictionary — rendered live by the engine;
+#  · the root sh:or (hasStructuredData ⇒ hasVariables) is kept as the
+#    standard implication sh:or ( [ sh:not C ] T ): toggling "Datos estructurados"
+#    reveals and requires the variable dictionary — rendered live by the engine;
 #  · DASH editors become shui:editor; hidden constant-stamp fields dropped;
 #  · the huge EU authority enums (language ~8200, file-type ~227) are trimmed
 #    to a representative set — the full authority lists apply in production.
@@ -113,10 +103,11 @@ evds-sh:HealthDatasetOnboardingShape
         evds-sh:dataset-hasCodingSystem,
         evds-sh:dataset-wasGeneratedBy,
         evds-sh:dataset-hasStructuredData ;
-    # Conditional (was a root sh:or) — OUR component, not SHACL 1.2's: if the dataset declares
-    # structured data, reveal & require the variable dictionary.
-    sh:if evds-sh:StructuredDataCondition ;
-    sh:then evds-sh:StructuredDataRequirements .
+    # Conditional as a material implication (SHACL Core §4.6.1, §4.6.3): if the dataset
+    # declares structured data, reveal & require the variable dictionary.
+    sh:or ( [ sh:not evds-sh:StructuredDataCondition ] evds-sh:StructuredDataRequirements ) ;
+    sh:message "Si el dataset declara datos estructurados, debe incluir el diccionario de variables."@es ,
+               "Si el dataset declara dades estructurades, ha d'incloure el diccionari de variables."@ca .
 
 evds-sh:StructuredDataCondition
     a sh:NodeShape ;
@@ -461,7 +452,7 @@ evds-sh:dataset-hasStructuredData
     sh:maxCount 1 .
 
 #################################################################
-# 7. Variable dictionary (revealed by the sh:if/sh:then above)
+# 7. Variable dictionary (revealed by the sh:or implication above)
 #################################################################
 
 evds-sh:dataset-hasVariables

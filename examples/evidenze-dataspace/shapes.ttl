@@ -13,28 +13,18 @@
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-# NOTE ON sh:if — sh:if / sh:then / sh:else is NOT a SHACL 1.2 constraint
-# component. SHACL 1.2 Core (WD 2026-08-28) defines 43 components and none is
-# conditional; the 1.2 family's conditional construct is shnex:IfExpression, a
-# NODE EXPRESSION in the shnex: namespace, which computes a value rather than
-# requiring a property. The component used below is ours, minted in the sh:
-# namespace deliberately, and validated by exactly one engine (rudof, via
-# @kanzo-tech/rudof-wasm). shui: below, by contrast, is used exactly as W3C
-# specifies it — SHACL 1.2 User Interfaces, FPWD 2026-05-26.
-
 #################################################################
 # Evidenze Data Space Dataset Onboarding Shapes v2.0
-# SHACL 1.2 Core + SHACL-UI (shui:) — no DASH — plus one non-standard
-# conditional component of ours; see the note below.
-# Demonstrates conditional rendering via our sh:if/sh:then component on the
-# root node shape reveals (and requires) a field only when a selector
+# SHACL Core + SHACL-UI (shui:) — no DASH.
+# Demonstrates conditional rendering: a standard implication
+# sh:or ( [ sh:not C ] T ) on the root node shape reveals (and requires) a field only when a selector
 # value is chosen.
 #################################################################
 
 evds-sh:ShapeGraph
     a owl:Ontology ;
     rdfs:label "Evidenze Data Space Dataset Onboarding Shapes v2.0"@es ;
-    dct:description "Perfil de captura de metadatos para datasets publicables en Evidenze Data Space, en SHACL 1.2 Core + SHACL-UI, con un componente condicional propio (sh:if) que no es estandar."@es ;
+    dct:description "Perfil de captura de metadatos para datasets publicables en Evidenze Data Space, en SHACL Core + SHACL-UI, con un requisito condicional expresado como implicacion estandar (sh:or)."@es ;
     dct:issued "2026-07-14"^^xsd:date ;
     dct:conformsTo <https://dataspace.evidenze.example/profile/dataset-onboarding/v2.0> .
 
@@ -120,11 +110,12 @@ evds-sh:DatasetOnboardingShape
         evds-sh:dataset-organisationalUnit,
         evds-sh:dataset-environmentZone,
         evds-sh:dataset-field ;
-    # Conditional — OUR component, not SHACL 1.2's: if access is RESTRICTED, reveal & require a
-    # justification. Driven by the accessRights selector — rudof evaluates the
-    # condition and the form shows the sh:then field live.
-    sh:if evds-sh:RestrictedAccessCondition ;
-    sh:then evds-sh:RestrictedAccessRequirements .
+    # Conditional as a material implication (SHACL Core §4.6.1, §4.6.3): if access is
+    # RESTRICTED, reveal & require a justification. Driven by the accessRights
+    # selector — rudof evaluates the condition and the form shows the requirements live.
+    sh:or ( [ sh:not evds-sh:RestrictedAccessCondition ] evds-sh:RestrictedAccessRequirements ) ;
+    sh:message "Si el acceso es restringido, hay que indicar la justificacion de acceso."@es ,
+               "Si l'acces es restringit, cal indicar la justificacio d'acces."@ca .
 
 #################################################################
 # Conditional: restricted-access justification

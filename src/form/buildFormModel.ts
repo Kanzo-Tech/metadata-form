@@ -79,7 +79,7 @@ export interface BuildArgs {
    *  single-graph projection). The sole value source; defaults to empty (so
    *  structure-only callers get empty slots). */
   values?: ProjectedValues;
-  /** Per-focus set of satisfied SHACL-1.2 conditional `conditionId`s (keyed by
+  /** Per-focus set of satisfied conditional `conditionId`s (keyed by
    *  `focus.value`), from the projection. Gates which conditional branch's fields
    *  are built. Defaults to empty (no conditional is active). */
   satisfied?: Map<string, Set<string>>;
@@ -154,8 +154,8 @@ function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
   }
 
   // Every property shape that applies to this focus right now: the node shape's
-  // own, plus the active branch of each SHACL 1.2 conditional (then when the focus
-  // conforms to the sh:if, else when it doesn't — rudof evaluated conformance
+  // own, plus the active branch of each conditional (then when the focus
+  // conforms to its condition, else when it doesn't — rudof evaluated conformance
   // canonically, we only read `satisfied`). They are gathered before any field is
   // built because they are conjoined by path, and a branch that is active applies
   // exactly as the node shape's own do.

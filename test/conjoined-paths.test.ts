@@ -255,10 +255,10 @@ describe("property shapes sharing a path (SHACL conjunction)", () => {
 
 /**
  * The conditional case, on a hand-built IR because what is under test is which
- * property shapes apply — not rudof's evaluation of the `sh:if`, which
+ * property shapes apply — not rudof's evaluation of the condition, which
  * `conditionals.integration.test.ts` covers.
  */
-describe("conjunction across a SHACL 1.2 conditional branch", () => {
+describe("conjunction across a conditional branch", () => {
   const CONDITION = "_:cond";
   const prop = (iri: string, extra: Partial<PropertyShapeIR> = {}): PropertyShapeIR => ({
     path: { kind: "predicate", iri },

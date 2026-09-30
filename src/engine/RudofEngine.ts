@@ -8,6 +8,7 @@ import type { Severity, ValidationResult } from "../form/validation.js";
 import type { RudofLoader, RudofResult, RudofSession, ShapeModelJson } from "./abi.js";
 
 const TURTLE = "text/turtle";
+const SH_OR = "http://www.w3.org/ns/shacl#OrConstraintComponent";
 const RDF_TYPE = namedNode(rdf("type").value);
 
 function mapSeverity(s: string | undefined): Severity {
@@ -245,16 +246,22 @@ export class RudofEngine {
    * inside a nested publisher reaches the report at all.
    *
    * Duplicates are possible in principle (the outer rollup plus the inner cause);
-   * `computeFormReport` is where the rollup is dropped, since only there is it
-   * known whether anything nested actually reported.
+   * `computeFormReport` is where the `sh:node` rollup is dropped, since only there
+   * is it known whether anything nested actually reported. The pathless `sh:or`
+   * result of a conditional is dropped here instead, because only here is it known
+   * which results came from the branch: a `branchOf` node that reported something
+   * makes the parent's node-level `sh:or` result for that focus redundant.
    */
   async validateTree(nodes: readonly ProjectedNode[]): Promise<ValidationResult[]> {
     await this.ready();
     const out: ValidationResult[] = [];
-    for (const { focus, shapeId } of nodes) {
-      out.push(...this.s.validateFocus(toTermValue(focus), shapeId).results.map(toValidationResult));
+    const branched = new Set<string>();
+    for (const { focus, shapeId, branchOf } of nodes) {
+      const results = this.s.validateFocus(toTermValue(focus), shapeId).results.map(toValidationResult);
+      if (branchOf && results.length > 0) branched.add(focus.value);
+      out.push(...results);
     }
-    return out;
+    return out.filter((r) => !(r.constraint === SH_OR && !r.pathKey && branched.has(r.focusNode.value)));
   }
 
   /** Evaluate every property path of a shape for a focus node against the graph. */

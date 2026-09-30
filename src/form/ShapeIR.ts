@@ -71,21 +71,26 @@ export interface LogicalConstraints {
 }
 
 /**
- * A SHACL 1.2 `sh:if` / `sh:then` / `sh:else` conditional attached to a node
- * shape. The condition itself is not rendered; rudof evaluates it canonically and
- * reports whether the focus conforms via {@link ProjectedForm.satisfied}. When it
- * does, the `then` property shapes become visible/required; otherwise the `else`
- * ones do. The branch shapes are flattened to their property shapes so they build
- * into fields with `buildField`.
+ * A conditional requirement stated in SHACL Core as a material implication on a
+ * node shape, `sh:or ( [ sh:not C ] T )` (§4.6.1, §4.6.3): the focus conforms when
+ * it does not conform to the condition `C`, or conforms to the requirements `T`.
+ * The condition itself is not rendered; rudof evaluates it canonically and reports
+ * whether the focus conforms to it via {@link ProjectedForm.satisfied}. When it
+ * does, the `then` property shapes become visible/required. The branch shapes are
+ * flattened to their property shapes so they build into fields with `buildField`.
  */
 export interface ConditionalIR {
-  /** Stable id of the `sh:if` condition shape (an IRI, or `_:b…` for a blank
-   *  node) — matches an entry in {@link ProjectedForm.satisfied} when the focus
-   *  conforms to it. */
+  /** Stable id of the condition shape `C` (an IRI, or `_:b…` for a blank node) —
+   *  matches an entry in {@link ProjectedForm.satisfied} when the focus conforms
+   *  to it. */
   conditionId: string;
-  /** Property shapes to show/require when the condition holds (`sh:then`). */
+  /** Id (IRI, or `_:b…` for an anonymous shape) of the shape `T` the `then`
+   *  branch comes from. `validateFocus`/`projectForm` accept it, and validating
+   *  it reports the branch's own path-level results. */
+  thenId?: string;
+  /** Property shapes to show/require when the condition holds (`T`). */
   then: PropertyShapeIR[];
-  /** Property shapes to show/require when it does not (`sh:else`). */
+  /** Property shapes to show/require when it does not; empty for an implication. */
   else: PropertyShapeIR[];
 }
 
@@ -109,7 +114,7 @@ export interface PresentationHints {
 /**
  * An open record of a constraint component, keyed by its component IRI. Carries
  * every component — including those normalized above — so a rule or widget can
- * react to terms the typed core does not model (custom vocab, new SHACL 1.2
+ * react to terms the typed core does not model (custom vocab, new SHACL
  * components) without changing this IR. This is the Open/Closed extension point.
  */
 export interface ComponentIR {
@@ -174,8 +179,7 @@ export interface NodeShapeIR {
   /** Canonical class for a new instance (the first sh:targetClass). */
   instanceClass?: string;
   properties: PropertyShapeIR[];
-  /** SHACL 1.2 `sh:if`/`sh:then`/`sh:else` conditionals declared on this node
-   *  shape. Empty/absent when the shape has none. */
+  /** Conditionals stated on this node shape as `sh:or ( [ sh:not C ] T )`. Empty/absent when the shape has none. */
   conditionals?: ConditionalIR[];
   /**
    * Combinators declared on the node shape itself, constraining the focused node
@@ -235,9 +239,8 @@ export interface ProjectedProperty {
 export interface ProjectedForm {
   focus: TermValue;
   properties: ProjectedProperty[];
-  /** SHACL-1.2 conditional evaluation for this focus: the `conditionId`s (see
-   *  {@link ConditionalIR}) whose `sh:if` condition the focus currently conforms
-   *  to. rudof evaluates these canonically with the validator so the UI never
+  /** Conditional evaluation for this focus: the `conditionId`s (see
+   *  {@link ConditionalIR}) whose condition the focus currently conforms to. rudof evaluates these canonically with the validator so the UI never
    *  re-implements SHACL conformance. Absent on hand-built IRs (treated as none). */
   satisfied?: string[];
 }
