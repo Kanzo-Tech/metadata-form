@@ -20,12 +20,14 @@ import {
 } from "@kanzo-tech/ui";
 import { Code2Icon, DownloadIcon, FileTextIcon, ListChecksIcon } from "lucide-react";
 import { PaneHeader } from "./components/PaneHeader.js";
-import { FormAssistant, MetadataForm, useMetadataForm, ValidationPanel, type FormAssist } from "metadata-form";
+import { MetadataForm, useMetadataForm, ValidationPanel, type FormAssist } from "metadata-form";
+import { assistUi } from "metadata-form/ai";
 import { Preferences, usePreferences } from "./Preferences.js";
 import { Header } from "./components/Header.js";
 import { PresetPicker, ShapePicker } from "./components/ExamplePickers.js";
 import { LocaleSelect } from "./components/LocaleSelect.js";
 import { ShareButton } from "./components/ShareButton.js";
+import { Companion } from "./components/Companion.js";
 import { PanelRail } from "./components/PanelRail.js";
 import { WorkspaceColumns, type WorkspaceColumn } from "./components/Workspace.js";
 import { CodePanel, CodeEditor } from "./components/CodePanel.js";
@@ -322,7 +324,7 @@ function ThemedApp({
             </CardContent>
           </Card>
         ) : (
-          <MetadataForm form={form} layout={prefs.layout.mode} grid={{ columns: prefs.layout.columns }} />
+          <MetadataForm form={form} assistUi={assistUi} layout={prefs.layout.mode} grid={{ columns: prefs.layout.columns }} />
         )}
       </div>
     </ShellMain>
@@ -458,9 +460,10 @@ function ThemedApp({
           // The FAB is fixed bottom-end and owns that spot (it is the design system's,
           // and every showcase puts it there); the companion is the guest, so it moves
           // up by the FAB's height and its gap rather than sitting on top of it.
-          <FormAssistant
-            form={form}
-            offset={{ bottom: "4rem" }}
+          <Companion
+            report={form.report}
+            onReveal={form.revealField}
+            offset="4rem"
             onDismiss={() => update("assistant", { enabled: false })}
           />
         )}

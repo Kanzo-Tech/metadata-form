@@ -62,6 +62,9 @@
     "zod": ">=3.23"
   },
   "peerDependenciesMeta": {
+    "@kanzo-tech/ai": {
+      "optional": true
+    },
     "ai": {
       "optional": true
     },

@@ -25,7 +25,6 @@ import {
   Textarea,
   useField,
 } from "@kanzo-tech/ui";
-import { CompleteHint, CompleteRoot, CompleteTextarea } from "@kanzo-tech/ai";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import { column, grow } from "../styles.js";
 import type { WidgetOption } from "../../assist.js";
@@ -218,11 +217,7 @@ const LangArea: Widget = (p) => {
   const text = useCommit(p.value, (v) => p.onChange(v, p.language || ""));
   return (
     <div style={{ ...column, ...grow, gap: "0.25rem" }}>
-      <Textarea
-        value={text.local}
-        onChange={(e) => text.change(e.target.value)}
-        onBlur={text.flush}
-      />
+      <AssistedTextarea text={text} complete={p.complete} placeholder={p.placeholder} />
       <div style={{ marginInlineStart: "auto", width: "fit-content" }}>
         <LangSlot {...p} text={text.local} />
       </div>
@@ -280,48 +275,59 @@ const ReferenceMulti: MultiWidget = (p) =>
   );
 
 /**
- * Long free text, with streaming inline completion when the consumer wires
- * `assist.complete`.
+ * A textarea over the design system's, with ghost-text completion when the form
+ * has an `assistUi` and the consumer wired `assist.complete`.
  *
  * The ghost is `@kanzo-tech/ai`'s compound composed *over* a plain `Textarea`
- * rather than an editor with a completion prop — which is why this is six lines
- * and not a CodeMirror instance. `cleanGhost` inside it also handles the echo
- * still arriving, not merely a finished one, which is the case that used to paint
- * the sentence twice.
+ * rather than an editor with a completion prop. The form receives it as
+ * `assistUi.complete` (the core imports no AI package), so without one — or
+ * without `complete` — this is the plain textarea and nothing else.
  *
- * `CompleteRoot` owns the field's value while it is mounted, so the debounce
- * feeds it and the graph commit stays on the same blur as everywhere else.
+ * `Root` owns the field's value while it is mounted, so the debounce feeds it
+ * and the graph commit stays on the same blur as everywhere else.
  */
-const Area: Widget = (p) => {
-  // Hook first (stable order), then branch on whether inline completion is wired.
-  const { local, change, flush } = useCommit(p.value, p.onChange);
-  const complete = p.complete;
-  if (!complete) {
+function AssistedTextarea({
+  text,
+  complete,
+  placeholder,
+}: {
+  text: ReturnType<typeof useCommit>;
+  complete: WidgetProps["complete"];
+  placeholder: string | undefined;
+}) {
+  const ghost = useFormContext().assistUi?.complete;
+  if (!complete || !ghost) {
     return (
       <Textarea
         style={{ flex: 1 }}
-        value={local}
-        placeholder={p.placeholder}
-        onChange={(e) => change(e.target.value)}
-        onBlur={flush}
+        value={text.local}
+        placeholder={placeholder}
+        onChange={(e) => text.change(e.target.value)}
+        onBlur={text.flush}
       />
     );
   }
   return (
-    <CompleteRoot
-      // `className`, not `style`: CompleteRoot takes no style prop. `flex-1` is a
+    <ghost.Root
+      // `className`, not `style`: the root takes no style prop. `flex-1` is a
       // class the design system's own sheet ships, which the guard test checks.
       className="flex-1"
-      value={local}
-      onValueChange={change}
-      complete={(req) => complete(req.value, req.signal)}
+      value={text.local}
+      onValueChange={text.change}
+      complete={complete}
     >
-      <CompleteTextarea>
-        <Textarea placeholder={p.placeholder} onBlur={flush} />
-      </CompleteTextarea>
-      <CompleteHint />
-    </CompleteRoot>
+      <ghost.Textarea>
+        <Textarea placeholder={placeholder} onBlur={text.flush} />
+      </ghost.Textarea>
+      <ghost.Hint />
+    </ghost.Root>
   );
+}
+
+/** Long free text. */
+const Area: Widget = (p) => {
+  const text = useCommit(p.value, p.onChange);
+  return <AssistedTextarea text={text} complete={p.complete} placeholder={p.placeholder} />;
 };
 
 /**

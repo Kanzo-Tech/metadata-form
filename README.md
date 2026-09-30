@@ -21,9 +21,11 @@ field's **SHACL-UI editor** to a widget and renders the form.
   [Ark UI](https://ark-ui.com); swap any input by overriding its widget.
 - ✅ **Live validation** — per-field errors from rudof's SHACL validator, plus a
   ready-made `<ValidationSummary>` pill.
-- 🤖 **Optional AI assist** — one `assist` seam: streaming inline ghost-text
-  completion (ghost text in a textarea; Tab/Esc) and live value suggestions, with a
-  one-line [Vercel AI SDK](https://sdk.vercel.ai) adapter. The core imports no LLM SDK.
+- 🤖 **Optional AI assist** — one `assist` seam, and a separate `metadata-form/ai`
+  subpath that draws it: streaming ghost text in textareas (Tab/Esc), ✨ value
+  suggestions under text fields, prompts built from the field's own SHACL
+  constraints, and a one-line [Vercel AI SDK](https://sdk.vercel.ai) adapter.
+  The core imports no AI package.
 - 📦 **Bundled example shapes** (e.g. **HealthDCAT-AP**) in the playground.
 - 🧩 **ShEx-ready** — the engine seam is shape-language-agnostic; ShEx can be
   added without touching the UI.
@@ -31,9 +33,11 @@ field's **SHACL-UI editor** to a widget and renders the form.
 ## Install
 
 ```sh
-npm install metadata-form react react-dom lucide-react tailwindcss \
-  @kanzo-tech/ui @kanzo-tech/ai
+npm install metadata-form react react-dom lucide-react tailwindcss @kanzo-tech/ui
 ```
+
+The AI layer is opt-in and has its own peers (`@kanzo-tech/ai`, and `ai` + `zod`
+for the model adapter) — see [Assistance](#assistance--one-seam-assist).
 
 ESM-only, React 19+, Tailwind CSS v4. The UI is built on **@kanzo-tech/ui**
 (icons from [lucide](https://lucide.dev)), which ships Tailwind *source*, not
@@ -43,7 +47,6 @@ one stylesheet.
 ```css
 @import "tailwindcss";
 @import "@kanzo-tech/ui/tailwind.css";
-@import "@kanzo-tech/ai/tailwind.css";
 @import "metadata-form/tailwind.css";
 ```
 
@@ -52,8 +55,6 @@ on `<html>` with `KanzoThemeProvider`. There is **no wrapper component to render
 inside** — Ark's overlays portal to `document.body`, outside anything a wrapper
 could reach, and density sets the root font-size the whole `rem` scale resolves
 against.
-
-`@kanzo-tech/ai` is a required peer for now: the library imports it unconditionally.
 
 ### The wasm engine
 
@@ -123,81 +124,62 @@ The main entry is deliberately small.
 |---|---|
 | `useMetadataForm`, `MetadataForm` | the controller hook and the component that renders it |
 | `ValidationSummary`, `ValidationPanel` | the issue pill and the issue list |
-| `FormAssistant` | the corner companion |
 | `defaultWidgets`, `Editors` | the widget registry and the `shui:` editor IRIs it is keyed by |
-| types | the form model (`FormModel`, `FieldModel`, …), the report (`FormReport`, `FieldError`, …), the widget contract (`Widget`, `WidgetProps`, `WidgetRegistry`, …), `FormAssist`, `Strings` |
+| types | the form model (`FormModel`, `FieldModel`, …), the report (`FormReport`, `FieldError`, …), the widget contract (`Widget`, `WidgetProps`, `WidgetRegistry`, …), `FormAssist`, `AssistUi`, `Strings` |
 
 Everything else is on a subpath: `metadata-form/rudof` (the engine and the shape
-IR), `metadata-form/ai` (the Vercel AI SDK adapter), `metadata-form/tailwind.css`.
+IR), `metadata-form/ai` (the AI layer: UI, prompt context, model adapter), `metadata-form/tailwind.css`.
 
 ### Assistance — one seam (`assist`)
 
-All data/AI help goes through a single `assist` object. The library **never calls
-an LLM or a vocabulary service itself** — it maps to the two canonical editor
-patterns and renders what these (all optional) callbacks return:
+All data/AI help goes through a single `assist` object with three optional
+callbacks: `suggest` (value candidates, streamed), `complete` (a streamed inline
+continuation at the caret) and `search` (`sh:class` instances for a reference
+combobox). Every callback gets an `AbortSignal`. The library **never calls an LLM
+or a vocabulary service itself**, and the core **draws no assistance UI**: without
+`metadata-form/ai` a form renders plain inputs and plain textareas, and a wired
+`assist.suggest`/`assist.complete` is never called (`search` feeds the reference
+combobox with or without it).
 
-- `suggest` — value candidates for a field, **streamed** into a ✨ popover (a fixed
-  window that refills as you dismiss rows); for short free text.
-- `complete` — a **streaming** inline continuation (ghost text in a textarea;
-  **Tab** accepts, **Esc** dismisses); for `textarea`.
-- `search` — `sh:class` instance autocomplete (a typeahead combobox); for `reference`.
-
-Every callback gets an `AbortSignal` so the UI can cancel stale runs.
-
-**Simplest setup — the optional `metadata-form/ai` adapter** turns any
-[Vercel AI SDK](https://sdk.vercel.ai) model into a ready `assist` (streaming
-suggestions + streaming completion), one line:
+**Enabling it** takes one import and one prop. `assistUi` is
+[`@kanzo-tech/ai`](https://github.com/Kanzo-Tech/kanzo-ui)'s ✨ suggestion strip
+(under text and reference fields) and ghost-text completion (over `textarea`,
+`rich text` and the language-tagged textarea), handed to the form:
 
 ```tsx
+import { assistUi, createFormAssist } from "metadata-form/ai"; // peers: @kanzo-tech/ai, ai, zod
 import { createAnthropic } from "@ai-sdk/anthropic";
-import { createFormAssist } from "metadata-form/ai"; // optional subpath; peer-deps: ai, zod
 
-const form = useMetadataForm({
-  shapes,
-  assist: createFormAssist(createAnthropic({ apiKey })("claude-opus-4-8")),
-});
+const assist = createFormAssist(createAnthropic({ apiKey })("claude-opus-4-8"));
+const form = useMetadataForm({ shapes, assist });
+return <MetadataForm form={form} assistUi={assistUi} />;
 ```
 
-The core never imports `ai` — the adapter lives at a separate subpath. Add your own
-`search` (a real vocabulary service) by spreading: `{ ...createFormAssist(model), search }`.
-
-**Or wire the raw seam yourself** (any stack) — e.g. streaming `complete`:
+`createFormAssist` turns any [Vercel AI SDK](https://sdk.vercel.ai) `LanguageModel`
+into streamed `suggest` and `complete`; add your own `search` (a real vocabulary
+service) by spreading: `{ ...createFormAssist(model), search }`. It is the only
+part that touches the SDK, and it is domain-free — it only maps the SDK's streams
+onto the `AsyncIterable` sources `@kanzo-tech/ai` consumes. With another stack,
+implement the seam yourself and keep `assistUi`:
 
 ```tsx
 assist={{
-  // both stream — each yields items/chunks as they're produced
-  suggest: async function* ({ field, locale, signal }) { /* yield FieldSuggestion */ },
-  complete: ({ field, value, signal }) => myLLM.stream(value, { signal }), // AsyncIterable<string>
+  suggest: async function* ({ field, focus, graph, locale, signal }) { /* yield { value, label?, rationale? } */ },
+  complete: ({ field, value, position, signal }) => myLLM.stream(value, { signal }), // AsyncIterable<string>
 }}
 ```
 
-The callbacks run in the consumer, so the core imports **no LLM SDK** and stays
-portable. The reference combobox and the ✨ suggestion strip are the design
-system's own accessible components.
-
-### The assistant (`<FormAssistant>` + a swappable mascot)
-
-The assistant is split into a **brain** and a **body**. It reads the controller's
-`form.report` (validation + completion + a `health` mood/message) with no UI of its
-own — so it surfaces the validation report **and** guides. `<FormAssistant>` is a
-small, non-intrusive corner companion that renders that state through a mascot and,
-on click, gently guides to the next pending field (scroll + focus, never an overlay):
-
-```tsx
-<>
-  <MetadataForm form={form} />
-  <FormAssistant form={form} />
-</>
-```
-
-The mascot is a **swappable `character`** (same idea as a widget). The default is
-a dependency-free emoji; plug a Lottie/Rive character for something custom:
-
-```tsx
-<FormAssistant form={form} character={myLottieMascot} />
-```
-
-Or build a fully custom surface on top of `form.report`.
+**What the model is told.** The default prompts are written from `fieldContext(field)`
+— everything the field's own shape states, one line per fact and nothing it does
+not state: label, description, value type (`sh:datatype` / `sh:nodeKind` /
+`sh:class`), `sh:in` options, `sh:pattern` (+ flags), length and numeric bounds,
+allowed language tags (`sh:languageIn`), cardinality, and the values a repeatable
+field already holds — plus `siblingValues(…)`: the literals already entered on the
+same resource (predicate local name and value, up to 12, each cut at 200
+characters). For a completion the text before and after the caret is added. The
+model is asked to satisfy the constraints; the shape still validates whatever is
+committed. Override the prompts with `createFormAssist(model, { suggestPrompt,
+completePrompt })` — `fieldContext` and `siblingValues` are exported for that.
 
 ### Layout
 
@@ -257,10 +239,10 @@ inside a `FieldArray` with add/remove.
 | `shui:` editor | Picked when | Control | Repeatable |
 | --- | --- | --- | --- |
 | `TextFieldEditor` | anything with no better fact (the fallback) | `Input` | **`TagsInput`** — chips, one control |
-| `TextAreaEditor` | stated | `Textarea`, ghost-text completion when `assist.complete` is wired | rows |
+| `TextAreaEditor` | stated | `Textarea`, ghost-text completion when `assist.complete` and `assistUi` are wired | rows |
 | `RichTextEditor` | stated | `Textarea` — **the design system ships no rich-text editor**; the profile asked for something we do not have | rows |
 | `TextFieldWithLangEditor` | `sh:datatype rdf:langString` | `InputGroup` + the language picker in its trailing slot | rows |
-| `TextAreaWithLangEditor` | stated | `Textarea` + the language picker under it | rows |
+| `TextAreaWithLangEditor` | stated | `Textarea` (with the same ghost text) + the language picker under it | rows |
 | `NumberFieldEditor` | numeric `sh:datatype` | `NumberInput` — steppers, scrubber, `tabular-nums`; bounds from `sh:minInclusive`/`sh:maxInclusive` | rows |
 | `BooleanEditor` | `sh:datatype xsd:boolean` | `SegmentGroup` (Yes / No / Not set) — or a `Switch` when `sh:minCount ≥ 1` or `sh:defaultValue` guarantees a value | rows |
 | `EnumSelectEditor` | `sh:in` | ≤ 4 options: `SegmentGroup`. ≤ 15: `NativeSelect`. Beyond that a searchable `Combobox` | **`Combobox multiple`** |
@@ -369,7 +351,7 @@ flowchart LR
   subgraph assist["assist seam · optional"]
     direction TB
     seam["suggest · complete · search"]
-    ai["metadata-form/ai<br/>Vercel AI SDK adapter"]
+    ai["metadata-form/ai<br/>assistUi · fieldContext · SDK adapter"]
     ai -. provides .-> seam
   end
 
@@ -386,8 +368,8 @@ flowchart LR
 rudof (left) owns every RDF concern — parsing, validation, projection,
 serialization, and SHACL-UI editor resolution — over a **single** wasm graph. The
 React layer is shape-language-agnostic: it consumes the `ShapeModel` IR and binds
-editor IRIs to widgets, and nothing in it imports an LLM SDK (the `assist` seam is
-fed entirely by the consumer). Adding **ShEx** is an engine-side change behind the
+editor IRIs to widgets, and nothing in it imports an AI package (the `assist` seam is
+fed, and drawn, by `metadata-form/ai` or by the consumer). Adding **ShEx** is an engine-side change behind the
 same IR; the UI doesn't move.
 
 ### `metadata-form/rudof` — direct engine access

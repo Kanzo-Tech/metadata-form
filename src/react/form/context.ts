@@ -4,6 +4,7 @@ import type { GraphState } from "../../engine/GraphState.js";
 import type { FormModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
 import type { FormAssist } from "../../assist.js";
+import type { AssistUi } from "../assistUi.js";
 import type { WidgetRegistry } from "../widgets/widgets.js";
 import type { FormReport } from "../validation/formReport.js";
 import type { Strings } from "../../i18n/strings.js";
@@ -33,6 +34,8 @@ export interface FormContextValue {
   errors: Map<string, FieldError[]>;
   report: FormReport;
   assist?: FormAssist;
+  /** The UI that draws `assist`; without it a wired `assist` is never asked. */
+  assistUi?: AssistUi;
   layout?: FormLayout;
   grid?: GridLayout;
   /** Active reveal request (from `form.revealField`) — drives tab/step switch + scroll. */

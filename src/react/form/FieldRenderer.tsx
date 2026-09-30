@@ -10,6 +10,7 @@ import {
   NativeSelectOption,
 } from "@kanzo-tech/ui";
 import type { Term } from "@rdfjs/types";
+import type { CompletionRequest } from "../../assist.js";
 import { alternativeFor } from "../../form/disjunction.js";
 import type {
   FieldAlternative,
@@ -28,15 +29,15 @@ import {
   widgetMulti,
   widgetRender,
 } from "../widgets/widgets.js";
-import { useFormContext } from "./context.js";
+import { useFocusNode, useFormContext } from "./context.js";
 import { useField } from "../hooks/useField.js";
 import { NodeForm } from "./NodeForm.js";
-import { SuggestList, SuggestMark, SuggestRoot } from "@kanzo-tech/ai";
 import { column, fieldGap, ink, labelRow } from "../styles.js";
 
 /** Renders a single field: label, help, value rows (multi-value), errors. */
 export function FieldRenderer({ field }: { field: FieldModel }) {
-  const { widgets, assist, graph, locale } = useFormContext();
+  const { widgets, assist, assistUi, graph, locale } = useFormContext();
+  const focus = useFocusNode();
   const ops = useField(field);
 
   // `shui:BlankNodeEditor` is `DetailsEditor`'s twin: both say "this value is a
@@ -156,8 +157,8 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
   const Multi = alts ? undefined : widgetMulti(entry);
   const caps = widgetAssist(entry); // assistance this widget declares it supports
   const complete =
-    assist?.complete && !field.readOnly && caps.complete
-      ? (value: string, signal?: AbortSignal) => assist.complete!({ field, value, graph, locale, signal })
+    assist?.complete && assistUi && !field.readOnly && caps.complete
+      ? (request: CompletionRequest) => assist.complete!({ ...request, field, focus, graph, locale })
       : undefined;
 
   const searchFor = (f: FieldModel) => {
@@ -294,23 +295,24 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     </FieldArray>
   ));
 
-  const suggests = assist?.suggest && !field.readOnly && caps.suggest;
+  const suggests = assist?.suggest && assistUi && !field.readOnly && caps.suggest;
   if (!suggests) return <FieldShell field={field} errors={errs}>{rows}</FieldShell>;
 
   // The ✨ and its candidates are one compound around the field's own rows: the
   // mark is bound to the stream by context, so it reads correctly in the label
   // row and the strip lands under the values it is offering to fill.
+  const { Root, Mark, List } = assistUi.suggest;
   return (
-    <SuggestRoot
-      suggest={(signal) => assist.suggest!({ field, graph, locale, signal })}
+    <Root
+      suggest={(signal) => assist.suggest!({ field, focus, graph, locale, signal })}
       existing={real.map((s) => s.value?.value ?? "").filter(Boolean)}
       onPick={applySuggestion}
     >
-      <FieldShell field={field} errors={errs} action={<SuggestMark />}>
+      <FieldShell field={field} errors={errs} action={<Mark />}>
         {rows}
-        <SuggestList />
+        <List />
       </FieldShell>
-    </SuggestRoot>
+    </Root>
   );
 }
 
