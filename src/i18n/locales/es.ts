@@ -23,6 +23,8 @@ export const strings: Strings = {
     suggest: "Sugerir",
     suggestOffering: "Sugerir otros valores",
     completeAnnouncement: "Sugerencia lista. Pulsa Tab para aceptarla, Escape para descartarla.",
+    completeAccept: "aceptar",
+    completeDismiss: "descartar",
   },
   readOnly: {
     "variable-length-path":

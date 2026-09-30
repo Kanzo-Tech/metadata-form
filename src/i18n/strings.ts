@@ -58,6 +58,9 @@ export interface Strings {
     suggestOffering: string;
     /** What a screen reader hears once, when a completion lands. */
     completeAnnouncement: string;
+    /** The words after the Tab and Esc keys in the completion's keys hint. */
+    completeAccept: string;
+    completeDismiss: string;
   };
   /**
    * Why a field shows its values but does not take input, keyed by
@@ -141,6 +144,8 @@ export const EN: Strings = {
     suggest: "Suggest",
     suggestOffering: "Suggest different values",
     completeAnnouncement: "Suggestion ready. Press Tab to accept, Escape to dismiss.",
+    completeAccept: "accept",
+    completeDismiss: "dismiss",
   },
   readOnly: {
     "variable-length-path":

@@ -23,6 +23,8 @@ export const strings: Strings = {
     suggest: "Suggereix",
     suggestOffering: "Suggereix altres valors",
     completeAnnouncement: "Suggeriment llest. Prem Tab per acceptar-lo, Escape per descartar-lo.",
+    completeAccept: "acceptar",
+    completeDismiss: "descartar",
   },
   readOnly: {
     "variable-length-path":

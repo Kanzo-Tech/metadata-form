@@ -31,6 +31,6 @@ export interface AssistUi {
       children: ReactNode;
     }>;
     Textarea: ComponentType<{ children: ReactElement }>;
-    Hint: ComponentType;
+    Hint: ComponentType<{ acceptLabel: string; dismissLabel: string }>;
   };
 }

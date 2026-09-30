@@ -8,6 +8,7 @@ import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { Companion } from "@playground/components/Companion.js";
 import { literal, namedNode, NS } from "@/form/factory.js";
+import { es } from "@/i18n/index.js";
 import type { FieldModel } from "@/form/FormModel.js";
 import type { GraphState } from "@/engine/GraphState.js";
 import type { FormAssist } from "@/assist.js";
@@ -69,7 +70,7 @@ const fake: FormAssist = {
   },
 };
 
-function Form({ withUi }: { withUi: boolean }) {
+function Form({ withUi, locale }: { withUi: boolean; locale?: string }) {
   const form = useMetadataForm({
     shapes: SHAPES,
     data: DATA,
@@ -77,6 +78,8 @@ function Form({ withUi }: { withUi: boolean }) {
     rootShape: "http://example.org/Shape",
     validateOn: "off",
     assist: fake,
+    locale,
+    strings: { es: es.strings },
   });
   return <MetadataForm form={form} assistUi={withUi ? assistUi : undefined} />;
 }
@@ -125,6 +128,14 @@ describe("assistance UI is opt-in", () => {
 
     fireEvent.keyDown(lang, { key: "Tab" });
     await waitFor(() => expect(lang.value).toContain("the rest"));
+  });
+
+  it("words the completion's keys hint in the reader's language", async () => {
+    render(<Form locale="es" withUi />);
+    await waitFor(() => expect(areas()).toHaveLength(2));
+    fireEvent.change(areas().find((a) => a.value === "Hello world")!, { target: { value: "Hello world." } });
+    await waitFor(() => expect(screen.getByText("aceptar")).toBeInTheDocument(), { timeout: 3000 });
+    expect(screen.getByText("descartar")).toBeInTheDocument();
   });
 });
 

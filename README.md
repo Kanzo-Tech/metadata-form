@@ -190,12 +190,12 @@ leaves out stays English). The same `strings` option re-words English itself (`{
 **Localised by the form's language.** `<MetadataForm>` mounts Kanzo UI's `LocaleProvider`
 with the first language of the list, so the calendar, number formatting and collation follow
 it; the words of the parts the design system draws (`LanguagePicker`, `FieldArray`, the
-steps' Back and Next, the ✨ and its announcement) are in the strings table.
+steps' Back and Next, the ✨ and its announcement, the words after <kbd>Tab</kbd> and <kbd>Esc</kbd>
+in the completion's keys hint) are in the strings table.
 
 **Not localised.** The accessible names Ark's machines carry by default (the calendar's
 "Open calendar", the tags input's delete button) are English: `@kanzo-tech/ui` does not
-expose them as props. In the completion's keys hint (`CompleteHint`) the words after
-<kbd>Tab</kbd> and <kbd>Esc</kbd> are English for the same reason. The `Diagnostic` messages
+expose them as props. The `Diagnostic` messages
 passed to `onDiagnostic` (developer-facing) and any text the AI adapter's prompts contain are
 English. A shape's `sh:languageIn` orders the labels of its own property; it is not consulted
 when choosing a failure message. Plural forms follow `Intl.PluralRules` for the table's
