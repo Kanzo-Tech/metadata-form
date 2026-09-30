@@ -29,7 +29,9 @@ import {
   ListOrderedIcon,
   RectangleHorizontalIcon,
 } from "lucide-react";
-import type { FormLayout } from "metadata-form";
+import type { FormLayout, GridLayout } from "metadata-form";
+
+type Columns = NonNullable<GridLayout["columns"]>;
 import { useChrome, type Chrome } from "./i18n.js";
 
 /**
@@ -52,7 +54,7 @@ import { useChrome, type Chrome } from "./i18n.js";
  */
 
 export interface PreferencesState {
-  layout: { mode: FormLayout; columns: number };
+  layout: { mode: FormLayout; columns: Columns };
   ai: { claudeKey: string };
   assistant: { enabled: boolean };
 }
@@ -85,7 +87,7 @@ function load(): PreferencesState {
     return {
       // A stored 4 predates the three-card control and would select no card at
       // all, so it is clamped rather than shown as an empty choice.
-      layout: { ...layout, columns: Math.min(3, Math.max(1, Math.round(layout.columns) || 1)) },
+      layout: { ...layout, columns: Math.min(3, Math.max(1, Math.round(layout.columns) || 1)) as Columns },
       ai: { ...defaultPreferences.ai, ...saved.ai },
       assistant: { ...defaultPreferences.assistant, ...saved.assistant },
     };
@@ -131,8 +133,8 @@ const LAYOUTS: readonly Choice[] = [
   ["steps", (t) => t.steps, ListOrderedIcon],
 ];
 
-/** `FieldsGrid` writes `repeat(N, minmax(0, 1fr))` and takes any N, so three is
- *  a judgement about forms rather than a limit of the grid: past three, a label
+/** `FieldGroup` takes one to four columns, so three is a judgement about forms
+ *  rather than a limit of the grid: past three, a label
  *  and its control stop fitting on a line at the widths this column gets with a
  *  panel open on either side. A number input said otherwise. */
 const COLUMNS: readonly Choice[] = [
@@ -193,7 +195,7 @@ function LayoutSection() {
         label={t.columns}
         options={COLUMNS}
         value={String(prefs.layout.columns)}
-        onChange={(v) => update("layout", { columns: Number(v) })}
+        onChange={(v) => update("layout", { columns: Number(v) as Columns })}
       />
     </>
   );
