@@ -1,13 +1,19 @@
 {
-  "generated": "2026-08-28",
+  "generated": "2026-09-30",
   "separation": {
-    "sourceFiles": 45,
+    "sourceFiles": 53,
     "sdkImporters": [
       {
-        "file": "src/ai/index.ts",
+        "file": "src/ai/adapter.ts",
         "imports": [
           "ai",
           "zod"
+        ]
+      },
+      {
+        "file": "src/ai/ui.ts",
+        "imports": [
+          "@kanzo-tech/ai"
         ]
       }
     ],
@@ -21,8 +27,8 @@
   },
   "fields": 29,
   "assisted": 13,
-  "suggest": 11,
-  "complete": 2,
+  "suggest": 10,
+  "complete": 3,
   "withheld": 16,
   "enumFields": 11,
   "enumFieldsAssisted": 0,
@@ -42,14 +48,56 @@
       2
     ]
   ],
+  "promptCoverage": [
+    {
+      "facet": "sh:description",
+      "stated": 13,
+      "carried": 13
+    },
+    {
+      "facet": "sh:datatype / sh:nodeKind / sh:class",
+      "stated": 13,
+      "carried": 13
+    },
+    {
+      "facet": "sh:in",
+      "stated": 0,
+      "carried": 0
+    },
+    {
+      "facet": "sh:pattern",
+      "stated": 1,
+      "carried": 1
+    },
+    {
+      "facet": "sh:minLength / sh:maxLength",
+      "stated": 0,
+      "carried": 0
+    },
+    {
+      "facet": "numeric bounds",
+      "stated": 0,
+      "carried": 0
+    },
+    {
+      "facet": "sh:languageIn",
+      "stated": 0,
+      "carried": 0
+    },
+    {
+      "facet": "sh:minCount / sh:maxCount",
+      "stated": 13,
+      "carried": 13
+    }
+  ],
   "rows": [
     {
       "profile": "health-dcat-ap",
       "label": "Title",
       "path": "urn:e6:focus|http://purl.org/dc/terms/title",
       "predicate": "http://purl.org/dc/terms/title",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -60,8 +108,50 @@
       },
       "bounding": {
         "sh:datatype": "shape",
-        "sh:maxCount": "unbounded"
+        "sh:maxCount": "prompt"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -94,8 +184,8 @@
       "label": "Description",
       "path": "urn:e6:focus|http://purl.org/dc/terms/description",
       "predicate": "http://purl.org/dc/terms/description",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextAreaEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextAreaEditor",
       "suggest": false,
       "complete": true,
       "reason": "the widget declares complete",
@@ -106,6 +196,48 @@
       "bounding": {
         "sh:datatype": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -138,8 +270,8 @@
       "label": "Keywords",
       "path": "urn:e6:focus|http://www.w3.org/ns/dcat#keyword",
       "predicate": "http://www.w3.org/ns/dcat#keyword",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -150,6 +282,48 @@
       "bounding": {
         "sh:datatype": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -182,8 +356,8 @@
       "label": "Theme",
       "path": "urn:e6:focus|http://www.w3.org/ns/dcat#theme",
       "predicate": "http://www.w3.org/ns/dcat#theme",
-      "editorId": "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/AutoCompleteEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/AutoCompleteEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -193,8 +367,50 @@
         "classIri": "http://www.w3.org/2004/02/skos/core#Concept"
       },
       "bounding": {
-        "sh:class": "unbounded"
+        "sh:class": "prompt"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -227,8 +443,8 @@
       "label": "Access rights",
       "path": "urn:e6:focus|http://purl.org/dc/terms/accessRights",
       "predicate": "http://purl.org/dc/terms/accessRights",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -246,6 +462,48 @@
         "sh:in": "shape",
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -253,8 +511,8 @@
       "label": "Release date",
       "path": "urn:e6:focus|http://purl.org/dc/terms/issued",
       "predicate": "http://purl.org/dc/terms/issued",
-      "editorId": "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/DatePickerEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/DatePickerEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (DatePickerEditor) declares no assistance",
@@ -267,6 +525,48 @@
         "sh:datatype": "n/a",
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -274,8 +574,8 @@
       "label": "Modification date",
       "path": "urn:e6:focus|http://purl.org/dc/terms/modified",
       "predicate": "http://purl.org/dc/terms/modified",
-      "editorId": "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/DatePickerEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/DatePickerEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (DatePickerEditor) declares no assistance",
@@ -288,6 +588,48 @@
         "sh:datatype": "n/a",
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -295,8 +637,8 @@
       "label": "Health theme",
       "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#healthTheme",
       "predicate": "http://healthdataportal.eu/ns/health#healthTheme",
-      "editorId": "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/AutoCompleteEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/AutoCompleteEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -306,8 +648,50 @@
         "classIri": "http://www.w3.org/2004/02/skos/core#Concept"
       },
       "bounding": {
-        "sh:class": "unbounded"
+        "sh:class": "prompt"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -340,8 +724,8 @@
       "label": "Population coverage",
       "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#populationCoverage",
       "predicate": "http://healthdataportal.eu/ns/health#populationCoverage",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextAreaEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextAreaEditor",
       "suggest": false,
       "complete": true,
       "reason": "the widget declares complete",
@@ -352,8 +736,50 @@
       },
       "bounding": {
         "sh:datatype": "shape",
-        "sh:maxCount": "unbounded"
+        "sh:maxCount": "prompt"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -386,8 +812,8 @@
       "label": "Number of records",
       "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#numberOfRecords",
       "predicate": "http://healthdataportal.eu/ns/health#numberOfRecords",
-      "editorId": "http://www.w3.org/ns/shacl-ui#NumberFieldEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#NumberFieldEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/NumberFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/NumberFieldEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (NumberFieldEditor) declares no assistance",
@@ -400,6 +826,48 @@
         "sh:datatype": "n/a",
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -407,8 +875,8 @@
       "label": "Coding system",
       "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#hasCodeSystem",
       "predicate": "http://healthdataportal.eu/ns/health#hasCodeSystem",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -419,6 +887,48 @@
       "bounding": {
         "sh:datatype": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -451,8 +961,8 @@
       "label": "Título del dataset",
       "path": "urn:e6:focus|http://purl.org/dc/terms/title",
       "predicate": "http://purl.org/dc/terms/title",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextFieldWithLangEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextFieldWithLangEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -464,6 +974,48 @@
       "bounding": {
         "sh:datatype": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -496,11 +1048,11 @@
       "label": "Descripción del dataset",
       "path": "urn:e6:focus|http://purl.org/dc/terms/description",
       "predicate": "http://purl.org/dc/terms/description",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
-      "suggest": true,
-      "complete": false,
-      "reason": "the widget declares suggest",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextAreaEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextAreaEditor",
+      "suggest": false,
+      "complete": true,
+      "reason": "the widget declares complete",
       "constraints": {
         "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
         "minCount": 1,
@@ -509,6 +1061,48 @@
       "bounding": {
         "sh:datatype": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -541,8 +1135,8 @@
       "label": "Identificador del dataset",
       "path": "urn:e6:focus|http://purl.org/dc/terms/identifier",
       "predicate": "http://purl.org/dc/terms/identifier",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -554,6 +1148,48 @@
       "bounding": {
         "sh:datatype": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -586,8 +1222,8 @@
       "label": "Página del dataset",
       "path": "urn:e6:focus|http://www.w3.org/ns/dcat#landingPage",
       "predicate": "http://www.w3.org/ns/dcat#landingPage",
-      "editorId": "http://www.w3.org/ns/shacl-ui#IRIEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#IRIEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/IRIEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/IRIEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (IRIEditor) declares no assistance",
@@ -599,6 +1235,48 @@
       "bounding": {
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -606,8 +1284,8 @@
       "label": "Tema DCAT",
       "path": "urn:e6:focus|http://www.w3.org/ns/dcat#theme",
       "predicate": "http://www.w3.org/ns/dcat#theme",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -625,6 +1303,48 @@
       "bounding": {
         "sh:in": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -632,8 +1352,8 @@
       "label": "Palabras clave",
       "path": "urn:e6:focus|http://www.w3.org/ns/dcat#keyword",
       "predicate": "http://www.w3.org/ns/dcat#keyword",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextFieldWithLangEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextFieldWithLangEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -645,6 +1365,48 @@
       "bounding": {
         "sh:datatype": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -677,8 +1439,8 @@
       "label": "Idioma del dataset",
       "path": "urn:e6:focus|http://purl.org/dc/terms/language",
       "predicate": "http://purl.org/dc/terms/language",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -699,6 +1461,48 @@
         "sh:in": "shape",
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -706,8 +1510,8 @@
       "label": "Nivel de acceso",
       "path": "urn:e6:focus|http://purl.org/dc/terms/accessRights",
       "predicate": "http://purl.org/dc/terms/accessRights",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -729,6 +1533,48 @@
         "sh:in": "shape",
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -736,8 +1582,8 @@
       "label": "DID del participante",
       "path": "urn:e6:focus|https://dataspace.evidenze.example/ns#participantDID",
       "predicate": "https://dataspace.evidenze.example/ns#participantDID",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -750,9 +1596,51 @@
       },
       "bounding": {
         "sh:datatype": "shape",
-        "sh:pattern": "unbounded",
-        "sh:maxCount": "unbounded"
+        "sh:pattern": "prompt",
+        "sh:maxCount": "prompt"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -785,8 +1673,8 @@
       "label": "Rol en Evidenze Data Space",
       "path": "urn:e6:focus|https://dataspace.evidenze.example/ns#dataspaceRole",
       "predicate": "https://dataspace.evidenze.example/ns#dataspaceRole",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -804,6 +1692,48 @@
         "sh:in": "shape",
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -811,8 +1741,8 @@
       "label": "Unidad organizativa",
       "path": "urn:e6:focus|https://dataspace.evidenze.example/ns#organisationalUnit",
       "predicate": "https://dataspace.evidenze.example/ns#organisationalUnit",
-      "editorId": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
       "suggest": true,
       "complete": false,
       "reason": "the widget declares suggest",
@@ -824,8 +1754,50 @@
       },
       "bounding": {
         "sh:datatype": "shape",
-        "sh:maxCount": "unbounded"
+        "sh:maxCount": "prompt"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": true
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": true
+        }
+      ],
       "commits": [
         {
           "candidate": "Cardiology Outpatient Registry",
@@ -858,8 +1830,8 @@
       "label": "Entorno",
       "path": "urn:e6:focus|https://dataspace.evidenze.example/ns#environmentZone",
       "predicate": "https://dataspace.evidenze.example/ns#environmentZone",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -877,6 +1849,48 @@
         "sh:in": "shape",
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -884,8 +1898,8 @@
       "label": "Categoría de datos de salud",
       "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#healthCategory",
       "predicate": "http://healthdataportal.eu/ns/health#healthCategory",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -904,6 +1918,48 @@
       "bounding": {
         "sh:in": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -911,8 +1967,8 @@
       "label": "Temática sanitaria",
       "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#healthTheme",
       "predicate": "http://healthdataportal.eu/ns/health#healthTheme",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -931,6 +1987,48 @@
       "bounding": {
         "sh:in": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -938,8 +2036,8 @@
       "label": "Estándares o modelos de datos",
       "path": "urn:e6:focus|http://purl.org/dc/terms/conformsTo",
       "predicate": "http://purl.org/dc/terms/conformsTo",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -957,6 +2055,48 @@
       "bounding": {
         "sh:in": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -964,8 +2104,8 @@
       "label": "Sistemas de codificación",
       "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#hasCodingSystem",
       "predicate": "http://healthdataportal.eu/ns/health#hasCodingSystem",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -983,6 +2123,48 @@
       "bounding": {
         "sh:in": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -990,8 +2172,8 @@
       "label": "Actividad generadora",
       "path": "urn:e6:focus|http://www.w3.org/ns/prov#wasGeneratedBy",
       "predicate": "http://www.w3.org/ns/prov#wasGeneratedBy",
-      "editorId": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (EnumSelectEditor) declares no assistance",
@@ -1009,6 +2191,48 @@
       "bounding": {
         "sh:in": "shape"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     },
     {
@@ -1016,8 +2240,8 @@
       "label": "Datos estructurados",
       "path": "urn:e6:focus|http://healthdataportal.eu/ns/health#hasStructuredData",
       "predicate": "http://healthdataportal.eu/ns/health#hasStructuredData",
-      "editorId": "http://www.w3.org/ns/shacl-ui#BooleanEditor",
-      "effectiveEditor": "http://www.w3.org/ns/shacl-ui#BooleanEditor",
+      "editorId": "http://www.w3.org/ns/shacl-ui/BooleanEditor",
+      "effectiveEditor": "http://www.w3.org/ns/shacl-ui/BooleanEditor",
       "suggest": false,
       "complete": false,
       "reason": "the widget (BooleanEditor) declares no assistance",
@@ -1031,6 +2255,48 @@
         "sh:datatype": "n/a",
         "sh:maxCount": "n/a"
       },
+      "facets": [
+        {
+          "facet": "sh:description",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:datatype / sh:nodeKind / sh:class",
+          "stated": true,
+          "carried": false
+        },
+        {
+          "facet": "sh:in",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:pattern",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minLength / sh:maxLength",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "numeric bounds",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:languageIn",
+          "stated": false,
+          "carried": false
+        },
+        {
+          "facet": "sh:minCount / sh:maxCount",
+          "stated": true,
+          "carried": false
+        }
+      ],
       "commits": []
     }
   ],
@@ -1043,7 +2309,7 @@
       {
         "constraint": "http://www.w3.org/ns/shacl#PatternConstraintComponent",
         "severity": "violation",
-        "message": "Introduce el DID del participante en formato did:web:organizacion.example.org. (@es) · Introdueix el DID del participant en format did:web:organitzacio.example.org. (@ca) · Pattern(^did:web:.+) not satisfied"
+        "message": "Introdueix el DID del participant en format did:web:organitzacio.example.org. (@ca) · Introduce el DID del participante en formato did:web:organizacion.example.org. (@es)"
       }
     ]
   },
@@ -1068,7 +2334,7 @@
         {
           "constraint": "http://www.w3.org/ns/shacl#DatatypeConstraintComponent",
           "severity": "violation",
-          "message": "Expected Datatype: rdf:langString · El título del dataset es obligatorio. (@es) · El títol del dataset és obligatori. (@ca)"
+          "message": "El título del dataset es obligatorio. (@es) · El títol del dataset és obligatori. (@ca)"
         }
       ]
     }

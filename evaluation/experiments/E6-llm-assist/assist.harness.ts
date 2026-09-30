@@ -318,7 +318,7 @@ async function postHoc(
     value,
     total: all.length,
     results: all
-      .filter((r) => r.path?.value === predicate)
+      .filter((r) => r.pathKey === predicate)
       .map((r) => ({
         constraint: r.constraint ?? "—",
         severity: r.severity,
