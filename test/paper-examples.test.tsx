@@ -53,7 +53,6 @@ function openForm(statedWith: keyof typeof CONDITIONALS, options: Pick<UseMetada
     useMetadataForm({
       ...CONDITIONALS[statedWith],
       validateOn: "change",
-      validationDebounceMs: 0,
       ...options,
     }),
   );

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode } from "../../form/factory.js";
 import { mapResults } from "../../form/validation.js";
@@ -42,8 +42,10 @@ export interface UseMetadataFormOptions {
    *  (`Session.loadMessages`), and the later document wins per component and
    *  language. */
   messages?: string | readonly string[];
+  /** When the form validates: after every change (`"change"`, once the edit has
+   *  been drawn, so typing stays responsive), only when {@link MetadataFormController.validate}
+   *  is called (`"manual"`), or never (`"off"`). */
   validateOn?: "change" | "manual" | "off";
-  validationDebounceMs?: number;
   /** The single assistance seam (reference search · suggestions · completion).
    * The lib never calls an LLM/service itself — these callbacks do. */
   assist?: FormAssist;
@@ -125,7 +127,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     strings: stringsOption,
     messages: messagesOption,
     validateOn = "change",
-    validationDebounceMs = 300,
     assist,
     onDiagnostic,
   } = options;
@@ -229,21 +230,21 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
 
   const model: FormModel | undefined = projected?.model;
 
-  // Debounced live validation.
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Live validation follows the form React has drawn, not a clock: the projection is
+  // deferred, so an edit is painted first and validated in the render that catches
+  // up, and a burst of edits validates the last of them once. The validation reads
+  // the live session, so what it checks is the graph as it is when it runs, and a
+  // result that arrives after a newer edit began is dropped.
+  const deferred = useDeferredValue(projected);
   useEffect(() => {
     if (!prepared || validateOn !== "change") return;
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(async () => {
-      // Validate the live session in place (no reload) — every node of the
-      // projected tree, not only the root: see `RudofEngine.validateTree`.
-      const results = await engine.validateTree(projected?.nodes ?? []);
-      setErrors(mapResults(results));
-    }, validationDebounceMs);
+    let current = true;
+    // Every node of the projected tree, not only the root: see `RudofEngine.validateTree`.
+    void engine.validateTree(deferred?.nodes ?? []).then((results) => current && setErrors(mapResults(results)));
     return () => {
-      if (timer.current) clearTimeout(timer.current);
+      current = false;
     };
-  }, [engine, prepared, projected, version, validateOn, validationDebounceMs]);
+  }, [engine, prepared, deferred, validateOn]);
 
   const isValid = useMemo(() => {
     for (const list of errors.values()) {

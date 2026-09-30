@@ -228,7 +228,7 @@ describe("no user-visible English outside the catalog (pseudo-locale)", () => {
   const table = { xx: pseudo<DeepPartial<Strings>>(EN) };
 
   function Screen({ layout }: { layout?: "tabs" | "steps" }) {
-    const form = useMetadataForm({ shapes, rootShape: `${ex}S`, locale: "xx", strings: table, validateOn: "change", validationDebounceMs: 0 });
+    const form = useMetadataForm({ shapes, rootShape: `${ex}S`, locale: "xx", strings: table, validateOn: "change" });
     return (
       <>
         <MetadataForm form={form} layout={layout} />

@@ -153,7 +153,7 @@ describe("the findings a value survives", () => {
   `;
 
   it("are the field's helper, toned by severity, and do not invalidate the field", async () => {
-    render(<Form shapes={advisory} validateOn="change" validationDebounceMs={0} />);
+    render(<Form shapes={advisory} validateOn="change" />);
     await waitFor(() => expect(screen.getByText("Note")).toBeInTheDocument());
 
     type(inputOf("note"), "hi");
