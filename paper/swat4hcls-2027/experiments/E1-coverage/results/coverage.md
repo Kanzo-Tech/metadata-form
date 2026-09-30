@@ -1,6 +1,6 @@
 # E1 — coverage across published SHACL profiles
 
-Generated 2026-08-28 by `coverage.harness.ts`. Do not edit by hand.
+Generated 2026-09-03 by `coverage.harness.ts`. Do not edit by hand.
 
 **Baseline measured:** rudof reads only `shui:editor`, so the `dash:editor`
 hints most published profiles carry are recorded and ignored, and every
@@ -17,13 +17,13 @@ out of the headline tables. See each one's note for the evidence.
 
 | Profile | Node shapes | Property shapes | Groups | Labelled | Fields | Typed widget | Nested form | Plain-text floor | Read-only | No widget | **Zero-code control** |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| DCAT-AP 3.0.1 (SEMIC) | 91 | 298 | 0 | 0 (0.0%) | 298 | 108 | 35 | 153 | 2 | 0 | **48.0%** |
-| HealthDCAT-AP Release 5 (European Commission) | 52 | 139 | 0 | 0 (0.0%) | 139 | 56 | 34 | 47 | 2 | 0 | **64.7%** |
+| DCAT-AP 3.0.1 (SEMIC) | 91 | 298 | 0 | 0 (0.0%) | 297 | 119 | 24 | 154 | 0 | 0 | **48.1%** |
+| HealthDCAT-AP Release 5 (European Commission) | 52 | 139 | 0 | 0 (0.0%) | 134 | 56 | 34 | 44 | 0 | 0 | **67.2%** |
 | Health-RI Core (HealthDCAT-AP national implementation) | 14 | 143 | 0 | 143 (100.0%) | 143 | 93 | 23 | 27 | 0 | 0 | **81.1%** |
-| DCAT-AP.de 2.0 (national extension, Germany) | 29 | 121 | 0 | 0 (0.0%) | 121 | 46 | 2 | 70 | 3 | 0 | **39.7%** |
+| DCAT-AP.de 2.0 (national extension, Germany) | 29 | 121 | 0 | 0 (0.0%) | 104 | 48 | 2 | 54 | 0 | 0 | **48.1%** |
 | FAIR Data Point (FAIRDataTeam reference implementation) | 13 | 37 | 0 | 1 (2.7%) | 37 | 22 | 7 | 8 | 0 | 0 | **78.4%** |
-| SPHN 2026.1 (Swiss Personalized Health Network) | 1744 | 1246 | 0 | 0 (0.0%) | 1246 | 891 | 0 | 258 | 97 | 0 | **71.5%** |
-| Bioschemas profiles v20250219 | 32 | 643 | 0 | 0 (0.0%) | 643 | 0 | 0 | 113 | 530 | 0 | **0.0%** |
+| SPHN 2026.1 (Swiss Personalized Health Network) | 1744 | 1246 | 0 | 0 (0.0%) | 1246 | 1085 | 0 | 90 | 71 | 0 | **87.1%** |
+| Bioschemas profiles v20250219 | 32 | 643 | 0 | 0 (0.0%) | 641 | 0 | 0 | 641 | 0 | 0 | **0.0%** |
 | SPDX 3.0.1 model | 64 | 193 | 0 | 0 (0.0%) | 193 | 98 | 0 | 95 | 0 | 0 | **50.8%** |
 | Health-RI domain modules (health, imaging, omics) | 1 | 6 | 0 | 0 (0.0%) | 6 | 3 | 0 | 3 | 0 | 0 | **50.0%** |
 | Evidenze HealthDCAT-AP onboarding (ours) | 10 | 48 | 13 | 47 (97.9%) | 48 | 32 | 8 | 8 | 0 | 0 | **83.3%** |
@@ -47,26 +47,59 @@ controlled vocabulary is a form that renders, not a form that works.
 
 **No widget** is zero in every profile: the type-fact fallback always resolves to *something*, so nothing fails to render outright. The whole question is what it degrades to, which is why the literal 'renders with zero custom widget code' figure would be 100% everywhere and is not the number reported.
 
+### What authoring a profile for this engine buys
+
+| Comparison | Ours | | Externally authored | | Difference |
+|---|---|---:|---|---:|---:|
+| like for like — the same profile, authored twice | Evidenze HealthDCAT-AP onboarding | 83.3% | Health-RI Core | 81.1% | **+2.2 points** |
+| corpus extremes — best of each origin | Evidenze HealthDCAT-AP onboarding | 83.3% | SPHN 2026.1 | 87.1% | **-3.7 points** |
+
+The first row is the adoption-cost measurement: both are implementations of
+the same application profile, one written with complete knowledge of this
+engine and one written by people who had never heard of it. The second row is
+reported so the first cannot be mistaken for a corpus maximum — the highest
+external score belongs to a profile from another domain with a different
+shape style, and comparing against it would measure that, not adoption.
+
+### Variants — excluded from the headline, reported because the pairs are informative
+
+| Variant | Variant of | Fields | Typed widget | Nested form | **Zero-code control** |
+|---|---|---:|---:|---:|---:|
+| DCAT-AP 3.0.1 | `dcat-ap-3` | 131 | 88 | 0 | **67.2%** |
+| HealthDCAT-AP Release 5 | `healthdcat-ap` | 83 | 32 | 8 | **48.2%** |
+| DCAT-AP as vendored by Health-RI | `dcat-ap-3` | 109 | 72 | 0 | **66.1%** |
+| Health-RI FAIR Data Point shapes | `health-ri-core` | 143 | 93 | 23 | **81.1%** |
+
+A variant is a second encoding or a re-serialisation of a profile already
+counted, so it is kept out of Tab. 3. The figures are here because the *pairs*
+say something Tab. 3 cannot: the same specification, encoded twice, does not
+produce the same form.
+
 ## Scale and annotation as authored
 
-| Profile | Files | kB | `shui:editor` | `dash:editor` | `sh:group` | `sh:name` | Languages |
-|---|---:|---:|---:|---:|---:|---:|---|
-| DCAT-AP 3.0.1 (SEMIC) | 5 | 65 | 0 | 0 | 0 | 0 | en (51) |
-| HealthDCAT-AP Release 5 (European Commission) | 4 | 50 | 0 | 0 | 0 | 0 | en (17) |
-| Health-RI Core (HealthDCAT-AP national implementation) | 14 | 83 | 0 | 141 | 0 | 143 | en (321) |
-| DCAT-AP.de 2.0 (national extension, Germany) | 4 | 70 | 0 | 0 | 0 | 23 | de (251) |
-| FAIR Data Point (FAIRDataTeam reference implementation) | 8 | 9 | 0 | 27 | 0 | 1 | — |
-| SPHN 2026.1 (Swiss Personalized Health Network) | 1 | 930 | 0 | 0 | 0 | 0 | — |
-| Bioschemas profiles v20250219 | 1 | 222 | 0 | 0 | 0 | 0 | — |
-| SPDX 3.0.1 model | 1 | 179 | 0 | 0 | 0 | 0 | en (530) |
-| Health-RI domain modules (health, imaging, omics) | 5 | 5 | 0 | 0 | 0 | 1 | en (15) |
-| Evidenze HealthDCAT-AP onboarding (ours) | 1 | 33 | 11 | 0 | 47 | 47 | es (106), ca (82) |
-| Evidenze data space onboarding (ours) | 1 | 28 | 7 | 0 | 32 | 32 | es (113), ca (87) |
+| Profile | Files | kB | `shui:editor` | `dash:editor` | `sh:group` | `sh:name` | `sh:message` | of those, lang-tagged | Languages |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| DCAT-AP 3.0.1 (SEMIC) | 5 | 65 | 0 | 0 | 0 | 0 | 11 | 6 (54.5%) | en (51) |
+| HealthDCAT-AP Release 5 (European Commission) | 4 | 50 | 0 | 0 | 0 | 0 | 43 | 0 (0.0%) | en (17) |
+| Health-RI Core (HealthDCAT-AP national implementation) | 14 | 83 | 0 | 141 | 0 | 143 | 0 | — | en (321) |
+| DCAT-AP.de 2.0 (national extension, Germany) | 4 | 70 | 0 | 0 | 0 | 23 | 183 | 179 (97.8%) | de (251) |
+| FAIR Data Point (FAIRDataTeam reference implementation) | 8 | 9 | 0 | 27 | 0 | 1 | 0 | — | — |
+| SPHN 2026.1 (Swiss Personalized Health Network) | 1 | 930 | 0 | 0 | 0 | 0 | 636 | 0 (0.0%) | — |
+| Bioschemas profiles v20250219 | 1 | 222 | 0 | 0 | 0 | 0 | 0 | — | — |
+| SPDX 3.0.1 model | 1 | 179 | 0 | 0 | 0 | 0 | 0 | — | en (530) |
+| Health-RI domain modules (health, imaging, omics) | 5 | 5 | 0 | 0 | 0 | 1 | 0 | — | en (15) |
+| Evidenze HealthDCAT-AP onboarding (ours) | 1 | 34 | 11 | 0 | 47 | 47 | 14 | 14 (100.0%) | es (106), ca (82) |
+| Evidenze data space onboarding (ours) | 1 | 28 | 7 | 0 | 32 | 32 | 8 | 8 (100.0%) | es (113), ca (87) |
 
 These are textual counts over the whole profile, i.e. what the author wrote.
 They can exceed the *Labelled* column of Tab. 3, which counts only property
 shapes: DCAT-AP.de's 23 `sh:name`s are all on **node** shapes, and a node
 shape's name has nowhere to go in a form that renders one shape as one page.
+
+The `sh:message` pair is what makes the multilingual gap visible: a profile can
+carry hundreds of author-written error messages and still offer the reader only
+one language. Counted per literal, not per predicate — one `sh:message` may
+carry several translations in one object list.
 
 ## Property paths
 
@@ -151,12 +184,17 @@ not the same problem:
 - property shapes: 298; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 27 (9.1%)
 - SHACL 1.2 conditionals (`sh:if`): 0
-- property shapes sharing a path with a sibling on the same node shape: 1 (they collapse into one control)
-- editor resolution: 108 from a stated `shui:editor`, 153 inferred, 0 degraded to the type-fact fallback
+- editor resolution: 119 from a stated `shui:editor`, 154 inferred, 0 degraded to the type-fact fallback
 
-**Editors resolved:** TextFieldEditor=153, AutoCompleteEditor=83, DetailsEditor=35, IRIEditor=24, NumberFieldEditor=3
+**Editors resolved:** TextFieldEditor=154, AutoCompleteEditor=87, DetailsEditor=24, IRIEditor=22, DatePickerEditor=7, NumberFieldEditor=3
 
 **SHACL parameters present:** path=298, severity=281, nodeKind=144, class=84, minCount=71, maxCount=54, node=38, description=27, hasValue=16, datatype=6, message=6, shape=5
+
+**Diagnostics:** conflicting-constraint=2, conjoined-property=1
+
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status
+- [conflicting-constraint] Property shapes on this path disagree on sh:node: kept http://data.europa.eu/r5r#StatusRestriction, not carried http://data.europa.eu/r5r#StatusRestrictionADMS. The validator still checks all of them. — http://www.w3.org/ns/adms#status
+- [conflicting-constraint] Property shapes on this path disagree on sh:description: kept A non EU managed concept is used to indicate the status of the distribution. If no corresponding can be found inform the maintainer of the adms:status codelist., not carried The codelist of adms:status has changed from DCAT-AP 2.1 to DCAT-AP 3.0.0. — http://www.w3.org/ns/adms#status
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
@@ -164,8 +202,8 @@ not the same problem:
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `deprecateduris.ttl` | 5 | 8 | 1 | 1 | 6 | 0 | 25.0% |
 | `mdr-vocabularies.shape.ttl` | 28 | 42 | 18 | 24 | 0 | 0 | 100.0% |
-| `range.ttl` | 15 | 82 | 79 | 2 | 0 | 1 | 98.8% |
-| `shapes.ttl` | 25 | 130 | 10 | 8 | 111 | 1 | 13.8% |
+| `range.ttl` | 15 | 82 | 82 | 0 | 0 | 0 | 100.0% |
+| `shapes.ttl` | 25 | 130 | 18 | 0 | 112 | 0 | 13.8% |
 | `shapes_recommended.ttl` | 19 | 36 | 0 | 0 | 36 | 0 | 0.0% |
 
 **Cannot render:**
@@ -183,21 +221,28 @@ not the same problem:
 - property shapes: 139; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 6 (4.3%)
 - SHACL 1.2 conditionals (`sh:if`): 0
-- property shapes sharing a path with a sibling on the same node shape: 5 (they collapse into one control)
-- editor resolution: 56 from a stated `shui:editor`, 47 inferred, 0 degraded to the type-fact fallback
+- editor resolution: 56 from a stated `shui:editor`, 44 inferred, 0 degraded to the type-fact fallback
 
-**Editors resolved:** TextFieldEditor=47, DetailsEditor=34, IRIEditor=29, AutoCompleteEditor=25, NumberFieldEditor=4
+**Editors resolved:** TextFieldEditor=44, DetailsEditor=34, IRIEditor=27, AutoCompleteEditor=25, NumberFieldEditor=4
 
 **SHACL parameters present:** path=139, severity=112, nodeKind=85, message=65, minCount=62, node=36, class=25, hasValue=24, maxCount=17, description=6, datatype=4
+
+**Diagnostics:** conjoined-property=5
+
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
 | File | Node shapes | Fields | Typed | Nested | Plain text | Read-only | Zero-code |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `public-shapes.ttl` | 13 | 57 | 20 | 8 | 27 | 2 | 49.1% |
+| `public-shapes.ttl` | 13 | 53 | 20 | 8 | 25 | 0 | 52.8% |
 | `public-shapes_recommended.ttl` | 1 | 18 | 0 | 0 | 18 | 0 | 0.0% |
 | `range.ttl` | 3 | 13 | 12 | 0 | 1 | 0 | 92.3% |
-| `mdr-vocabularies.shape.ttl` | 35 | 51 | 24 | 26 | 1 | 0 | 98.0% |
+| `mdr-vocabularies.shape.ttl` | 35 | 50 | 24 | 26 | 0 | 0 | 100.0% |
 
 **Cannot render:**
 
@@ -253,20 +298,34 @@ not the same problem:
 - property shapes: 121; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 1 (0.8%)
 - SHACL 1.2 conditionals (`sh:if`): 0
-- property shapes sharing a path with a sibling on the same node shape: 17 (they collapse into one control)
-- editor resolution: 46 from a stated `shui:editor`, 70 inferred, 0 degraded to the type-fact fallback
+- editor resolution: 48 from a stated `shui:editor`, 54 inferred, 0 degraded to the type-fact fallback
 
-**Editors resolved:** TextFieldEditor=70, AutoCompleteEditor=27, IRIEditor=22, DetailsEditor=2
+**Editors resolved:** TextFieldEditor=54, AutoCompleteEditor=27, IRIEditor=21, DetailsEditor=2
 
 **SHACL parameters present:** path=121, message=102, severity=99, nodeKind=30, class=27, maxCount=19, property=19, minCount=17, flags=3, node=3, pattern=3, or=2, qualifiedMinCount=2, qualifiedValueShape=2, description=1, qualifiedMaxCount=1
+
+**Diagnostics:** conjoined-property=17, unrenderable-alternative=2
+
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/plannedAvailability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#algorithm
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/type
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#granularity
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
 | File | Node shapes | Fields | Typed | Nested | Plain text | Read-only | Zero-code |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `dcat-ap-spec-german-additions.ttl` | 17 | 87 | 40 | 2 | 43 | 2 | 48.3% |
+| `dcat-ap-spec-german-additions.ttl` | 17 | 70 | 42 | 2 | 26 | 0 | 62.9% |
 | `dcat-ap-spec-german-messages.ttl` | 0 | 0 | 0 | 0 | 0 | 0 | — |
-| `dcat-ap-konventionen.ttl` | 8 | 27 | 6 | 0 | 20 | 1 | 22.2% |
+| `dcat-ap-konventionen.ttl` | 8 | 27 | 6 | 0 | 21 | 0 | 22.2% |
 | `dcat-ap-de-deprecated.ttl` | 4 | 7 | 0 | 0 | 7 | 0 | 0.0% |
 
 **Cannot render:**
@@ -322,9 +381,9 @@ not the same problem:
 - property shapes: 1246; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 0 (0.0%)
 - SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 891 from a stated `shui:editor`, 258 inferred, 0 degraded to the type-fact fallback
+- editor resolution: 1085 from a stated `shui:editor`, 90 inferred, 0 degraded to the type-fact fallback
 
-**Editors resolved:** AutoCompleteEditor=725, TextFieldEditor=258, DateTimePickerEditor=160, IRIEditor=101, NumberFieldEditor=2
+**Editors resolved:** AutoCompleteEditor=961, DateTimePickerEditor=160, TextFieldEditor=90, EnumSelectEditor=26, NumberFieldEditor=5, IRIEditor=4
 
 **SHACL parameters present:** path=1246, minCount=1220, maxCount=962, class=765, datatype=256, or=199, in=26
 
@@ -347,12 +406,16 @@ not the same problem:
 - property shapes: 643; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 643 (100.0%)
 - SHACL 1.2 conditionals (`sh:if`): 0
-- property shapes sharing a path with a sibling on the same node shape: 2 (they collapse into one control)
-- editor resolution: 0 from a stated `shui:editor`, 113 inferred, 0 degraded to the type-fact fallback
+- editor resolution: 0 from a stated `shui:editor`, 641 inferred, 0 degraded to the type-fact fallback
 
-**Editors resolved:** IRIEditor=530, TextFieldEditor=113
+**Editors resolved:** TextFieldEditor=641
 
 **SHACL parameters present:** description=643, path=643, minCount=353, severity=353
+
+**Diagnostics:** conjoined-property=2
+
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — (http://schema.org/sameAs|https://schema.org/sameAs)
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — (http://schema.org/sameAs|https://schema.org/sameAs)
 
 ## SPDX 3.0.1 model
 
@@ -403,16 +466,16 @@ not the same problem:
 
 > Pure SHACL 1.2 + SHACL-UI. The deployment.
 
-- source: 1 file(s), 793 lines, 33 kB
+- source: 1 file(s), 804 lines, 34 kB
 - node shapes: 10 (10 carry property shapes)
 - property shapes: 48; property groups: 13
 - carrying sh:name: 47 (97.9%); sh:description: 23 (47.9%)
 - SHACL 1.2 conditionals (`sh:if`): 1
 - editor resolution: 32 from a stated `shui:editor`, 8 inferred, 0 degraded to the type-fact fallback
 
-**Editors resolved:** EnumSelectEditor=15, IRIEditor=9, DetailsEditor=8, TextFieldEditor=8, TextFieldWithLangEditor=7, BooleanEditor=1
+**Editors resolved:** EnumSelectEditor=15, IRIEditor=9, DetailsEditor=8, TextFieldEditor=8, TextFieldWithLangEditor=5, TextAreaEditor=2, BooleanEditor=1
 
-**SHACL parameters present:** path=48, group=47, name=47, order=47, type=47, nodeKind=39, maxCount=25, minCount=25, description=23, datatype=16, in=15, class=8, node=8, message=7, hasValue=1, pattern=1
+**SHACL parameters present:** path=48, group=47, name=47, order=47, type=47, nodeKind=39, maxCount=25, minCount=25, description=23, datatype=16, in=15, editor=10, class=8, node=8, message=7, hasValue=1, pattern=1
 
 **Cannot render:**
 
@@ -423,7 +486,7 @@ not the same problem:
 
 > Pure SHACL 1.2 + SHACL-UI.
 
-- source: 1 file(s), 590 lines, 28 kB
+- source: 1 file(s), 600 lines, 28 kB
 - node shapes: 7 (7 carry property shapes)
 - property shapes: 33; property groups: 10
 - carrying sh:name: 32 (97.0%); sh:description: 32 (97.0%)
@@ -447,18 +510,32 @@ not the same problem:
 - property shapes: 292; property groups: 0
 - carrying sh:name: 292 (100.0%); sh:description: 292 (100.0%)
 - SHACL 1.2 conditionals (`sh:if`): 0
-- property shapes sharing a path with a sibling on the same node shape: 161 (they collapse into one control)
-- editor resolution: 88 from a stated `shui:editor`, 204 inferred, 0 degraded to the type-fact fallback
+- editor resolution: 88 from a stated `shui:editor`, 43 inferred, 0 degraded to the type-fact fallback
 
-**Editors resolved:** TextFieldEditor=204, AutoCompleteEditor=85, NumberFieldEditor=3
+**Editors resolved:** AutoCompleteEditor=85, TextFieldEditor=43, NumberFieldEditor=3
 
 **SHACL parameters present:** description=292, name=292, path=292, seeAlso=292, nodeKind=131, class=85, maxCount=50, minCount=20, datatype=6
+
+**Diagnostics:** conjoined-property=119
+
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/source
+- [conjoined-property] 4 property shapes state this path; the field is their conjunction. — http://xmlns.com/foaf/0.1/primaryTopic
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/language
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/modified
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/issued
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#endpointDescription
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/title
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/accessRights
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://xmlns.com/foaf/0.1/page
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
 | File | Node shapes | Fields | Typed | Nested | Plain text | Read-only | Zero-code |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `dcat-ap-SHACL.ttl` | 35 | 290 | 86 | 0 | 204 | 0 | 29.7% |
+| `dcat-ap-SHACL.ttl` | 35 | 131 | 86 | 0 | 45 | 0 | 65.6% |
 | `ranges.ttl` | 240 | 91 | 88 | 0 | 3 | 0 | 96.7% |
 
 **Cannot render:**
@@ -475,18 +552,24 @@ not the same problem:
 - property shapes: 87; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 2 (2.3%)
 - SHACL 1.2 conditionals (`sh:if`): 0
-- property shapes sharing a path with a sibling on the same node shape: 4 (they collapse into one control)
-- editor resolution: 32 from a stated `shui:editor`, 45 inferred, 0 degraded to the type-fact fallback
+- editor resolution: 32 from a stated `shui:editor`, 43 inferred, 0 degraded to the type-fact fallback
 
-**Editors resolved:** TextFieldEditor=45, AutoCompleteEditor=17, IRIEditor=13, DetailsEditor=8, NumberFieldEditor=4
+**Editors resolved:** TextFieldEditor=43, AutoCompleteEditor=17, IRIEditor=11, DetailsEditor=8, NumberFieldEditor=4
 
 **SHACL parameters present:** path=87, severity=83, message=40, minCount=40, nodeKind=35, class=17, maxCount=17, node=8, datatype=4, description=2, hasValue=1
+
+**Diagnostics:** conjoined-property=4
+
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
 | File | Node shapes | Fields | Typed | Nested | Plain text | Read-only | Zero-code |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| `restricted-shapes.ttl` | 13 | 56 | 20 | 8 | 26 | 2 | 50.0% |
+| `restricted-shapes.ttl` | 13 | 52 | 20 | 8 | 24 | 0 | 53.8% |
 | `restricted-shapes_recommended.ttl` | 1 | 18 | 0 | 0 | 18 | 0 | 0.0% |
 | `range.ttl` | 3 | 13 | 12 | 0 | 1 | 0 | 92.3% |
 
@@ -503,9 +586,9 @@ not the same problem:
 - property shapes: 109; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 0 (0.0%)
 - SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 66 from a stated `shui:editor`, 37 inferred, 0 degraded to the type-fact fallback
+- editor resolution: 72 from a stated `shui:editor`, 37 inferred, 0 degraded to the type-fact fallback
 
-**Editors resolved:** AutoCompleteEditor=63, TextFieldEditor=37, DetailsEditor=6, NumberFieldEditor=3
+**Editors resolved:** AutoCompleteEditor=64, TextFieldEditor=37, DatePickerEditor=5, NumberFieldEditor=3
 
 **SHACL parameters present:** path=109, severity=109, class=63, maxCount=47, nodeKind=27, minCount=18, node=6, datatype=5, shape=5, dateTime=1, hasValue=1
 

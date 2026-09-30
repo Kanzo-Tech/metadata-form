@@ -88,6 +88,49 @@ const bump = (m: Record<string, number>, k: string, by = 1) => { m[k] = (m[k] ??
  * anything — DCAT-AP 3.0.1's generated encoding uses `shacl:`, Flanders' OSLO
  * likewise, and a naive `sh:` grep scores both as containing no SHACL at all.
  */
+/**
+ * Turtle with its `#` comments removed, for the TEXTUAL counts only.
+ *
+ * Every source-level number in this harness is a regex over the document, and a
+ * regex cannot tell a term from prose about a term. That is not hypothetical:
+ * an earlier revision of this work reported a profile as carrying three `sh:if`
+ * conditionals when two of the three hits were sentences in comments. Anything
+ * counting what the AUTHOR WROTE must count triples, not documentation.
+ *
+ * `#` is only a comment outside a literal and outside an IRI — `<...#Frag>` and
+ * `"a # b"` both contain one and neither starts a comment — so the scan tracks
+ * which of the three it is in. Parsing still sees the original text.
+ */
+function stripComments(ttl: string): string {
+  let out = "";
+  let i = 0;
+  while (i < ttl.length) {
+    const c = ttl[i];
+    if (c === "<" && !/\s/.test(ttl[i + 1] ?? " ")) {
+      const end = ttl.indexOf(">", i);
+      if (end !== -1) { out += ttl.slice(i, end + 1); i = end + 1; continue; }
+    }
+    if (c === '"') {
+      const long = ttl.startsWith('"""', i);
+      const q = long ? '"""' : '"';
+      let j = i + q.length;
+      while (j < ttl.length) {
+        if (ttl[j] === "\\") { j += 2; continue; }
+        if (ttl.startsWith(q, j)) { j += q.length; break; }
+        j += 1;
+      }
+      out += ttl.slice(i, j); i = j; continue;
+    }
+    if (c === "#") {
+      const nl = ttl.indexOf("\n", i);
+      if (nl === -1) break;
+      i = nl; continue;               // drop the comment, keep the newline
+    }
+    out += c; i += 1;
+  }
+  return out;
+}
+
 function sourceTerms(ttl: string): Set<string> {
   const nsOf = new Map<string, string>();
   for (const m of ttl.matchAll(/@prefix\s+([A-Za-z][\w.-]*)?:\s*<([^>]+)>/g)) {
@@ -106,6 +149,34 @@ function sourceTerms(ttl: string): Set<string> {
     terms.add(m[1]);
   }
   return terms;
+}
+
+/**
+ * `sh:message` values, and how many of them carry a language tag.
+ *
+ * Textual, like the rest of `sourceTerms` — it counts what the author wrote, not
+ * what the engine parsed. Each `sh:message` predicate is followed to the end of
+ * its object list (`;`, `.` or `]`), because Turtle lets one predicate carry
+ * several literals — `sh:message "a"@en, "b"@es` is two messages, and counting
+ * only the first is how a profile with full translations reads as monolingual.
+ * Long-quoted (`"""`) literals are handled; a `;` inside a literal is not, which
+ * would end the scan early and UNDER-count. That direction is the safe one.
+ */
+function messageStats(ttl: string): { total: number; langTagged: number } {
+  let total = 0;
+  let langTagged = 0;
+  const lit = /(?:"""[\s\S]*?"""|"(?:[^"\\]|\\.)*")(@[a-zA-Z]{2,3}(?:-[a-zA-Z0-9]+)*)?/g;
+  for (const m of ttl.matchAll(/\b(?:sh|shacl):message(?![\w-])/g)) {
+    const from = m.index! + m[0].length;
+    const end = ttl.slice(from).search(/[;.\]]\s|[;.\]]$/);
+    const objects = ttl.slice(from, end === -1 ? undefined : from + end);
+    lit.lastIndex = 0;
+    for (const o of objects.matchAll(lit)) {
+      total += 1;
+      if (o[1]) langTagged += 1;
+    }
+  }
+  return { total, langTagged };
 }
 
 // -------------------------------------------------------------------- results
@@ -137,7 +208,13 @@ interface ProfileResult {
    *  one to name the culprit. A profile that breaks the engine is a RESULT. */
   parseIsolation?: { file: string; ok: boolean; error?: string }[];
   /** Source-level annotation counts (textual — what the author actually wrote). */
-  source: { shuiEditor: number; dashEditor: number; shGroup: number; shName: number; langTags: Record<string, number> };
+  source: {
+    shuiEditor: number; dashEditor: number; shGroup: number; shName: number;
+    langTags: Record<string, number>;
+    /** `sh:message` values written, and how many carry a language tag. The
+     *  multilingual half of SHACL messages is invisible without this pair. */
+    shMessage: number; shMessageLangTagged: number;
+  };
   /** Structural counts from the parsed IR. */
   ir: {
     nodeShapes: number;
@@ -223,10 +300,14 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
   const files = spec.sources.flatMap((s) => ttlFilesUnder(resolve(REPO, s), spec.exclude));
   const texts = files.map((f) => readFileSync(f, "utf8"));
   const ttl = texts.join("\n\n");
+  // Every textual count below runs over `prose`, never `ttl`: a comment that
+  // MENTIONS a term must not be counted as a use of it. Parsing uses `ttl`.
+  const prose = stripComments(ttl);
 
-  const count = (re: RegExp) => (ttl.match(re) ?? []).length;
+  const count = (re: RegExp) => (prose.match(re) ?? []).length;
   const langTags: Record<string, number> = {};
-  for (const m of ttl.matchAll(/(?<!\\)"@([a-zA-Z]{2,3}(?:-[a-zA-Z0-9]+)?)(?![\w-])/g)) bump(langTags, m[1].toLowerCase());
+  for (const m of prose.matchAll(/(?<!\\)"@([a-zA-Z]{2,3}(?:-[a-zA-Z0-9]+)?)(?![\w-])/g)) bump(langTags, m[1].toLowerCase());
+  const messages = messageStats(prose);
 
   const result: ProfileResult = {
     id: spec.id,
@@ -248,6 +329,8 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
       shGroup: count(/\b(?:sh|shacl):group(?![\w-])/g),
       shName: count(/\b(?:sh|shacl):name(?![\w-])/g),
       langTags,
+      shMessage: messages.total,
+      shMessageLangTagged: messages.langTagged,
     },
     ir: {
       nodeShapes: 0, nodeShapesWithProperties: 0, propertyShapes: 0, named: 0, described: 0, groups: 0,
@@ -345,7 +428,7 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
     }
   }
 
-  result.gaps = gapsFor(ttl, irTerms, carriers);
+  result.gaps = gapsFor(prose, irTerms, carriers);
 
   if (files.length > 1) {
     result.perFile = [];
@@ -500,19 +583,79 @@ function markdown(results: ProfileResult[], stamp: string): string {
       "it degrades to, which is why the literal 'renders with zero custom widget code' " +
       "figure would be 100% everywhere and is not the number reported.", "");
 
+  // ---- what authoring for this engine actually buys -----------------------
+  //
+  // Two comparisons, because they answer different questions and only the first
+  // is the one the paper claims. LIKE-FOR-LIKE pairs our HealthDCAT-AP profile
+  // against the national HealthDCAT-AP implementation: same specification, same
+  // domain, one written knowing this engine and one written without ever having
+  // heard of it. The corpus EXTREMES are also printed, because the best external
+  // profile in the corpus is not a HealthDCAT-AP one and comparing against it
+  // would be comparing shape styles rather than measuring adoption cost.
+  {
+    const scored = primary.filter((r) => r.parsed && r.form.fields > 0);
+    const share = (r: ProfileResult) => (100 * (r.form.typedWidget + r.form.nested)) / r.form.fields;
+    const byId = (id: string) => scored.find((r) => r.id === id);
+    const best = (o: "external" | "ours") =>
+      scored.filter((r) => r.origin === o).sort((a, b) => share(b) - share(a))[0];
+
+    const rows: [string, ProfileResult | undefined, ProfileResult | undefined][] = [
+      ["like for like — the same profile, authored twice", byId("evidenze-health"), byId("health-ri-core")],
+      ["corpus extremes — best of each origin", best("ours"), best("external")],
+    ];
+    L.push("### What authoring a profile for this engine buys", "");
+    L.push("| Comparison | Ours | | Externally authored | | Difference |");
+    L.push("|---|---|---:|---|---:|---:|");
+    for (const [what, a, b] of rows) {
+      if (!a || !b) { L.push(`| ${what} | — | — | — | — | — |`); continue; }
+      const d = share(a) - share(b);
+      L.push(`| ${what} | ${short(a)} | ${share(a).toFixed(1)}% | ${short(b)} | ${share(b).toFixed(1)}% | **${d >= 0 ? "+" : ""}${d.toFixed(1)} points** |`);
+    }
+    L.push("");
+    L.push("The first row is the adoption-cost measurement: both are implementations of");
+    L.push("the same application profile, one written with complete knowledge of this");
+    L.push("engine and one written by people who had never heard of it. The second row is");
+    L.push("reported so the first cannot be mistaken for a corpus maximum — the highest");
+    L.push("external score belongs to a profile from another domain with a different");
+    L.push("shape style, and comparing against it would measure that, not adoption.", "");
+  }
+
+  // ---- variants: same spec, different encoding ----------------------------
+  if (variants.length) {
+    L.push("### Variants — excluded from the headline, reported because the pairs are informative", "");
+    L.push("| Variant | Variant of | Fields | Typed widget | Nested form | **Zero-code control** |");
+    L.push("|---|---|---:|---:|---:|---:|");
+    for (const r of variants) {
+      if (!r.parsed) { L.push(`| ${r.label} | ${r.variantOf} | **parse failed** | — | — | — |`); continue; }
+      const f = r.form;
+      L.push(`| ${short(r)} | \`${r.variantOf}\` | ${f.fields} | ${f.typedWidget} | ${f.nested} | **${pct(f.typedWidget + f.nested, f.fields)}** |`);
+    }
+    L.push("");
+    L.push("A variant is a second encoding or a re-serialisation of a profile already");
+    L.push("counted, so it is kept out of Tab. 3. The figures are here because the *pairs*");
+    L.push("say something Tab. 3 cannot: the same specification, encoded twice, does not");
+    L.push("produce the same form.", "");
+  }
+
   // ---- annotation as authored -------------------------------------------
   L.push("## Scale and annotation as authored", "");
-  L.push("| Profile | Files | kB | `shui:editor` | `dash:editor` | `sh:group` | `sh:name` | Languages |");
-  L.push("|---|---:|---:|---:|---:|---:|---:|---|");
+  L.push("| Profile | Files | kB | `shui:editor` | `dash:editor` | `sh:group` | `sh:name` | `sh:message` | of those, lang-tagged | Languages |");
+  L.push("|---|---:|---:|---:|---:|---:|---:|---:|---:|---|");
   for (const r of primary) {
     const langs = Object.entries(r.source.langTags).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([l, n]) => `${l} (${n})`).join(", ") || "—";
-    L.push(`| ${r.label} | ${r.files} | ${(r.turtleBytes / 1024).toFixed(0)} | ${r.source.shuiEditor} | ${r.source.dashEditor} | ${r.source.shGroup} | ${r.source.shName} | ${langs} |`);
+    const msg = r.source.shMessage;
+    const tagged = msg === 0 ? "—" : `${r.source.shMessageLangTagged} (${pct(r.source.shMessageLangTagged, msg)})`;
+    L.push(`| ${r.label} | ${r.files} | ${(r.turtleBytes / 1024).toFixed(0)} | ${r.source.shuiEditor} | ${r.source.dashEditor} | ${r.source.shGroup} | ${r.source.shName} | ${msg} | ${tagged} | ${langs} |`);
   }
   L.push("");
   L.push("These are textual counts over the whole profile, i.e. what the author wrote.");
   L.push("They can exceed the *Labelled* column of Tab. 3, which counts only property");
   L.push("shapes: DCAT-AP.de's 23 `sh:name`s are all on **node** shapes, and a node");
   L.push("shape's name has nowhere to go in a form that renders one shape as one page.", "");
+  L.push("The `sh:message` pair is what makes the multilingual gap visible: a profile can");
+  L.push("carry hundreds of author-written error messages and still offer the reader only");
+  L.push("one language. Counted per literal, not per predicate — one `sh:message` may");
+  L.push("carry several translations in one object list.", "");
 
   // ---- paths -------------------------------------------------------------
   L.push("## Property paths", "");

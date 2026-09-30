@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-28",
+  "generated": "2026-09-03",
   "n": 11,
   "nExternal": 9,
   "results": [
@@ -15,26 +15,34 @@
       "form": {
         "complexPathFields": 2,
         "degradedToFallback": 0,
-        "diagnostics": {},
-        "diagnosticSamples": [],
-        "duplicatePath": 1,
-        "editorIds": {
-          "AutoCompleteEditor": 83,
-          "DetailsEditor": 35,
-          "IRIEditor": 24,
-          "NumberFieldEditor": 3,
-          "TextFieldEditor": 153
+        "diagnostics": {
+          "conflicting-constraint": 2,
+          "conjoined-property": 1
         },
-        "fields": 298,
-        "inferred": 153,
-        "nested": 35,
+        "diagnosticSamples": [
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status",
+          "[conflicting-constraint] Property shapes on this path disagree on sh:node: kept http://data.europa.eu/r5r#StatusRestriction, not carried http://data.europa.eu/r5r#StatusRestrictionADMS. The validator still checks all of them. — http://www.w3.org/ns/adms#status",
+          "[conflicting-constraint] Property shapes on this path disagree on sh:description: kept A non EU managed concept is used to indicate the status of the distribution. If no corresponding can be found inform the maintainer of the adms:status codelist., not carried The codelist of adms:status has changed from DCAT-AP 2.1 to DCAT-AP 3.0.0. — http://www.w3.org/ns/adms#status"
+        ],
+        "duplicatePath": 0,
+        "editorIds": {
+          "AutoCompleteEditor": 87,
+          "DatePickerEditor": 7,
+          "DetailsEditor": 24,
+          "IRIEditor": 22,
+          "NumberFieldEditor": 3,
+          "TextFieldEditor": 154
+        },
+        "fields": 297,
+        "inferred": 154,
+        "nested": 24,
         "noWidget": 0,
-        "plainTextFallback": 153,
-        "readOnly": 2,
+        "plainTextFallback": 154,
+        "readOnly": 0,
         "shapesBuilt": 91,
         "shapesFailed": [],
-        "statedEditorHonoured": 108,
-        "typedWidget": 108
+        "statedEditorHonoured": 119,
+        "typedWidget": 119
       },
       "gaps": [
         {
@@ -126,20 +134,20 @@
         {
           "fields": 82,
           "file": "range.ttl",
-          "nested": 2,
+          "nested": 0,
           "nodeShapes": 15,
           "plain": 0,
-          "readOnly": 1,
-          "typed": 79
+          "readOnly": 0,
+          "typed": 82
         },
         {
           "fields": 130,
           "file": "shapes.ttl",
-          "nested": 8,
+          "nested": 0,
           "nodeShapes": 25,
-          "plain": 111,
-          "readOnly": 1,
-          "typed": 10
+          "plain": 112,
+          "readOnly": 0,
+          "typed": 18
         },
         {
           "fields": 36,
@@ -157,6 +165,8 @@
           "en": 51
         },
         "shGroup": 0,
+        "shMessage": 11,
+        "shMessageLangTagged": 6,
         "shName": 0,
         "shuiEditor": 0
       },
@@ -174,22 +184,30 @@
       "form": {
         "complexPathFields": 2,
         "degradedToFallback": 0,
-        "diagnostics": {},
-        "diagnosticSamples": [],
-        "duplicatePath": 5,
+        "diagnostics": {
+          "conjoined-property": 5
+        },
+        "diagnosticSamples": [
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme"
+        ],
+        "duplicatePath": 0,
         "editorIds": {
           "AutoCompleteEditor": 25,
           "DetailsEditor": 34,
-          "IRIEditor": 29,
+          "IRIEditor": 27,
           "NumberFieldEditor": 4,
-          "TextFieldEditor": 47
+          "TextFieldEditor": 44
         },
-        "fields": 139,
-        "inferred": 47,
+        "fields": 134,
+        "inferred": 44,
         "nested": 34,
         "noWidget": 0,
-        "plainTextFallback": 47,
-        "readOnly": 2,
+        "plainTextFallback": 44,
+        "readOnly": 0,
         "shapesBuilt": 52,
         "shapesFailed": [],
         "statedEditorHonoured": 56,
@@ -258,12 +276,12 @@
       "parsed": true,
       "perFile": [
         {
-          "fields": 57,
+          "fields": 53,
           "file": "public-shapes.ttl",
           "nested": 8,
           "nodeShapes": 13,
-          "plain": 27,
-          "readOnly": 2,
+          "plain": 25,
+          "readOnly": 0,
           "typed": 20
         },
         {
@@ -285,11 +303,11 @@
           "typed": 12
         },
         {
-          "fields": 51,
+          "fields": 50,
           "file": "mdr-vocabularies.shape.ttl",
           "nested": 26,
           "nodeShapes": 35,
-          "plain": 1,
+          "plain": 0,
           "readOnly": 0,
           "typed": 24
         }
@@ -300,6 +318,8 @@
           "en": 17
         },
         "shGroup": 0,
+        "shMessage": 43,
+        "shMessageLangTagged": 0,
         "shName": 0,
         "shuiEditor": 0
       },
@@ -560,6 +580,8 @@
           "en": 321
         },
         "shGroup": 0,
+        "shMessage": 0,
+        "shMessageLangTagged": 0,
         "shName": 143,
         "shuiEditor": 0
       },
@@ -577,25 +599,41 @@
       "form": {
         "complexPathFields": 3,
         "degradedToFallback": 0,
-        "diagnostics": {},
-        "diagnosticSamples": [],
-        "duplicatePath": 17,
+        "diagnostics": {
+          "conjoined-property": 17,
+          "unrenderable-alternative": 2
+        },
+        "diagnosticSamples": [
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/plannedAvailability",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#algorithm",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/type",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#granularity"
+        ],
+        "duplicatePath": 0,
         "editorIds": {
           "AutoCompleteEditor": 27,
           "DetailsEditor": 2,
-          "IRIEditor": 22,
-          "TextFieldEditor": 70
+          "IRIEditor": 21,
+          "TextFieldEditor": 54
         },
-        "fields": 121,
-        "inferred": 70,
+        "fields": 104,
+        "inferred": 54,
         "nested": 2,
         "noWidget": 0,
-        "plainTextFallback": 70,
-        "readOnly": 3,
+        "plainTextFallback": 54,
+        "readOnly": 0,
         "shapesBuilt": 29,
         "shapesFailed": [],
-        "statedEditorHonoured": 46,
-        "typedWidget": 46
+        "statedEditorHonoured": 48,
+        "typedWidget": 48
       },
       "gaps": [
         {
@@ -667,8 +705,8 @@
         "editors": {
           "AutoCompleteEditor": 27,
           "DetailsEditor": 2,
-          "IRIEditor": 19,
-          "TextFieldEditor": 73
+          "IRIEditor": 21,
+          "TextFieldEditor": 71
         },
         "groups": 0,
         "named": 0,
@@ -704,13 +742,13 @@
       "parsed": true,
       "perFile": [
         {
-          "fields": 87,
+          "fields": 70,
           "file": "dcat-ap-spec-german-additions.ttl",
           "nested": 2,
           "nodeShapes": 17,
-          "plain": 43,
-          "readOnly": 2,
-          "typed": 40
+          "plain": 26,
+          "readOnly": 0,
+          "typed": 42
         },
         {
           "fields": 0,
@@ -726,8 +764,8 @@
           "file": "dcat-ap-konventionen.ttl",
           "nested": 0,
           "nodeShapes": 8,
-          "plain": 20,
-          "readOnly": 1,
+          "plain": 21,
+          "readOnly": 0,
           "typed": 6
         },
         {
@@ -746,6 +784,8 @@
           "de": 251
         },
         "shGroup": 0,
+        "shMessage": 183,
+        "shMessageLangTagged": 179,
         "shName": 23,
         "shuiEditor": 0
       },
@@ -924,6 +964,8 @@
         "dashEditor": 27,
         "langTags": {},
         "shGroup": 0,
+        "shMessage": 0,
+        "shMessageLangTagged": 0,
         "shName": 1,
         "shuiEditor": 0
       },
@@ -942,22 +984,23 @@
         "diagnosticSamples": [],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 725,
+          "AutoCompleteEditor": 961,
           "DateTimePickerEditor": 160,
-          "IRIEditor": 101,
-          "NumberFieldEditor": 2,
-          "TextFieldEditor": 258
+          "EnumSelectEditor": 26,
+          "IRIEditor": 4,
+          "NumberFieldEditor": 5,
+          "TextFieldEditor": 90
         },
         "fields": 1246,
-        "inferred": 258,
+        "inferred": 90,
         "nested": 0,
         "noWidget": 0,
-        "plainTextFallback": 258,
-        "readOnly": 97,
+        "plainTextFallback": 90,
+        "readOnly": 71,
         "shapesBuilt": 1744,
         "shapesFailed": [],
-        "statedEditorHonoured": 891,
-        "typedWidget": 891
+        "statedEditorHonoured": 1085,
+        "typedWidget": 1085
       },
       "gaps": [
         {
@@ -1016,12 +1059,12 @@
         "conditionals": 0,
         "described": 0,
         "editors": {
-          "AutoCompleteEditor": 765,
+          "AutoCompleteEditor": 961,
           "DateTimePickerEditor": 160,
           "EnumSelectEditor": 26,
           "IRIEditor": 4,
-          "NumberFieldEditor": 2,
-          "TextFieldEditor": 289
+          "NumberFieldEditor": 5,
+          "TextFieldEditor": 90
         },
         "groups": 0,
         "named": 0,
@@ -1051,6 +1094,8 @@
         "dashEditor": 0,
         "langTags": {},
         "shGroup": 0,
+        "shMessage": 636,
+        "shMessageLangTagged": 0,
         "shName": 0,
         "shuiEditor": 0
       },
@@ -1063,21 +1108,25 @@
       ],
       "files": 1,
       "form": {
-        "complexPathFields": 530,
+        "complexPathFields": 528,
         "degradedToFallback": 0,
-        "diagnostics": {},
-        "diagnosticSamples": [],
-        "duplicatePath": 2,
-        "editorIds": {
-          "IRIEditor": 530,
-          "TextFieldEditor": 113
+        "diagnostics": {
+          "conjoined-property": 2
         },
-        "fields": 643,
-        "inferred": 113,
+        "diagnosticSamples": [
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — (http://schema.org/sameAs|https://schema.org/sameAs)",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — (http://schema.org/sameAs|https://schema.org/sameAs)"
+        ],
+        "duplicatePath": 0,
+        "editorIds": {
+          "TextFieldEditor": 641
+        },
+        "fields": 641,
+        "inferred": 641,
         "nested": 0,
         "noWidget": 0,
-        "plainTextFallback": 113,
-        "readOnly": 530,
+        "plainTextFallback": 641,
+        "readOnly": 0,
         "shapesBuilt": 32,
         "shapesFailed": [],
         "statedEditorHonoured": 0,
@@ -1118,6 +1167,8 @@
         "dashEditor": 0,
         "langTags": {},
         "shGroup": 0,
+        "shMessage": 0,
+        "shMessageLangTagged": 0,
         "shName": 0,
         "shuiEditor": 0
       },
@@ -1221,6 +1272,8 @@
           "en": 530
         },
         "shGroup": 0,
+        "shMessage": 0,
+        "shMessageLangTagged": 0,
         "shName": 0,
         "shuiEditor": 0
       },
@@ -1345,6 +1398,8 @@
           "en": 15
         },
         "shGroup": 0,
+        "shMessage": 0,
+        "shMessageLangTagged": 0,
         "shName": 1,
         "shuiEditor": 0
       },
@@ -1367,8 +1422,9 @@
           "DetailsEditor": 8,
           "EnumSelectEditor": 15,
           "IRIEditor": 9,
+          "TextAreaEditor": 2,
           "TextFieldEditor": 8,
-          "TextFieldWithLangEditor": 7
+          "TextFieldWithLangEditor": 5
         },
         "fields": 48,
         "inferred": 8,
@@ -1415,8 +1471,9 @@
           "DetailsEditor": 8,
           "EnumSelectEditor": 15,
           "IRIEditor": 9,
+          "TextAreaEditor": 2,
           "TextFieldEditor": 8,
-          "TextFieldWithLangEditor": 7
+          "TextFieldWithLangEditor": 5
         },
         "groups": 13,
         "named": 47,
@@ -1426,6 +1483,7 @@
           "class": 8,
           "datatype": 16,
           "description": 23,
+          "editor": 10,
           "group": 47,
           "hasValue": 1,
           "in": 15,
@@ -1456,11 +1514,13 @@
           "es": 106
         },
         "shGroup": 47,
+        "shMessage": 14,
+        "shMessageLangTagged": 14,
         "shName": 47,
         "shuiEditor": 11
       },
-      "turtleBytes": 33566,
-      "turtleLines": 793
+      "turtleBytes": 34356,
+      "turtleLines": 804
     },
     {
       "fileNames": [
@@ -1568,11 +1628,13 @@
           "es": 113
         },
         "shGroup": 32,
+        "shMessage": 8,
+        "shMessageLangTagged": 8,
         "shName": 32,
         "shuiEditor": 7
       },
-      "turtleBytes": 28309,
-      "turtleLines": 590
+      "turtleBytes": 29088,
+      "turtleLines": 600
     },
     {
       "fileNames": [
@@ -1583,19 +1645,34 @@
       "form": {
         "complexPathFields": 0,
         "degradedToFallback": 0,
-        "diagnostics": {},
-        "diagnosticSamples": [],
-        "duplicatePath": 161,
+        "diagnostics": {
+          "conjoined-property": 119
+        },
+        "diagnosticSamples": [
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/source",
+          "[conjoined-property] 4 property shapes state this path; the field is their conjunction. — http://xmlns.com/foaf/0.1/primaryTopic",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/language",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/modified",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/issued",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#endpointDescription",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/title",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/accessRights",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://xmlns.com/foaf/0.1/page"
+        ],
+        "duplicatePath": 0,
         "editorIds": {
           "AutoCompleteEditor": 85,
           "NumberFieldEditor": 3,
-          "TextFieldEditor": 204
+          "TextFieldEditor": 43
         },
-        "fields": 292,
-        "inferred": 204,
+        "fields": 131,
+        "inferred": 43,
         "nested": 0,
         "noWidget": 0,
-        "plainTextFallback": 204,
+        "plainTextFallback": 43,
         "readOnly": 0,
         "shapesBuilt": 40,
         "shapesFailed": [],
@@ -1658,11 +1735,11 @@
       "parsed": true,
       "perFile": [
         {
-          "fields": 290,
+          "fields": 131,
           "file": "dcat-ap-SHACL.ttl",
           "nested": 0,
           "nodeShapes": 35,
-          "plain": 204,
+          "plain": 45,
           "readOnly": 0,
           "typed": 86
         },
@@ -1682,6 +1759,8 @@
           "en": 762
         },
         "shGroup": 0,
+        "shMessage": 0,
+        "shMessageLangTagged": 0,
         "shName": 381,
         "shuiEditor": 0
       },
@@ -1699,22 +1778,29 @@
       "form": {
         "complexPathFields": 2,
         "degradedToFallback": 0,
-        "diagnostics": {},
-        "diagnosticSamples": [],
-        "duplicatePath": 4,
+        "diagnostics": {
+          "conjoined-property": 4
+        },
+        "diagnosticSamples": [
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column"
+        ],
+        "duplicatePath": 0,
         "editorIds": {
           "AutoCompleteEditor": 17,
           "DetailsEditor": 8,
-          "IRIEditor": 13,
+          "IRIEditor": 11,
           "NumberFieldEditor": 4,
-          "TextFieldEditor": 45
+          "TextFieldEditor": 43
         },
-        "fields": 87,
-        "inferred": 45,
+        "fields": 83,
+        "inferred": 43,
         "nested": 8,
         "noWidget": 0,
-        "plainTextFallback": 45,
-        "readOnly": 2,
+        "plainTextFallback": 43,
+        "readOnly": 0,
         "shapesBuilt": 17,
         "shapesFailed": [],
         "statedEditorHonoured": 32,
@@ -1777,12 +1863,12 @@
       "parsed": true,
       "perFile": [
         {
-          "fields": 56,
+          "fields": 52,
           "file": "restricted-shapes.ttl",
           "nested": 8,
           "nodeShapes": 13,
-          "plain": 26,
-          "readOnly": 2,
+          "plain": 24,
+          "readOnly": 0,
           "typed": 20
         },
         {
@@ -1810,6 +1896,8 @@
           "en": 14
         },
         "shGroup": 0,
+        "shMessage": 39,
+        "shMessageLangTagged": 0,
         "shName": 0,
         "shuiEditor": 0
       },
@@ -1829,21 +1917,21 @@
         "diagnosticSamples": [],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 63,
-          "DetailsEditor": 6,
+          "AutoCompleteEditor": 64,
+          "DatePickerEditor": 5,
           "NumberFieldEditor": 3,
           "TextFieldEditor": 37
         },
         "fields": 109,
         "inferred": 37,
-        "nested": 6,
+        "nested": 0,
         "noWidget": 0,
         "plainTextFallback": 37,
         "readOnly": 0,
         "shapesBuilt": 21,
         "shapesFailed": [],
-        "statedEditorHonoured": 66,
-        "typedWidget": 66
+        "statedEditorHonoured": 72,
+        "typedWidget": 72
       },
       "gaps": [
         {
@@ -1922,6 +2010,8 @@
           "en": 16
         },
         "shGroup": 0,
+        "shMessage": 2,
+        "shMessageLangTagged": 0,
         "shName": 14,
         "shuiEditor": 0
       },
@@ -2103,6 +2193,8 @@
           "en": 440
         },
         "shGroup": 0,
+        "shMessage": 0,
+        "shMessageLangTagged": 0,
         "shName": 184,
         "shuiEditor": 0
       },
