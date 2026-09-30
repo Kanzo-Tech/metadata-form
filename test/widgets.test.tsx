@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
+import { assistUi } from "@/ai/index.js";
+import type { AssistUi } from "@/react/assistUi.js";
+import { es } from "metadata-form/i18n";
 
 const ex = "http://example.org/";
 const options = Array.from({ length: 20 }, (_, i) => `"option-${i}"`).join(" ");
@@ -13,6 +16,7 @@ const shapes = `
     sh:property [ sh:path ex:links ; sh:name "Links" ; sh:class ex:Cls ; sh:nodeKind sh:IRI ] ;
     sh:property [ sh:path ex:kind ; sh:name "Kind" ; sh:in ( ${options} ) ; sh:maxCount 1 ] ;
     sh:property [ sh:path ex:kinds ; sh:name "Kinds" ; sh:in ( ${options} ) ] ;
+    sh:property [ sh:path ex:dates ; sh:name "Dates" ; sh:datatype xsd:date ] ;
     sh:property [ sh:path ex:title ; sh:name "Title" ; sh:datatype rdf:langString ; sh:maxCount 1 ; sh:languageIn ( "en" "es" ) ] .
 `;
 
@@ -22,9 +26,9 @@ const found = [
 ];
 
 let form!: ReturnType<typeof useMetadataForm>;
-function Form(props: Partial<UseMetadataFormOptions>) {
+function Form({ assistUi, ...props }: Partial<UseMetadataFormOptions> & { assistUi?: AssistUi }) {
   form = useMetadataForm({ shapes, rootShape: `${ex}S`, validateOn: "off", ...props });
-  return <MetadataForm form={form} />;
+  return <MetadataForm form={form} assistUi={assistUi} />;
 }
 
 const objects = (predicate: string) =>
@@ -186,5 +190,33 @@ describe("the layouts", () => {
     expect(group).toHaveClass("grid-cols-3");
     expect(fieldOf("title").parentElement).toHaveClass("col-span-2");
     expect(fieldOf("link").parentElement).not.toHaveClass("col-span-2");
+  });
+});
+
+describe("the words of the parts the design system draws", () => {
+  const spanish = { locale: "es", strings: { es: es.strings } };
+
+  it("reach the row buttons of a repeatable field", async () => {
+    render(<Form {...spanish} />);
+    await waitFor(() => expect(screen.getByText("Dates")).toBeInTheDocument());
+    fireEvent.click(within(fieldOf("dates")).getByRole("button", { name: es.strings.chrome.addRow }));
+    expect(await within(fieldOf("dates")).findByRole("button", { name: es.strings.chrome.remove })).toBeInTheDocument();
+    expect(within(fieldOf("dates")).queryByText("Add")).toBeNull();
+  });
+
+  it("reach the ✨, through assistUi", async () => {
+    render(
+      <Form
+        {...spanish}
+        assist={{
+          suggest: async function* () { yield { value: "x" }; },
+          complete: async function* () { yield "y"; },
+        }}
+        assistUi={assistUi}
+      />,
+    );
+    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
+    expect(screen.getAllByRole("button", { name: es.strings.assist.suggest }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: "Suggest" })).toBeNull();
   });
 });

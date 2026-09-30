@@ -277,7 +277,8 @@ function AssistedTextarea({
   complete: WidgetProps["complete"];
   placeholder: string | undefined;
 }) {
-  const ghost = useFormContext().assistUi?.complete;
+  const { assistUi, strings } = useFormContext();
+  const ghost = assistUi?.complete;
   if (!complete || !ghost) {
     return (
       <Textarea
@@ -292,6 +293,7 @@ function AssistedTextarea({
     <ghost.Root
       value={text.draft ?? ""}
       onValueChange={text.change}
+      announcement={strings.assist.completeAnnouncement}
       complete={complete}
     >
       <ghost.Textarea>

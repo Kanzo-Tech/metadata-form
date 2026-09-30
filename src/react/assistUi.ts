@@ -6,7 +6,8 @@ import type { Candidate, CompletionRequest } from "../assist.js";
  * consumer, never imported by the core, so a form without it renders plain
  * inputs and carries no AI package. `metadata-form/ai` provides `assistUi`;
  * these are the parts of `@kanzo-tech/ai`'s two field compounds, typed by the
- * props the form passes them.
+ * props the form passes them — among them the words they draw, which the core
+ * reads from its catalog (`Strings.assist`) so the parts need know no language.
  */
 export interface AssistUi {
   /** The ✨ and its candidate strip around a field (`FormAssist.suggest`). */
@@ -17,7 +18,7 @@ export interface AssistUi {
       onPick: (value: string) => void;
       children: ReactNode;
     }>;
-    Mark: ComponentType;
+    Mark: ComponentType<{ label: string; offeringLabel: string }>;
     List: ComponentType;
   };
   /** Ghost text over a textarea (`FormAssist.complete`). */
@@ -26,7 +27,7 @@ export interface AssistUi {
       complete: (request: CompletionRequest) => AsyncIterable<string>;
       value: string;
       onValueChange: (value: string) => void;
-      className?: string;
+      announcement: string;
       children: ReactNode;
     }>;
     Textarea: ComponentType<{ children: ReactElement }>;

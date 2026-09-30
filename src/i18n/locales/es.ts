@@ -20,6 +20,11 @@ export const strings: Strings = {
     reportedValue: "Valor recibido",
     detailsOf: "Detalles de la incidencia en {field}",
   },
+  assist: {
+    suggest: "Sugerir",
+    suggestOffering: "Sugerir otros valores",
+    completeAnnouncement: "Sugerencia lista. Pulsa Tab para aceptarla, Escape para descartarla.",
+  },
   readOnly: {
     "variable-length-path":
       "Se muestra a título informativo. El perfil llega a estos valores por un camino repetitivo, que no indica dónde se guardaría uno nuevo.",
@@ -44,6 +49,7 @@ export const strings: Strings = {
     yes: "Sí",
     no: "No",
     time: "Hora",
+    addRow: "Añadir",
     noMatches: "Sin coincidencias",
     remove: "Quitar",
     kindOfValue: "{field} — tipo de valor",

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Alert, AlertDescription, Skeleton } from "@kanzo-tech/ui";
+import { Alert, AlertDescription, LocaleProvider, Skeleton } from "@kanzo-tech/ui";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { FormContext, type FormContextValue, type FormLayout, type GridLayout } from "./context.js";
 import { NodeForm } from "./NodeForm.js";
@@ -77,10 +77,12 @@ export function MetadataForm({ form, widgets, assistUi, layout, grid, className 
   }
 
   return (
-    <FormContext.Provider value={ctx}>
-      <form className={className} onSubmit={(e) => e.preventDefault()}>
-        <NodeForm model={ctx.model} root />
-      </form>
-    </FormContext.Provider>
+    <LocaleProvider locale={form.locale}>
+      <FormContext.Provider value={ctx}>
+        <form className={className} onSubmit={(e) => e.preventDefault()}>
+          <NodeForm model={ctx.model} root />
+        </form>
+      </FormContext.Provider>
+    </LocaleProvider>
   );
 }

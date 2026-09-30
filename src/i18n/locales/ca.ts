@@ -20,6 +20,11 @@ export const strings: Strings = {
     reportedValue: "Valor rebut",
     detailsOf: "Detalls de la incidència a {field}",
   },
+  assist: {
+    suggest: "Suggereix",
+    suggestOffering: "Suggereix altres valors",
+    completeAnnouncement: "Suggeriment llest. Prem Tab per acceptar-lo, Escape per descartar-lo.",
+  },
   readOnly: {
     "variable-length-path":
       "Es mostra a títol informatiu. El perfil arriba a aquests valors per un camí repetitiu, que no indica on es desaria un de nou.",
@@ -44,6 +49,7 @@ export const strings: Strings = {
     yes: "Sí",
     no: "No",
     time: "Hora",
+    addRow: "Afegeix",
     noMatches: "Sense coincidències",
     remove: "Treu",
     kindOfValue: "{field} — tipus de valor",

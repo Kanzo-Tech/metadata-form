@@ -20,7 +20,6 @@ import type {
   ValueSlot,
 } from "../../form/FormModel.js";
 import { Editors } from "../../form/vocab/shacl-ui.js";
-import { defaultWidgets } from "../widgets/defaultWidgets.js";
 import { languageOf, primitiveToTerm, termToPrimitive } from "../../form/termBinding.js";
 import {
   optionsFor,
@@ -40,6 +39,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
   const { widgets, assist, assistUi, graph, locale, strings } = useFormContext();
   const focus = useFocusNode();
   const ops = useFieldBinding(field);
+  const arrayLabels = { addLabel: strings.chrome.addRow, removeLabel: strings.chrome.remove };
 
   // `shui:BlankNodeEditor` is `DetailsEditor`'s twin: both say "this value is a
   // resource with a shape of its own", and the difference — whether it gets an IRI
@@ -105,6 +105,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     return (
       <FieldShell field={field} errors={errs}>
         <FieldArray
+          {...arrayLabels}
           count={real.length}
           rowKey={rowKey}
           canAdd={canAddMore}
@@ -142,7 +143,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
   };
 
   const entryFor = (f: FieldModel) => {
-    const found = resolveWidget(f, widgets, defaultWidgets);
+    const found = resolveWidget(f, widgets);
     if (!found) {
       throw new Error(
         `No widget for editor ${f.editorId} on ${f.id}, and none for the ` +
@@ -285,6 +286,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     row(0)
   ) : (
     <FieldArray
+      {...arrayLabels}
       count={rowCount}
       rowKey={rowKey}
       canAdd={canAddMore}
@@ -309,7 +311,11 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
       existing={real.map((s) => s.value?.value ?? "").filter(Boolean)}
       onPick={applySuggestion}
     >
-      <FieldShell field={field} errors={errs} action={<Mark />}>
+      <FieldShell
+        field={field}
+        errors={errs}
+        action={<Mark label={strings.assist.suggest} offeringLabel={strings.assist.suggestOffering} />}
+      >
         {rows}
         <List />
       </FieldShell>

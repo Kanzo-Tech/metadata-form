@@ -48,6 +48,17 @@ export interface Strings {
      *  field's hierarchical label, substituted verbatim. */
     detailsOf: string;
   };
+  /** The words of the assistance UI — the ✨ and the ghost text — which `assistUi`
+   *  receives as props: the parts are `@kanzo-tech/ai`'s, and the core reads
+   *  the catalog, not them. */
+  assist: {
+    /** Accessible name of the ✨ at rest. */
+    suggest: string;
+    /** Accessible name of the ✨ while candidates are on offer. */
+    suggestOffering: string;
+    /** What a screen reader hears once, when a completion lands. */
+    completeAnnouncement: string;
+  };
   /**
    * Why a field shows its values but does not take input, keyed by
    * {@link ReadOnlyCode}. A disabled field with no account of itself reads as a
@@ -71,6 +82,8 @@ export interface Strings {
     no: string;
     /** Accessible name of the time input of a date-time field. */
     time: string;
+    /** The button that adds a row to a repeatable field. */
+    addRow: string;
     noMatches: string;
     remove: string;
     /** Accessible name of the value-kind selector. `{field}` is the field label. */
@@ -124,6 +137,11 @@ export const EN: Strings = {
     reportedValue: "Reported value",
     detailsOf: "Details of the issue on {field}",
   },
+  assist: {
+    suggest: "Suggest",
+    suggestOffering: "Suggest different values",
+    completeAnnouncement: "Suggestion ready. Press Tab to accept, Escape to dismiss.",
+  },
   readOnly: {
     "variable-length-path":
       "Shown for reference. The profile reaches these values through a repeating path, which does not say where a new one would be stored.",
@@ -148,6 +166,7 @@ export const EN: Strings = {
     yes: "Yes",
     no: "No",
     time: "Time",
+    addRow: "Add",
     noMatches: "No matches",
     remove: "Remove",
     kindOfValue: "{field} — kind of value",

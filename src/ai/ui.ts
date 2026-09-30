@@ -15,7 +15,8 @@ import type { AssistUi } from "../react/assistUi.js";
  *   <MetadataForm form={form} assistUi={assistUi} />
  *
  * The compounds are used as published; `AssistUi` only names the parts the form
- * composes. Its `Candidate` is structurally `@kanzo-tech/ai`'s own, which this
+ * composes, and the words they draw (`label`, `offeringLabel`, `announcement`)
+ * come in as props from the core's strings table — this file names no language. Its `Candidate` is structurally `@kanzo-tech/ai`'s own, which this
  * assignment checks in the direction the form relies on.
  */
 export const assistUi: AssistUi = {

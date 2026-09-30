@@ -168,13 +168,8 @@ const INTEGRAL = new Set(
  * means the registry is missing `shui:TextFieldEditor` and every field is broken;
  * the caller reports that rather than rendering nothing in silence.
  */
-export function resolveWidget(
-  field: FieldModel,
-  registry: WidgetRegistry,
-  base: WidgetRegistry,
-): WidgetEntry | undefined {
-  const pick = (id: string) => registry[id] ?? base[id];
-  return pick(field.editorId) ?? pick(fallbackEditorId(field));
+export function resolveWidget(field: FieldModel, registry: WidgetRegistry): WidgetEntry | undefined {
+  return registry[field.editorId] ?? registry[fallbackEditorId(field)];
 }
 
 export function stepFor(field: FieldModel): string | undefined {
