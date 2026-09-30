@@ -186,8 +186,9 @@ interface Gap {
   /** How many property shapes carry it (source occurrences for engine drops). */
   count: number;
   /** `unrendered` — reached the IR and changes nothing. `carried` — reached the
-   *  field and no widget reads it. `dropped` — never reached the IR at all. */
-  kind: "unrendered" | "carried" | "dropped";
+   *  field and no widget reads it. `dropped` — never reached the IR at all.
+   *  `partial` — read, but only some of what it can say becomes a control. */
+  kind: "unrendered" | "carried" | "dropped" | "partial";
   why: string;
 }
 
@@ -507,7 +508,7 @@ function gapsFor(ttl: string, irTerms: Set<string>, carriers: Record<string, num
       continue;
     }
     if (entry.how === "consumed") continue;
-    add(iri, n, entry.how === "carried" ? "carried" : "unrendered", entry.why);
+    add(iri, n, entry.how === "carried" || entry.how === "partial" ? entry.how : "unrendered", entry.why);
   }
 
   for (const term of sourceTerms(ttl)) {
@@ -519,7 +520,7 @@ function gapsFor(ttl: string, irTerms: Set<string>, carriers: Record<string, num
     // In the source and not on any property shape we enumerated: it sits on a
     // node shape, or inside a nested/qualified value shape. Either way nothing
     // downstream reads it, so it is the same finding with a wider count.
-    add(term, occurrences(ttl, term), irTerms.has(term) ? (ledger.how === "carried" ? "carried" : "unrendered") : "dropped", ledger.why);
+    add(term, occurrences(ttl, term), irTerms.has(term) ? (ledger.how === "carried" || ledger.how === "partial" ? ledger.how : "unrendered") : "dropped", ledger.why);
   }
   return [...gaps.values()].sort((a, b) => b.count - a.count || a.term.localeCompare(b.term));
 }
@@ -697,8 +698,9 @@ function markdown(results: ProfileResult[], stamp: string): string {
 
   // ---- the gap list ------------------------------------------------------
   L.push("## What we cannot render, and why", "");
-  L.push("The list §8 is built from. Three failure modes, kept apart because they are");
-  L.push("not the same problem:", "");
+  L.push("The list §8 is built from. Four modes, kept apart because they are not the");
+  L.push("same problem:", "");
+  L.push("- **partial** — the form reads it, and only some of what it says becomes a control.");
   L.push("- **unrendered** — the construct reaches the IR and changes nothing the user sees.");
   L.push("- **carried** — it reaches the field model and no widget reads it.");
   L.push("- **dropped** — it is in the published source and never reaches the IR at all.", "");

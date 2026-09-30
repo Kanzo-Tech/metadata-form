@@ -57,7 +57,7 @@ export const PARAM_TO_COMPONENT: Record<string, string> = {
   [`${SH}sparql`]: "SPARQLConstraintComponent",
 };
 
-export type Consumption = "consumed" | "carried" | "unrendered";
+export type Consumption = "consumed" | "partial" | "carried" | "unrendered";
 
 /** What the form layer does with each term that reaches the IR. */
 export const LEDGER: Record<string, { how: Consumption; why: string }> = {
@@ -101,7 +101,7 @@ export const LEDGER: Record<string, { how: Consumption; why: string }> = {
   },
   // --- reaches the IR, changes nothing ---
   [`${SH}or`]: {
-    how: "consumed",
+    how: "partial",
     why: "Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`.",
   },
   [`${SH}xone`]: { how: "unrendered", why: "Not read (only sh:or is planned as a disjunction). Exclusive choice has no control; the UI cannot offer the branch selector the construct describes." },

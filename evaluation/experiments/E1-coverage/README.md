@@ -251,7 +251,7 @@ Ranked by occurrences across the corpus:
 | `sh:sparql` | dropped | 480 | sphn | SPARQL constraint: validation-only, no affordance a form can derive from a query. |
 | `sh:closed` | dropped | 233 | sphn | The form offers exactly the declared fields so it cannot *violate* closedness — but it cannot show the user that nothing else is allowed. |
 | `sh:ignoredProperties` | dropped | 233 | sphn | Parameter of `sh:closed`. |
-| `sh:or` | **read** (was: unrendered) | 216 | sphn, dcat-ap-3, dcat-ap-de, healthdcat-ap, ours | Now read: `planDisjunction` turns branches that constrain the value itself (datatype, nodeKind, class, `sh:in`) into the field's alternatives. A branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic (2 in the corpus, DCAT-AP.de). Removed from the "cannot render" table of `results/coverage.md`. |
+| `sh:or` | **partial** (was: unrendered) | 216 | sphn, dcat-ap-3, dcat-ap-de, healthdcat-ap, ours | Read: `planDisjunction` turns branches that constrain the value itself (datatype, nodeKind, class, `sh:in`) into the field's alternatives. A branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic (2 in the corpus, DCAT-AP.de). The four modes of `results/coverage.md` are now unrendered / carried / dropped / partial. |
 | `dash:editor` | unrendered | 168 | health-ri-core, fair-data-point | Recorded, not acted on. Only `shui:editor` selects a widget. This is the measured baseline. |
 | `dash:viewer` | unrendered | 165 | health-ri-core, fair-data-point | As `dash:editor`. |
 | `sh:target` | dropped | 96 | sphn | SPARQL/custom target; only `sh:targetClass` resolves a root shape. |
@@ -270,7 +270,7 @@ Two entries of the earlier run no longer belong to the list:
 
 1. **`sh:deactivated` was a bug, not a gap**, and is fixed: the engine now drops a
    deactivated shape (SHACL 2.1.6).
-2. **`sh:or` was the largest real gap** (216 occurrences) and is now read. It is
+2. **`sh:or` was the largest real gap** (216 occurrences) and is now read (mode *partial*). It is
    still the standard way to say "an IRI *or* a literal"; the field now offers the
    branches it can render as alternatives.
 

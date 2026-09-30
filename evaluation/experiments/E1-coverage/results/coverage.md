@@ -150,9 +150,10 @@ components a validation report over that profile would name in
 
 ## What we cannot render, and why
 
-The list §8 is built from. Three failure modes, kept apart because they are
-not the same problem:
+The list §8 is built from. Four modes, kept apart because they are not the
+same problem:
 
+- **partial** — the form reads it, and only some of what it says becomes a control.
 - **unrendered** — the construct reaches the IR and changes nothing the user sees.
 - **carried** — it reaches the field model and no widget reads it.
 - **dropped** — it is in the published source and never reaches the IR at all.
@@ -163,6 +164,7 @@ not the same problem:
 | `sh:sparql` | dropped | 480 | sphn=480 | SPARQL-based constraint. Validation-only; there is no affordance a form can derive from a query. |
 | `sh:closed` | dropped | 233 | sphn=233 | Node-level closedness. A form offers exactly the fields the shape declares, so it cannot violate closedness — but it also cannot show the user that no other property is permitted. |
 | `sh:ignoredProperties` | dropped | 233 | sphn=233 | Parameter of sh:closed. |
+| `sh:or` | dropped / partial | 216 | dcat-ap-3=9, healthdcat-ap=2, dcat-ap-de=3, sphn=199, evidenze-health=1, evidenze-dataspace=2 | Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`. |
 | `dash:editor` | unrendered | 168 | health-ri-core=141, fair-data-point=27 | The DASH editor vocabulary. The engine records the term and does not act on it: only `shui:editor` selects a widget. This is the measured baseline — see the note above the coverage table. |
 | `dash:viewer` | unrendered | 165 | health-ri-core=141, fair-data-point=24 | See dash:editor. |
 | `sh:target` | dropped | 96 | sphn=96 | SPARQL/custom target; not used for root-shape resolution. |
@@ -212,6 +214,7 @@ not the same problem:
 **Cannot render:**
 
 - `sh:hasValue` ×16 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
+- `sh:or` ×9 (dropped) — Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`.
 - `sh:shape` ×5 (unrendered) — Not a SHACL 1.2 term at all — a leftover from a pre-REC draft, still shipped by DCAT-AP 3.0.1. It is recorded and ignored.
 
 ## HealthDCAT-AP Release 5 (European Commission)
@@ -232,9 +235,9 @@ not the same problem:
 
 **Diagnostics:** conjoined-property=5
 
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column
 
@@ -250,6 +253,7 @@ not the same problem:
 **Cannot render:**
 
 - `sh:hasValue` ×24 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
+- `sh:or` ×2 (dropped) — Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`.
 
 ## Health-RI Core (HealthDCAT-AP national implementation)
 
@@ -316,12 +320,12 @@ not the same problem:
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#algorithm
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingURI
 - [unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Dataset_dct_spatial_v_IRIorClass
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/type
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#granularity
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
@@ -336,6 +340,7 @@ not the same problem:
 
 - `sh:hasValue` ×27 (dropped) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
 - `sh:property` ×19 (unrendered) — A property shape nested INSIDE another property shape — reached as a constraint parameter (under sh:or, sh:qualifiedValueShape…) rather than from a node shape. Only node-shape properties are built into fields, so these are invisible. (The ordinary node-shape sh:property is the mechanism itself and is of course read; it is filtered out of this count.)
+- `sh:or` ×3 (partial) — Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`.
 - `sh:qualifiedMinCount` ×2 (unrendered) — Parameter of sh:qualifiedValueShape.
 - `sh:qualifiedValueShape` ×2 (unrendered) — No slot in the typed IR. 'at least n of the values must match shape S' is a per-value constraint the field, which models one editor for all its values, cannot express.
 - `sh:qualifiedMaxCount` ×1 (unrendered) — Parameter of sh:qualifiedValueShape.
@@ -397,6 +402,7 @@ not the same problem:
 - `sh:sparql` ×480 (dropped) — SPARQL-based constraint. Validation-only; there is no affordance a form can derive from a query.
 - `sh:closed` ×233 (dropped) — Node-level closedness. A form offers exactly the fields the shape declares, so it cannot violate closedness — but it also cannot show the user that no other property is permitted.
 - `sh:ignoredProperties` ×233 (dropped) — Parameter of sh:closed.
+- `sh:or` ×199 (partial) — Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`.
 - `sh:target` ×96 (dropped) — SPARQL/custom target; not used for root-shape resolution.
 - `sh:entailment` ×1 (dropped) — Entailment regime declaration; ignored.
 
@@ -488,6 +494,7 @@ not the same problem:
 
 - `sh:hasValue` ×1 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
 - `sh:not` ×1 (dropped) — Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)
+- `sh:or` ×1 (dropped) — Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`.
 
 ## Evidenze data space onboarding (ours)
 
@@ -507,6 +514,7 @@ not the same problem:
 
 **Cannot render:**
 
+- `sh:or` ×2 (dropped) — Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`.
 - `sh:hasValue` ×1 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
 - `sh:not` ×1 (dropped) — Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)
 
@@ -571,9 +579,9 @@ not the same problem:
 
 **Diagnostics:** conjoined-property=4
 
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
@@ -607,6 +615,7 @@ not the same problem:
 **Cannot render:**
 
 - `sh:shape` ×5 (unrendered) — Not a SHACL 1.2 term at all — a leftover from a pre-REC draft, still shipped by DCAT-AP 3.0.1. It is recorded and ignored.
+- `sh:or` ×2 (dropped) — Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`.
 - `sh:dateTime` ×1 (unrendered) — Not in the construct ledger — unclassified, and therefore unread by the form layer.
 - `sh:hasValue` ×1 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
 

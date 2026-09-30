@@ -58,6 +58,12 @@
           "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
         },
         {
+          "count": 9,
+          "kind": "dropped",
+          "term": "sh:or",
+          "why": "Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`."
+        },
+        {
           "count": 5,
           "kind": "unrendered",
           "term": "sh:shape",
@@ -190,9 +196,9 @@
           "conjoined-property": 5
         },
         "diagnosticSamples": [
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column"
         ],
@@ -228,6 +234,12 @@
           "kind": "carried",
           "term": "sh:hasValue",
           "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
+        },
+        {
+          "count": 2,
+          "kind": "dropped",
+          "term": "sh:or",
+          "why": "Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`."
         }
       ],
       "id": "healthdcat-ap",
@@ -622,12 +634,12 @@
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#algorithm",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingURI",
           "[unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Dataset_dct_spatial_v_IRIorClass",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/type",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher"
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#granularity",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability"
         ],
         "duplicatePath": 0,
         "editorIds": {
@@ -665,6 +677,12 @@
           "kind": "unrendered",
           "term": "sh:property",
           "why": "A property shape nested INSIDE another property shape — reached as a constraint parameter (under sh:or, sh:qualifiedValueShape…) rather than from a node shape. Only node-shape properties are built into fields, so these are invisible. (The ordinary node-shape sh:property is the mechanism itself and is of course read; it is filtered out of this count.)"
+        },
+        {
+          "count": 3,
+          "kind": "partial",
+          "term": "sh:or",
+          "why": "Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`."
         },
         {
           "count": 2,
@@ -1045,6 +1063,12 @@
           "kind": "dropped",
           "term": "sh:ignoredProperties",
           "why": "Parameter of sh:closed."
+        },
+        {
+          "count": 199,
+          "kind": "partial",
+          "term": "sh:or",
+          "why": "Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`."
         },
         {
           "count": 96,
@@ -1489,6 +1513,12 @@
           "kind": "dropped",
           "term": "sh:not",
           "why": "Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)"
+        },
+        {
+          "count": 1,
+          "kind": "dropped",
+          "term": "sh:or",
+          "why": "Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`."
         }
       ],
       "id": "evidenze-health",
@@ -1602,6 +1632,12 @@
         "typedWidget": 21
       },
       "gaps": [
+        {
+          "count": 2,
+          "kind": "dropped",
+          "term": "sh:or",
+          "why": "Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`."
+        },
         {
           "count": 1,
           "kind": "carried",
@@ -1843,9 +1879,9 @@
           "conjoined-property": 4
         },
         "diagnosticSamples": [
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column"
         ],
         "duplicatePath": 0,
@@ -2015,6 +2051,12 @@
           "kind": "unrendered",
           "term": "sh:shape",
           "why": "Not a SHACL 1.2 term at all — a leftover from a pre-REC draft, still shipped by DCAT-AP 3.0.1. It is recorded and ignored."
+        },
+        {
+          "count": 2,
+          "kind": "dropped",
+          "term": "sh:or",
+          "why": "Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`."
         },
         {
           "count": 1,
