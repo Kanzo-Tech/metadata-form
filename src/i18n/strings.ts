@@ -17,18 +17,16 @@ import { matchesLanguage } from "../form/terms.js";
 export type Plural = Partial<Record<Intl.LDMLPluralRule, string>> & { other: string };
 
 export interface Strings {
-  /** UI chrome of the `rdf:langString` language-tag picker. */
+  /** The words of the `rdf:langString` language-tag picker (`LanguagePicker`'s `translations`, plus its accessible name). */
   languagePicker: {
-    /** Accessible name + empty-value placeholder of the trigger. */
+    /** Accessible name of the picker. */
     label: string;
     /** Search box when free BCP-47 entry is allowed. */
-    searchPlaceholder: string;
+    placeholder: string;
     /** Search box when the shape pins `sh:languageIn` (filter-only). */
     filterPlaceholder: string;
     /** Shown when a constrained filter matches nothing. */
     noMatches: string;
-    /** Hint shown when a typed free tag can be committed with Enter. */
-    enterToUse: string;
   };
   /** Chrome of the findings panel — the words AROUND a message, not the message.
    *  A form whose fields and errors are Spanish and whose severity badge says
@@ -106,10 +104,9 @@ export interface ResolvedStrings extends Strings {
 export const EN: Strings = {
   languagePicker: {
     label: "Language",
-    searchPlaceholder: "Search or type a tag…",
+    placeholder: "Search or type a tag…",
     filterPlaceholder: "Filter…",
     noMatches: "No matches",
-    enterToUse: "Press Enter to use this tag",
   },
   validationPanel: {
     empty: "Nothing to fix. Every shape this form covers is satisfied.",

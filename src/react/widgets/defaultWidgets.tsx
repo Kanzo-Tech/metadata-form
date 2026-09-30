@@ -4,6 +4,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
+  LanguagePicker,
   NativeSelect,
   NativeSelectOption,
   NumberInput,
@@ -37,7 +38,6 @@ import type {
 } from "./widgets.js";
 import { makeDateField } from "./DateField.js";
 import { AsyncCombobox, AsyncMultiCombobox } from "../fieldassist/AsyncCombobox.js";
-import { LanguagePicker } from "./LanguagePicker.js";
 import { useFormContext, useStrings } from "../form/context.js";
 
 /**
@@ -176,20 +176,22 @@ const NumberField: Widget = (p) => {
   );
 };
 
-/** The language picker, glued to the trailing edge of whatever it tags.
+/** The language picker, in the trailing slot of whatever it tags.
  *  `align="inline-end"` is logical — it follows the writing direction rather
  *  than assuming LTR. */
 function LangSlot(p: WidgetProps & { text: string }) {
-  const { strings } = useFormContext();
+  const { label, ...translations } = useStrings().languagePicker;
   return (
     <LanguagePicker
+      inline
+      aria-label={label}
       value={p.language ?? ""}
-      onChange={(tag) => p.onChange(p.text || null, tag)}
-      allowed={p.languageIn}
+      onValueChange={(tag) => p.onChange(p.text || null, tag)}
+      languages={p.languageIn}
       // A language tags a value — meaningless with no text, so disable it until
       // something is typed.
       disabled={!p.text}
-      strings={strings.languagePicker}
+      translations={translations}
     />
   );
 }

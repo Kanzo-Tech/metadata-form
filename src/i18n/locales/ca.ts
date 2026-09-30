@@ -5,10 +5,9 @@ import turtle from "./ca.ttl?raw";
 export const strings: Strings = {
   languagePicker: {
     label: "Idioma",
-    searchPlaceholder: "Cerca o escriu un tag…",
+    placeholder: "Cerca o escriu un tag…",
     filterPlaceholder: "Filtra…",
     noMatches: "Sense coincidències",
-    enterToUse: "Prem Enter per usar aquest tag",
   },
   validationPanel: {
     empty: "No hi ha res a corregir. El formulari compleix totes les formes.",
