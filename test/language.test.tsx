@@ -103,6 +103,61 @@ describe("label resolution (SHACL-UI Editor's Draft, Label and Language Resoluti
     expect(await label(body, ["en"])).toBe("Nom");
   });
 
+  describe("the label of a property, step by step", () => {
+    /** The labels of `ex:p`, over shapes that label it and data that may too. */
+    const chain = async (property: string, shapesGraph: string, data: string, languages: string[]) => {
+      const engine = createRudofEngine();
+      const shapes = await engine.loadShapes(`
+        @prefix sh: <http://www.w3.org/ns/shacl#> . @prefix ex: <${ex}> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+        ex:S a sh:NodeShape ; sh:targetClass ex:Thing ; sh:property [ sh:path ex:p ${property} ] .
+        ${shapesGraph}
+      `);
+      const session = await engine.createGraph(
+        shapes,
+        `@prefix ex: <${ex}> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . ex:d1 a ex:Thing . ${data}`,
+        "text/turtle",
+        namedNode(`${ex}d1`),
+        namedNode(`${ex}S`),
+      );
+      const tree = engine.projectValues(shapes, session.focusNode, session.rootShapeId);
+      const model = buildFormModel({
+        shapes,
+        focusNode: session.focusNode,
+        shape: shapes.nodeShapes.get(`${ex}S`)!,
+        languages,
+        values: tree.values,
+        labels: tree.labels,
+      });
+      return allFields(model)[0].label;
+    };
+    const inShapes = `ex:p rdfs:label "Shapes label"@en , "Etiqueta de las formas"@es .`;
+    const inData = `ex:p rdfs:label "Data label"@en , "Etiqueta de los datos"@es .`;
+
+    it("takes sh:name before any rdfs:label", async () => {
+      expect(await chain(`; sh:name "Name"@en`, inShapes, inData, ["en"])).toBe("Name");
+    });
+
+    it("takes the data graph's rdfs:label of the predicate next", async () => {
+      expect(await chain(``, inShapes, inData, ["en"])).toBe("Data label");
+      expect(await chain(``, inShapes, inData, ["es"])).toBe("Etiqueta de los datos");
+    });
+
+    it("takes the shapes graph's rdfs:label of the predicate after that", async () => {
+      expect(await chain(``, inShapes, ``, ["en"])).toBe("Shapes label");
+      expect(await chain(``, inShapes, ``, ["es"])).toBe("Etiqueta de las formas");
+    });
+
+    it("picks each step by the same language resolution, and does not look further down for a better language", async () => {
+      // A step that has any label wins, in the best language it has: the draft's
+      // "MAY fall back" is taken within a step, not across steps.
+      expect(await chain(`; sh:name "Nom"@fr`, inShapes, inData, ["es"])).toBe("Nom");
+    });
+
+    it("falls to the humanised local name when nothing labelled the predicate", async () => {
+      expect(await chain(``, ``, ``, ["en"])).toBe("p");
+    });
+  });
+
   it("names an unnamed property by its humanised local name", async () => {
     expect(await label(`sh:path ex:dateIssued`, ["en"])).toBe("date issued");
     expect(humanise("accessURL")).toBe("access URL");

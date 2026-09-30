@@ -208,7 +208,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     if (!prepared) return undefined;
     // Single graph: re-derive field values from the engine session (sync, after
     // ready()) on every edit, then build the model over them.
-    const { values, satisfied, nodes } = engine.projectValues(prepared.shapes, prepared.focusNode, prepared.rootShapeId);
+    const { values, labels, satisfied, nodes } = engine.projectValues(prepared.shapes, prepared.focusNode, prepared.rootShapeId);
     const model = buildFormModel({
       shapes: prepared.shapes,
       focusNode: prepared.focusNode,
@@ -216,6 +216,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       languages,
       onDiagnostic,
       values,
+      labels,
       satisfied,
       // The live graph, for the one question the shapes cannot answer: whether a
       // sequence path's intermediate resource exists and is unique (see BuildArgs).

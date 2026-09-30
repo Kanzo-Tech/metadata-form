@@ -20,6 +20,7 @@ import type {
   ValueSlot,
 } from "./FormModel.js";
 import type {
+  LangString,
   NodeShapeIR,
   PropertyShapeIR,
   ShapeIR,
@@ -81,6 +82,10 @@ export interface BuildArgs {
    *  single-graph projection). The sole value source; defaults to empty (so
    *  structure-only callers get empty slots). */
   values?: ProjectedValues;
+  /** The `rdfs:label`s the data graph holds for each predicate, keyed like
+   *  {@link values}. Label-only: a field's name is the second thing tried after
+   *  its `sh:name` (see `labelOf`). Defaults to none. */
+  labels?: Map<string, LangString[]>;
   /** Per-focus set of satisfied conditional `conditionId`s (keyed by
    *  `focus.value`), from the projection. Gates which conditional branch's fields
    *  are built. Defaults to empty (no conditional is active). */
@@ -99,8 +104,9 @@ export interface BuildArgs {
 }
 
 /** Inner build args: projected values are always resolved (defaulted) before recursion. */
-type InnerArgs = Omit<BuildArgs, "values" | "satisfied" | "languages"> & {
+type InnerArgs = Omit<BuildArgs, "values" | "labels" | "satisfied" | "languages"> & {
   values: ProjectedValues;
+  labels: Map<string, LangString[]>;
   satisfied: Map<string, Set<string>>;
   languages: readonly string[];
 };
@@ -113,6 +119,7 @@ export function buildFormModel(args: BuildArgs): FormModel {
     {
       ...args,
       values: args.values ?? new Map(),
+      labels: args.labels ?? new Map(),
       satisfied: args.satisfied ?? new Map(),
       languages: args.languages ?? [],
     },
@@ -126,16 +133,17 @@ interface FieldCtx {
   languages: readonly string[];
   onDiagnostic?: DiagnosticSink;
   values: ProjectedValues;
+  labels: Map<string, LangString[]>;
   satisfied: Map<string, Set<string>>;
   readStep?: StepReader;
 }
 
 function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
-  const { shapes, focusNode, shape, languages, onDiagnostic, values, satisfied, readStep } = args;
+  const { shapes, focusNode, shape, languages, onDiagnostic, values, labels, satisfied, readStep } = args;
   const guardKey = `${shape.id}::${focusNode.value}`;
   const cyclic = visited.has(guardKey);
   const nextVisited = new Set(visited).add(guardKey);
-  const ctx: FieldCtx = { shapes, focusNode, languages, onDiagnostic, values, satisfied, readStep };
+  const ctx: FieldCtx = { shapes, focusNode, languages, onDiagnostic, values, labels, satisfied, readStep };
 
   // A deactivated shape constrains nothing (SHACL §2.1.6: every term conforms to
   // it, and the validator reports nothing for it), so it renders nothing — down to
@@ -298,12 +306,9 @@ function buildField(
   const resolved = resolveWrite(ps, ctx);
   const write = "write" in resolved ? resolved.write : undefined;
   // SHACL-UI ED, "Language Resolution": the shape's own `sh:languageIn` order comes
-  // before the application's languages. The label chain of "Property Labels" is
-  // `sh:name`, then `rdfs:label` of the predicate in the data graph and in the
-  // shapes graph, then the humanised local name. The IR carries no `rdfs:label` of
-  // a predicate, so those two steps are not taken.
+  // before the application's languages.
   const languages = [...(ps.value.languageIn ?? []), ...ctx.languages];
-  const label = pickByLanguage(ps.presentation.names, languages)?.value ?? fallbackLabel(ps, write);
+  const label = labelOf(ps, ctx.labels.get(id), languages, write);
   const description = pickByLanguage(ps.presentation.descriptions, languages)?.value;
 
   const v = ps.value;
@@ -457,7 +462,27 @@ function reportDropped(
 }
 
 /**
- * The label for a property the author did not name.
+ * The label of a property, by the order of SHACL-UI's "Property Labels" (Editor's
+ * Draft): its `sh:name`, then the `rdfs:label` of its predicate in the data graph,
+ * then in the shapes graph, then the local name split into words. Each step is
+ * picked by the same language resolution, and the first that has one wins.
+ */
+function labelOf(
+  ps: PropertyShapeIR,
+  dataLabels: readonly LangString[] | undefined,
+  languages: readonly string[],
+  write: FieldWrite | undefined,
+): string {
+  return (
+    pickByLanguage(ps.presentation.names, languages)?.value ??
+    pickByLanguage(dataLabels ?? [], languages)?.value ??
+    pickByLanguage(ps.presentation.pathLabels ?? [], languages)?.value ??
+    fallbackLabel(ps, write)
+  );
+}
+
+/**
+ * The label for a property nothing named.
  *
  * A single step reads as its own local name (an inverse one prefixed, because
  * "← parent" and "parent" are opposite questions and would otherwise share a
@@ -505,6 +530,7 @@ function projectValues(
           languages: ctx.languages,
           onDiagnostic: ctx.onDiagnostic,
           values: ctx.values,
+          labels: ctx.labels,
           satisfied: ctx.satisfied,
           readStep: ctx.readStep,
         },

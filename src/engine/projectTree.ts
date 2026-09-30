@@ -1,7 +1,7 @@
 import type { Term } from "@rdfjs/types";
 import { toTerm } from "../form/termValue.js";
 import type { ProjectedSlot, ProjectedValues } from "../form/buildFormModel.js";
-import type { NodeShapeIR, ProjectedForm, PropertyShapeIR, ShapeModel } from "../form/ShapeIR.js";
+import type { LangString, NodeShapeIR, ProjectedForm, PropertyShapeIR, ShapeModel } from "../form/ShapeIR.js";
 
 /** One node of the projected tree: a focus and the node shape it was projected
  *  against. The pair `validateFocus` needs — see {@link ProjectedTree.nodes}. */
@@ -19,6 +19,9 @@ export interface ProjectedNode {
  *  are produced in one recursive pass so `buildFormModel` reads them synchronously. */
 export interface ProjectedTree {
   values: ProjectedValues;
+  /** The `rdfs:label`s the data graph holds for each projected predicate, keyed
+   *  like {@link values}: the second step of SHACL-UI's property labels. */
+  labels: Map<string, LangString[]>;
   satisfied: Map<string, Set<string>>;
   /**
    * Every `(focus, shapeId)` the walk visited, root first — the `visited` guard
@@ -42,7 +45,7 @@ export type Projector = (focus: Term, shapeId: string) => ProjectedForm;
  * re-entering WASM or awaiting.
  */
 export function projectTree(project: Projector, shapes: ShapeModel, shapeId: string, focus: Term): ProjectedTree {
-  const tree: ProjectedTree = { values: new Map(), satisfied: new Map(), nodes: [] };
+  const tree: ProjectedTree = { values: new Map(), labels: new Map(), satisfied: new Map(), nodes: [] };
   recurse(project, shapes, shapeId, focus, tree, new Set());
   return tree;
 }
@@ -89,6 +92,7 @@ function recurse(
       `${focus.value}|${prop.pathKey}`,
       prop.values.map((v) => ({ value: toTerm(v.value), nestedFocus: v.nested ? toTerm(v.nested) : undefined })),
     );
+    if (prop.pathLabels?.length) tree.labels.set(`${focus.value}|${prop.pathKey}`, prop.pathLabels);
     const ps = propShapes.find((p) => p.pathKey === prop.pathKey);
     if (ps?.node) {
       for (const v of prop.values) {

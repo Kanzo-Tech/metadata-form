@@ -158,9 +158,10 @@ Editor's Draft, *Label and Language Resolution*: the order of the property shape
 `navigator.languages` as the default; tags match ranges by RFC 4647 §3.3.1 basic
 filtering (the tag `en-US` matches the range `en`, and `en` does not match `en-US`, so
 give `["es-ES", "es"]`, as a browser does); when nothing matches, an untagged literal,
-else any. A property with no `sh:name` is labelled with its local name split into words;
-the draft's two intermediate steps (an `rdfs:label` of the predicate in the data or shapes
-graph) are **not** taken, since the shape IR does not carry them.
+else any. A property is labelled by the draft's *Property Labels* order: its `sh:name`, then
+the `rdfs:label` of its predicate in the data graph, then in the shapes graph, then the
+predicate's local name split into words; each step is picked by that same resolution, and the
+first step that has a label wins.
 
 **Messages come from the engine.** A validation result carries its messages
 language-tagged, and the form picks the one to draw when it draws it, so changing `locale`
