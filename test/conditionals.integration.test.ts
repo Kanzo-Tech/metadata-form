@@ -38,7 +38,7 @@ describe("SHACL 1.2 conditional rendering — real rudof wasm", () => {
         shape: shapes.nodeShapes.get(session.rootShapeId)!,
         values,
         satisfied,
-        locale: "es",
+        languages: ["es"],
       });
       return { model, satisfied };
     };

@@ -1,0 +1,60 @@
+# Default validation messages, as RDF.
+#
+# What this file is: the wording shown for a constraint violation when the shape's
+# author wrote no `sh:message` in the reader's language. One resource per SHACL
+# constraint component, one `sh:message` literal per language. It is data, not code:
+# a language is added by supplying more triples (`useMetadataForm({ messages })`),
+# never by editing the library.
+#
+# Why `sh:message` on the component. SHACL defines `sh:message` as the wording of
+# the results a constraint produces (SHACL §2.1.5: the values are copied into the
+# results' `sh:resultMessage`), and lets SHACL-SPARQL constraints and
+# component validators declare one too (§5.1, §6.2.2).
+# A constraint component's message is that same statement one level up: "results
+# this component produces read like this, unless the shape says otherwise". No term
+# is minted in a W3C namespace. The alternatives said something else: `rdfs:comment`
+# and `skos:definition` describe the COMPONENT, not the error a reader sees.
+# The W3C `shacl.ttl` cannot serve as this data: it carries `@en` only and describes
+# components. Reading `sh:message` on a component is our convention, not a SHACL rule.
+#
+# `sh:ConstraintComponent` itself (the class of all components) holds the message
+# for any component this file does not name.
+#
+# Language: Spanish.
+
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+sh:MinCountConstraintComponent sh:message "Este campo es obligatorio"@es .
+sh:MaxCountConstraintComponent sh:message "Demasiados valores"@es .
+sh:DatatypeConstraintComponent sh:message "Tipo de valor no válido"@es .
+sh:NodeKindConstraintComponent sh:message "Clase de valor no válida"@es .
+sh:PatternConstraintComponent sh:message "El valor no coincide con el patrón requerido"@es .
+sh:MinLengthConstraintComponent sh:message "El valor es demasiado corto"@es .
+sh:MaxLengthConstraintComponent sh:message "El valor es demasiado largo"@es .
+sh:ClassConstraintComponent sh:message "El valor no es del tipo esperado"@es .
+sh:InConstraintComponent sh:message "El valor no es una opción permitida"@es .
+sh:NodeConstraintComponent sh:message "Faltan datos en esta sección"@es .
+sh:PropertyConstraintComponent sh:message "Hay datos no válidos en esta propiedad"@es .
+sh:QualifiedValueShapeConstraintComponent sh:message "Algunos valores no son los esperados aquí"@es .
+sh:QualifiedMinCountConstraintComponent sh:message "No hay suficientes valores que cumplan lo esperado"@es .
+sh:QualifiedMaxCountConstraintComponent sh:message "Hay demasiados valores que cumplen lo esperado"@es .
+sh:ReifierShapeConstraintComponent sh:message "Faltan datos sobre esta declaración"@es .
+sh:AndConstraintComponent sh:message "El valor no cumple todos los requisitos"@es .
+sh:OrConstraintComponent sh:message "El valor no cumple ninguna de las alternativas permitidas"@es .
+sh:XoneConstraintComponent sh:message "El valor debe cumplir exactamente una de las alternativas"@es .
+sh:NotConstraintComponent sh:message "Este valor no está permitido aquí"@es .
+sh:IfConstraintComponent sh:message "El valor no cumple el requisito que se aplica aquí"@es .
+sh:MinInclusiveConstraintComponent sh:message "El valor es demasiado pequeño"@es .
+sh:MinExclusiveConstraintComponent sh:message "El valor es demasiado pequeño"@es .
+sh:MaxInclusiveConstraintComponent sh:message "El valor es demasiado grande"@es .
+sh:MaxExclusiveConstraintComponent sh:message "El valor es demasiado grande"@es .
+sh:LanguageInConstraintComponent sh:message "Este idioma no está permitido"@es .
+sh:UniqueLangConstraintComponent sh:message "Solo se permite un valor por idioma"@es .
+sh:EqualsConstraintComponent sh:message "El valor debe coincidir con el del campo relacionado"@es .
+sh:DisjointConstraintComponent sh:message "El valor debe ser distinto del campo relacionado"@es .
+sh:LessThanConstraintComponent sh:message "El valor debe ser menor que el del campo relacionado"@es .
+sh:LessThanOrEqualsConstraintComponent sh:message "El valor debe ser menor o igual que el del campo relacionado"@es .
+sh:HasValueConstraintComponent sh:message "Falta un valor obligatorio"@es .
+sh:ClosedConstraintComponent sh:message "Esta propiedad no está permitida aquí"@es .
+sh:SPARQLConstraintComponent sh:message "El valor no cumple un requisito personalizado"@es .
+sh:ConstraintComponent sh:message "Valor no válido"@es .

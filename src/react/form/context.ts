@@ -6,7 +6,7 @@ import type { FieldError } from "../../form/validation.js";
 import type { FormAssist } from "../../assist.js";
 import type { WidgetRegistry } from "../widgets/widgets.js";
 import type { FormReport } from "../validation/formReport.js";
-import type { Strings } from "../../i18n/strings.js";
+import { EN, type ResolvedStrings } from "../../i18n/strings.js";
 
 /** Arrangement of the root property groups. */
 export type FormLayout = "sequential" | "tabs" | "steps";
@@ -27,9 +27,14 @@ export interface FormContextValue {
   graph: GraphState;
   model: FormModel;
   widgets: WidgetRegistry;
+  /** The most preferred language — for what takes a single one (an assistant's prompt). */
   locale: string;
-  /** Resolved UI string catalog (language-picker chrome, default messages). */
-  strings: Strings;
+  /** The reader's ordered language ranges. */
+  languages: readonly string[];
+  /** The interface strings, in the reader's language. */
+  strings: ResolvedStrings;
+  /** The text of one validation failure, in the reader's language. */
+  messageOf: (error: Pick<FieldError, "messages" | "constraint">) => string;
   errors: Map<string, FieldError[]>;
   report: FormReport;
   assist?: FormAssist;
@@ -45,6 +50,14 @@ export function useFormContext(): FormContextValue {
   const ctx = useContext(FormContext);
   if (!ctx) throw new Error("useFormContext must be used within a <MetadataForm>");
   return ctx;
+}
+
+const ENGLISH: ResolvedStrings = { ...EN, language: "en" };
+
+/** The interface strings: the form's, or English where a widget is rendered on its
+ *  own, outside a `<MetadataForm>`. */
+export function useStrings(): ResolvedStrings {
+  return useContext(FormContext)?.strings ?? ENGLISH;
 }
 
 /** Provides the focus node for the current (sub-)form scope. */

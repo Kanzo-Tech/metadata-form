@@ -12,6 +12,7 @@ import {
 import { XIcon } from "lucide-react";
 import type { WidgetOption } from "../../assist.js";
 import { grow, row } from "../styles.js";
+import { useStrings } from "../form/context.js";
 
 /**
  * A combobox over candidates fetched as you type.
@@ -126,6 +127,7 @@ export function AsyncCombobox(props: {
    *  whatever the last query returned. */
   showTrigger?: boolean;
 }) {
+  const { chrome } = useStrings();
   const { collection, setQuery } = useCandidates(props.loadItems);
   const typed = useDeferredCommit(props.onChange);
   const value = useMemo(() => (props.value ? [props.value] : []), [props.value]);
@@ -150,7 +152,7 @@ export function AsyncCombobox(props: {
         onBlur={typed.flush}
       />
       <ComboboxContent>
-        <ComboboxEmpty>No matches</ComboboxEmpty>
+        <ComboboxEmpty>{chrome.noMatches}</ComboboxEmpty>
         {collection.items.map((item) => (
           <ComboboxItem key={item.value} item={item}>
             {item.label}
@@ -181,6 +183,7 @@ export function AsyncMultiCombobox(props: {
   max?: number;
   showTrigger?: boolean;
 }) {
+  const { chrome } = useStrings();
   const { collection, setQuery, labelOf } = useCandidates(props.loadItems);
 
   return (
@@ -198,7 +201,7 @@ export function AsyncMultiCombobox(props: {
           disabled={props.max !== undefined && props.values.length >= props.max}
         />
         <ComboboxContent>
-          <ComboboxEmpty>No matches</ComboboxEmpty>
+          <ComboboxEmpty>{chrome.noMatches}</ComboboxEmpty>
           {collection.items.map((item) => (
             <ComboboxItem key={item.value} item={item}>
               {item.label}
@@ -218,7 +221,7 @@ export function AsyncMultiCombobox(props: {
                 {labelOf(v)}
                 <XIcon aria-hidden />
                 <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clipPath: "inset(50%)" }}>
-                  Remove
+                  {chrome.remove}
                 </span>
               </button>
             </Badge>

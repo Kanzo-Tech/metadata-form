@@ -5,7 +5,7 @@ import { freshFocusNode, resolveRootShapeFromTypes } from "./rootShape.js";
 import { projectTree, type ProjectedNode, type ProjectedTree } from "./projectTree.js";
 import type { NodeShapeIR, ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
 import type { Severity, ValidationResult } from "../form/validation.js";
-import type { RudofLoader, RudofResult, RudofSession, ShapeModelJson } from "./abi.js";
+import type { RudofLoader, RudofModule, RudofQuad, RudofResult, RudofSession, ShapeModelJson } from "./abi.js";
 
 const TURTLE = "text/turtle";
 const RDF_TYPE = namedNode(rdf("type").value);
@@ -122,6 +122,7 @@ export class RudofGraphBackend {
  * graph (rudof owns all RDF I/O).
  */
 export class RudofEngine {
+  private module?: RudofModule;
   private session?: RudofSession;
   private initOnce?: Promise<void>;
 
@@ -130,6 +131,7 @@ export class RudofEngine {
   /** Resolve once the engine is usable (awaits WASM; memoized). */
   ready(): Promise<void> {
     return (this.initOnce ??= this.load().then((m) => {
+      this.module = m;
       this.session = m.newSession();
     }));
   }
@@ -144,6 +146,18 @@ export class RudofEngine {
   async loadShapes(text: string, mediaType = TURTLE): Promise<ShapeModel> {
     await this.ready();
     return shapeModelFromJson(this.s.loadShapes(text, mediaType));
+  }
+
+  /**
+   * Parse an RDF document into its triples without touching the form's graph: a
+   * scratch session, discarded after the read. For data that is not part of the
+   * form — the default-message graph — so rudof stays the one RDF parser.
+   */
+  async parseQuads(text: string, mediaType = TURTLE): Promise<RudofQuad[]> {
+    await this.ready();
+    const scratch = this.module!.newSession();
+    scratch.loadData(text, mediaType);
+    return scratch.quads(null, null, null);
   }
 
   /** Parse a data document into the session graph; returns the live backend. */

@@ -1,4 +1,6 @@
 import { Badge } from "@kanzo-tech/ui";
+import { useStrings } from "../form/context.js";
+import { count } from "../../i18n/strings.js";
 import type { GroupIssues } from "../validation/formReport.js";
 
 /**
@@ -17,8 +19,9 @@ import type { GroupIssues } from "../validation/formReport.js";
  * Optionally jumps on click.
  */
 export function GroupIssuesBadge({ issues, onJump }: { issues?: GroupIssues; onJump?: () => void }) {
+  const strings = useStrings();
   if (!issues || issues.count === 0) return null;
-  const label = `${issues.count} issue${issues.count === 1 ? "" : "s"}`;
+  const label = count(strings, strings.chrome.issues, issues.count);
   const badge = (
     <Badge pill size="xs" variant={issues.hasViolation ? "destructive" : "warning"}>
       {issues.count}

@@ -6,6 +6,7 @@ import { allFields, type FieldModel, type FormModel } from "@/form/FormModel.js"
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { namedNode } from "@/form/factory.js";
 import type { Diagnostic } from "@/form/buildFormModel.js";
+import { EN } from "@/i18n/strings.js";
 import type { NodeShapeIR, PropertyShapeIR, ShapeModel } from "@/form/ShapeIR.js";
 
 /**
@@ -53,7 +54,7 @@ async function form(shapesBody: string, dataTtl = "", shapeId = `${EX}S`) {
     shapes,
     focusNode: session.focusNode,
     shape: shapes.nodeShapes.get(session.rootShapeId)!,
-    locale: "en",
+    languages: ["en"],
     values,
     satisfied,
     readStep: graph.readStep,
@@ -188,7 +189,7 @@ describe("property shapes sharing a path (SHACL conjunction)", () => {
     expect(ref.readOnly).toBe(true);
     expect(ref.write).toBeUndefined();
     expect(ref.readOnlyReason?.code).toBe("unsatisfiable-conjunction");
-    expect(ref.readOnlyReason?.message).toContain("contradict one another");
+    expect(EN.readOnly[ref.readOnlyReason!.code]).toContain("contradict one another");
     expect(diagnostics.map((d) => d.code)).toContain("unsatisfiable-property");
   });
 

@@ -4,6 +4,8 @@ import { XIcon } from "lucide-react";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { defaultMascot, type MascotCharacter } from "./mascot.js";
 import { column, ink, row } from "../styles.js";
+import { count, fill, type ResolvedStrings } from "../../i18n/strings.js";
+import type { FormReport } from "../validation/formReport.js";
 
 export interface FormAssistantProps {
   form: MetadataFormController;
@@ -26,6 +28,14 @@ export interface FormAssistantProps {
   onDismiss?: () => void;
 }
 
+/** The assistant's line for the form's state, in the reader's language. */
+function healthLine(strings: ResolvedStrings, { mood, count: n }: FormReport["health"]): string {
+  const h = strings.chrome.health;
+  if (mood === "warning") return count(strings, h.warning, n);
+  if (mood === "guiding") return count(strings, h.guiding, n);
+  return mood === "celebrating" ? h.celebrating : h.idle;
+}
+
 /**
  * The assistant's *body*: a small, non-intrusive corner companion. It reads the
  * controller's `form.report` (health + completion + next pending field) and
@@ -41,6 +51,7 @@ export function FormAssistant({
   onDismiss,
 }: FormAssistantProps) {
   const { health, progress, nextField } = form.report;
+  const { chrome } = form.strings;
   const [dismissed, setDismissed] = useState(false);
   const Character = character;
 
@@ -76,19 +87,19 @@ export function FormAssistant({
         <CardContent style={{ ...row, gap: "0.75rem" }}>
           <Character mood={health.mood} size={44} />
           <div style={{ ...column, gap: "0.25rem", minWidth: 0 }}>
-            <p style={{ fontWeight: 500, fontSize: "0.875rem" }}>{health.message}</p>
+            <p style={{ fontWeight: 500, fontSize: "0.875rem" }}>{healthLine(form.strings, health)}</p>
             {actionable ? (
-              <p style={{ color: ink.muted, fontSize: "0.75rem" }}>Next: {nextField!.label} →</p>
+              <p style={{ color: ink.muted, fontSize: "0.75rem" }}>{fill(chrome.assistant.next, { field: nextField!.label })}</p>
             ) : (
               progress.total > 0 && (
                 <p style={{ color: ink.muted, fontSize: "0.75rem" }}>
-                  {progress.filled}/{progress.total} filled
+                  {fill(chrome.assistant.filled, { filled: progress.filled, total: progress.total })}
                 </p>
               )
             )}
           </div>
           <Button
-            aria-label="Dismiss assistant"
+            aria-label={chrome.assistant.dismiss}
             size="sm"
             variant="ghost"
             onClick={(e) => {

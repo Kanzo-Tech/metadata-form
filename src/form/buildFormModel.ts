@@ -1,13 +1,12 @@
 import type { Term } from "@rdfjs/types";
 import { namedNode } from "./factory.js";
-import { localName, pickByLanguage } from "./terms.js";
+import { humanise, localName, pickByLanguage } from "./terms.js";
 import { toTerm } from "./termValue.js";
 import { SH_IRI } from "./vocab/shacl.js";
 import { Editors } from "./vocab/shacl-ui.js";
 import { conjoinByPath } from "./conjunction.js";
 import { nodeDisjunction, planDisjunction, type Disjunction } from "./disjunction.js";
 import { planWrite, resolveCarrier, writesSubjects } from "./writePath.js";
-import { resolveStrings, type Strings } from "../i18n/strings.js";
 import type { FieldWrite, StepReader, WriteStep } from "./writePath.js";
 import type {
   FieldAlternative,
@@ -73,7 +72,10 @@ export interface BuildArgs {
   shapes: ShapeModel;
   focusNode: Term;
   shape: NodeShapeIR;
-  locale?: string;
+  /** The ordered language ranges labels and descriptions are picked by (see
+   *  `pickByLanguage`). The application's languages; a property shape's own
+   *  `sh:languageIn` is put in front of them. */
+  languages?: readonly string[];
   onDiagnostic?: DiagnosticSink;
   /** Pre-projected field values, keyed by `${focusNode}|${pathKey}` (the
    *  single-graph projection). The sole value source; defaults to empty (so
@@ -94,17 +96,13 @@ export interface BuildArgs {
    * data graph — so those fields come out read-only with that reason.
    */
   readStep?: StepReader;
-  /** UI string catalog for the read-only reasons. Defaults to the built-in table
-   *  for `locale`; pass the controller's resolved catalog so a consumer override
-   *  reaches the field model too. */
-  strings?: Strings;
 }
 
 /** Inner build args: projected values are always resolved (defaulted) before recursion. */
-type InnerArgs = Omit<BuildArgs, "values" | "satisfied" | "strings"> & {
+type InnerArgs = Omit<BuildArgs, "values" | "satisfied" | "languages"> & {
   values: ProjectedValues;
   satisfied: Map<string, Set<string>>;
-  strings: Strings;
+  languages: readonly string[];
 };
 
 const DEFAULT_GROUP = "__default__";
@@ -116,7 +114,7 @@ export function buildFormModel(args: BuildArgs): FormModel {
       ...args,
       values: args.values ?? new Map(),
       satisfied: args.satisfied ?? new Map(),
-      strings: args.strings ?? resolveStrings(args.locale),
+      languages: args.languages ?? [],
     },
     new Set(),
   );
@@ -125,20 +123,19 @@ export function buildFormModel(args: BuildArgs): FormModel {
 interface FieldCtx {
   shapes: ShapeModel;
   focusNode: Term;
-  locale?: string;
+  languages: readonly string[];
   onDiagnostic?: DiagnosticSink;
   values: ProjectedValues;
   satisfied: Map<string, Set<string>>;
   readStep?: StepReader;
-  strings: Strings;
 }
 
 function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
-  const { shapes, focusNode, shape, locale, onDiagnostic, values, satisfied, readStep, strings } = args;
+  const { shapes, focusNode, shape, languages, onDiagnostic, values, satisfied, readStep } = args;
   const guardKey = `${shape.id}::${focusNode.value}`;
   const cyclic = visited.has(guardKey);
   const nextVisited = new Set(visited).add(guardKey);
-  const ctx: FieldCtx = { shapes, focusNode, locale, onDiagnostic, values, satisfied, readStep, strings };
+  const ctx: FieldCtx = { shapes, focusNode, languages, onDiagnostic, values, satisfied, readStep };
 
   // A deactivated shape constrains nothing (SHACL §2.1.6: every term conforms to
   // it, and the validator reports nothing for it), so it renders nothing — down to
@@ -169,7 +166,7 @@ function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
   }
 
   const fields = buildFields(applicable, ctx, nextVisited, cyclic);
-  return { focusNode, shape: namedNode(shape.id), groups: groupFields(fields, shapes, locale) };
+  return { focusNode, shape: namedNode(shape.id), groups: groupFields(fields, shapes, languages) };
 }
 
 const EMPTY_SET: ReadonlySet<string> = new Set();
@@ -271,7 +268,7 @@ function resolveWrite(
   ctx: FieldCtx,
 ): { write: FieldWrite } | { reason: ReadOnlyReason } {
   const reason = (code: ReadOnlyCode): { reason: ReadOnlyReason } => ({
-    reason: { code, message: ctx.strings.readOnly[code], detail: ps.pathKey },
+    reason: { code, detail: ps.pathKey },
   });
 
   const plan = planWrite(ps.path);
@@ -300,9 +297,14 @@ function buildField(
   const id = `${ctx.focusNode.value}|${ps.pathKey}`;
   const resolved = resolveWrite(ps, ctx);
   const write = "write" in resolved ? resolved.write : undefined;
-  const label =
-    pickByLanguage(ps.presentation.names, ctx.locale)?.value ?? fallbackLabel(ps, write);
-  const description = pickByLanguage(ps.presentation.descriptions, ctx.locale)?.value;
+  // SHACL-UI ED, "Language Resolution": the shape's own `sh:languageIn` order comes
+  // before the application's languages. The label chain of "Property Labels" is
+  // `sh:name`, then `rdfs:label` of the predicate in the data graph and in the
+  // shapes graph, then the humanised local name. The IR carries no `rdfs:label` of
+  // a predicate, so those two steps are not taken.
+  const languages = [...(ps.value.languageIn ?? []), ...ctx.languages];
+  const label = pickByLanguage(ps.presentation.names, languages)?.value ?? fallbackLabel(ps, write);
+  const description = pickByLanguage(ps.presentation.descriptions, languages)?.value;
 
   const v = ps.value;
   const constraints: FieldConstraints = {
@@ -373,7 +375,7 @@ function buildField(
         branches,
         own: constraints,
         fieldId: id,
-        locale: ctx.locale,
+        languages: ctx.languages,
         ownControl: !derivedDefault,
       })
     : undefined;
@@ -408,7 +410,7 @@ function buildField(
         ? "disjunction-of-shapes"
         : undefined;
   const readOnlyReason: ReadOnlyReason | undefined = code
-    ? { code, message: ctx.strings.readOnly[code], detail: ps.pathKey }
+    ? { code, detail: ps.pathKey }
     : undefined;
 
   return {
@@ -478,7 +480,8 @@ function fallbackLabel(ps: PropertyShapeIR, write: FieldWrite | undefined): stri
   const directions = new Set(steps.map((s) => s.direction));
   if (names.size !== 1 || directions.size !== 1) return ps.pathKey;
   const [name] = names;
-  return steps[0].direction === "inverse" ? `← ${name}` : name;
+  const words = humanise(name);
+  return steps[0].direction === "inverse" ? `← ${words}` : words;
 }
 
 function projectValues(
@@ -502,12 +505,11 @@ function projectValues(
           shapes: ctx.shapes,
           focusNode: sub,
           shape: nestedShape,
-          locale: ctx.locale,
+          languages: ctx.languages,
           onDiagnostic: ctx.onDiagnostic,
           values: ctx.values,
           satisfied: ctx.satisfied,
           readStep: ctx.readStep,
-          strings: ctx.strings,
         },
         visited,
       );
@@ -525,7 +527,7 @@ function optionsFrom(ps: PropertyShapeIR): FieldOption[] | undefined {
   }));
 }
 
-function groupFields(fields: FieldModel[], shapes: ShapeModel, locale: string | undefined): GroupModel[] {
+function groupFields(fields: FieldModel[], shapes: ShapeModel, languages: readonly string[]): GroupModel[] {
   const byGroup = new Map<string, FieldModel[]>();
   for (const f of fields) {
     const arr = byGroup.get(f.groupId) ?? [];
@@ -539,7 +541,7 @@ function groupFields(fields: FieldModel[], shapes: ShapeModel, locale: string | 
     groupFieldsList.sort(orderCompare);
     groups.push({
       id: groupId,
-      label: meta ? pickByLanguage(meta.labels, locale)?.value : undefined,
+      label: meta ? pickByLanguage(meta.labels, languages)?.value : undefined,
       order: meta?.order ?? (groupId === DEFAULT_GROUP ? Number.MAX_SAFE_INTEGER : 0),
       fields: groupFieldsList,
     });

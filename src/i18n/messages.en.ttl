@@ -1,0 +1,60 @@
+# Default validation messages, as RDF.
+#
+# What this file is: the wording shown for a constraint violation when the shape's
+# author wrote no `sh:message` in the reader's language. One resource per SHACL
+# constraint component, one `sh:message` literal per language. It is data, not code:
+# a language is added by supplying more triples (`useMetadataForm({ messages })`),
+# never by editing the library.
+#
+# Why `sh:message` on the component. SHACL defines `sh:message` as the wording of
+# the results a constraint produces (SHACL §2.1.5: the values are copied into the
+# results' `sh:resultMessage`), and lets SHACL-SPARQL constraints and
+# component validators declare one too (§5.1, §6.2.2).
+# A constraint component's message is that same statement one level up: "results
+# this component produces read like this, unless the shape says otherwise". No term
+# is minted in a W3C namespace. The alternatives said something else: `rdfs:comment`
+# and `skos:definition` describe the COMPONENT, not the error a reader sees.
+# The W3C `shacl.ttl` cannot serve as this data: it carries `@en` only and describes
+# components. Reading `sh:message` on a component is our convention, not a SHACL rule.
+#
+# `sh:ConstraintComponent` itself (the class of all components) holds the message
+# for any component this file does not name.
+#
+# Language: English.
+
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+sh:MinCountConstraintComponent sh:message "This field is required"@en .
+sh:MaxCountConstraintComponent sh:message "Too many values"@en .
+sh:DatatypeConstraintComponent sh:message "Invalid value type"@en .
+sh:NodeKindConstraintComponent sh:message "Invalid value kind"@en .
+sh:PatternConstraintComponent sh:message "Value does not match the required pattern"@en .
+sh:MinLengthConstraintComponent sh:message "Value is too short"@en .
+sh:MaxLengthConstraintComponent sh:message "Value is too long"@en .
+sh:ClassConstraintComponent sh:message "Value is not of the expected type"@en .
+sh:InConstraintComponent sh:message "Value is not an allowed option"@en .
+sh:NodeConstraintComponent sh:message "Some details in this section are incomplete"@en .
+sh:PropertyConstraintComponent sh:message "Some details of this property are not valid"@en .
+sh:QualifiedValueShapeConstraintComponent sh:message "Some values are not what is expected here"@en .
+sh:QualifiedMinCountConstraintComponent sh:message "Not enough matching values"@en .
+sh:QualifiedMaxCountConstraintComponent sh:message "Too many matching values"@en .
+sh:ReifierShapeConstraintComponent sh:message "Details about this statement are incomplete"@en .
+sh:AndConstraintComponent sh:message "Value does not meet all the requirements"@en .
+sh:OrConstraintComponent sh:message "Value does not meet any of the allowed alternatives"@en .
+sh:XoneConstraintComponent sh:message "Value must meet exactly one of the alternatives"@en .
+sh:NotConstraintComponent sh:message "This value is not allowed here"@en .
+sh:IfConstraintComponent sh:message "Value does not meet the requirement that applies here"@en .
+sh:MinInclusiveConstraintComponent sh:message "Value is too small"@en .
+sh:MinExclusiveConstraintComponent sh:message "Value is too small"@en .
+sh:MaxInclusiveConstraintComponent sh:message "Value is too large"@en .
+sh:MaxExclusiveConstraintComponent sh:message "Value is too large"@en .
+sh:LanguageInConstraintComponent sh:message "This language is not allowed"@en .
+sh:UniqueLangConstraintComponent sh:message "Only one value per language is allowed"@en .
+sh:EqualsConstraintComponent sh:message "Value must match the related field"@en .
+sh:DisjointConstraintComponent sh:message "Value must differ from the related field"@en .
+sh:LessThanConstraintComponent sh:message "Value must be less than the related field"@en .
+sh:LessThanOrEqualsConstraintComponent sh:message "Value must be less than or equal to the related field"@en .
+sh:HasValueConstraintComponent sh:message "A required value is missing"@en .
+sh:ClosedConstraintComponent sh:message "This property is not allowed here"@en .
+sh:SPARQLConstraintComponent sh:message "Value does not meet a custom requirement"@en .
+sh:ConstraintComponent sh:message "Invalid value"@en .

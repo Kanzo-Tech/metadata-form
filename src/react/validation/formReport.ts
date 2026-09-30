@@ -1,6 +1,7 @@
 import type { Term } from "@rdfjs/types";
 import type { FieldModel, FormModel } from "../../form/FormModel.js";
 import type { FieldError, Severity } from "../../form/validation.js";
+import type { LangString } from "../../form/ShapeIR.js";
 
 /**
  * The single derived model of a form's state. Everything the validation and
@@ -16,7 +17,9 @@ export interface IssueRow {
   /** Field id (error-map key); also the `data-field` anchor for jumping. */
   key: string;
   label: string;
-  message: string;
+  /** The result's lang-tagged messages; `form.messageOf` turns them into the text
+   *  in the reader's language. */
+  messages: LangString[];
   severity: Severity;
   /** Constraint-component IRI, for a surface that wants to name the rule. */
   constraint?: string;
@@ -52,7 +55,10 @@ export interface FormReport {
   /** Required-but-empty fields, depth-first, in render order. */
   pending: { id: string; label: string }[];
   nextField?: { id: string; label: string };
-  health: { mood: FormMood; message: string };
+  /** The state of the form as data: the mood, and the count the assistant's line
+   *  is about (violations when `warning`, required fields left when `guiding`).
+   *  The sentence is chrome (`strings.chrome.health`), worded where it is shown. */
+  health: { mood: FormMood; count: number };
 }
 
 interface FieldInfo {
@@ -85,7 +91,7 @@ const EMPTY: FormReport = {
   progress: { filled: 0, total: 0, requiredFilled: 0, requiredTotal: 0 },
   issues: { total: 0, hasViolations: false, rows: [], byField: new Map(), byGroup: new Map() },
   pending: [],
-  health: { mood: "idle", message: "" },
+  health: { mood: "idle", count: 0 },
 };
 
 const SH_NODE = "http://www.w3.org/ns/shacl#NodeConstraintComponent";
@@ -155,7 +161,7 @@ export function computeFormReport(
       rows.push({
         key,
         label,
-        message: err.message,
+        messages: err.messages,
         severity: err.severity,
         constraint: err.constraint,
         value: err.value,
@@ -180,16 +186,15 @@ export function computeFormReport(
 
   const violations = rows.filter((r) => r.severity === "violation").length;
   let mood: FormMood;
-  let message: string;
+  let count = 0;
   if (violations > 0) {
     mood = "warning";
-    message = `${violations} thing${violations === 1 ? "" : "s"} to fix`;
+    count = violations;
   } else if (pending.length === 0) {
     mood = total > 0 ? "celebrating" : "idle";
-    message = total > 0 ? "All set — looks complete!" : "Let's fill this in";
   } else {
     mood = "guiding";
-    message = `${pending.length} required field${pending.length === 1 ? "" : "s"} left`;
+    count = pending.length;
   }
 
   return {
@@ -197,6 +202,6 @@ export function computeFormReport(
     issues: { total: rows.length, hasViolations: violations > 0, rows, byField, byGroup },
     pending,
     nextField: pending[0],
-    health: { mood, message },
+    health: { mood, count },
   };
 }
