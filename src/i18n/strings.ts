@@ -105,6 +105,14 @@ export interface Strings {
     issues: Plural;
     /** The summary pill of a clean form. */
     valid: string;
+    /** The attribution under the form: `{madeWith} ♥ {madeAt} Kanzo`, and the word
+     *  the heart is read aloud as. */
+    madeWith: string;
+    madeAt: string;
+    love: string;
+    /** What pressing the summary pill does: mark every issue on its field, and stop. */
+    markIssues: string;
+    unmarkIssues: string;
   };
 }
 
@@ -183,6 +191,11 @@ export const EN: Strings = {
     next: "Next",
     issues: { one: "{n} issue", other: "{n} issues" },
     valid: "Valid",
+    madeWith: "Made with",
+    madeAt: "at",
+    love: "love",
+    markIssues: "Mark every issue on its field",
+    unmarkIssues: "Stop marking the issues",
   },
 };
 

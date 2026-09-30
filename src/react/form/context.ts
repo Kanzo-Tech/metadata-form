@@ -47,6 +47,8 @@ export interface FormContextValue {
   assistUi?: AssistUi;
   layout?: FormLayout;
   grid?: GridLayout;
+  /** Every field shows its errors, touched or not (`form.revealAll`). */
+  revealAll?: boolean;
   /** Active reveal request (from `form.revealField`) — drives tab/step switch + scroll. */
   revealTarget?: { id: string; n: number };
 }

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Alert, AlertDescription, LocaleProvider, Skeleton } from "@kanzo-tech/ui";
+import { Alert, AlertDescription, LocaleProvider, MadeWith, Skeleton } from "@kanzo-tech/ui";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { FormContext, type FormContextValue, type FormLayout, type GridLayout } from "./context.js";
 import { NodeForm } from "./NodeForm.js";
@@ -21,6 +21,9 @@ export interface MetadataFormProps {
   /** Column layout within each group (and per-field spans). */
   grid?: GridLayout;
   className?: string;
+  /** The "Made with ♥ at Kanzo" line under the form. On by default; `false` for a
+   *  host that carries its own attribution. */
+  attribution?: boolean;
 }
 
 /**
@@ -34,7 +37,7 @@ export interface MetadataFormProps {
  * portal to `document.body`, outside anything this component could wrap, and
  * density sets the root font-size the whole `rem` scale resolves against.
  */
-export function MetadataForm({ form, widgets, assistUi, layout, grid, className }: MetadataFormProps) {
+export function MetadataForm({ form, widgets, assistUi, layout, grid, className, attribution = true }: MetadataFormProps) {
   const registry = useMemo<WidgetRegistry>(
     () => ({ ...defaultWidgets, ...widgets }),
     [widgets],
@@ -56,9 +59,10 @@ export function MetadataForm({ form, widgets, assistUi, layout, grid, className 
       assistUi,
       layout,
       grid,
+      revealAll: form.revealAll,
       revealTarget: form._revealTarget,
     };
-  }, [form.ready, form.graph, form.model, registry, form.locale, form.languages, form.strings, form.resolveMessage, form.errors, form.report, form.assist, assistUi, layout, grid, form._revealTarget]);
+  }, [form.ready, form.graph, form.model, registry, form.locale, form.languages, form.strings, form.resolveMessage, form.errors, form.report, form.assist, assistUi, layout, grid, form.revealAll, form._revealTarget]);
 
   if (form.error) {
     return (
@@ -81,6 +85,19 @@ export function MetadataForm({ form, widgets, assistUi, layout, grid, className 
       <FormContext.Provider value={ctx}>
         <form className={className} onSubmit={(e) => e.preventDefault()}>
           <NodeForm model={ctx.model} root />
+          {/* A watermark, not a footer: the quietest ink there is, under the last
+              field, so it is there on every form and in the way of none. */}
+          {attribution && (
+            <MadeWith
+              className="mt-6 flex justify-center opacity-64"
+              href="https://kanzo.tech"
+              infix={form.strings.chrome.madeAt}
+              loveLabel={form.strings.chrome.love}
+              prefix={form.strings.chrome.madeWith}
+            >
+              Kanzo
+            </MadeWith>
+          )}
         </form>
       </FormContext.Provider>
     </LocaleProvider>

@@ -62,5 +62,10 @@ export const strings: Strings = {
     next: "Siguiente",
     issues: { one: "{n} incidencia", other: "{n} incidencias" },
     valid: "Válido",
+    madeWith: "Hecho con",
+    madeAt: "en",
+    love: "amor",
+    markIssues: "Marcar cada incidencia en su campo",
+    unmarkIssues: "Dejar de marcar las incidencias",
   },
 };

@@ -110,11 +110,18 @@ export interface MetadataFormController {
    * pulse it. Lets a companion or `<ValidationSummary>` (rendered outside the
    * form) drive navigation through the shared controller. */
   revealField(fieldId: string): void;
+  /** Whether every field shows its errors, touched or not. Off, a field stays quiet
+   *  until the reader has been in it; `<ValidationSummary>` turns this on when
+   *  pressed, which is "show me where they are" for the count it carries. */
+  revealAll: boolean;
+  setRevealAll(on: boolean): void;
   /** Internal: the current reveal request (id + bump counter). */
   readonly _revealTarget?: { id: string; n: number };
 }
 
 interface Prepared {
+  /** The engine whose session this is. Everything below is a handle into it. */
+  engine: RudofEngine;
   shapes: ShapeModel;
   graph: GraphState;
   initialQuads: Quad[];
@@ -170,10 +177,17 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const documents = typeof messagesOption === "string" ? [messagesOption] : (messagesOption ?? []);
   const documentsKey = documents.join("\0");
 
-  const [prepared, setPrepared] = useState<Prepared | null>(null);
+  // A session is only as good as the engine that holds it: when the engine is
+  // replaced (a new `engine` prop, or a hot reload re-creating the default one) the
+  // state kept from the old one names shapes and a graph the new one has never
+  // loaded, and projecting it threw "ready() must be awaited" into the render. It
+  // is not this form's session until the load below has run against this engine.
+  const [held, setPrepared] = useState<Prepared | null>(null);
+  const prepared = held?.engine === engine ? held : null;
   const [error, setError] = useState<Error | undefined>(undefined);
   const [errors, setErrors] = useState<Map<string, FieldError[]>>(new Map());
   const [revealTarget, setRevealTarget] = useState<{ id: string; n: number }>();
+  const [revealAll, setRevealAll] = useState(false);
   const revealField = useCallback(
     (id: string) => setRevealTarget((t) => ({ id, n: (t?.n ?? 0) + 1 })),
     [],
@@ -202,6 +216,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       const graph = new GraphState(session.backend);
       if (!active) return;
       setPrepared({
+        engine,
         shapes: shapeModel,
         graph,
         // Reset baseline = the seeded session graph (focus type + sh:hasValue seeds).
@@ -251,7 +266,9 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       // sequence path's intermediate resource exists and is unique (see BuildArgs).
       readStep: prepared.graph.readStep,
     });
-    return { model, nodes, diagnostics };
+    // `prepared` rides along so a consumer of a DEFERRED projection can tell which
+    // session it was projected from.
+    return { model, nodes, diagnostics, prepared };
     // `version` re-projects field values from the graph after each edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine, prepared, version, languages, onDiagnostic]);
@@ -266,9 +283,14 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const deferred = useDeferredValue(projected);
   useEffect(() => {
     if (!prepared || validateOn !== "change") return;
+    // The deferred projection lags by a render, and on the render where a new
+    // session arrives it is still the old session's tree: its shape ids are not in
+    // the shapes the engine now holds, and validating them throws "shape not found
+    // in shapes graph". Wait for the projection of THIS session, one render on.
+    if (deferred?.prepared !== prepared) return;
     let current = true;
     // Every node of the projected tree, not only the root: see `RudofEngine.validateTree`.
-    void engine.validateTree(deferred?.nodes ?? []).then((results) => current && setErrors(mapResults(results)));
+    void engine.validateTree(deferred.nodes).then((results) => current && setErrors(mapResults(results)));
     return () => {
       current = false;
     };
@@ -369,8 +391,10 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       subscribe,
       assist,
       revealField,
+      revealAll,
+      setRevealAll,
       _revealTarget: revealTarget,
     }),
-    [model, error, getQuads, errors, isValid, report, locale, languages, availableLanguages, strings, messageOf, resolveMessage, diagnostics, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
+    [model, error, getQuads, errors, isValid, report, locale, languages, availableLanguages, strings, messageOf, resolveMessage, diagnostics, graph, engine, validate, reset, subscribe, assist, revealField, revealAll, revealTarget],
   );
 }

@@ -36,7 +36,7 @@ import { NodeForm } from "./NodeForm.js";
 
 /** Renders a single field: label, help, value rows (multi-value), errors. */
 export function FieldRenderer({ field }: { field: FieldModel }) {
-  const { widgets, assist, assistUi, graph, locale, strings } = useFormContext();
+  const { widgets, assist, assistUi, graph, locale, strings, revealAll } = useFormContext();
   const focus = useFocusNode();
   const ops = useFieldBinding(field);
   const arrayLabels = { addLabel: strings.chrome.addRow, removeLabel: strings.chrome.remove };
@@ -60,9 +60,10 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
   // pristine form doesn't shout required-field violations on load. The
   // ValidationSummary still reflects the live totals (GOV.UK-style: summary now,
   // inline on touch). `touched` survives model rebuilds because the FieldRenderer
-  // key (field.id) is stable.
+  // key (field.id) is stable. `revealAll` is the reader asking for all of them at
+  // once, by pressing that summary.
   const [touched, setTouched] = useState(false);
-  const errs = touched ? ops.errors : [];
+  const errs = touched || revealAll ? ops.errors : [];
 
   // Which alternative an EMPTY row is offering (see `altAt` below, where the rule
   // is argued). Declared up here with the other row state because the nested
