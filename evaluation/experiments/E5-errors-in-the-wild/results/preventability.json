@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-09-02T09:19:08+00:00",
+ "generated_utc": "2026-09-30T14:34:32+00:00",
  "total_defects": 1367,
  "old_claim": {
   "statement": "L1 and L2 are preventable at entry by construction",
@@ -127,13 +127,13 @@
   {
    "component": "L1:ClassConstraintComponent",
    "bucket": "validation",
-   "reason": "the reference control sets allowCustomValue on purpose, so any IRI can be typed",
+   "reason": "the reference control takes any IRI that is typed (free IRI entry without a search source; a combobox that keeps a custom value with one)",
    "n": 136
   },
   {
    "component": "L1:NodeKindConstraintComponent",
    "bucket": "validation",
-   "reason": "primitiveToTerm emits an IRI only for sh:nodeKind sh:IRI; this profile says sh:BlankNodeOrIRI, so the control writes a literal",
+   "reason": "the binding emits an IRI only for sh:nodeKind sh:IRI (or an sh:class with no sh:datatype); this profile says sh:BlankNodeOrIRI, so the control writes a literal",
    "n": 92
   },
   {

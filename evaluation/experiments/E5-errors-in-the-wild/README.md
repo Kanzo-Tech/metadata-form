@@ -7,9 +7,18 @@ validation would have prevented much of it.
 
 ## Status
 
-**Complete and verified. Re-run 2 Sep 2026 on one engine.** The corpus is
-validated by rudof — `@kanzo-tech/rudof-wasm@0.3.8`, the engine this library
+**Complete and verified. Re-run 30 Sep 2026 on one engine.** The corpus is
+validated by rudof — `@kanzo-tech/rudof-wasm@0.3.10`, the engine this library
 ships and the engine the form runs on commit — and by nothing else.
+
+The 30 Sep re-run (engine 0.3.10, the current form: editor selection by score,
+date-time control writing a valid `xsd:dateTime`, `xsd:anyURI` a typed literal)
+moved **no number**: validation, the defect taxonomy and the preventability
+buckets are identical to the 2 Sep run. The form-side classification is now read
+from the running form (`form_fields.harness.ts` runs the real `primitiveToTerm`
+per field) rather than restated in Python, so it would have moved had the
+binding changed; the corpus has no `xsd:anyURI` or date-time defect, which is why
+it did not. Only the wording of two bucket reasons changed.
 
 The headline is **69.1%** of records violating the profile they claim, and
 **96.3%** of the defects found structurally preventable at entry. Both numbers
@@ -45,7 +54,7 @@ The second number is robust to how it is counted: the three readings above span
 
 ## One engine, and why the second one is gone
 
-The engine is `@kanzo-tech/rudof-wasm@0.3.8`, instantiated headlessly and driven
+The engine is `@kanzo-tech/rudof-wasm@0.3.10`, instantiated headlessly and driven
 through the same `Session` ABI that `src/engine/RudofEngine.ts` programs
 against. No test double, no fork checkout. rdflib 7.6.0 is still in the
 pipeline and is not an exception to "one engine": it parses, cleans and
@@ -79,7 +88,7 @@ replaced it, and neither needs a second engine:
   shapes graphs use against a minimal case whose correct answer is forced by the
   specification's own TEXTUAL DEFINITION — `expect` is the spec's answer, never
   another engine's. It carries the minimal reproducer for each of the two bugs
-  above. **rudof 0.3.8 scores 30/30 on the constraint cases and 4/4 on the
+  above. **rudof 0.3.10 scores 30/30 on the constraint cases and 4/4 on the
   parser cases**, against 28/30 and 1/4 for the version that produced the
   original run. Report:
   [`results/rudof-conformance.md`](results/rudof-conformance.md).
@@ -97,7 +106,7 @@ Measured, not asserted, by
 the **identical** 372 staged validation graphs are re-run through the previous
 release, so every difference is a difference between the two engine builds.
 
-| | 0.3.5 (the original run) | 0.3.8 (now) |
+| | 0.3.5 (the original run) | 0.3.10 (now; 0.3.8 gave the same) |
 |---|---:|---:|
 | records the parser refused | 0 | **2** |
 | records flagged (L1 + L2) | 259 | 257 |
@@ -179,7 +188,8 @@ not the old reasons restated:
   input. This is a fact about validating a published profile against
   requirements it does not encode, and it would not arise for a profile that
   stated its own `sh:in`.
-- **136 `sh:class`.** The reference control sets `allowCustomValue` on purpose,
+- **136 `sh:class`.** The reference control takes any IRI that is typed (free
+  IRI entry without a search source),
   so any IRI can be typed. Deliberate, and it defeats prevention by construction.
 - **97 `sh:nodeKind`.** `primitiveToTerm` emits an IRI only for `sh:nodeKind
   sh:IRI`; DCAT-AP says `sh:BlankNodeOrIRI` on every property this corpus fails,
@@ -417,7 +427,7 @@ exercise. So every SHACL construct the two shapes graphs use is probed in
 isolation, with the expected answer taken from the Recommendation's own textual
 definition.
 
-**rudof 0.3.8: 30/30 constraint cases, 4/4 parser cases.** The version that
+**rudof 0.3.10: 30/30 constraint cases, 4/4 parser cases.** The version that
 produced the original run scored 28/30 and 1/4; the five cases it failed are the
 minimal reproducers for the two bugs named above, and all five pass now. rudof
 is right about `sh:targetClass` including the subclass closure, `sh:class` with
@@ -622,7 +632,7 @@ stratum. Each record is fetched as an anchored `CONSTRUCT` closure, cleaned of
 aggregator artefacts (`dqv` quality annotations, machine-translated literals),
 merged with the `rdfs:subClassOf` axioms and the `rdf:type` of the external IRIs
 it references, serialized once, and validated by **rudof
-(`@kanzo-tech/rudof-wasm@0.3.8`, wasm)** against three layers: L1 the published
+(`@kanzo-tech/rudof-wasm@0.3.10`, wasm)** against three layers: L1 the published
 DCAT-AP 3.0.1 SHACL, L2 the controlled-vocabulary requirements the same
 specification states in prose but does not express in SHACL, L3 four defect
 classes no SHACL profile can express. L1 and L2 are *expressible in SHACL* and

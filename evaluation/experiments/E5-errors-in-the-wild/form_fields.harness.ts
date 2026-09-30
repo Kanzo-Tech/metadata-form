@@ -39,6 +39,7 @@ import { allFields, type FieldModel } from "@/form/FormModel.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { namedNode } from "@/form/factory.js";
+import { primitiveToTerm } from "@/form/termBinding.js";
 import type { ShapeModel } from "@/form/ShapeIR.js";
 
 const HERE = __dirname;
@@ -96,13 +97,31 @@ interface FieldRow {
   datatype: string | null;
   nodeKind: string | null;
   classIri: string | null;
+  /** Where the editor came from (declared / scored / branch / fallback). */
+  editorSource: string | null;
+  /**
+   * What the control's commit binding makes of typed text, by running the REAL
+   * `primitiveToTerm` on this field — not by re-deriving its rules here. Which
+   * term a value becomes is a fact about the constraints the field carries, and
+   * `preventability.py` reads these two instead of restating the binding: a
+   * change to the binding (as when `xsd:anyURI` stopped being a NamedNode) moves
+   * them, and the classification follows.
+   */
+  bindsNamedNode: boolean;
+  /** The datatype IRI of the literal the binding writes; null for a non-literal. */
+  boundDatatype: string | null;
 }
 
 function localName(iri: string): string {
   return iri.split(/[#/]/).pop() ?? iri;
 }
 
+/** Typed text no constraint of any profile here matches, so the binding cannot
+ *  take the enumeration branch and must show what it does with a bare value. */
+const PROBE = "e5-probe-value";
+
 function rowFor(shapeId: string, targetClasses: string[], f: FieldModel): FieldRow {
+  const bound = primitiveToTerm(f, PROBE);
   const c = f.constraints ?? {};
   const present = Object.entries(c)
     .filter(([, v]) => v !== undefined && v !== null && !(Array.isArray(v) && v.length === 0))
@@ -132,6 +151,9 @@ function rowFor(shapeId: string, targetClasses: string[], f: FieldModel): FieldR
     datatype: c.datatype ?? null,
     nodeKind: c.nodeKind ?? null,
     classIri: c.classIri ?? null,
+    editorSource: f.editorSource ?? null,
+    bindsNamedNode: bound?.termType === "NamedNode",
+    boundDatatype: bound?.termType === "Literal" ? bound.datatype.value : null,
   };
 }
 

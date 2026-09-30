@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-09-02T10:15:43+00:00",
+ "generated_utc": "2026-09-30T14:32:16+00:00",
  "n": 372,
  "n_population": 33228,
  "n_catalogues": 77,
@@ -571,7 +571,7 @@
  "engine": {
   "name": "rudof (wasm)",
   "package": "@kanzo-tech/rudof-wasm",
-  "version": "0.3.8",
+  "version": "0.3.10",
   "node": "v23.9.0"
  },
  "incomplete_harvest": 1,

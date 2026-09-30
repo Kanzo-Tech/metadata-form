@@ -1,8 +1,8 @@
 {
- "generated_utc": "2026-09-02T09:18:30+00:00",
+ "generated_utc": "2026-09-30T14:34:05+00:00",
  "package": "@kanzo-tech/rudof-wasm",
  "before": "0.3.5",
- "after": "0.3.8",
+ "after": "0.3.10",
  "n_records": 372,
  "whole_corpus": {
   "records_refused_before": 0,

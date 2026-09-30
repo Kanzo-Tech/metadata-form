@@ -36,17 +36,19 @@ by hand:
 Two findings drove the design and both are measured, not assumed:
 
  1. **DCAT-AP 3.0.1's generated SHACL puts every constraint in its own property
-    shape.** `dct:format` on `dcat:Distribution` is four property shapes — one
-    with `sh:nodeKind`, one with `sh:class`, one with neither, and (from L2) one
-    with `sh:in`. `buildFormModel` renders one field per property shape and does
-    not merge them, so the form shows four controls over the same predicate.
-    A closed enumeration beside three open text boxes does not make anything
-    untypable. Prevention-by-widget is therefore a property of *all* the fields
+    shape.** `dct:format` on `dcat:Distribution` is several property shapes — one
+    with `sh:nodeKind`, one with `sh:class`, one with neither, and (from L2, on
+    a node shape of its own) one with `sh:in`. `buildFormModel` merges the ones
+    on one node shape into a single field (`src/form/conjunction.ts`); those on
+    different node shapes of the same class stay separate fields over the same
+    predicate. A closed enumeration beside an open text box does not make
+    anything untypable. Prevention-by-widget is therefore a property of *all* the fields
     on a path, not of the best one, and that is how it is computed here.
 
- 2. **`primitiveToTerm` emits an IRI only for `sh:nodeKind sh:IRI`.** DCAT-AP
-    says `sh:BlankNodeOrIRI`, which is not that IRI, so the binding layer falls
-    through and writes a literal — the exact defect the corpus is full of.
+ 2. **`primitiveToTerm` emits an IRI only for `sh:nodeKind sh:IRI` (or an
+    `sh:class` with no `sh:datatype`).** DCAT-AP says `sh:BlankNodeOrIRI` on the
+    properties this corpus fails, which is not that IRI, so the binding layer
+    falls through and writes a literal — the exact defect the corpus is full of.
 
 Ethics: unchanged and binding. Output is per constraint component and per
 profile property; no record, catalogue, publisher or value appears.
@@ -106,19 +108,16 @@ def expand(short: str) -> str:
 
 
 def emits_iri(field: dict) -> bool:
-    """Would `primitiveToTerm` turn this field's input into a NamedNode?
+    """Does the control's commit binding turn typed text into a NamedNode?
 
-    src/react/widgets/widgets.ts:
-
-        if (c.nodeKind === SH_IRI || dt === `${XSD}anyURI` || (!dt && c.classIri))
-          return namedNode(raw);
-
-    Note what is *not* there: `sh:BlankNodeOrIRI`. DCAT-AP uses that value on
-    every one of the properties this corpus fails, so the branch never fires for
-    them and the field writes a literal.
+    Read from the inventory, where `form_fields.harness.ts` ran the real
+    `primitiveToTerm` (src/form/termBinding.ts) on the field: not restated here,
+    so a change to the binding moves it. (With the binding as of engine 0.3.10 a
+    field gets an IRI for `sh:nodeKind sh:IRI` or, with no `sh:datatype`, for an
+    `sh:class`; `sh:BlankNodeOrIRI`, which DCAT-AP uses on every property this
+    corpus fails, and `xsd:anyURI`, which is a typed literal, do not.)
     """
-    dt, nk, cls = field["datatype"], field["nodeKind"], field["classIri"]
-    return nk == f"{SH}IRI" or dt == f"{XSD}anyURI" or (not dt and bool(cls))
+    return bool(field["bindsNamedNode"])
 
 
 # ---------------------------------------------------------------- the rules
@@ -157,11 +156,12 @@ def rule_datatype(d, fields):
         return VALIDATION, ("the datatype IRI is right and the lexical form is "
                             "ill-typed; the widget stamps the IRI, not the "
                             "lexical form")
-    if declared and all(f["datatype"] in declared and f["datatype"] for f in fields):
+    # `boundDatatype` is the datatype of the literal the binding really writes
+    # for this control (form_fields.harness.ts runs `primitiveToTerm`).
+    if declared and all(f["boundDatatype"] in declared for f in fields):
         return WIDGET, "every control on this path stamps the declared datatype"
-    return VALIDATION, ("at least one control on this path carries no "
-                        "sh:datatype, so a value written through it is emitted "
-                        "untyped")
+    return VALIDATION, ("at least one control on this path writes a literal of "
+                        "another datatype than the declared one, or none")
 
 
 def rule_nodekind(d, fields):
@@ -169,9 +169,10 @@ def rule_nodekind(d, fields):
     if d.get("value_kind") == "Literal":
         if all(emits_iri(f) for f in fields):
             return WIDGET, "every control on this path emits an IRI by construction"
-        return VALIDATION, ("primitiveToTerm emits an IRI only for sh:nodeKind "
-                            "sh:IRI; this profile says sh:BlankNodeOrIRI, so the "
-                            "control writes a literal")
+        return VALIDATION, ("the binding emits an IRI only for sh:nodeKind "
+                            "sh:IRI (or an sh:class with no sh:datatype); this "
+                            "profile says sh:BlankNodeOrIRI, so the control "
+                            "writes a literal")
     return VALIDATION, "not made untypable by the control"
 
 
@@ -179,8 +180,9 @@ def rule_class(d, fields):
     if all(f["nested"] for f in fields):
         return WIDGET, ("the value is a nested sub-form, so the form stamps its "
                         "rdf:type")
-    return VALIDATION, ("the reference control sets allowCustomValue on purpose, "
-                        "so any IRI can be typed")
+    return VALIDATION, ("the reference control takes any IRI that is typed "
+                        "(free IRI entry without a search source; a combobox "
+                        "that keeps a custom value with one)")
 
 
 def rule_validation_only(reason):
@@ -481,16 +483,19 @@ def render(r: dict) -> None:
 
     L.append("\n## Why the widget number is what it is\n\n")
     d = r["duplicate_path_fields"]["merged"]
-    L.append(f"The profile's generated SHACL splits one predicate across "
-             f"several property shapes, and `buildFormModel` renders one field "
-             f"per property shape without merging them. Of "
+    L.append(f"`buildFormModel` merges the property shapes that share a path "
+             f"within one node shape into a single field carrying their "
+             f"conjunction (`src/form/conjunction.ts`). A path still gets more "
+             f"than one field when its shapes sit on different node shapes of "
+             f"the same target class, as the L2 shapes this study wrote sit "
+             f"beside the published profile's. Of "
              f"{d['distinct_class_path_pairs']} distinct (class, path) pairs, "
              f"**{d['pairs_with_more_than_one_field']}** get more than one "
              f"field — up to {d['max_fields_on_one_pair']} controls over the "
              f"same predicate, {d['extra_fields']} extra fields in all. A "
-             f"closed enumeration standing beside three open text boxes on the "
-             f"same property does not make anything untypable, so almost "
-             f"everything falls through to the commit-time check.\n")
+             f"closed enumeration standing beside an open text box on the "
+             f"same property does not make anything untypable, so those "
+             f"defects fall through to the commit-time check.\n")
 
     g = r["validation_gate"]
     L.append("\n## What \"prevented by validation\" is worth\n\n")
