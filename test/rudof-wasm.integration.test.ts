@@ -192,6 +192,35 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(byPath("accessRights")?.editorId).toBe(Editors.EnumSelect); // sh:in
   });
 
+  it("emits the editor of each kind of value, and where it came from", async () => {
+    // What `emitted` in disjunction.test.tsx reproduces by hand, pinned to the engine.
+    const kinds: [string, string, string][] = [
+      ["sh:datatype xsd:double", Editors.NumberField, "scored"],
+      ["sh:datatype xsd:string", Editors.TextField, "scored"],
+      ["sh:datatype xsd:date", Editors.DatePicker, "scored"],
+      ["sh:datatype xsd:dateTime", Editors.DateTimePicker, "scored"],
+      ["sh:class ex:C", Editors.InstancesSelect, "scored"],
+      ["sh:nodeKind sh:IRI", Editors.IRI, "scored"],
+      ["sh:in ( ex:a ex:b )", Editors.EnumSelect, "scored"],
+      ["sh:datatype xsd:string ; sh:singleLine false", Editors.TextArea, "scored"],
+      ["sh:datatype xsd:anyURI", Editors.TextField, "fallback"],
+      ["sh:datatype xsd:positiveInteger", Editors.TextField, "fallback"],
+      ["sh:node ex:PersonShape", Editors.Details, "fallback"],
+      ["shui:editor shui:RichTextEditor", Editors.RichText, "declared"],
+    ];
+    const properties = kinds.map(([facts], i) => `sh:property [ sh:path ex:p${i} ; ${facts} ]`).join(" ; ");
+    const model = await engine.loadShapes(`
+      @prefix sh: <http://www.w3.org/ns/shacl#> . @prefix ex: <${EX}> .
+      @prefix shui: <http://www.w3.org/ns/shacl-ui/> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      ex:PersonShape a sh:NodeShape .
+      ex:Kinds a sh:NodeShape ; ${properties} .
+    `);
+    const emitted = model.nodeShapes.get(`${EX}Kinds`)!.properties
+      .sort((a, b) => a.pathKey.localeCompare(b.pathKey, "en", { numeric: true }))
+      .map((p) => [p.presentation.editor, p.presentation.editorSource]);
+    expect(emitted).toEqual(kinds.map(([, editor, source]) => [editor, source]));
+  });
+
   it("projectForm pulls real values (incl. a nested resource) from the data graph", async () => {
     await engine.loadShapes(healthDcatApShapes);
     await engine.loadData(healthDcatApSampleData);

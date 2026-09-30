@@ -1,5 +1,6 @@
 import type { NamedNode, Term } from "@rdfjs/types";
 import type { FieldWrite, PathReadOnlyCode } from "./writePath.js";
+import type { EditorScore, EditorSource } from "./ShapeIR.js";
 
 /**
  * Schema-agnostic representation of a form. Produced by `buildFormModel` from the
@@ -135,6 +136,13 @@ export interface FieldModel {
   label: string;
   description?: string;
   editorId: EditorId;
+  /** Where {@link editorId} comes from: an editor the profile `declared`, the best
+   *  one the SHACL-UI score function `scored`, the editor of the first `sh:or`
+   *  `branch`, or the engine's plain `fallback`. */
+  editorSource: EditorSource;
+  /** Every result of the score function for the field's shape, best first. Absent
+   *  when the editor was not scored (`branch`, `fallback`). */
+  editors?: EditorScore[];
   required: boolean;
   repeatable: boolean;
   minCount: number;

@@ -31,7 +31,6 @@ import { expect, it } from "vitest";
 import { createRudofEngine } from "@/engine/index.js";
 import { buildFormModel, type Diagnostic } from "@/form/buildFormModel.js";
 import { allFields, type FieldModel } from "@/form/FormModel.js";
-import { fallbackEditorId } from "@/form/editors.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { namedNode } from "@/form/factory.js";
@@ -288,8 +287,7 @@ function tally(shapes: ShapeModel): { fields: number; typed: number; nested: num
       acc.fields++;
       if (f.readOnly) { acc.readOnly++; continue; }
       if (NESTED_EDITORS.has(f.editorId) || f.nodeShape) { acc.nested++; continue; }
-      const fb = fallbackEditorId(f);
-      const eff = REGISTERED.has(f.editorId) ? f.editorId : REGISTERED.has(fb) ? fb : undefined;
+      const eff = REGISTERED.has(f.editorId) ? f.editorId : REGISTERED.has(Editors.TextField) ? Editors.TextField : undefined;
       if (eff === Editors.TextField) acc.plain++;
       else if (eff) acc.typed++;
     }
@@ -464,8 +462,7 @@ function classify(f: FieldModel, r: ProfileResult): void {
   if (NESTED_EDITORS.has(f.editorId) || f.nodeShape) { r.form.nested++; return; }
 
   const stated = REGISTERED.has(f.editorId);
-  const fallback = fallbackEditorId(f);
-  const effective = stated ? f.editorId : REGISTERED.has(fallback) ? fallback : undefined;
+  const effective = REGISTERED.has(f.editorId) ? f.editorId : REGISTERED.has(Editors.TextField) ? Editors.TextField : undefined;
 
   // rudof always emits an editor; TextFieldEditor is what it emits when the type
   // facts said nothing, so it is inference, not an author's statement.

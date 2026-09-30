@@ -5,6 +5,7 @@ import { resolveRootShapeFromTypes } from "@/engine/rootShape.js";
 import type { Diagnostic } from "@/form/buildFormModel.js";
 import { projectTree } from "@/engine/projectTree.js";
 import { allFields } from "@/form/FormModel.js";
+import { Editors } from "@/form/vocab/shacl-ui.js";
 import type { NodeShapeIR, ProjectedForm, PropertyShapeIR, ShapeModel } from "@/form/ShapeIR.js";
 
 /**
@@ -33,7 +34,7 @@ function prop(pathIri: string, opts: Partial<PropertyShapeIR> = {}): PropertySha
     cardinality: {},
     value: {},
     logical: {},
-    presentation: { names: [{ value: pathIri.split(/[#/]/).pop()!, language: "" }], descriptions: [] },
+    presentation: { names: [{ value: pathIri.split(/[#/]/).pop()!, language: "" }], descriptions: [], editor: Editors.TextField, editorSource: "fallback" },
     components: [],
     ...opts,
   };

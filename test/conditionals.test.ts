@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { namedNode } from "@/form/factory.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import { allFields } from "@/form/FormModel.js";
+import { Editors } from "@/form/vocab/shacl-ui.js";
 import type { NodeShapeIR, PropertyShapeIR, ShapeModel } from "@/form/ShapeIR.js";
 
 /**
@@ -20,7 +21,7 @@ function prop(pathIri: string, opts: Partial<PropertyShapeIR> = {}): PropertySha
     cardinality: {},
     value: {},
     logical: {},
-    presentation: { names: [{ value: pathIri.split(/[#/]/).pop()!, language: "" }], descriptions: [] },
+    presentation: { names: [{ value: pathIri.split(/[#/]/).pop()!, language: "" }], descriptions: [], editor: Editors.TextField, editorSource: "fallback" },
     components: [],
     ...opts,
   };

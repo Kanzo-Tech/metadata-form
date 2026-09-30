@@ -56,7 +56,8 @@ async function expand(index = 0) {
 const field = (over: Partial<FieldModel> & Pick<FieldModel, "id" | "label">): FieldModel => ({
   path: namedNode("http://example.org/p"),
   pathKind: "predicate",
-  editorId: "http://datashapes.org/shui#TextFieldEditor",
+  editorId: "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
+  editorSource: "fallback",
   required: true,
   repeatable: false,
   minCount: 1,

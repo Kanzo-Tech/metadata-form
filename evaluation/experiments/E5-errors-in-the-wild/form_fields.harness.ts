@@ -36,7 +36,6 @@ import { expect, it } from "vitest";
 import { createRudofEngine } from "@/engine/index.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import { allFields, type FieldModel } from "@/form/FormModel.js";
-import { fallbackEditorId } from "@/form/editors.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { namedNode } from "@/form/factory.js";
@@ -109,8 +108,7 @@ function rowFor(shapeId: string, targetClasses: string[], f: FieldModel): FieldR
     .filter(([, v]) => v !== undefined && v !== null && !(Array.isArray(v) && v.length === 0))
     .map(([k]) => k)
     .sort();
-  const fb = fallbackEditorId(f);
-  const effective = REGISTERED.has(f.editorId) ? f.editorId : REGISTERED.has(fb) ? fb : null;
+  const effective = REGISTERED.has(f.editorId) ? f.editorId : REGISTERED.has(Editors.TextField) ? Editors.TextField : null;
   const nested = NESTED_EDITORS.has(f.editorId) || !!f.nodeShape;
   return {
     shapeId,

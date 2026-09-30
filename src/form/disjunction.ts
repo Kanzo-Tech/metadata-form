@@ -1,7 +1,6 @@
 import type { Term } from "@rdfjs/types";
 import { toTerm } from "./termValue.js";
 import { localName, pickByLanguage } from "./terms.js";
-import { editorForConstraints } from "./editors.js";
 import { SH_BLANK_NODE, SH_IRI } from "./vocab/shacl.js";
 import type { FieldAlternative, FieldConstraints, FieldOption } from "./FormModel.js";
 import type { ShapeIR, ValueConstraints } from "./ShapeIR.js";
@@ -351,7 +350,9 @@ export function planDisjunction(args: DisjunctionArgs): Disjunction {
     alternatives.push({
       id: head.shape.id ?? `${fieldId}#or${head.index}`,
       label: labelOf(head.shape, constraints, languages, head.index),
-      editorId: editorForConstraints(constraints),
+      // The engine's editor for the branch, read off the branch itself. The others
+      // in the group differ only in `sh:class` / `sh:in`, which asks for the same control.
+      editorId: head.shape.presentation.editor,
       constraints,
     });
   }

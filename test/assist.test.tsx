@@ -136,6 +136,7 @@ function field(over: Partial<FieldModel> & { constraints?: FieldModel["constrain
     pathKind: "predicate",
     label: "Field",
     editorId: "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
+    editorSource: "fallback",
     required: false,
     repeatable: false,
     minCount: 0,

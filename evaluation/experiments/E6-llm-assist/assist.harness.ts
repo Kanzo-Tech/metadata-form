@@ -36,7 +36,6 @@ import { expect, it } from "vitest";
 import { createRudofEngine } from "@/engine/index.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import { allFields, type FieldModel } from "@/form/FormModel.js";
-import { fallbackEditorId } from "@/form/editors.js";
 import { fieldContext } from "@/ai/context.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { widgetAssist } from "@/react/widgets/widgets.js";
@@ -213,8 +212,7 @@ async function analyse(
   const rows: FieldRow[] = [];
   for (const f of allFields(model) as FieldModel[]) {
     if (NESTED.has(f.editorId) || f.nodeShape) continue;
-    const fb = fallbackEditorId(f);
-    const eff = REGISTERED.has(f.editorId) ? f.editorId : REGISTERED.has(fb) ? fb : undefined;
+    const eff = REGISTERED.has(f.editorId) ? f.editorId : REGISTERED.has(Editors.TextField) ? Editors.TextField : undefined;
     const entry = eff ? defaultWidgets[eff] : undefined;
     const caps = entry ? widgetAssist(entry) : {};
     const c = f.constraints;
@@ -504,7 +502,7 @@ function report(
     patternNote: cite("src/react/form/FieldRenderer.tsx", "never as an HTML `pattern` attribute"),
     ghost: cite("src/react/widgets/defaultWidgets.tsx", "function AssistedTextarea"),
     playgroundWiring: cite("playground/src/lib/assist.ts", "export function makeAssist"),
-    fallback: cite("src/form/editors.ts", "export function fallbackEditorId"),
+    fallback: cite("src/react/widgets/widgets.ts", "export function resolveWidget"),
     factoryLiteral: cite("src/form/factory.ts", "export function literal"),
   };
 
@@ -586,8 +584,8 @@ end-to-end with no network and no key.
 Assistance is **opt-in per widget**, and the widget is chosen from the shape.
 That indirection is the whole mechanism: a constraint bounds a suggestion by
 deciding which editor the property gets, and the editor decides whether a model
-is asked at all (\`${C.wire}\`, \`${C.wireComplete}\`; editor inference falls back
-through \`${C.fallback}\`).
+is asked at all (\`${C.wire}\`, \`${C.wireComplete}\`; the engine chooses the editor, and one the
+registry has no widget for renders through \`${C.fallback}\`).
 
 Across the two bundled health profiles: **${s.fields}** leaf fields,
 **${s.assisted}** assisted (${s.suggest} ✨ menu, ${s.complete} ghost text),

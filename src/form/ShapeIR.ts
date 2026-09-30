@@ -94,6 +94,18 @@ export interface ConditionalIR {
   else: PropertyShapeIR[];
 }
 
+/** Where a shape's editor comes from. `declared` and `scored` are SHACL-UI's;
+ *  `branch` and `fallback` are the engine's own, for a shape the score function
+ *  returned nothing for. */
+export type EditorSource = "declared" | "scored" | "branch" | "fallback";
+
+/** One result of SHACL-UI's score function: an editor and the score of the
+ *  `shui:WidgetScore` that matched. */
+export interface EditorScore {
+  editor: string;
+  score: number;
+}
+
 /** Presentation hints — vocabulary-agnostic; emitted by rudof from the SHACL-UI
  *  (`shui`) annotations. */
 export interface PresentationHints {
@@ -101,13 +113,23 @@ export interface PresentationHints {
   descriptions: LangString[];
   order?: number;
   groupId?: string;
-  /** The SHACL-UI editor IRI rudof resolved for this property — an explicit
-   *  `shui:editor` if stated, otherwise a datatype/nodeKind default. The UI maps
-   *  this IRI to a widget. Effectively always present (optional for hand-built IRs). */
-  editor?: string;
+  /** The SHACL-UI editor IRI rudof chose for this shape: the best result of the
+   *  score function over the specification's own scoring data, which an explicit
+   *  `shui:editor` wins. The UI maps this IRI to a widget. Always present on what
+   *  the engine emits. */
+  editor: string;
+  /** Where {@link editor} comes from. */
+  editorSource: EditorSource;
+  /** Every result of the score function, best first — the score-function results
+   *  only, so absent when {@link editorSource} is `branch` or `fallback`. */
+  editors?: EditorScore[];
+  /** The `rdfs:label`s the shapes graph holds for the predicate, when the path is
+   *  a predicate IRI (SHACL-UI, "Property Labels", step 3). */
+  pathLabels?: LangString[];
   /** The SHACL-UI viewer IRI, when stated (read-only display hint). */
   viewer?: string;
-  /** `shui:singleLine`: whether a text editor should be one line or several. */
+  /** `sh:singleLine`: whether a text editor should be one line or several. The
+   *  score function has already read it; carried for a widget that wants to. */
   singleLine?: boolean;
 }
 
@@ -234,6 +256,9 @@ export interface ProjectedProperty {
   /** Canonical path key (see `pathKey`) identifying the property shape. */
   pathKey: string;
   values: ProjectedValue[];
+  /** The `rdfs:label`s the data graph holds for the predicate, when the path is a
+   *  predicate IRI (SHACL-UI, "Property Labels", step 2). */
+  pathLabels?: LangString[];
 }
 
 export interface ProjectedForm {

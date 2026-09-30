@@ -16,7 +16,7 @@ import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { resolveStrings } from "@/i18n/strings.js";
 import { es, ca } from "metadata-form/i18n";
 import type { Term } from "@rdfjs/types";
-import type { NodeShapeIR, PropertyShapeIR, ShapeIR, ShapeModel } from "@/form/ShapeIR.js";
+import type { NodeShapeIR, PresentationHints, PropertyShapeIR, ShapeIR, ShapeModel } from "@/form/ShapeIR.js";
 
 /**
  * Rendering `sh:or`.
@@ -39,26 +39,55 @@ const XSD = NS.xsd;
 const DCT = "http://purl.org/dc/terms/";
 const SH_BLANK_NODE = `${NS.sh}BlankNode`;
 
+/**
+ * The editor the engine emits for a shape that states only these facts, as the
+ * IR it hands over carries it. Pinned against the real engine in
+ * `rudof-wasm.integration.test.ts` ("emits the editor of each kind of value"), so
+ * the hand-written shapes below say what the engine says and nothing of their own.
+ */
+function emitted(v: ShapeIR["value"], node?: string): Pick<PresentationHints, "editor" | "editorSource"> {
+  const scored = (editor: string) => ({ editor, editorSource: "scored" as const });
+  if (v.in?.length) return scored(Editors.EnumSelect);
+  if (v.classIri) return scored(Editors.InstancesSelect);
+  if (v.nodeKind === SH_IRI) return scored(Editors.IRI);
+  if (v.datatype === `${XSD}double`) return scored(Editors.NumberField);
+  if (v.datatype === `${XSD}string`) return scored(Editors.TextField);
+  if (v.datatype === `${XSD}date`) return scored(Editors.DatePicker);
+  if (v.datatype === `${XSD}dateTime`) return scored(Editors.DateTimePicker);
+  return { editor: node ? Editors.Details : Editors.TextField, editorSource: "fallback" };
+}
+
 /** A pathless `sh:or` member: a shape constraining the value node itself. */
-function branch(value: ShapeIR["value"], extra: Partial<ShapeIR> = {}): ShapeIR {
+function branch(
+  value: ShapeIR["value"],
+  extra: Omit<Partial<ShapeIR>, "presentation"> & { presentation?: Partial<PresentationHints> } = {},
+): ShapeIR {
   return {
     cardinality: {},
     value,
     logical: {},
-    presentation: { names: [], descriptions: [] },
     components: [],
     ...extra,
+    presentation: { names: [], descriptions: [], ...emitted(value, extra.node), ...extra.presentation },
   };
 }
 
 function prop(pathIri: string, opts: Partial<PropertyShapeIR> = {}): PropertyShapeIR {
+  const { value = {}, logical = {}, node } = opts;
+  const own = emitted(value, node);
+  // A shape that scores nothing on its own takes its first `sh:or` branch's editor.
+  const first = logical.or?.[0];
+  const { editor, editorSource } =
+    own.editorSource === "fallback" && first
+      ? { editor: first.presentation.editor, editorSource: "branch" as const }
+      : own;
   return {
     path: { kind: "predicate", iri: pathIri },
     pathKey: pathIri,
     cardinality: {},
-    value: {},
-    logical: {},
-    presentation: { names: [{ value: pathIri.split(/[#/]/).pop()!, language: "" }], descriptions: [] },
+    value,
+    logical,
+    presentation: { names: [{ value: pathIri.split(/[#/]/).pop()!, language: "" }], descriptions: [], editor, editorSource },
     components: [],
     ...opts,
   };
@@ -119,7 +148,7 @@ describe("branches that differ only in class are ONE control, not a choice", () 
   it("folds the classes into a set and offers no picker", () => {
     const field = build(ps);
     expect(field.alternatives).toBeUndefined();
-    expect(field.editorId).toBe(Editors.AutoComplete);
+    expect(field.editorId).toBe(Editors.InstancesSelect);
     expect(field.constraints.classIri).toBe(`${EX}Terminology`);
     expect(field.constraints.classIn).toEqual([`${EX}Terminology`, `${EX}Code`]);
   });
@@ -210,8 +239,6 @@ describe("a disjunction reached through sh:node is a value kind, not a sub-form"
   };
   const ps = prop(`${DCT}issued`, {
     node: dateOrDateTime.id,
-    // What rudof emits for any property carrying sh:node.
-    presentation: { names: [], descriptions: [], editor: Editors.Details },
   });
 
   it("renders the kinds instead of a nested form with no fields", () => {
@@ -231,7 +258,6 @@ describe("a disjunction reached through sh:node is a value kind, not a sub-form"
     const field = build(
       prop(`${DCT}publisher`, {
         node: publisher.id,
-        presentation: { names: [], descriptions: [], editor: Editors.Details },
       }),
       { nodeShapes: [publisher] },
     );
@@ -324,7 +350,6 @@ describe("a disjunction of structures is refused, with a reason", () => {
     const field = build(
       prop(`${DCT}spatial`, {
         value: { nodeKind: SH_IRI },
-        presentation: { names: [], descriptions: [], editor: Editors.IRI },
         logical: ps.logical,
       }),
     );

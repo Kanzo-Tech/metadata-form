@@ -1,6 +1,5 @@
 import type { Term } from "@rdfjs/types";
 import { literal, namedNode, NS } from "./factory.js";
-import { NUMERIC } from "./editors.js";
 import type { FieldModel } from "./FormModel.js";
 
 /**
@@ -12,6 +11,16 @@ import type { FieldModel } from "./FormModel.js";
 const XSD = NS.xsd;
 const RDF_LANGSTRING = `${NS.rdf}langString`;
 const SH_IRI = `${NS.sh}IRI`;
+
+/** The integer datatypes: a value of one is written without a fraction. */
+export const INTEGRAL = new Set(
+  ["integer", "int", "long", "short", "byte", "nonNegativeInteger", "positiveInteger",
+   "negativeInteger", "nonPositiveInteger", "unsignedInt", "unsignedLong", "unsignedShort",
+   "unsignedByte"].map((t) => `${XSD}${t}`),
+);
+
+/** Every numeric datatype a value is bound as itself, rather than as text. */
+export const NUMERIC = new Set([...INTEGRAL, ...["decimal", "float", "double"].map((t) => `${XSD}${t}`)]);
 
 /** RDF term → primitive string for a widget. */
 export function termToPrimitive(term: Term | null): string | null {

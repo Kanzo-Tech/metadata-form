@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { NS } from "../../form/factory.js";
-import { fallbackEditorId, NUMERIC } from "../../form/editors.js";
+import { INTEGRAL, NUMERIC } from "../../form/termBinding.js";
+import { Editors } from "../../form/vocab/shacl-ui.js";
 import type { FieldModel } from "../../form/FormModel.js";
 import type { CompletionRequest, WidgetOption } from "../../assist.js";
 
@@ -153,23 +153,18 @@ export function widgetMulti(entry: WidgetEntry): MultiWidget | undefined {
   return typeof entry === "function" ? undefined : entry.multi;
 }
 
-const XSD = NS.xsd;
-const INTEGRAL = new Set(
-  ["integer", "int", "long", "short", "byte", "nonNegativeInteger", "positiveInteger",
-   "negativeInteger", "nonPositiveInteger", "unsignedInt", "unsignedLong", "unsignedShort",
-   "unsignedByte"].map((t) => `${XSD}${t}`),
-);
-
 /**
- * The widget for a field: its stated editor, else one derived from its own type
- * facts — the same lookup twice, never a separate taxonomy.
+ * The widget for a field: the one registered for its editor. The engine chose the
+ * editor; the only thing decided here is what to render for an editor the registry
+ * has no control for — a profile's own `shui:editor` — which is the plain text
+ * field the engine itself falls back to.
  *
- * Returns `undefined` only if the derived fallback is unregistered too, which
- * means the registry is missing `shui:TextFieldEditor` and every field is broken;
- * the caller reports that rather than rendering nothing in silence.
+ * Returns `undefined` only if the registry lacks `shui:TextFieldEditor` too, which
+ * means every field is broken; the caller reports that rather than rendering
+ * nothing in silence.
  */
 export function resolveWidget(field: FieldModel, registry: WidgetRegistry): WidgetEntry | undefined {
-  return registry[field.editorId] ?? registry[fallbackEditorId(field)];
+  return registry[field.editorId] ?? registry[Editors.TextField];
 }
 
 export function stepFor(field: FieldModel): string | undefined {

@@ -147,7 +147,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     if (!found) {
       throw new Error(
         `No widget for editor ${f.editorId} on ${f.id}, and none for the ` +
-          `fallback either — the registry is missing ${Editors.TextField}.`,
+          `plain text field either — the registry is missing ${Editors.TextField}.`,
       );
     }
     return found;

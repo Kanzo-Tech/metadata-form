@@ -5,6 +5,8 @@ import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useM
 import { assistUi } from "@/ai/index.js";
 import type { AssistUi } from "@/react/assistUi.js";
 import { es } from "metadata-form/i18n";
+import { Editors } from "@/form/vocab/shacl-ui.js";
+import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 
 const ex = "http://example.org/";
 const options = Array.from({ length: 20 }, (_, i) => `"option-${i}"`).join(" ");
@@ -218,5 +220,16 @@ describe("the words of the parts the design system draws", () => {
     await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
     expect(screen.getAllByRole("button", { name: es.strings.assist.suggest }).length).toBeGreaterThan(0);
     expect(screen.queryByRole("button", { name: "Suggest" })).toBeNull();
+  });
+});
+
+describe("the default registry", () => {
+  it("has a control for every editor the engine can emit", () => {
+    // The sixteen editors of the SHACL-UI Editor's Draft. The two that stand for a
+    // resource with a shape of its own are drawn as a nested form, not a widget.
+    const nested: string[] = [Editors.Details, Editors.BlankNode];
+    const widgets = Object.values(Editors).filter((e) => !nested.includes(e));
+    expect(Object.values(Editors)).toHaveLength(16);
+    expect(widgets.filter((e) => !(e in defaultWidgets))).toEqual([]);
   });
 });

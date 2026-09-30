@@ -179,6 +179,30 @@ describe("property shapes sharing a path (SHACL conjunction)", () => {
     expect(status.label).toBe("status");
   });
 
+  it("takes the editor a profile declared, else the best one scored, and says which", async () => {
+    // Nothing declared: two shapes score an editor each, the higher score wins.
+    const scored = await form(`
+      ex:S a sh:NodeShape ; sh:targetClass ex:Thing ; sh:property ex:p1, ex:p2 .
+      ex:p1 sh:path ex:when ; sh:datatype xsd:date .
+      ex:p2 sh:path ex:when ; sh:class ex:Moment .
+    `);
+    const when = one(scored.fields, `${EX}when`);
+    expect(when.editorId).toBe(Editors.DatePicker);
+    expect(when.editorSource).toBe("scored");
+    expect(when.editors?.[0].editor).toBe(Editors.DatePicker);
+
+    // One shape declares an editor: it wins over a higher score elsewhere.
+    const declared = await form(`
+      @prefix shui: <http://www.w3.org/ns/shacl-ui/> .
+      ex:S a sh:NodeShape ; sh:targetClass ex:Thing ; sh:property ex:p1, ex:p2 .
+      ex:p1 sh:path ex:when ; sh:datatype xsd:date .
+      ex:p2 sh:path ex:when ; shui:editor shui:TextFieldEditor .
+    `);
+    const declaredWhen = one(declared.fields, `${EX}when`);
+    expect(declaredWhen.editorId).toBe(Editors.TextField);
+    expect(declaredWhen.editorSource).toBe("declared");
+  });
+
   it("refuses input where the shapes contradict each other, and says why", async () => {
     const { fields, diagnostics } = await form(`
       ex:S a sh:NodeShape ; sh:targetClass ex:Thing ; sh:property ex:p1, ex:p2 .
@@ -267,7 +291,7 @@ describe("conjunction across a conditional branch", () => {
     cardinality: {},
     value: {},
     logical: {},
-    presentation: { names: [], descriptions: [] },
+    presentation: { names: [], descriptions: [], editor: Editors.TextField, editorSource: "fallback" },
     components: [],
     ...extra,
   });

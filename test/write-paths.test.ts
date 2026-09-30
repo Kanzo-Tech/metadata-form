@@ -127,13 +127,16 @@ describe("inverse paths are writable (one statement, ends swapped)", () => {
     expect(back?.values.map((v) => v.value.value)).toEqual([`${EX}c7`]);
   });
 
-  it("fills in the nodeKind RDF already implies, and picks the IRI editor for it", async () => {
+  it("fills in the nodeKind RDF already implies, and leaves the editor to the engine", async () => {
     const { build } = await form(shapes);
     const field = only(build());
     // No sh:nodeKind in the shape — but an inverse value is a statement's subject,
-    // so it cannot be a literal, and the widget must commit a NamedNode.
+    // so it cannot be a literal, and the widget must commit a NamedNode. The shape
+    // states no type for the engine's score function, so its editor is the text
+    // field it falls back to: the form does not second-guess it.
     expect(field.constraints.nodeKind).toBe(SH_IRI);
-    expect(field.editorId).toBe(Editors.IRI);
+    expect(field.editorId).toBe(Editors.TextField);
+    expect(field.editorSource).toBe("fallback");
   });
 
   it("refuses a literal, because a literal cannot be the subject of a statement", async () => {

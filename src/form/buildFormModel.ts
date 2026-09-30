@@ -331,16 +331,6 @@ function buildField(
     languageIn: v.languageIn,
   };
 
-  // rudof resolves the editor (explicit shui:editor else a datatype default) and
-  // always emits it; the UI only maps the IRI → widget. The one case it cannot
-  // resolve is a property with NO type facts on an inverse path: its default is a
-  // text field, and we know the one fact it was missing (see `nodeKind` above).
-  // An editor the author actually stated is left alone — a bare text default is
-  // not a preference, and this is the only way to tell the two apart.
-  const statedEditor = ps.presentation.editor ?? Editors.TextField;
-  const inferredIri = !v.nodeKind && constraints.nodeKind === SH_IRI;
-  const editorId = inferredIri && statedEditor === Editors.TextField ? Editors.IRI : statedEditor;
-
   const minCount = ps.cardinality.min ?? 0;
   const maxCount = ps.cardinality.max;
   const repeatable = maxCount === undefined || maxCount > 1;
@@ -363,12 +353,14 @@ function buildField(
   const nestedShape = inlined ? undefined : referenced;
   const branches: ShapeIR[] = [...(ps.logical.or ?? []), ...(inlined ?? [])];
 
-  // The editor rudof emitted is a derivation wherever it is the bare text default,
-  // and the `Details` of an inlined `sh:node` came from a reference we have just
-  // established is not a sub-form. Neither is a control the property really has, so
-  // neither yields to a branch's editor — nor counts as one worth protecting from
-  // a refusal.
-  const derivedDefault = statedEditor === Editors.TextField || (!!inlined && statedEditor === Editors.Details);
+  // rudof chose the editor, and says where it came from. One it `declared` or
+  // `scored` is a control the property really has. One it took from a branch, or
+  // fell back to, is not: the property says nothing an editor is chosen by, so the
+  // disjunction's alternative is the better answer, and a real sub-form (`sh:node`
+  // that is not just a named disjunction) is a control worth protecting from a
+  // refusal all the same.
+  const { editorSource } = ps.presentation;
+  const ownControl = editorSource === "declared" || editorSource === "scored" || nestedShape !== undefined;
 
   const disjunction = branches.length
     ? planDisjunction({
@@ -376,7 +368,7 @@ function buildField(
         own: constraints,
         fieldId: id,
         languages: ctx.languages,
-        ownControl: !derivedDefault,
+        ownControl,
       })
     : undefined;
   reportDropped(disjunction, ps, ctx);
@@ -390,7 +382,10 @@ function buildField(
   const chosen: FieldAlternative | undefined = refused ? undefined : alternatives?.[0];
 
   const effective = chosen?.constraints ?? constraints;
-  const effectiveEditor = chosen && derivedDefault ? chosen.editorId : editorId;
+  // The alternative's editor is the engine's for that branch alone: not scored for
+  // the field, so it is reported as a branch's.
+  const fromBranch = chosen !== undefined && !ownControl;
+  const effectiveEditor = fromBranch ? chosen.editorId : ps.presentation.editor;
 
   const values = projectValues(ps, id, ctx, effectiveEditor, nestedShape, visited, cyclic);
   const nestedTypeIri = nestedShape?.instanceClass;
@@ -420,6 +415,8 @@ function buildField(
     label,
     description,
     editorId: effectiveEditor,
+    editorSource: fromBranch ? "branch" : editorSource,
+    editors: fromBranch ? undefined : ps.presentation.editors,
     required: minCount >= 1,
     repeatable,
     minCount,
