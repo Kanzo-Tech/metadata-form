@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { NS } from "../../form/factory.js";
 import { fallbackEditorId, NUMERIC } from "../../form/editors.js";
 import type { FieldModel } from "../../form/FormModel.js";
-import type { WidgetOption } from "../../assist.js";
+import type { CompletionRequest, WidgetOption } from "../../assist.js";
 
 /**
  * The presentation contract. Widgets are *dumb*: they render an input for a
@@ -36,8 +36,9 @@ export interface WidgetProps {
   /** Async suggestion loader for `reference` fields (from `assist.search`). */
   loadOptions?: (query: string, signal?: AbortSignal) => Promise<WidgetOption[]>;
   /** Streaming inline completion for free text (from `assist.complete`) — ghost
-   * text. Yields continuation chunks; pass an `AbortSignal` to cancel a stale run. */
-  complete?: (value: string, signal?: AbortSignal) => AsyncIterable<string>;
+   * text at the caret. Yields continuation chunks; the request's `AbortSignal`
+   * cancels a stale run. Present only when the form has an `assistUi` to draw it. */
+  complete?: (request: CompletionRequest) => AsyncIterable<string>;
   /** The sh:class IRI for `reference` fields. */
   classIri?: string;
   /** Every class the value may belong to, when an `sh:or` allowed more than one

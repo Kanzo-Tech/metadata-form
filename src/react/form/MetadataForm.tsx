@@ -3,6 +3,7 @@ import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { FormContext, type FormContextValue, type FormLayout, type GridLayout } from "./context.js";
 import { NodeForm } from "./NodeForm.js";
 import { defaultWidgets } from "../widgets/defaultWidgets.js";
+import type { AssistUi } from "../assistUi.js";
 import type { WidgetRegistry } from "../widgets/widgets.js";
 import { ink } from "../styles.js";
 
@@ -11,6 +12,9 @@ export interface MetadataFormProps {
   form: MetadataFormController;
   /** Widget overrides, merged over the defaults. */
   widgets?: WidgetRegistry;
+  /** The UI for `form.assist` — `assistUi` from `metadata-form/ai`. Without it the
+   *  form draws plain inputs and never calls the assistance. */
+  assistUi?: AssistUi;
   /** How the root property groups are arranged. Defaults to `sequential`. */
   layout?: FormLayout;
   /** Column layout within each group (and per-field spans). */
@@ -29,7 +33,7 @@ export interface MetadataFormProps {
  * portal to `document.body`, outside anything this component could wrap, and
  * density sets the root font-size the whole `rem` scale resolves against.
  */
-export function MetadataForm({ form, widgets, layout, grid, className }: MetadataFormProps) {
+export function MetadataForm({ form, widgets, assistUi, layout, grid, className }: MetadataFormProps) {
   const registry = useMemo<WidgetRegistry>(
     () => ({ ...defaultWidgets, ...widgets }),
     [widgets],
@@ -46,11 +50,12 @@ export function MetadataForm({ form, widgets, layout, grid, className }: Metadat
       errors: form.errors,
       report: form.report,
       assist: form.assist,
+      assistUi,
       layout,
       grid,
       revealTarget: form._revealTarget,
     };
-  }, [form.graph, form.model, registry, form.locale, form.strings, form.errors, form.report, form.assist, layout, grid, form._revealTarget]);
+  }, [form.graph, form.model, registry, form.locale, form.strings, form.errors, form.report, form.assist, assistUi, layout, grid, form._revealTarget]);
 
   if (form.error) {
     return (

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent, waitFor, renderHook, act, within } from "@testing-library/react";
 import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { ValidationSummary } from "@/react/validation/ValidationSummary.js";
-import { FormAssistant } from "@/react/assistant/FormAssistant.js";
+import { assistUi } from "@/ai/index.js";
 import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { namedNode } from "@/form/factory.js";
@@ -73,7 +73,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
         assist: { suggest: async function* ({ field }) { yield { value: `Suggested ${field.label}` }; } },
       });
       return (
-        <MetadataForm form={form} />
+        <MetadataForm form={form} assistUi={assistUi} />
       );
     }
     render(<AssistForm />);
@@ -109,7 +109,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
         },
       });
       return (
-        <MetadataForm form={form} />
+        <MetadataForm form={form} assistUi={assistUi} />
       );
     }
     render(<AssistForm />);
@@ -147,7 +147,7 @@ describe("useMetadataForm + <MetadataForm>", () => {
         assist: { complete: async function* () { yield "the"; yield " rest"; } },
       });
       return (
-        <MetadataForm form={form} />
+        <MetadataForm form={form} assistUi={assistUi} />
       );
     }
     render(<GhostForm />);
@@ -168,20 +168,6 @@ describe("useMetadataForm + <MetadataForm>", () => {
     // Tab takes what is on offer, into the field's own value.
     fireEvent.keyDown(area(), { key: "Tab" });
     await waitFor(() => expect(area().value).toContain("the rest"));
-  });
-
-  it("<FormAssistant> reports the count of required-but-empty fields", async () => {
-    function Guided() {
-      const form = useMetadataForm({ shapes, validateOn: "off" });
-      return (
-        <>
-          <MetadataForm form={form} />
-          <FormAssistant form={form} />
-        </>
-      );
-    }
-    render(<Guided />);
-    await waitFor(() => expect(screen.getByText(/required field/)).toBeInTheDocument());
   });
 
   it("renders the custom date picker (calendar button) for xsd:date fields", async () => {

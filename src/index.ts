@@ -5,7 +5,7 @@
 //
 // Deliberately small: a hook, the components that render it, and the types a
 // consumer writes against. The rudof engine and the shape IR are on the
-// `metadata-form/rudof` subpath, the AI adapter on `metadata-form/ai`.
+// `metadata-form/rudof` subpath, the whole AI layer on `metadata-form/ai`.
 
 export { useMetadataForm } from "./react/hooks/useMetadataForm.js";
 export type { MetadataFormController, UseMetadataFormOptions } from "./react/hooks/useMetadataForm.js";
@@ -16,9 +16,6 @@ export { ValidationSummary } from "./react/validation/ValidationSummary.js";
 export type { ValidationSummaryProps } from "./react/validation/ValidationSummary.js";
 export { ValidationPanel } from "./react/validation/ValidationPanel.js";
 export type { ValidationPanelProps, ValidationPanelLabels } from "./react/validation/ValidationPanel.js";
-export { FormAssistant } from "./react/assistant/FormAssistant.js";
-export type { FormAssistantProps } from "./react/assistant/FormAssistant.js";
-export type { MascotCharacter, MascotMood } from "./react/assistant/mascot.js";
 
 // Widgets — the presentation contract (a theme is a set of these, keyed by editor IRI).
 export { defaultWidgets } from "./react/widgets/defaultWidgets.js";
@@ -33,7 +30,8 @@ export type {
   WidgetEntry,
   AssistSupport,
 } from "./react/widgets/widgets.js";
-export type { WidgetOption, FormAssist, FieldSuggestion } from "./assist.js";
+export type { WidgetOption, FormAssist, Candidate, CompletionRequest } from "./assist.js";
+export type { AssistUi } from "./react/assistUi.js";
 
 // The form model and the report derived from it.
 export type {
