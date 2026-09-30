@@ -12,6 +12,8 @@ import {
   KanzoThemeProvider,
   NativeSelect,
   NativeSelectOption,
+  PreferencesRoot,
+  PreferencesTrigger,
   ShellAside,
   ShellBody,
   ShellHeader,
@@ -23,7 +25,7 @@ import { PaneHeader } from "./components/PaneHeader.js";
 import { MetadataForm, useMetadataForm, ValidationPanel, type FormAssist } from "metadata-form";
 import { assistUi } from "metadata-form/ai";
 import { es, ca } from "metadata-form/i18n";
-import { Preferences, usePreferences } from "./Preferences.js";
+import { PLAYGROUND_SECTION, PreferencesPanelContent, useClaudeKey, useLayoutPrefs, useMascot } from "./Preferences.js";
 import { Header } from "./components/Header.js";
 import { PresetPicker, ShapePicker } from "./components/ExamplePickers.js";
 import { LocaleSelect } from "./components/LocaleSelect.js";
@@ -86,10 +88,17 @@ export function App() {
     // branded example cannot overwrite a reader's saved theme. Publishing fewer than
     // two would hide the colour section, which is also the page's only light/dark
     // control; pinning would hide it outright. See `instance.ts`.
-    <KanzoThemeProvider themes={INSTANCE.themes} defaultTheme={defaultTheme} policy={policy}>
-      <Preferences.Root>
+    <KanzoThemeProvider
+      themes={INSTANCE.themes}
+      defaultTheme={defaultTheme}
+      policy={policy}
+      sections={[PLAYGROUND_SECTION]}
+    >
+      {/* `p`, opt-in: a design system must not claim an unmodified key in its
+          host's keymap without being asked. */}
+      <PreferencesRoot hotkey="p">
         <ThemedApp url={url} workspace={workspace} branding={branding} />
-      </Preferences.Root>
+      </PreferencesRoot>
     </KanzoThemeProvider>
   );
 }
@@ -104,8 +113,9 @@ function ThemedApp({
   workspace: ReturnType<typeof useWorkspace>;
   branding: ExampleBranding | undefined;
 }) {
-  const { prefs, update } = usePreferences();
-  const apiKey = prefs.ai.claudeKey;
+  const [apiKey] = useClaudeKey();
+  const layoutPrefs = useLayoutPrefs();
+  const [mascot, setMascot] = useMascot();
 
   // The assistance seam is wired only when an API key is present.
   const assist = useMemo<FormAssist | undefined>(() => (apiKey ? makeAssist(apiKey) : undefined), [apiKey]);
@@ -334,7 +344,7 @@ function ThemedApp({
             </CardContent>
           </Card>
         ) : (
-          <MetadataForm form={form} assistUi={assistUi} layout={prefs.layout.mode} grid={{ columns: prefs.layout.columns }} />
+          <MetadataForm form={form} assistUi={assistUi} layout={layoutPrefs.layout} grid={{ columns: layoutPrefs.columns }} />
         )}
       </div>
     </ShellMain>
@@ -466,7 +476,7 @@ function ThemedApp({
           </div>
         </ShellBody>
 
-        {prefs.assistant.enabled && (
+        {mascot && (
           // The FAB is fixed bottom-end and owns that spot (it is the design system's,
           // and every showcase puts it there); the companion is the guest, so it moves
           // up by the FAB's height and its gap rather than sitting on top of it.
@@ -474,14 +484,14 @@ function ThemedApp({
             report={form.report}
             onReveal={form.revealField}
             offset="4rem"
-            onDismiss={() => update("assistant", { enabled: false })}
+            onDismiss={() => setMascot(false)}
           />
         )}
 
         {/* The FAB and the drawer. The panel composes its own sections now — ours
             first, then the design system's theme axes. */}
-        <Preferences.Trigger />
-        <Preferences.Panel />
+        <PreferencesTrigger />
+        <PreferencesPanelContent />
       </ShellRoot>
     </ChromeContext.Provider>
   );

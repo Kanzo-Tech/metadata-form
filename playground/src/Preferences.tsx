@@ -1,8 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import type { ComponentType, ReactNode } from "react";
+import { useState, useSyncExternalStore } from "react";
 import {
-  Field,
-  FieldLabel,
   InputGroup,
   InputGroupButton,
   InputGroupInput,
@@ -13,213 +10,116 @@ import {
   PreferencesMonoFont,
   PreferencesPanel,
   PreferencesRadius,
-  PreferencesRoot,
-  PreferencesTrigger,
-  RadioGroup,
-  RadioGroupCard,
-  Switch,
+  PreferencesSections,
+  useKanzoTheme,
 } from "@kanzo-tech/ui";
-import {
-  Columns2Icon,
-  Columns3Icon,
-  EyeIcon,
-  EyeOffIcon,
-  GalleryVerticalIcon,
-  LayoutPanelTopIcon,
-  ListOrderedIcon,
-  RectangleHorizontalIcon,
-} from "lucide-react";
+import { prefBoolean, type SectionManifest } from "@kanzo-tech/theme";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import type { FormLayout, GridLayout } from "metadata-form";
-
-type Columns = NonNullable<GridLayout["columns"]>;
-import { useChrome, type Chrome } from "./i18n.js";
+import { useChrome } from "./i18n.js";
 
 /**
- * The playground's preferences — the reference pattern for embedding
- * metadata-form's settings in a host app.
+ * The playground's preferences.
  *
- * **The theme layer is gone from here.** This file used to carry the appearance,
- * accent, gray, panel-background, radius and scaling axes, mirroring Radix's own
- * ThemePanel and hand-syncing its value lists. The design system owns all of that
- * now: `PreferencesRoot` brings the drawer, the `p` hotkey and its typing guard,
- * `PreferencesTrigger` the FAB, and `PreferencesColor` / `Density` / `Radius` /
- * `Font` / `MonoFont` the axes themselves — applied to `<html>`, persisted, and
- * live.
+ * **Everything the design system can hold, it holds.** How the *form* is laid out
+ * and whether the mascot shows are a `SectionManifest` — the mechanism an optional
+ * package uses to contribute a choice — registered on the theme provider. So they
+ * are drawn by `PreferencesSections` in the panel's own language, resolved through
+ * the same chain as radius and density (a tenant could pin them), and persisted
+ * beside them; this file keeps no store of its own for them.
  *
- * What is left is what the design system has no opinion about and should not:
- * how the *form* is laid out, whether the mascot shows, and the consumer's own
- * API key. Note that passing `children` to `PreferencesPanel` REPLACES the
- * library's sections rather than adding to them, so the theme axes below are
- * rendered explicitly and their order is ours to choose.
+ * What is left is the consumer's own API key. A section has three kinds — choice,
+ * toggle, range — and by design no text field, and a credential is not a choice
+ * anyway: it stays here, in its own storage key, masked.
+ *
+ * Note that passing `children` to `PreferencesPanel` REPLACES the library's
+ * sections, so the theme axes below are rendered explicitly.
  */
 
-export interface PreferencesState {
-  layout: { mode: FormLayout; columns: Columns };
-  ai: { claudeKey: string };
-  assistant: { enabled: boolean };
-}
+const NAMESPACE = "playground";
 
-export const defaultPreferences: PreferencesState = {
-  layout: { mode: "sequential", columns: 1 },
-  ai: { claudeKey: "" },
-  assistant: { enabled: false },
+export const PLAYGROUND_SECTION: SectionManifest = {
+  namespace: NAMESPACE,
+  version: 1,
+  prefs: {
+    layout: {
+      kind: "choice",
+      label: "Layout",
+      default: "sequential",
+      doc: "How the property groups are arranged.",
+      options: [
+        { value: "sequential", label: "Sequential" },
+        { value: "tabs", label: "Tabs" },
+        { value: "steps", label: "Steps" },
+      ],
+    },
+    // `FieldGroup` takes one to four columns, so three is a judgement about forms
+    // rather than a limit of the grid: past three, a label and its control stop
+    // fitting on a line at the widths this column gets with a panel open on either
+    // side.
+    columns: {
+      kind: "choice",
+      label: "Columns",
+      default: "1",
+      doc: "How many columns each group's fields are laid out in.",
+      options: [
+        { value: "1", label: "One" },
+        { value: "2", label: "Two" },
+        { value: "3", label: "Three" },
+      ],
+    },
+    mascot: {
+      kind: "toggle",
+      label: "Show the mascot companion",
+      default: "false",
+      doc: "The corner companion that reads the form's health.",
+    },
+  },
 };
 
-const STORAGE_KEY = "mf_prefs";
-
-interface PreferencesContextValue {
-  prefs: PreferencesState;
-  update: <K extends keyof PreferencesState>(layer: K, patch: Partial<PreferencesState[K]>) => void;
+/** The form's layout preferences, as the props `MetadataForm` takes. */
+export function useLayoutPrefs(): { layout: FormLayout; columns: NonNullable<GridLayout["columns"]> } {
+  const { sectionPrefs } = useKanzoTheme();
+  const prefs = sectionPrefs[NAMESPACE];
+  return {
+    layout: (prefs?.layout?.value ?? "sequential") as FormLayout,
+    columns: Number(prefs?.columns?.value ?? 1) as NonNullable<GridLayout["columns"]>,
+  };
 }
 
-const PreferencesContext = createContext<PreferencesContextValue | null>(null);
-
-export function usePreferences(): PreferencesContextValue {
-  const ctx = useContext(PreferencesContext);
-  if (!ctx) throw new Error("usePreferences must be used within <Preferences.Root>");
-  return ctx;
+/** Whether the mascot shows, and how to put it away. */
+export function useMascot(): [boolean, (on: boolean) => void] {
+  const { sectionPrefs, setSectionPref } = useKanzoTheme();
+  const shown = prefBoolean(sectionPrefs[NAMESPACE]?.mascot?.value ?? "false");
+  return [shown, (on) => setSectionPref(NAMESPACE, { mascot: String(on) })];
 }
 
-function load(): PreferencesState {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}") as Partial<PreferencesState>;
-    const layout = { ...defaultPreferences.layout, ...saved.layout };
-    return {
-      // A stored 4 predates the three-card control and would select no card at
-      // all, so it is clamped rather than shown as an empty choice.
-      layout: { ...layout, columns: Math.min(3, Math.max(1, Math.round(layout.columns) || 1)) as Columns },
-      ai: { ...defaultPreferences.ai, ...saved.ai },
-      assistant: { ...defaultPreferences.assistant, ...saved.assistant },
-    };
-  } catch {
-    return defaultPreferences;
-  }
-}
-
-/** Our three layers. The theme's own persistence is the provider's business, not
- *  ours — this key holds only what the design system does not know about. */
-function Root({ children }: { children: ReactNode }) {
-  const [prefs, setPrefs] = useState<PreferencesState>(load);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-  }, [prefs]);
-
-  const update = useCallback<PreferencesContextValue["update"]>((layer, patch) => {
-    setPrefs((p) => ({ ...p, [layer]: { ...p[layer], ...patch } }));
-  }, []);
-
-  return (
-    <PreferencesContext.Provider value={{ prefs, update }}>
-      {/* `p`, as before — opt-in, because a design system must not claim an
-          unmodified key in its host's keymap without being asked. */}
-      <PreferencesRoot hotkey="p">{children}</PreferencesRoot>
-    </PreferencesContext.Provider>
-  );
-}
-
-/** The label is a function of the catalog rather than a string, so both axes stay
- *  one table each: the list is what a choice IS, and which language it is said in
- *  is not part of that. */
-type Choice = readonly [
-  value: string,
-  label: (t: Chrome["prefs"]) => string,
-  icon: ComponentType<{ className?: string }>,
-];
-
-const LAYOUTS: readonly Choice[] = [
-  ["sequential", (t) => t.sequential, GalleryVerticalIcon],
-  ["tabs", (t) => t.tabs, LayoutPanelTopIcon],
-  ["steps", (t) => t.steps, ListOrderedIcon],
-];
-
-/** `FieldGroup` takes one to four columns, so three is a judgement about forms
- *  rather than a limit of the grid: past three, a label
- *  and its control stop fitting on a line at the widths this column gets with a
- *  panel open on either side. A number input said otherwise. */
-const COLUMNS: readonly Choice[] = [
-  ["1", (t) => t.one, RectangleHorizontalIcon],
-  ["2", (t) => t.two, Columns2Icon],
-  ["3", (t) => t.three, Columns3Icon],
-];
-
-/** A row of icon cards, one of which is chosen — the shape both layout axes take. */
-function CardChoice({
-  label,
-  onChange,
-  options,
-  value,
-}: {
-  label: string;
-  onChange: (value: string) => void;
-  options: readonly Choice[];
-  value: string;
-}) {
-  const t = useChrome().prefs;
-  return (
-    <PreferencesField label={label}>
-      <RadioGroup
-        aria-label={label}
-        className="flex-row flex-wrap gap-2"
-        value={value}
-        onValueChange={(d) => d.value && onChange(d.value)}
-      >
-        {options.map(([v, text, Icon]) => (
-          <RadioGroupCard
-            key={v}
-            value={v}
-            className="min-w-0 flex-1 basis-20 flex-col items-center px-2 py-2"
-            style={{ gap: "0.375rem" }}
-          >
-            <Icon className="size-4 text-muted-foreground" />
-            <span className="font-medium text-xs">{text(t)}</span>
-          </RadioGroupCard>
-        ))}
-      </RadioGroup>
-    </PreferencesField>
-  );
-}
-
-function LayoutSection() {
-  const { prefs, update } = usePreferences();
-  const t = useChrome().prefs;
-  return (
-    <>
-      <CardChoice
-        label={t.layout}
-        options={LAYOUTS}
-        value={prefs.layout.mode}
-        onChange={(v) => update("layout", { mode: v as FormLayout })}
-      />
-      <CardChoice
-        label={t.columns}
-        options={COLUMNS}
-        value={String(prefs.layout.columns)}
-        onChange={(v) => update("layout", { columns: Number(v) as Columns })}
-      />
-    </>
-  );
-}
-
-function AssistantSection() {
-  const { prefs, update } = usePreferences();
-  const t = useChrome().prefs;
-  return (
-    <Field orientation="horizontal">
-      <FieldLabel className="w-fit flex-1">{t.mascot}</FieldLabel>
-      <Switch
-        checked={prefs.assistant.enabled}
-        onCheckedChange={(d) => update("assistant", { enabled: d.checked === true })}
-      />
-    </Field>
-  );
-}
+const KEY_STORAGE = "mf_claude_key";
+const listeners = new Set<() => void>();
 
 /** The consumer's own key, never the library's business — metadata-form imports
- *  no LLM SDK. Masked by default: this is a credential sitting in a panel that a
- *  screen share can be pointed at. */
+ *  no LLM SDK. */
+export function useClaudeKey(): [string, (key: string) => void] {
+  const key = useSyncExternalStore(
+    (notify) => {
+      listeners.add(notify);
+      return () => listeners.delete(notify);
+    },
+    () => localStorage.getItem(KEY_STORAGE) ?? "",
+  );
+  return [
+    key,
+    (next) => {
+      localStorage.setItem(KEY_STORAGE, next);
+      listeners.forEach((notify) => notify());
+    },
+  ];
+}
+
+/** Masked by default: this is a credential sitting in a panel that a screen share
+ *  can be pointed at. */
 function ClaudeKeySection() {
-  const { prefs, update } = usePreferences();
+  const [key, setKey] = useClaudeKey();
   const [shown, setShown] = useState(false);
   const t = useChrome().prefs;
   return (
@@ -230,13 +130,10 @@ function ClaudeKeySection() {
           placeholder="sk-ant-…"
           autoComplete="off"
           spellCheck={false}
-          value={prefs.ai.claudeKey}
-          onChange={(e) => update("ai", { claudeKey: e.target.value })}
+          value={key}
+          onChange={(e) => setKey(e.target.value)}
         />
-        <InputGroupButton
-          aria-label={shown ? t.hideKey : t.showKey}
-          onClick={() => setShown((s) => !s)}
-        >
+        <InputGroupButton aria-label={shown ? t.hideKey : t.showKey} onClick={() => setShown((s) => !s)}>
           {shown ? <EyeOffIcon /> : <EyeIcon />}
         </InputGroupButton>
       </InputGroup>
@@ -244,20 +141,16 @@ function ClaudeKeySection() {
   );
 }
 
-/** The panel: colour first, then ours, then the design system's remaining axes in
- *  the order it publishes them.
+/** The panel: colour first, then the section this app contributes, its key, then
+ *  the design system's remaining axes in the order it publishes them.
  *
  *  Colour leads because it is the only light/dark control this app has, and a
- *  person hunting for one looks at the top of a settings panel. It renders
- *  nothing until the provider is given two or more `themes` — `PreferencesColor`
- *  returns null on an empty list — which is why the panel appears to start at
- *  Layout today. */
-function Panel() {
+ *  person hunting for one looks at the top of a settings panel. */
+export function PreferencesPanelContent() {
   return (
     <PreferencesPanel>
       <PreferencesColor />
-      <LayoutSection />
-      <AssistantSection />
+      <PreferencesSections />
       <ClaudeKeySection />
       <PreferencesDensity />
       <PreferencesRadius />
@@ -266,13 +159,3 @@ function Panel() {
     </PreferencesPanel>
   );
 }
-
-/** Compound: Root provider + decoupled Trigger/Panel + standalone sections. */
-export const Preferences = {
-  Root,
-  Trigger: PreferencesTrigger,
-  Panel,
-  Layout: LayoutSection,
-  ClaudeKey: ClaudeKeySection,
-  Assistant: AssistantSection,
-};

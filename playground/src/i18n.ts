@@ -72,15 +72,6 @@ export interface Chrome {
     dismiss: string;
   };
   prefs: {
-    layout: string;
-    sequential: string;
-    tabs: string;
-    steps: string;
-    columns: string;
-    one: string;
-    two: string;
-    three: string;
-    mascot: string;
     apiKey: string;
     showKey: string;
     hideKey: string;
@@ -145,15 +136,6 @@ const EN: Chrome = {
     dismiss: "Dismiss",
   },
   prefs: {
-    layout: "Layout",
-    sequential: "Sequential",
-    tabs: "Tabs",
-    steps: "Steps",
-    columns: "Columns",
-    one: "One",
-    two: "Two",
-    three: "Three",
-    mascot: "Show the mascot companion",
     apiKey: "Anthropic API key",
     showKey: "Show the key",
     hideKey: "Hide the key",
@@ -213,15 +195,6 @@ const ES: Chrome = {
     dismiss: "Descartar",
   },
   prefs: {
-    layout: "Disposición",
-    sequential: "Secuencial",
-    tabs: "Pestañas",
-    steps: "Pasos",
-    columns: "Columnas",
-    one: "Una",
-    two: "Dos",
-    three: "Tres",
-    mascot: "Mostrar la mascota acompañante",
     apiKey: "Clave de API de Anthropic",
     showKey: "Mostrar la clave",
     hideKey: "Ocultar la clave",
@@ -281,15 +254,6 @@ const CA: Chrome = {
     dismiss: "Descarta",
   },
   prefs: {
-    layout: "Disposició",
-    sequential: "Seqüencial",
-    tabs: "Pestanyes",
-    steps: "Passos",
-    columns: "Columnes",
-    one: "Una",
-    two: "Dues",
-    three: "Tres",
-    mascot: "Mostra la mascota acompanyant",
     apiKey: "Clau d'API d'Anthropic",
     showKey: "Mostra la clau",
     hideKey: "Amaga la clau",
