@@ -4,6 +4,8 @@ Auto-generate editable **React** forms from **SHACL** shapes. Pass a SHACL shape
 (the "model") and an optional RDF data graph; get a form that edits the graph and
 serializes back to **Turtle** and **JSON-LD**.
 
+**[Try the playground →](https://kanzo-tech.github.io/metadata-form/)**
+
 The shape engine is [**rudof**](https://github.com/rudof-project/rudof) — a Rust
 SHACL/ShEx stack — compiled to **WebAssembly**. rudof owns the RDF: it parses the
 shapes, validates, projects the form's values out of the data graph, and
@@ -20,13 +22,15 @@ field's **SHACL-UI editor** to a widget and renders the form.
   [@kanzo-tech/ui](https://github.com/Kanzo-Tech/kanzo-ui) over
   [Ark UI](https://ark-ui.com); swap any input by overriding its widget.
 - ✅ **Live validation** — per-field errors from rudof's SHACL validator, plus a
-  ready-made `<ValidationSummary>` pill.
+  ready-made `<ValidationSummary>` tally: hover it for every issue, press it to
+  mark them all on their fields.
 - 🤖 **Optional AI assist** — one `assist` seam, and a separate `metadata-form/ai`
   subpath that draws it: streaming ghost text in textareas (Tab/Esc), ✨ value
   suggestions under text fields, prompts built from the field's own SHACL
   constraints, and a one-line [Vercel AI SDK](https://sdk.vercel.ai) adapter.
   The core imports no AI package.
-- 📦 **Bundled example shapes** (e.g. **HealthDCAT-AP**) in the playground.
+- 📦 **Small example shapes** in the playground — a conditional field in SHACL
+  Core and in SHACL 1.2, and one property per editor.
 - 🧩 **ShEx-ready** — the engine seam is shape-language-agnostic; ShEx can be
   added without touching the UI.
 
@@ -113,6 +117,7 @@ controller is the single handle for everything:
 | `form.toTurtle()` / `form.toJsonLd()` | serialized output (via rudof) |
 | `form.isValid` / `form.errors` | live SHACL validation |
 | `form.validate()` / `form.reset()` | imperative actions |
+| `form.revealAll` / `form.setRevealAll(on)` | show every field's errors, touched or not (what pressing `<ValidationSummary>` toggles) |
 | `form.report` | derived form state — `{progress, issues, pending, nextField, health}` |
 | `form.subscribe(cb)` | observe changes (autosave, external sync) |
 
@@ -123,7 +128,7 @@ The main entry is deliberately small.
 | Export | |
 |---|---|
 | `useMetadataForm`, `MetadataForm` | the controller hook and the component that renders it |
-| `ValidationSummary`, `ValidationPanel` | the issue pill and the issue list |
+| `ValidationSummary`, `ValidationPanel` | the issue tally and the issue list |
 | `defaultWidgets`, `Editors` | the widget registry and the `shui:` editor IRIs it is keyed by |
 | types | the form model (`FormModel`, `FieldModel`, …), the report (`FormReport`, `FieldError`, …), the widget contract (`Widget`, `WidgetProps`, `WidgetRegistry`, …), `FormAssist`, `AssistUi`, `Strings`, `StringTables` |
 
@@ -173,8 +178,7 @@ language; a text in a requested language, and an untagged one, carry none. And t
 reports it through `onDiagnostic` (also kept as `form.diagnostics`) as a diagnostic with
 `level: "info"` and `code: "missing-language"`, once per shape (or field) and kind (name,
 description, message) and requested languages, never per render: *No name in en for Nom;
-showing ca.* An untagged text is language-neutral and is not reported. The playground lists
-them under *Notes on the profile* in its Issues pane. The picker itself is
+showing ca.* An untagged text is language-neutral and is not reported. The picker itself is
 `resolveLanguage(items, languages)`, which returns the literal and whether it was a
 fallback; `pickByLanguage` is the same choice without the flag.
 
@@ -236,7 +240,7 @@ combobox with or without it).
 import { assistUi, createFormAssist } from "metadata-form/ai"; // peers: @kanzo-tech/ai, ai, zod
 import { createAnthropic } from "@ai-sdk/anthropic";
 
-const assist = createFormAssist(createAnthropic({ apiKey })("claude-opus-4-8"));
+const assist = createFormAssist(createAnthropic({ apiKey })("claude-opus-5-5"));
 const form = useMetadataForm({ shapes, assist });
 return <MetadataForm form={form} assistUi={assistUi} />;
 ```
@@ -290,11 +294,28 @@ per-field spans by the predicate IRI:
 
 Nested sub-forms always render sequentially; only the root honors `layout`.
 
+### Errors, and when they show
+
+A field stays quiet until the reader has been in it, so a new form does not open
+covered in "required". `<ValidationSummary>` counts every issue from the start
+(hover it for the list; each entry jumps to its field), and pressing it sets
+`form.revealAll`, which shows all of them on their fields at once. A host with its
+own "Save" can call `form.setRevealAll(true)` on a failed submit.
+
+### Attribution
+
+`<MetadataForm>` ends with a small "Made with ♥ at Kanzo" line, translated with
+the rest of the interface. `attribution={false}` removes it.
+
 ### Example shapes
 
-Shapes are just SHACL/Turtle strings — bring your own. The **playground** ships a
-HealthDCAT-AP demo (`examples/health-dcat-ap/*.ttl`) you can copy; the
-library itself ships no shapes (its job is shape→form, not shipping vocabularies).
+Shapes are just SHACL/Turtle strings — bring your own. The
+[playground](https://kanzo-tech.github.io/metadata-form/) opens on three small ones
+(`examples/paper-*`): a conditional field stated with `sh:or`, the same condition
+with SHACL 1.2's `sh:targetWhere`, and one property per `shui:` editor. Full
+profiles used by the tests and the evaluation (`examples/health-dcat-ap`, among
+others) are in the repository to copy from. The library itself ships no shapes
+(its job is shape→form, not shipping vocabularies).
 
 ## SHACL-UI editors (`shui:`)
 
@@ -330,7 +351,7 @@ inside a `FieldArray` with add/remove.
 | `TextFieldEditor` | anything with no better fact (the fallback) | `Input` | **`TagsInput`** — chips, one control |
 | `TextAreaEditor` | stated | `Textarea`, ghost-text completion when `assist.complete` and `assistUi` are wired | rows |
 | `RichTextEditor` | stated | `Textarea` — **the design system ships no rich-text editor**; the profile asked for something we do not have | rows |
-| `TextFieldWithLangEditor` | `sh:datatype rdf:langString` | `InputGroup` + the language picker in its trailing slot | rows |
+| `TextFieldWithLangEditor` | `sh:datatype rdf:langString` | `InputGroup` + the language picker in its trailing slot; the language can be chosen before the text | rows |
 | `TextAreaWithLangEditor` | stated | `Textarea` (with the same ghost text) + the language picker under it | rows |
 | `NumberFieldEditor` | numeric `sh:datatype` | `NumberInput` — steppers, scrubber, `tabular-nums`; bounds from `sh:minInclusive`/`sh:maxInclusive` | rows |
 | `BooleanEditor` | `sh:datatype xsd:boolean` | `SegmentGroup` (Yes / No / Not set) — or a `Switch` when `sh:minCount ≥ 1` or `sh:defaultValue` guarantees a value | rows |
