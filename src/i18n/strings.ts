@@ -1,12 +1,12 @@
 /**
  * The words of the interface itself — everything the library prints that no shape
- * and no message graph says. English is built in; every other language is data a
+ * and no validation report says. English is built in; every other language is data a
  * consumer imports (`metadata-form/i18n`) or writes, and passes as `strings`.
  *
  * What is NOT here: field labels, descriptions and group names (the profile's
  * `sh:name`/`sh:description`/`rdfs:label`, picked by language) and the wording of
- * a validation failure (the profile's `sh:message`, else the message graph in
- * `messages.ts`). This file is the third and last source, the chrome around them.
+ * a validation failure (the profile's `sh:message`, else the engine's catalog).
+ * This file is the third and last source, the chrome around them.
  */
 
 import type { ReadOnlyCode } from "../form/FormModel.js";

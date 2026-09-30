@@ -57,12 +57,9 @@ const asideSplit = (asides: number) => {
  *  to form-only with a single overlay drawer. */
 const NARROW = "(max-width: 1024px)";
 
-/** The languages the shapes speak, beyond the English the library carries: data the
- *  playground imports from `metadata-form/i18n`, like any consumer. */
-const LANGUAGES = {
-  strings: { es: es.strings, ca: ca.strings },
-  messages: [es.messages, ca.messages],
-};
+/** The interface strings of the languages the library ships beyond English: data
+ *  the playground imports from `metadata-form/i18n`, like any consumer. */
+const STRINGS = { es: es.strings, ca: ca.strings };
 
 export function App() {
   // Permalink and workspace live ABOVE the provider, and that is the whole cost of a
@@ -194,8 +191,7 @@ function ThemedApp({
     focusNode: options.focusNode,
     rootShape: options.rootShape,
     locale,
-    strings: LANGUAGES.strings,
-    messages: LANGUAGES.messages,
+    strings: STRINGS,
     assist,
   });
 

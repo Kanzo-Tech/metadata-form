@@ -14,9 +14,9 @@ export interface ValidationResult {
    *  result. */
   pathKey?: string;
   /**
-   * Lang-tagged messages for this result: the engine's default (untagged, i.e.
-   * `language: ""`) merged with the shape author's per-language `sh:message`.
-   * `resolveMessage` picks the best for the reader's languages.
+   * Lang-tagged messages for this result: the shape author's `sh:message`
+   * literals, or, when it has none, the engine's default wording in each language
+   * of its catalog. `messageOf` picks the one for the reader's languages.
    */
   messages: LangString[];
   severity: Severity;
@@ -29,7 +29,7 @@ export interface ValidationResult {
 export interface FieldError {
   /** The result's lang-tagged messages, untouched: which one is shown depends on
    *  the reader's languages, so the choice is made where the text is rendered
-   *  (`resolveMessage` in `i18n/`), not here — a form whose language changes
+   *  (`messageOf` on the controller), not here — a form whose language changes
    *  re-words its errors without validating again. */
   messages: LangString[];
   severity: Severity;

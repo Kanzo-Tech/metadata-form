@@ -1,185 +1,118 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { createRudofEngine } from "@/engine/index.js";
-import type { ValidationResult } from "@/form/validation.js";
-import { mapResults } from "@/form/validation.js";
-import { catalogFromTriples, englishMessages, mergeCatalogs, resolveMessage, type MessageCatalog } from "@/i18n/messages.js";
 import { EN, count, resolveStrings } from "@/i18n/strings.js";
-import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
-import { namedNode } from "@/form/factory.js";
+import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
 import { es, ca } from "metadata-form/i18n";
 
 const SH = "http://www.w3.org/ns/shacl#";
-const MIN_COUNT = `${SH}MinCountConstraintComponent`;
+const EX = "http://example.org/";
 
-const focus = namedNode("http://example.org/subject");
-const path = namedNode("http://purl.org/dc/terms/title");
+const shapes = `
+  @prefix sh: <${SH}> .
+  @prefix ex: <${EX}> .
+  ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
+    sh:property [ sh:path ex:title ; sh:name "Title" ; sh:minCount 1 ] ;
+    sh:property [ sh:path ex:code ; sh:name "Code" ; sh:minCount 1 ;
+      sh:message "Falta el código"@es, "Falta el codi"@ca, "The code is missing"@en ] .
+`;
 
-const engine = createRudofEngine();
-const parse = async (...documents: string[]): Promise<MessageCatalog> =>
-  mergeCatalogs(await Promise.all(documents.map(async (d) => catalogFromTriples(await engine.parseQuads(d)))));
-
-let catalog: MessageCatalog;
-beforeAll(async () => {
-  catalog = await parse(englishMessages, es.messages, ca.messages);
-});
-
-/** The text a reader of `languages` is shown for a one-result report. */
-function messageFor(result: ValidationResult, ...languages: string[]): string {
-  const error = mapResults([result]).get(`${focus.value}|${path.value}`)![0];
-  return resolveMessage(error, catalog, languages);
+/** A form over the shapes above, ready, with a `validate` that has not run yet. */
+async function open(options: Partial<UseMetadataFormOptions> = {}) {
+  const hook = renderHook(
+    (locale: string[]) => useMetadataForm({ shapes, rootShape: `${EX}S`, validateOn: "manual", ...options, locale }),
+    { initialProps: [...(typeof options.locale === "string" ? [options.locale] : (options.locale ?? ["en"]))] },
+  );
+  await waitFor(() => expect(hook.result.current.ready).toBe(true));
+  return hook;
 }
 
-describe("localized validation messages (sh:message + the message graph)", () => {
-  const authored: ValidationResult = {
-    focusNode: focus,
-    pathKey: path.value,
-    severity: "violation",
-    constraint: MIN_COUNT,
-    messages: [
-      { value: "This field is required", language: "" }, // engine default (untagged)
-      { value: "Este campo es obligatorio", language: "es" }, // sh:message @es
-      { value: "Aquest camp és obligatori", language: "ca" }, // sh:message @ca
-    ],
-  };
-
-  it("prefers the author's sh:message in the reader's language", () => {
-    expect(messageFor(authored, "es")).toBe("Este campo es obligatorio");
-    expect(messageFor(authored, "ca")).toBe("Aquest camp és obligatori");
+/** What each failing field says, in the reader's current language. */
+async function said(hook: Awaited<ReturnType<typeof open>>) {
+  await act(async () => {
+    await hook.result.current.validate();
   });
+  const { errors, messageOf } = hook.result.current;
+  return Object.fromEntries([...errors].map(([key, list]) => [key.split("|")[1].replace(EX, ""), list.map(messageOf)]));
+}
 
-  it("matches by RFC 4647 basic filtering: a range `es` takes a tag `es-ES`, not the reverse", () => {
-    const regional: ValidationResult = {
-      ...authored,
-      messages: [{ value: "Campo obligatorio (España)", language: "es-ES" }],
-    };
-    expect(messageFor(regional, "es")).toBe("Campo obligatorio (España)");
-    // The range `es-ES` does not match the tag `es`: the author's message is not
-    // chosen, and the catalog's Spanish wording (a tag `es`) is not either — the
-    // reader gets the English fallback. Ask for `["es-ES", "es"]`, as a browser does.
-    expect(messageFor(authored, "es-ES")).toBe("This field is required");
-    expect(messageFor(authored, "es-ES", "es")).toBe("Este campo es obligatorio");
-  });
-
-  it("walks the reader's ordered list: the first language anyone wrote wins", () => {
-    // `fr` is preferred but nobody wrote it; `ca` is next and the author did.
-    expect(messageFor(authored, "fr", "ca", "es")).toBe("Aquest camp és obligatori");
-  });
-
-  it("falls to the message graph when the author has no tag for the language", () => {
-    // English is untagged (the engine's default, not an author tag) → the graph.
-    expect(messageFor(authored, "en")).toBe("This field is required");
-    // A language nobody wrote → English.
-    expect(messageFor(authored, "fr")).toBe("This field is required");
-  });
-
-  it("takes the fallback wording for es/ca from the graph when the author is silent", () => {
-    const noAuthor: ValidationResult = { ...authored, messages: [{ value: "min count violation", language: "" }] };
-    expect(messageFor(noAuthor, "es")).toBe("Este campo es obligatorio");
-    expect(messageFor(noAuthor, "ca")).toBe("Aquest camp és obligatori");
-  });
-
-  it("stays engine-neutral: an untagged message with an unknown constraint passes through", () => {
-    // Models a ShEx (or unknown-SHACL) result: no known constraint, one plain message.
-    const shex: ValidationResult = { ...authored, constraint: undefined, messages: [{ value: "does not satisfy the shape", language: "" }] };
-    expect(messageFor(shex, "es")).toBe("does not satisfy the shape");
-  });
-
-  it("never lets a sh: constraint fall through to the engine's own text", () => {
-    // Verbatim shape of what rudof emits for sh:node: it renders the message by
-    // Display-ing the internal IRShape, so the report used to hand a person an AST
-    // dump. A sh: constraint must resolve to the graph (or its generic message).
-    const astDump: ValidationResult = {
-      ...authored,
-      constraint: `${SH}NodeConstraintComponent`,
-      messages: [
-        {
-          value:
-            "Shape _:db9dc3bc6e05eb3301a1c103c00c6311: Node(NodeShape\n Targets: - targetClass(ex:Dataset)\n Property Shapes: [22, 13, 23]\n) constraint not satisfied for _:mf1",
-          language: "",
-        },
-      ],
-    };
-    for (const language of ["en", "es", "ca"]) expect(messageFor(astDump, language)).not.toMatch(/NodeShape|\n/);
-    expect(messageFor(astDump, "en")).toBe("Some details in this section are incomplete");
-    expect(messageFor(astDump, "es")).toBe("Faltan datos en esta sección");
-    expect(messageFor(astDump, "ca")).toBe("Falten dades en aquesta secció");
-  });
-
-  it("falls back rather than echoing the engine for a sh: constraint the graph does not name", () => {
-    const unknownShacl: ValidationResult = {
-      ...authored,
-      constraint: `${SH}SomeFutureConstraintComponent`,
-      messages: [{ value: "IRShape { id: _:b0, … } not satisfied", language: "" }],
-    };
-    expect(messageFor(unknownShacl, "es")).toBe("Valor no válido");
-  });
-
-  it("uses the generic message when nothing else matches", () => {
-    const empty: ValidationResult = { ...authored, constraint: undefined, messages: [] };
-    expect(messageFor(empty, "es")).toBe("Valor no válido");
-    expect(messageFor(empty, "en")).toBe("Invalid value");
-  });
-});
-
-describe("a language the library does not ship is data, not code", () => {
-  const fr = `
-    @prefix sh: <http://www.w3.org/ns/shacl#> .
-    sh:MinCountConstraintComponent sh:message "Ce champ est obligatoire"@fr .
-    sh:ConstraintComponent sh:message "Valeur invalide"@fr .
-  `;
-
-  it("shows the French message once French triples are supplied, and English before", async () => {
-    const withFrench = await parse(englishMessages, fr);
-    const minCount: ValidationResult = { focusNode: focus, severity: "violation", constraint: MIN_COUNT, messages: [] };
-    expect(resolveMessage(minCount, catalog, ["fr"])).toBe("This field is required");
-    expect(resolveMessage(minCount, withFrench, ["fr"])).toBe("Ce champ est obligatoire");
-    // A component the French triples do not name still gets its English wording.
-    expect(resolveMessage({ ...minCount, constraint: `${SH}NotConstraintComponent` }, withFrench, ["fr"])).toBe("This value is not allowed here");
-  });
-
-  it("re-words a built-in message when a consumer states it again", async () => {
-    const custom = await parse(englishMessages, `@prefix sh: <${SH}> . sh:MinCountConstraintComponent sh:message "Required"@en .`);
-    const minCount: ValidationResult = { focusNode: focus, severity: "violation", constraint: MIN_COUNT, messages: [] };
-    expect(resolveMessage(minCount, custom, ["en"])).toBe("Required");
-  });
-
-  const shapes = `
-    @prefix sh: <${SH}> .
-    @prefix ex: <http://example.org/> .
-    ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
-      sh:property [ sh:path ex:title ; sh:name "Title" ; sh:minCount 1 ] .
-  `;
-
-  it("reaches useMetadataForm through the `messages` option, with no code change", async () => {
-    const { result } = renderHook(() =>
-      useMetadataForm({ shapes, rootShape: "http://example.org/S", locale: ["fr"], messages: fr, validateOn: "manual" }),
-    );
-    await waitFor(() => expect(result.current.ready).toBe(true));
-    let errors: Awaited<ReturnType<typeof result.current.validate>> = [];
-    await act(async () => {
-      errors = await result.current.validate();
+describe("validation messages, as the engine reports them", () => {
+  it("shows the author's sh:message in the reader's language, and the engine's wording where there is none", async () => {
+    expect(await said(await open({ locale: ["en"] }))).toEqual({
+      title: ["At least 1 value(s) required"],
+      code: ["The code is missing"],
     });
-    expect(errors.map((e) => result.current.messageOf(e))).toEqual(["Ce champ est obligatoire"]);
+    expect(await said(await open({ locale: ["es"] }))).toEqual({
+      title: ["Se requieren al menos 1 valor(es)"],
+      code: ["Falta el código"],
+    });
+    expect((await said(await open({ locale: ["ca"] }))).code).toEqual(["Falta el codi"]);
+  });
+
+  it("puts the constraint's parameters into the default wording", async () => {
+    const hook = await open({
+      shapes: `
+        @prefix sh: <${SH}> . @prefix ex: <${EX}> .
+        ex:S a sh:NodeShape ; sh:targetClass ex:Thing ; sh:property [ sh:path ex:title ; sh:minCount 2 ] .`,
+    });
+    expect(await said(hook)).toEqual({ title: ["At least 2 value(s) required"] });
+  });
+
+  it("matches by RFC 4647 basic filtering: a range `es` takes a tag `es-ES`, not the reverse", async () => {
+    const regional = { messages: [{ value: "Campo obligatorio (España)", language: "es-ES" }, { value: "Required", language: "en" }] };
+    expect((await open({ locale: ["es"] })).result.current.messageOf(regional)).toBe("Campo obligatorio (España)");
+    // The range `es-ES` does not match the tag `es`; English is what is left. A
+    // browser asks for `["es-ES", "es"]`, and so should a consumer.
+    expect((await open({ locale: ["es-ES"] })).result.current.messageOf({ messages: [{ value: "Campo", language: "es" }, { value: "Required", language: "en" }] })).toBe("Required");
+    expect((await open({ locale: ["es-ES", "es"] })).result.current.messageOf({ messages: [{ value: "Campo", language: "es" }, { value: "Required", language: "en" }] })).toBe("Campo");
+  });
+
+  it("walks the reader's ordered list: the first language anyone wrote wins", async () => {
+    const written = { messages: [{ value: "Aquest camp", language: "ca" }, { value: "Este campo", language: "es" }, { value: "Required", language: "en" }] };
+    // `fr` is preferred but nobody wrote it; `ca` is next and someone did.
+    expect((await open({ locale: ["fr", "ca", "es"] })).result.current.messageOf(written)).toBe("Aquest camp");
+  });
+
+  it("gives a reader whose language nobody wrote the English wording", async () => {
+    expect(await said(await open({ locale: ["fr"] }))).toEqual({
+      title: ["At least 1 value(s) required"],
+      code: ["The code is missing"],
+    });
   });
 
   it("re-words the errors already reported when the language changes, with no new validation", async () => {
-    const options = { shapes, rootShape: "http://example.org/S", validateOn: "manual" as const, messages: [es.messages] };
-    const { result, rerender } = renderHook((locale: string[]) => useMetadataForm({ ...options, locale }), {
-      initialProps: ["en"],
-    });
-    await waitFor(() => expect(result.current.ready).toBe(true));
-    await act(async () => {
-      await result.current.validate();
-    });
-    const before = result.current.errors;
-    const [error] = [...before.values()].flat();
-    expect(result.current.messageOf(error)).toBe("At least 1 value(s) required");
+    const hook = await open({ locale: ["en"] });
+    await said(hook);
+    const before = hook.result.current.errors;
+    const [error] = before.get(`${hook.result.current.focusNode!.value}|${EX}title`)!;
+    expect(hook.result.current.messageOf(error)).toBe("At least 1 value(s) required");
 
-    rerender(["es"]);
-    await waitFor(() => expect(result.current.locale).toBe("es"));
-    expect(result.current.errors).toBe(before); // the same results, not a new pass
-    expect(result.current.messageOf(error)).toBe("Se requieren al menos 1 valor(es)");
+    hook.rerender(["es"]);
+    await waitFor(() => expect(hook.result.current.locale).toBe("es"));
+    expect(hook.result.current.errors).toBe(before); // the same results, not a new pass
+    expect(hook.result.current.messageOf(error)).toBe("Se requieren al menos 1 valor(es)");
+  });
+});
+
+describe("a language the engine does not ship is data, not code", () => {
+  const fr = `
+    @prefix sh: <${SH}> .
+    sh:MinCountConstraintComponent sh:message "Au moins {$minCount} valeur(s) requise(s)"@fr .
+  `;
+
+  it("shows the French message once French triples are supplied, and English before", async () => {
+    expect((await said(await open({ locale: ["fr"] }))).title).toEqual(["At least 1 value(s) required"]);
+    expect((await said(await open({ locale: ["fr"], messages: fr }))).title).toEqual(["Au moins 1 valeur(s) requise(s)"]);
+  });
+
+  it("re-words a built-in message when a consumer states it again", async () => {
+    const custom = `@prefix sh: <${SH}> . sh:MinCountConstraintComponent sh:message "Required"@en .`;
+    expect((await said(await open({ locale: ["en"], messages: custom }))).title).toEqual(["Required"]);
+  });
+
+  it("takes several documents, the later one winning", async () => {
+    const first = `@prefix sh: <${SH}> . sh:MinCountConstraintComponent sh:message "One"@en .`;
+    const second = `@prefix sh: <${SH}> . sh:MinCountConstraintComponent sh:message "Two"@en .`;
+    expect((await said(await open({ locale: ["en"], messages: [first, second] }))).title).toEqual(["Two"]);
   });
 });
 

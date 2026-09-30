@@ -1,14 +1,14 @@
 // `metadata-form/i18n` — languages other than English, as data.
 //
-// The core carries English only. Each language here is a pair of plain values: the
-// interface `strings` (a typed table) and the default validation `messages` (a
-// Turtle graph of `sh:message` literals). Pass what you need to `useMetadataForm`:
+// The core carries English only. Each language here is the interface `strings`, a
+// typed table. Pass what you need to `useMetadataForm`:
 //
 //   import { es, ca } from "metadata-form/i18n";
-//   useMetadataForm({ locale: ["es", "ca"], strings: { es: es.strings, ca: ca.strings }, messages: [es.messages, ca.messages] });
+//   useMetadataForm({ locale: ["es", "ca"], strings: { es: es.strings, ca: ca.strings } });
 //
-// A language this package does not ship is added the same way, from your own table
-// and your own triples — see the README.
+// The default validation messages are not here: the engine carries English, Spanish
+// and Catalan. A language none of them covers is added the same way, from your own
+// table and, for the messages, your own triples (`messages`) — see the README.
 
 import * as es from "./locales/es.js";
 import * as ca from "./locales/ca.js";

@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode } from "../../form/factory.js";
 import { mapResults } from "../../form/validation.js";
+import { pickByLanguage } from "../../form/terms.js";
 import { resolveStrings, type ResolvedStrings, type StringTables } from "../../i18n/strings.js";
 import { resolveLanguages } from "../../i18n/languages.js";
-import { catalogFromTriples, englishMessages, mergeCatalogs, resolveMessage, type MessageCatalog } from "../../i18n/messages.js";
 import type { FormModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
 import type { ShapeModel } from "../../form/ShapeIR.js";
@@ -28,17 +28,19 @@ export interface UseMetadataFormOptions {
   /** Explicit root shape IRI. */
   rootShape?: string;
   /** The reader's language, or an ordered list of them, most preferred first.
-   *  Labels, descriptions, the author's `sh:message` and the default messages are
-   *  picked from it by RFC 4647 basic filtering (`en-US` matches `en`, not the
-   *  reverse). Defaults to `navigator.languages`, else `en`. */
+   *  Labels, descriptions and validation messages are picked from it by RFC 4647
+   *  basic filtering (`en-US` matches `en`, not the reverse). Defaults to
+   *  `navigator.languages`, else `en`. */
   locale?: string | readonly string[];
   /** Interface strings by language tag (`{ es: es.strings }` from
    *  `metadata-form/i18n`, or your own). English is built in; a table may be partial. */
   strings?: StringTables;
   /** Extra default validation messages, as Turtle documents of
-   *  `<constraint component> sh:message "…"@lang` triples — how a language is added
-   *  (`es.messages` from `metadata-form/i18n`, or your own). Layered over the
-   *  built-in English graph. */
+   *  `<constraint component> sh:message "…"@lang` triples with `{$param}`
+   *  templates — how a language is added, or a built-in wording changed. The engine
+   *  carries English, Spanish and Catalan; these are handed to it as they are
+   *  (`Session.loadMessages`), and the later document wins per component and
+   *  language. */
   messages?: string | readonly string[];
   validateOn?: "change" | "manual" | "off";
   validationDebounceMs?: number;
@@ -78,11 +80,12 @@ export interface MetadataFormController {
   languages: readonly string[];
   /** The interface strings, in the reader's language. */
   strings: ResolvedStrings;
-  /** The text of one validation failure, in the reader's language: the author's
-   *  `sh:message`, else the message graph's wording for its constraint component.
-   *  Re-evaluated against the current language, so a change of `locale` re-words
-   *  errors already reported. */
-  messageOf(error: Pick<FieldError, "messages" | "constraint">): string;
+  /** The text of one validation failure, in the reader's language: the message the
+   *  engine reported for it (the author's `sh:message`, else its default wording)
+   *  in the most preferred language that has one, English next. Evaluated against
+   *  the current language, so a change of `locale` re-words errors already
+   *  reported. */
+  messageOf(error: Pick<FieldError, "messages">): string;
   /** The underlying editable graph (mutable, observable). */
   graph?: GraphState;
   assist?: FormAssist;
@@ -104,7 +107,6 @@ interface Prepared {
 }
 
 const NOOP_UNSUB = () => () => {};
-const EMPTY_CATALOG: MessageCatalog = new Map();
 
 /** Turtle vs JSON-LD by a cheap leading-char sniff (rudof parses by media type). */
 function detectMediaType(text: string): string {
@@ -135,25 +137,14 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const locale = languages[0];
   const strings = useMemo(() => resolveStrings(languages, stringsOption), [languages, stringsOption]);
 
-  // The message graph: the built-in English plus the consumer's documents, parsed
-  // by rudof like every other RDF the form reads.
-  const documents = [englishMessages, ...(typeof messagesOption === "string" ? [messagesOption] : (messagesOption ?? []))];
-  const documentsKey = documents.join("\0");
-  const [catalog, setCatalog] = useState<MessageCatalog>();
-  useEffect(() => {
-    let active = true;
-    Promise.all(documents.map((d) => engine.parseQuads(d)))
-      .then((parsed) => active && setCatalog(mergeCatalogs(parsed.map(catalogFromTriples))))
-      .catch((e) => active && setError(e instanceof Error ? e : new Error(String(e))));
-    return () => {
-      active = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine, documentsKey]);
+  // The default messages are the engine's: a result carries one per language of its
+  // catalog, so the reader's is picked, and English is what a language it lacks gets.
   const messageOf = useCallback(
-    (error: Pick<FieldError, "messages" | "constraint">) => resolveMessage(error, catalog ?? EMPTY_CATALOG, languages),
-    [catalog, languages],
+    (error: Pick<FieldError, "messages">) => pickByLanguage(error.messages, [...languages, "en"])?.value ?? "",
+    [languages],
   );
+  const documents = typeof messagesOption === "string" ? [messagesOption] : (messagesOption ?? []);
+  const documentsKey = documents.join("\0");
 
   const [prepared, setPrepared] = useState<Prepared | null>(null);
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -172,6 +163,8 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     (async () => {
       // rudof parses both documents (Turtle / JSON-LD by media type).
       const shapeModel = await engine.loadShapes(shapes, detectMediaType(shapes));
+      // The consumer's message documents extend the engine's catalog for this session.
+      for (const document of documents) await engine.loadMessages(document);
       const root = rootShape ? (namedNode(rootShape) as NamedNode) : undefined;
       // Load the initial data into the engine session ONCE, seed the focus into it,
       // and build GraphState over that live session — the single source of truth.
@@ -196,7 +189,8 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     return () => {
       active = false;
     };
-  }, [engine, shapes, data, focusNode, rootShape]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engine, shapes, data, focusNode, rootShape, documentsKey]);
 
   const graph = prepared?.graph;
 
@@ -286,7 +280,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
 
   return useMemo<MetadataFormController>(
     () => ({
-      ready: !!model && !!catalog,
+      ready: !!model,
       error,
       model,
       focusNode: model?.focusNode,
@@ -310,6 +304,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       revealField,
       _revealTarget: revealTarget,
     }),
-    [model, catalog, error, getQuads, errors, isValid, report, locale, languages, strings, messageOf, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
+    [model, error, getQuads, errors, isValid, report, locale, languages, strings, messageOf, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
   );
 }

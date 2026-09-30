@@ -12,7 +12,6 @@ import {
 } from "@examples/paper-conditional/index.js";
 import { paperMappingShapes, paperMappingSampleData, paperMappingRootShape } from "@examples/paper-mapping/index.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
-import { es } from "metadata-form/i18n";
 
 const HEALTH = "http://healthdataportal.eu/ns/health#";
 const STRUCTURED = `${HEALTH}hasStructuredData`;
@@ -41,7 +40,6 @@ function openForm(options: Pick<UseMetadataFormOptions, "locale">) {
       shapes: paperConditionalShapes,
       data: paperConditionalSampleData,
       rootShape: paperConditionalRootShape,
-      messages: [es.messages],
       validateOn: "change",
       validationDebounceMs: 0,
       ...options,

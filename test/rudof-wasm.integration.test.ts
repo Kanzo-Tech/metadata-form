@@ -7,8 +7,7 @@ import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
 import { namedNode, literal } from "@/form/factory.js";
 import { mapResults, type FieldError } from "@/form/validation.js";
-import { catalogFromTriples, englishMessages, mergeCatalogs, resolveMessage, type MessageCatalog } from "@/i18n/messages.js";
-import { es, ca } from "metadata-form/i18n";
+import { pickByLanguage } from "@/form/terms.js";
 import { computeFormReport } from "@/react/validation/formReport.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import { projectTree } from "@/engine/projectTree.js";
@@ -52,9 +51,8 @@ const valuesFor = (form: ProjectedForm, key: string) =>
 describe("RudofEngine over the REAL wasm", () => {
   let engine: RudofEngine;
   let wasmModule: RudofModule;
-  let catalog: MessageCatalog;
   /** The text of a failure for a reader of `languages`, as the form would show it. */
-  const say = (e: Pick<FieldError, "messages" | "constraint">, ...languages: string[]) => resolveMessage(e, catalog, languages);
+  const say = (e: Pick<FieldError, "messages">, ...languages: string[]) => pickByLanguage(e.messages, languages)?.value;
 
   beforeAll(async () => {
     const mod = await import("@kanzo-tech/rudof-wasm");
@@ -62,8 +60,6 @@ describe("RudofEngine over the REAL wasm", () => {
     wasmModule = { newSession: () => new mod.Session() as unknown as RudofSession };
     engine = new RudofEngine(async () => wasmModule);
     await engine.ready();
-    const graphs = await Promise.all([englishMessages, es.messages, ca.messages].map((d) => engine.parseQuads(d)));
-    catalog = mergeCatalogs(graphs.map(catalogFromTriples));
   });
 
   it("parses shapes into the IR (full paths + presentation)", async () => {
@@ -102,10 +98,10 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(await engine.validate()).toHaveLength(0);
   });
 
-  it("carries multilingual sh:message through the report and resolveMessage picks by language", async () => {
-    // A minCount constraint with author messages in es + ca. The wasm merges the
-    // engine's untagged default with these lang-tagged entries; the ABI must keep
-    // the tags (not flatten), so mapResults can select the locale's wording.
+  it("carries multilingual sh:message through the report and the picker chooses by language", async () => {
+    // A minCount constraint with author messages in es + ca. The engine copies
+    // them exactly; the ABI must keep the tags (not flatten), so the locale's
+    // wording can be selected.
     await engine.loadShapes(`
       @prefix sh:  <http://www.w3.org/ns/shacl#> .
       @prefix ex:  <${EX}> .
@@ -120,13 +116,11 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(daveResult).toBeTruthy();
     // The lang tags survived the ABI (the whole point of the fork change).
     const langs = daveResult!.messages.map((m) => m.language).sort();
-    expect(langs).toEqual(expect.arrayContaining(["ca", "es"]));
+    expect(langs).toEqual(["ca", "es"]); // the author's, and no default beside them
 
     const key = `${EX}dave|${EX}name`;
     expect(say(mapResults(results).get(key)![0], "es")).toBe("El nombre es obligatorio");
     expect(say(mapResults(results).get(key)![0], "ca")).toBe("El nom és obligatori");
-    // No author message for en → localized catalog default.
-    expect(say(mapResults(results).get(key)![0], "en")).toBe("This field is required");
   });
 
   it("validateFocus scopes validation to a single focus node (the spine's validate_focus)", async () => {
@@ -379,10 +373,10 @@ describe("RudofEngine over the REAL wasm", () => {
    * components, on exactly the path the i18n work was built for.
    *
    * Two halves, both pinned here because nothing else pins either:
-   *  - the author's messages arrive lang-TAGGED, so `resolveMessage` can pick by
-   *    locale (untagged engine text is excluded from that choice by design);
-   *  - `sh:node`'s own untagged default names the shape's ID and no longer
-   *    `Display`s the whole `IRShape`. The dump M6 reported verbatim
+   *  - the author's messages arrive lang-TAGGED, so the picker can choose by
+   *    locale;
+   *  - `sh:node`'s own default is the catalog's wording, and no longer `Display`s
+   *    the whole `IRShape`. The dump M6 reported verbatim
    *    ("Node(NodeShape Targets: … Property Shapes: [22, 13, 23])") is gone.
    */
   it("keeps the shape's multilingual sh:message on a sh:node violation", async () => {

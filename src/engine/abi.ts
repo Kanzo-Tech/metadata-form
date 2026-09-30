@@ -39,8 +39,9 @@ export interface RudofResult {
    *  serialiser that keys the projected fields; see `shapes::path_key`. */
   pathKey?: string;
   value?: TermValue;
-  /** Lang-tagged messages: the engine default (untagged) merged with the shape's
-   *  per-language `sh:message`. The TS side picks the best by locale. */
+  /** Lang-tagged messages. The shape's own `sh:message` literals, copied exactly;
+   *  when it has none, the engine's default wording, one message per language of its
+   *  catalog. The TS side picks the best by locale. */
   message: LangString[];
   severity?: string;
   sourceConstraintComponent?: string;
@@ -65,6 +66,13 @@ export interface RudofSession {
   loadData(text: string, mediaType: string, base?: string): void;
   /** Replace the current graph with an empty one. */
   newData(): void;
+  /** Add default validation messages: `sh:message` literals on constraint
+   *  components (`sh:MinCountConstraintComponent sh:message "…"@fr`, with
+   *  `{$minCount}`-style placeholders), used for a result whose shape has no
+   *  `sh:message`. They extend the built-in English, Spanish and Catalan messages;
+   *  per component and language the later document wins. `mediaType` defaults to
+   *  Turtle. */
+  loadMessages(text: string, mediaType?: string): void;
 
   add(subject: TermValue, predicate: TermValue, object: TermValue): void;
   remove(subject: TermValue, predicate: TermValue, object: TermValue): void;

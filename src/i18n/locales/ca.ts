@@ -1,7 +1,6 @@
 import type { Strings } from "../strings.js";
-import turtle from "./ca.ttl?raw";
 
-/** Catalan: the interface words and the default validation messages, as data. */
+/** Catalan: the interface words, as data. */
 export const strings: Strings = {
   languagePicker: {
     label: "Idioma",
@@ -63,6 +62,3 @@ export const strings: Strings = {
     valid: "Vàlid",
   },
 };
-
-/** The default validation messages, as a Turtle graph of `sh:message` literals. */
-export const messages: string = turtle;

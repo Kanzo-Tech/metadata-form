@@ -138,7 +138,7 @@ What the reader sees comes from three places, and the library says which:
 | What | Where it comes from | Localised how |
 |---|---|---|
 | field labels (`sh:name`), help (`sh:description`), group names, `sh:or` alternative names, the author's `sh:message` | **the profile** — language-tagged literals in the shapes graph | picked by the reader's languages |
-| the wording of a failure when the author wrote no `sh:message` in that language | **a message graph** — Turtle triples `<constraint component> sh:message "…"@lang`, English built in | picked by the same function |
+| the wording of a failure when the author wrote no `sh:message` | **the engine's message catalog** — RDF triples `<constraint component> sh:message "…"@lang`, English, Spanish and Catalan built in | picked by the same function |
 | placeholders, `Yes`/`No`, counts, progress, the read-only reasons, the findings panel | **the strings table** — typed, English built in | by language tag |
 
 ```tsx
@@ -148,7 +148,7 @@ useMetadataForm({
   shapes,
   locale: ["ca", "es"],                          // ordered, most preferred first; default: navigator.languages, else "en"
   strings: { es: es.strings, ca: ca.strings },   // interface strings, by tag
-  messages: [es.messages, ca.messages],          // default failure messages, as Turtle
+  messages: "…",                                 // more default failure messages, as Turtle (see below)
 });
 ```
 
@@ -162,24 +162,24 @@ else any. A property with no `sh:name` is labelled with its local name split int
 the draft's two intermediate steps (an `rdfs:label` of the predicate in the data or shapes
 graph) are **not** taken, since the shape IR does not carry them.
 
-**Messages are data.** The core returns each failure as its constraint component and its
-language-tagged messages, never as a sentence; the text is chosen when it is drawn, so
-changing `locale` re-words the errors already on screen without validating again. The
-default wording lives in `src/i18n/messages.en.ttl` (and `src/i18n/locales/*.ttl`) as
-`sh:MinCountConstraintComponent sh:message "This field is required"@en .`.
-`sh:message` is the property SHACL uses for the wording of a constraint's results
-(§2.1.5, and SHACL-SPARQL validators); putting it on the component IRI reads it as "results
-of this component read like this unless the shape says otherwise". That reading is this
-library's convention, not a rule of the SHACL recommendation, and no term is minted in a W3C
-namespace (`rdfs:comment` and `skos:definition` describe the component rather than the error).
-`sh:ConstraintComponent` holds the message for any component not named. The message graph is
-parsed by rudof, like every other RDF the form reads.
+**Messages come from the engine.** A validation result carries its messages
+language-tagged, and the form picks the one to draw when it draws it, so changing `locale`
+re-words the errors already on screen without validating again. A result whose shape has an
+`sh:message` carries exactly the author's literals (SHACL §2.1.5). A result whose shape has
+none carries one message per language of the engine's catalog, generated from RDF inside the
+engine — `sh:MinCountConstraintComponent sh:message "At least {$minCount} value(s) required"@en .`,
+with the constraint's parameters filled in (`shacl/src/messages/README.md` in the engine says
+what the standards fix and what the engine chose). Reading `sh:message` off a constraint
+component is the engine's convention, not a rule of the SHACL recommendation;
+`sh:ConstraintComponent` holds the message for any component the catalog does not name. A
+reader whose language has no message gets English.
 
 **Adding a language** is supplying data, with no code change: triples for the messages
-(`messages: "@prefix sh: <http://www.w3.org/ns/shacl#> . sh:MinCountConstraintComponent sh:message \"Ce champ est obligatoire\"@fr ."`)
-and a table for the strings (`strings: { fr: { chrome: { yes: "Oui", no: "Non" } } }`; a
-table may be partial and what it leaves out stays English). The same `strings` option
-re-words English itself (`{ en: { … } }`).
+(`messages: "@prefix sh: <http://www.w3.org/ns/shacl#> . sh:MinCountConstraintComponent sh:message \"Ce champ est obligatoire\"@fr ."`,
+handed to the engine's `Session.loadMessages`; later documents win per component and language,
+so the same option re-words a built-in message) and a table for the strings
+(`strings: { fr: { chrome: { yes: "Oui", no: "Non" } } }`; a table may be partial and what it
+leaves out stays English). The same `strings` option re-words English itself (`{ en: { … } }`).
 
 **Localised by the form's language.** `<MetadataForm>` mounts Kanzo UI's `LocaleProvider`
 with the first language of the list, so the calendar, number formatting and collation follow

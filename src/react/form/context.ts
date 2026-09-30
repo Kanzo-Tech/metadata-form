@@ -38,7 +38,7 @@ export interface FormContextValue {
   /** The interface strings, in the reader's language. */
   strings: ResolvedStrings;
   /** The text of one validation failure, in the reader's language. */
-  messageOf: (error: Pick<FieldError, "messages" | "constraint">) => string;
+  messageOf: (error: Pick<FieldError, "messages">) => string;
   errors: Map<string, FieldError[]>;
   report: FormReport;
   assist?: FormAssist;
