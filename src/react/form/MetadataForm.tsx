@@ -1,11 +1,11 @@
 import { useMemo } from "react";
+import { Alert, AlertDescription, Skeleton } from "@kanzo-tech/ui";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { FormContext, type FormContextValue, type FormLayout, type GridLayout } from "./context.js";
 import { NodeForm } from "./NodeForm.js";
 import { defaultWidgets } from "../widgets/defaultWidgets.js";
 import type { AssistUi } from "../assistUi.js";
 import type { WidgetRegistry } from "../widgets/widgets.js";
-import { ink } from "../styles.js";
 import { fill } from "../../i18n/strings.js";
 
 export interface MetadataFormProps {
@@ -62,16 +62,17 @@ export function MetadataForm({ form, widgets, assistUi, layout, grid, className 
 
   if (form.error) {
     return (
-      <p style={{ color: ink.destructive }} role="alert">
-        {fill(form.strings.chrome.loadFailed, { error: form.error.message })}
-      </p>
+      <Alert variant="destructive">
+        <AlertDescription>{fill(form.strings.chrome.loadFailed, { error: form.error.message })}</AlertDescription>
+      </Alert>
     );
   }
   if (!ctx) {
     return (
-      <p style={{ color: ink.muted }} aria-busy="true">
-        {form.strings.chrome.loading}
-      </p>
+      <div aria-busy="true" aria-label={form.strings.chrome.loading} className="flex flex-col gap-4" role="status">
+        <Skeleton className="h-8 w-1/3" />
+        <Skeleton className="h-32 w-full" />
+      </div>
     );
   }
 

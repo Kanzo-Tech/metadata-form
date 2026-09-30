@@ -12,12 +12,14 @@ import {
   DiagnosticSource,
   DiagnosticTitle,
   DiagnosticTrigger,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyRoot,
 } from "@kanzo-tech/ui";
 import type { Severity } from "../../form/validation.js";
 import type { ResolvedStrings } from "../../i18n/strings.js";
 import type { IssueRow } from "./formReport.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
-import { ink } from "../styles.js";
 
 /** Severity is a domain word; the design system spells the same three families
  *  `destructive` / `warning` / `info`. Same mapping `ValidationSummary` makes. */
@@ -122,9 +124,11 @@ export function ValidationPanel({ form, openId, onOpenChange, labels }: Validati
 
   if (rows.length === 0) {
     return (
-      <p style={{ color: ink.muted, fontSize: "0.875rem" }}>
-        {words.empty}
-      </p>
+      <EmptyRoot>
+        <EmptyHeader>
+          <EmptyDescription>{words.empty}</EmptyDescription>
+        </EmptyHeader>
+      </EmptyRoot>
     );
   }
 
@@ -171,9 +175,9 @@ export function ValidationPanel({ form, openId, onOpenChange, labels }: Validati
               {value ? (
                 // An IRI has no spaces, so it needs telling that it may break; without
                 // this the reported value pushes the panel's own scrollbar sideways.
-                <p style={{ color: ink.muted, fontSize: "0.75rem", overflowWrap: "anywhere" }}>
+                <DiagnosticDescription className="wrap-anywhere">
                   {words.reportedValue}: {value}
-                </p>
+                </DiagnosticDescription>
               ) : null}
               <DiagnosticFrames>
                 <DiagnosticFrame

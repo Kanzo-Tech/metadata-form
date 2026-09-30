@@ -5,20 +5,19 @@ import {
   HoverCardContent,
   HoverCardTrigger,
   ScrollArea,
+  Status,
 } from "@kanzo-tech/ui";
 import type { Severity } from "../../form/validation.js";
-import { column, ink, row } from "../styles.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { count } from "../../i18n/strings.js";
 
 /** Severity is a domain word; on the surface the design system spells the same
  *  three families `destructive` / `warning` / `info`, and `destructive` is what
- *  every other recipe uses for "this went wrong". Read as tokens, not classes —
- *  see `../styles.ts`. */
-const MSG_INK: Record<Severity, string> = {
-  violation: ink.destructive,
-  warning: ink.warning,
-  info: ink.muted,
+ *  every other recipe uses for "this went wrong". */
+const TONE: Record<Severity, "destructive" | "warning" | "info"> = {
+  violation: "destructive",
+  warning: "warning",
+  info: "info",
 };
 
 export interface ValidationSummaryProps {
@@ -55,27 +54,30 @@ export function ValidationSummary({ form, validLabel }: ValidationSummaryProps) 
   return (
     <HoverCard openDelay={120}>
       <HoverCardTrigger>
-        <Badge variant={variant} pill style={{ cursor: "default" }}>
+        <Badge variant={variant} pill>
           {count(form.strings, chrome.issues, rows.length)}
         </Badge>
       </HoverCardTrigger>
       {/* An explicit width, not a max: a shrink-to-fit box collapses because the
           scroll area inside it is 100% wide. With room to breathe, each issue
           (field + message) sits on one row. */}
-      <HoverCardContent style={{ width: "min(480px, 92vw)" }}>
-        <ScrollArea style={{ maxHeight: "20rem" }}>
-          <div style={{ ...column, paddingInlineEnd: "0.5rem" }}>
+      <HoverCardContent className="w-[min(480px,92vw)]">
+        <ScrollArea className="max-h-80">
+          <div className="flex flex-col gap-2 pe-2">
             {rows.map((r, i) => (
-              <div key={`${r.key}-${i}`} style={{ ...row, alignItems: "baseline", justifyContent: "space-between", gap: "1rem" }}>
-                <Button
-                  variant="link"
-                  size="sm"
-                  style={{ height: "auto", padding: 0, whiteSpace: "nowrap", fontWeight: 500 }}
-                  onClick={() => form.revealField(r.key)}
-                >
-                  {r.label}
-                </Button>
-                <span style={{ textAlign: "end", fontSize: "0.75rem", color: MSG_INK[r.severity] }}>{form.messageOf(r)}</span>
+              <div className="flex items-baseline justify-between gap-4" key={`${r.key}-${i}`}>
+                <span className="flex items-center gap-2">
+                  <Status variant={TONE[r.severity]} />
+                  <Button
+                    className="h-auto whitespace-nowrap p-0"
+                    onClick={() => form.revealField(r.key)}
+                    size="sm"
+                    variant="link"
+                  >
+                    {r.label}
+                  </Button>
+                </span>
+                <span className="text-end">{form.messageOf(r)}</span>
               </div>
             ))}
           </div>
