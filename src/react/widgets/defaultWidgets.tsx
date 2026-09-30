@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import {
   Input,
   InputGroup,
@@ -24,7 +24,9 @@ import {
   TagsInputItemPreview,
   TagsInputItemText,
   Textarea,
+  useDebouncedCommit,
   useField,
+  type DebouncedCommit,
 } from "@kanzo-tech/ui";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import { column, grow } from "../styles.js";
@@ -80,36 +82,16 @@ const SELECT_MAX_OPTIONS = 15;
 const SEGMENT_MAX_OPTIONS = 4;
 
 /**
- * Free-text fields keep local state and commit to the graph on a short debounce
- * (and on blur), so fast typing doesn't rebuild the form model / revalidate on
- * every keystroke. Discrete inputs (date, select, boolean) commit immediately.
+ * Free-text fields keep a draft and commit to the graph once typing pauses (and on
+ * blur), so fast typing doesn't rebuild the form model / revalidate on every
+ * keystroke. Discrete inputs (date, select, boolean) commit immediately. An
+ * emptied field is no value at all, not the empty string.
  */
-function useCommit(value: string | null, onChange: (v: string | null) => void, delay = 250) {
-  const [local, setLocal] = useState(value ?? "");
-  const dirty = useRef(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+const useText = (value: string | null, onChange: (v: string | null) => void) =>
+  useDebouncedCommit(value, (v) => onChange(v || null));
 
-  useEffect(() => {
-    if (!dirty.current) setLocal(value ?? "");
-  }, [value]);
-
-  const commit = (v: string) => {
-    dirty.current = false;
-    onChange(v === "" ? null : v);
-  };
-  const change = (v: string) => {
-    setLocal(v);
-    dirty.current = true;
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => commit(v), delay);
-  };
-  const flush = () => {
-    if (!dirty.current) return;
-    clearTimeout(timer.current);
-    commit(local);
-  };
-  return { local, change, flush };
-}
+/** What {@link useText} hands a control. */
+type Text = DebouncedCommit<string | null>;
 
 /**
  * A plain single-line input.
@@ -123,7 +105,7 @@ function useCommit(value: string | null, onChange: (v: string | null) => void, d
  */
 function textField(type: string): Widget {
   return (p: WidgetProps) => {
-    const { local, change, flush } = useCommit(p.value, p.onChange);
+    const { draft, change, flush } = useText(p.value, p.onChange);
     return (
       <Input
         style={grow}
@@ -134,7 +116,7 @@ function textField(type: string): Widget {
         minLength={p.minLength}
         maxLength={p.maxLength}
         placeholder={p.placeholder}
-        value={local}
+        value={draft ?? ""}
         onChange={(e) => change(e.target.value)}
         onBlur={flush}
       />
@@ -156,10 +138,10 @@ function textField(type: string): Widget {
  * `xsd:integer` and `xsd:double`. The engine rejects those on commit.
  */
 const NumberField: Widget = (p) => {
-  const { local, change, flush } = useCommit(p.value, p.onChange);
+  const { draft, change, flush } = useText(p.value, p.onChange);
   return (
     <NumberInput
-      value={local}
+      value={draft ?? ""}
       min={p.min}
       max={p.max}
       // "any" is the absence of a step, not a step of any size.
@@ -198,16 +180,16 @@ function LangSlot(p: WidgetProps & { text: string }) {
 
 /** rdf:langString on one line. */
 const LangField: Widget = (p) => {
-  const text = useCommit(p.value, (v) => p.onChange(v, p.language || ""));
+  const text = useText(p.value, (v) => p.onChange(v, p.language || ""));
   return (
     <InputGroup style={grow}>
       <InputGroupInput
-        value={text.local}
+        value={text.draft ?? ""}
         onChange={(e) => text.change(e.target.value)}
         onBlur={text.flush}
       />
       <InputGroupAddon align="inline-end">
-        <LangSlot {...p} text={text.local} />
+        <LangSlot {...p} text={text.draft ?? ""} />
       </InputGroupAddon>
     </InputGroup>
   );
@@ -216,12 +198,12 @@ const LangField: Widget = (p) => {
 /** rdf:langString as a paragraph. Distinct from {@link LangField} by exactly the
  *  thing the author asked for when they wrote `shui:TextAreaWithLangEditor`. */
 const LangArea: Widget = (p) => {
-  const text = useCommit(p.value, (v) => p.onChange(v, p.language || ""));
+  const text = useText(p.value, (v) => p.onChange(v, p.language || ""));
   return (
     <div style={{ ...column, ...grow, gap: "0.25rem" }}>
       <AssistedTextarea text={text} complete={p.complete} placeholder={p.placeholder} />
       <div style={{ marginInlineStart: "auto", width: "fit-content" }}>
-        <LangSlot {...p} text={text.local} />
+        <LangSlot {...p} text={text.draft ?? ""} />
       </div>
     </div>
   );
@@ -296,7 +278,7 @@ function AssistedTextarea({
   complete,
   placeholder,
 }: {
-  text: ReturnType<typeof useCommit>;
+  text: Text;
   complete: WidgetProps["complete"];
   placeholder: string | undefined;
 }) {
@@ -305,7 +287,7 @@ function AssistedTextarea({
     return (
       <Textarea
         style={{ flex: 1 }}
-        value={text.local}
+        value={text.draft ?? ""}
         placeholder={placeholder}
         onChange={(e) => text.change(e.target.value)}
         onBlur={text.flush}
@@ -317,7 +299,7 @@ function AssistedTextarea({
       // `className`, not `style`: the root takes no style prop. `flex-1` is a
       // class the design system's own sheet ships, which the guard test checks.
       className="flex-1"
-      value={text.local}
+      value={text.draft ?? ""}
       onValueChange={text.change}
       complete={complete}
     >
@@ -331,7 +313,7 @@ function AssistedTextarea({
 
 /** Long free text. */
 const Area: Widget = (p) => {
-  const text = useCommit(p.value, p.onChange);
+  const text = useText(p.value, p.onChange);
   return <AssistedTextarea text={text} complete={p.complete} placeholder={p.placeholder} />;
 };
 
