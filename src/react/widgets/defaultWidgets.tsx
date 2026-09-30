@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   Input,
   InputGroup,
@@ -30,16 +29,19 @@ import {
 } from "@kanzo-tech/ui";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import { column, grow } from "../styles.js";
-import type { WidgetOption } from "../../assist.js";
 import type {
   MultiWidget,
-  MultiWidgetProps,
   Widget,
   WidgetProps,
   WidgetRegistry,
 } from "./widgets.js";
 import { makeDateField } from "./DateField.js";
-import { AsyncCombobox, AsyncMultiCombobox } from "../fieldassist/AsyncCombobox.js";
+import {
+  EnumCombobox,
+  EnumMultiCombobox,
+  ReferenceCombobox,
+  ReferenceMultiCombobox,
+} from "../fieldassist/Comboboxes.js";
 import { useFormContext, useStrings } from "../form/context.js";
 
 /**
@@ -228,14 +230,11 @@ const ReferenceField: Widget = (p) => {
   const inner = IriField(p);
   if (!p.loadOptions) return inner;
   return (
-    <AsyncCombobox
+    <ReferenceCombobox
       value={p.value}
       onChange={p.onChange}
-      loadItems={p.loadOptions}
+      load={p.loadOptions}
       placeholder={chrome.iriOrSearch}
-      // The suggestions are candidates, not the permitted values: an IRI nobody
-      // suggested must survive being typed.
-      allowCustomValue
     />
   );
 };
@@ -246,10 +245,10 @@ const ReferenceField: Widget = (p) => {
 const ReferenceMulti: MultiWidget = (p) => {
   const { chrome } = useStrings();
   return p.loadOptions ? (
-    <AsyncMultiCombobox
+    <ReferenceMultiCombobox
       values={p.values}
       onChange={p.onChange}
-      loadItems={p.loadOptions}
+      load={p.loadOptions}
       placeholder={chrome.search}
       max={p.maxCount}
     />
@@ -404,20 +403,13 @@ function makeSelect(choices: (p: WidgetProps) => { value: string; label: string 
   return (p) => {
     const { chrome } = useStrings();
     const items = choices(p);
-    const search = useMemo(
-      () => async (query: string) => {
-        const q = query.trim().toLowerCase();
-        return q ? items.filter((i) => i.label.toLowerCase().includes(q)) : items;
-      },
-      [items],
-    );
     if (items.length > 0 && items.length <= SEGMENT_MAX_OPTIONS) {
       return <SegmentField {...p} items={items} />;
     }
     if (items.length > SELECT_MAX_OPTIONS) {
       // Closed set: the enumeration IS the permitted values, so an unmatched
       // input reverting on blur is correct rather than lossy.
-      return <AsyncCombobox value={p.value} onChange={p.onChange} loadItems={search} placeholder={chrome.search} />;
+      return <EnumCombobox value={p.value} onChange={p.onChange} items={items} placeholder={chrome.search} />;
     }
     return (
       <NativeSelect
@@ -436,23 +428,14 @@ function makeSelect(choices: (p: WidgetProps) => { value: string; label: string 
   };
 }
 
-/** A repeatable `sh:in`: the enumeration as one multi-select over a local filter,
- *  which is the same `AsyncCombobox` body with a synchronous source. */
+/** A repeatable `sh:in`: the enumeration as one multi-select. */
 const EnumMulti: MultiWidget = (p) => {
   const { chrome } = useStrings();
-  const items: WidgetOption[] = p.options ?? [];
-  const search = useMemo(
-    () => async (query: string) => {
-      const q = query.trim().toLowerCase();
-      return q ? items.filter((i) => i.label.toLowerCase().includes(q)) : items;
-    },
-    [items],
-  );
   return (
-    <AsyncMultiCombobox
+    <EnumMultiCombobox
       values={p.values}
       onChange={p.onChange}
-      loadItems={search}
+      items={p.options ?? []}
       placeholder={chrome.choose}
       max={p.maxCount}
     />
