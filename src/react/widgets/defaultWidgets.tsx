@@ -321,28 +321,24 @@ const Area: Widget = (p) => {
 const TagsMulti: MultiWidget = (p) => {
   const { chrome } = useStrings();
   return (
-  <TagsInput
-    value={p.values}
-    max={p.maxCount}
-    onValueChange={(d) => p.onChange(d.value)}
-  >
-    <TagsInputControl>
-      <TagsInputContext>
-        {(api) =>
-          api.value.map((value, index) => (
-            <TagsInputItem index={index} key={`${value}-${index}`} value={value}>
-              <TagsInputItemPreview>
-                <TagsInputItemText>{value}</TagsInputItemText>
-                <TagsInputItemDeleteTrigger />
-              </TagsInputItemPreview>
-              <TagsInputItemInput />
-            </TagsInputItem>
-          ))
-        }
-      </TagsInputContext>
-      <TagsInputInput placeholder={p.placeholder ?? chrome.add} />
-    </TagsInputControl>
-  </TagsInput>
+    <TagsInput value={p.values} max={p.maxCount} onValueChange={(d) => p.onChange(d.value)}>
+      <TagsInputControl>
+        <TagsInputContext>
+          {(api) =>
+            api.value.map((value, index) => (
+              <TagsInputItem index={index} key={`${value}-${index}`} value={value}>
+                <TagsInputItemPreview>
+                  <TagsInputItemText>{value}</TagsInputItemText>
+                  <TagsInputItemDeleteTrigger />
+                </TagsInputItemPreview>
+                <TagsInputItemInput />
+              </TagsInputItem>
+            ))
+          }
+        </TagsInputContext>
+        <TagsInputInput placeholder={p.placeholder ?? chrome.add} />
+      </TagsInputControl>
+    </TagsInput>
   );
 };
 
