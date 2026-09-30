@@ -1,7 +1,7 @@
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
-import { namedNode, quad, rdf } from "./factory.js";
-import { toTerm, toTermValue } from "./termValue.js";
-import { freshFocusNode, resolveRootShapeFromTypes } from "../form/buildFormModel.js";
+import { namedNode, quad, rdf } from "../form/factory.js";
+import { toTerm, toTermValue } from "../form/termValue.js";
+import { freshFocusNode, resolveRootShapeFromTypes } from "./rootShape.js";
 import { projectTree, type ProjectedNode, type ProjectedTree } from "./projectTree.js";
 import type { NodeShapeIR, ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
 import type { Severity, ValidationResult } from "../form/validation.js";
@@ -19,7 +19,6 @@ function mapSeverity(s: string | undefined): Severity {
 function toValidationResult(r: RudofResult): ValidationResult {
   return {
     focusNode: toTerm(r.focusNode),
-    path: r.path ? toTerm(r.path) : undefined,
     pathKey: r.pathKey,
     // Keep every lang-tagged message; the locale-aware pick happens in `friendly`.
     messages: r.message,

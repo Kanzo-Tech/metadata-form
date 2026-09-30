@@ -31,8 +31,6 @@ export {
   resolveWidget,
   optionsFor,
   stepFor,
-  termToPrimitive,
-  primitiveToTerm,
   widgetRender,
   widgetAssist,
   widgetMulti,
@@ -42,14 +40,13 @@ export type {
   WidgetProps,
   MultiWidget,
   MultiWidgetProps,
-  WidgetOption,
   WidgetRegistry,
   WidgetDef,
   WidgetEntry,
   AssistSupport,
-  FormAssist,
-  FieldSuggestion,
 } from "./react/widgets/widgets.js";
+export type { WidgetOption, FormAssist, FieldSuggestion } from "./assist.js";
+export { termToPrimitive, primitiveToTerm } from "./form/termBinding.js";
 // Lower-level building blocks (for custom layouts).
 export { NodeForm } from "./react/form/NodeForm.js";
 export { FieldRenderer } from "./react/form/FieldRenderer.js";
@@ -138,4 +135,4 @@ export type {
 
 // RDF term factory (namedNode/literal/blankNode/quad + the NS base IRIs). All RDF
 // parsing & serialization lives in rudof now — use the engine session for I/O.
-export * as ns from "./engine/factory.js";
+export * as ns from "./form/factory.js";

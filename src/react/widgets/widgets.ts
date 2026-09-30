@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
-import type { Term } from "@rdfjs/types";
-import { literal, namedNode, NS } from "../../engine/factory.js";
+import { NS } from "../../form/factory.js";
 import { fallbackEditorId, NUMERIC } from "../../form/editors.js";
 import type { FieldModel } from "../../form/FormModel.js";
-import type { GraphState } from "../../engine/GraphState.js";
+import type { WidgetOption } from "../../assist.js";
 
 /**
  * The presentation contract. Widgets are *dumb*: they render an input for a
  * primitive value and never touch RDF. All term ⇄ primitive conversion lives in
- * this one binding layer, so a theme is just a set of widgets — no duplication.
+ * one binding (`form/termBinding`), so a theme is just a set of widgets — no
+ * duplication.
  *
  * A registry is keyed by the property's **SHACL-UI editor IRI**, which rudof
  * resolves for every property. There is no intermediate widget taxonomy: both
@@ -22,11 +22,6 @@ import type { GraphState } from "../../engine/GraphState.js";
  * Keying on the IRI also makes the registry open: a profile with a custom
  * `shui:editor` is a new entry, not a new case in a union in core.
  */
-
-export interface WidgetOption {
-  value: string;
-  label: string;
-}
 
 export interface WidgetProps {
   /** Primitive value: the literal/IRI string, or "true"/"false" for booleans. */
@@ -157,40 +152,7 @@ export function widgetMulti(entry: WidgetEntry): MultiWidget | undefined {
   return typeof entry === "function" ? undefined : entry.multi;
 }
 
-/** A suggested value for a field (e.g. produced by an LLM in the consumer). */
-export interface FieldSuggestion {
-  /** Primitive value to commit (passed through the binding layer). */
-  value: string;
-  /** Human label shown in the picker; defaults to `value`. */
-  label?: string;
-  /** Optional rationale shown under the label. */
-  rationale?: string;
-}
-
-/**
- * The single assistance seam — the one place the consumer wires data/AI help.
- * The library **never calls an LLM or a vocabulary service itself**; it only
- * hands over context and renders what these callbacks return. Maps to the two
- * canonical editor patterns — a *candidate list* and *inline completion*:
- *   - `search`   — instances of an `sh:class` for `reference` autocomplete (typeahead).
- *   - `suggest`  — discrete value candidates for a field (the ✨ menu), streamed one
- *                  at a time so they appear as they are produced.
- *   - `complete` — a streaming inline continuation for free text (ghost text).
- * Every callback gets an optional `AbortSignal` so the UI can cancel stale runs.
- * For a one-line setup over the Vercel AI SDK, see the `metadata-form/ai` adapter.
- */
-export interface FormAssist {
-  /** `classIn` carries every class the value may belong to when an `sh:or`
-   *  allowed more than one; `classIri` is the first of them, so an implementation
-   *  that only reads it keeps working and simply searches one of the alternatives. */
-  search?(args: { classIri: string; classIn?: string[]; query: string; signal?: AbortSignal }): Promise<WidgetOption[]>;
-  suggest?(args: { field: FieldModel; graph: GraphState; locale: string; signal?: AbortSignal }): AsyncIterable<FieldSuggestion>;
-  complete?(args: { field: FieldModel; value: string; graph: GraphState; locale: string; signal?: AbortSignal }): AsyncIterable<string>;
-}
-
 const XSD = NS.xsd;
-const RDF_LANGSTRING = `${NS.rdf}langString`;
-const SH_IRI = `${NS.sh}IRI`;
 const INTEGRAL = new Set(
   ["integer", "int", "long", "short", "byte", "nonNegativeInteger", "positiveInteger",
    "negativeInteger", "nonPositiveInteger", "unsignedInt", "unsignedLong", "unsignedShort",
@@ -224,44 +186,4 @@ export function optionsFor(field: FieldModel): WidgetOption[] | undefined {
   const opts = field.constraints.options;
   if (!opts) return undefined;
   return opts.map((o) => ({ value: o.value.value, label: o.label ?? o.value.value }));
-}
-
-/** RDF term → primitive string for a widget. */
-export function termToPrimitive(term: Term | null): string | null {
-  return term ? term.value : null;
-}
-
-/** Language tag of a term (for `lang` fields), if any. */
-export function languageOf(term: Term | null): string {
-  return term && term.termType === "Literal" ? term.language : "";
-}
-
-/**
- * Primitive string from a widget → RDF term — the single binding direction.
- *
- * Driven by the field's **constraints**, not by whatever control rendered it.
- * Which term a value becomes is a fact about the shape (`sh:datatype`,
- * `sh:nodeKind`, `sh:in`), and reading it from the shape is what lets two
- * different editors over the same property agree.
- */
-export function primitiveToTerm(
-  field: FieldModel,
-  raw: string | null,
-  language?: string,
-): Term | null {
-  if (raw === null || raw === "") return null;
-  const c = field.constraints;
-
-  // sh:in first: the enumeration carries the term verbatim, datatype, language
-  // and all, so echoing it back beats reconstructing it.
-  const opt = c.options?.find((o) => o.value.value === raw);
-  if (opt) return opt.value;
-
-  const dt = c.datatype;
-  if (dt === `${XSD}boolean`) return literal(raw === "true" ? "true" : "false", namedNode(`${XSD}boolean`));
-  if (dt === RDF_LANGSTRING) return literal(raw, language ?? "");
-  if (dt && NUMERIC.has(dt)) return literal(raw, namedNode(dt));
-  if (c.nodeKind === SH_IRI || dt === `${XSD}anyURI` || (!dt && c.classIri)) return namedNode(raw);
-  if (dt && dt !== `${XSD}string`) return literal(raw, namedNode(dt));
-  return literal(raw);
 }

@@ -1,4 +1,4 @@
-import { NS } from "../engine/factory.js";
+import { NS } from "./factory.js";
 import { Editors } from "./vocab/shacl-ui.js";
 import { SH_IRI } from "./vocab/shacl.js";
 import type { FieldConstraints, FieldModel } from "./FormModel.js";

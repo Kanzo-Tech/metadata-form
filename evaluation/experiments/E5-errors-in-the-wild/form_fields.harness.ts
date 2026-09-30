@@ -39,7 +39,7 @@ import { allFields, type FieldModel } from "@/form/FormModel.js";
 import { fallbackEditorId } from "@/form/editors.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
-import { namedNode } from "@/engine/factory.js";
+import { namedNode } from "@/form/factory.js";
 import type { ShapeModel } from "@/form/ShapeIR.js";
 
 const HERE = __dirname;

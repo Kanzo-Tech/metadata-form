@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
-import { namedNode } from "../../engine/factory.js";
+import { namedNode } from "../../form/factory.js";
 import { mapResults } from "../../form/validation.js";
 import { resolveStrings, type DeepPartial, type Strings } from "../../i18n/strings.js";
 import type { FormModel } from "../../form/FormModel.js";
@@ -10,7 +10,7 @@ import { GraphState } from "../../engine/GraphState.js";
 import { createRudofEngine } from "../../engine/index.js";
 import type { RudofEngine } from "../../engine/RudofEngine.js";
 import { buildFormModel, type DiagnosticSink } from "../../form/buildFormModel.js";
-import type { FormAssist } from "../widgets/widgets.js";
+import type { FormAssist } from "../../assist.js";
 import { computeFormReport, type FormReport } from "../validation/formReport.js";
 
 export interface UseMetadataFormOptions {

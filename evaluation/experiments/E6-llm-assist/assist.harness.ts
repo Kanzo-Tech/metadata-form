@@ -37,7 +37,7 @@ import { fallbackEditorId } from "@/form/editors.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { primitiveToTerm, widgetAssist } from "@/react/widgets/widgets.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
-import { namedNode } from "@/engine/factory.js";
+import { namedNode } from "@/form/factory.js";
 import { healthDcatApShapes, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
 import { evidenzeHealthShapes, evidenzeHealthRootShape } from "@examples/evidenze-health/index.js";
 
@@ -444,19 +444,19 @@ function report(
     adapter: cite("src/ai/index.ts", "export function createFormAssist"),
     suggestPrompt: cite("src/ai/index.ts", "function defaultSuggestPrompt"),
     completePrompt: cite("src/ai/index.ts", "function defaultCompletePrompt"),
-    seam: cite("src/react/widgets/widgets.ts", "export interface FormAssist"),
+    seam: cite("src/assist.ts", "export interface FormAssist"),
     caps: cite("src/react/widgets/widgets.ts", "export interface AssistSupport"),
     wire: cite("src/react/form/FieldRenderer.tsx", "const suggests = assist?.suggest"),
     wireComplete: cite("src/react/form/FieldRenderer.tsx", "const complete ="),
     apply: cite("src/react/form/FieldRenderer.tsx", "const applySuggestion"),
-    coerce: cite("src/react/widgets/widgets.ts", "export function primitiveToTerm"),
+    coerce: cite("src/form/termBinding.ts", "export function primitiveToTerm"),
     enumOptOut: cite("src/react/widgets/defaultWidgets.tsx", "[Editors.EnumSelect]:"),
     enumWhy: cite("src/react/widgets/defaultWidgets.tsx", "an LLM ✨ suggestion is redundant"),
     patternNote: cite("src/react/form/FieldRenderer.tsx", "never as an HTML `pattern` attribute"),
     ghost: cite("src/react/widgets/defaultWidgets.tsx", "const Area: Widget"),
     playgroundWiring: cite("playground/src/lib/assist.ts", "export function makeAssist"),
     fallback: cite("src/form/editors.ts", "export function fallbackEditorId"),
-    factoryLiteral: cite("src/engine/factory.ts", "export function literal"),
+    factoryLiteral: cite("src/form/factory.ts", "export function literal"),
   };
 
   const fieldTable = (rows: FieldRow[]) =>

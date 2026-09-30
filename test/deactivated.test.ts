@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { namedNode } from "@/engine/factory.js";
-import { buildFormModel, resolveRootShapeFromTypes } from "@/form/buildFormModel.js";
+import { namedNode } from "@/form/factory.js";
+import { buildFormModel } from "@/form/buildFormModel.js";
+import { resolveRootShapeFromTypes } from "@/engine/rootShape.js";
 import type { Diagnostic } from "@/form/buildFormModel.js";
 import { projectTree } from "@/engine/projectTree.js";
 import { allFields } from "@/form/FormModel.js";

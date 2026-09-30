@@ -7,7 +7,7 @@ import { allFields, type FieldModel } from "@/form/FormModel.js";
 import { chooseBranch, planWrite, type FieldWrite, type StepReader } from "@/form/writePath.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { SH_IRI } from "@/form/vocab/shacl.js";
-import { literal, namedNode } from "@/engine/factory.js";
+import { literal, namedNode } from "@/form/factory.js";
 import type { PathExpr } from "@/form/ShapeIR.js";
 
 /**

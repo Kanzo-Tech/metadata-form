@@ -4,7 +4,7 @@ import { createRudofEngine } from "@/engine/index.js";
 import { GraphState } from "@/engine/GraphState.js";
 import { allFields, type FieldModel, type FormModel } from "@/form/FormModel.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
-import { namedNode } from "@/engine/factory.js";
+import { namedNode } from "@/form/factory.js";
 import type { Diagnostic } from "@/form/buildFormModel.js";
 import type { NodeShapeIR, PropertyShapeIR, ShapeModel } from "@/form/ShapeIR.js";
 

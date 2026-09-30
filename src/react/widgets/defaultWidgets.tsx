@@ -28,11 +28,11 @@ import {
 import { CompleteHint, CompleteRoot, CompleteTextarea } from "@kanzo-tech/ai";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import { column, grow } from "../styles.js";
+import type { WidgetOption } from "../../assist.js";
 import type {
   MultiWidget,
   MultiWidgetProps,
   Widget,
-  WidgetOption,
   WidgetProps,
   WidgetRegistry,
 } from "./widgets.js";

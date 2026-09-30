@@ -19,13 +19,11 @@ import type {
 } from "../../form/FormModel.js";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import { defaultWidgets } from "../widgets/defaultWidgets.js";
+import { languageOf, primitiveToTerm, termToPrimitive } from "../../form/termBinding.js";
 import {
-  languageOf,
   optionsFor,
-  primitiveToTerm,
   resolveWidget,
   stepFor,
-  termToPrimitive,
   widgetAssist,
   widgetMulti,
   widgetRender,

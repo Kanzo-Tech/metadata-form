@@ -1,6 +1,6 @@
 import type { Term } from "@rdfjs/types";
-import { toTerm } from "../engine/termValue.js";
-import { localName, pickByLanguage } from "../engine/terms.js";
+import { toTerm } from "./termValue.js";
+import { localName, pickByLanguage } from "./terms.js";
 import { editorForConstraints } from "./editors.js";
 import { SH_BLANK_NODE, SH_IRI } from "./vocab/shacl.js";
 import type { FieldAlternative, FieldConstraints, FieldOption } from "./FormModel.js";

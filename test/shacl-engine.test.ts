@@ -9,7 +9,7 @@ import { allFields } from "@/form/FormModel.js";
 import { computeFormReport } from "@/react/validation/formReport.js";
 import type { FieldError, ValidationResult } from "@/form/validation.js";
 import { mapResults } from "@/form/validation.js";
-import { namedNode } from "@/engine/factory.js";
+import { namedNode } from "@/form/factory.js";
 import type { ShapeModel } from "@/form/ShapeIR.js";
 import { healthDcatApShapes, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
 
@@ -276,7 +276,7 @@ describe("SHACL validation", () => {
     );
     // The Agent (publisher) is missing foaf:name (minCount 1) — reported on the
     // agent node, not the root dataset (no focus filter drops it).
-    const nameError = results.find((r) => r.path?.value.endsWith("/name"));
+    const nameError = results.find((r) => r.pathKey?.endsWith("/name"));
     expect(nameError).toBeDefined();
     expect(nameError!.focusNode.value).toBe("http://example.org/agent1");
   });

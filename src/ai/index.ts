@@ -2,7 +2,7 @@ import { streamText, streamObject, type LanguageModel } from "ai";
 import { z } from "zod";
 import type { FieldModel } from "../form/FormModel.js";
 import type { GraphState } from "../engine/GraphState.js";
-import type { FieldSuggestion, FormAssist } from "../react/widgets/widgets.js";
+import type { FieldSuggestion, FormAssist } from "../assist.js";
 
 /**
  * Optional adapter: turn any Vercel AI SDK `LanguageModel` into a {@link FormAssist}

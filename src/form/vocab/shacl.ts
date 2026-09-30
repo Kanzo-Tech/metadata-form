@@ -1,4 +1,4 @@
-import { NS } from "../../engine/factory.js";
+import { NS } from "../factory.js";
 
 /**
  * The SHACL Core IRIs the form layer still needs — the `sh:nodeKind` individuals,

@@ -1,7 +1,7 @@
-import type { NamedNode, Term } from "@rdfjs/types";
-import { blankNode, namedNode } from "../engine/factory.js";
-import { localName, pickByLanguage } from "../engine/terms.js";
-import { toTerm } from "../engine/termValue.js";
+import type { Term } from "@rdfjs/types";
+import { namedNode } from "./factory.js";
+import { localName, pickByLanguage } from "./terms.js";
+import { toTerm } from "./termValue.js";
 import { SH_IRI } from "./vocab/shacl.js";
 import { Editors } from "./vocab/shacl-ui.js";
 import { conjoinByPath } from "./conjunction.js";
@@ -19,14 +19,13 @@ import type {
   ReadOnlyCode,
   ReadOnlyReason,
   ValueSlot,
-} from "../form/FormModel.js";
-import type { ProjectedValues } from "../engine/projectTree.js";
+} from "./FormModel.js";
 import type {
   NodeShapeIR,
   PropertyShapeIR,
   ShapeIR,
   ShapeModel,
-} from "../form/ShapeIR.js";
+} from "./ShapeIR.js";
 
 /** A non-fatal issue surfaced while building the form (instead of failing
  * silently) — e.g. a property dropped for an unsupported path, or a `sh:node`
@@ -56,6 +55,17 @@ export interface Diagnostic {
   /** The shape/path/node the diagnostic concerns, if any. */
   detail?: string;
 }
+
+/** One projected value occurrence: the value term, plus the sub-focus to recurse
+ *  into for nested (sh:node) properties. */
+export interface ProjectedSlot {
+  value: Term;
+  nestedFocus?: Term;
+}
+
+/** Pre-projected values keyed by `${focusNode}|${pathKey}` — the sole value source
+ *  for `buildFormModel`, projected recursively up front so the build stays sync. */
+export type ProjectedValues = Map<string, ProjectedSlot[]>;
 
 export type DiagnosticSink = (diagnostic: Diagnostic) => void;
 
@@ -541,56 +551,4 @@ function groupFields(fields: FieldModel[], shapes: ShapeModel, locale: string | 
 function orderCompare(a: FieldModel, b: FieldModel): number {
   if (a.order !== b.order) return a.order - b.order;
   return a.label.localeCompare(b.label);
-}
-
-/** Create a fresh focus node (blank node) for an empty form. */
-export function freshFocusNode(): Term {
-  return blankNode();
-}
-
-/** Resolve the root node shape from the focus node's rdf:type values (read from
- *  the engine session backend): explicit > rdf:type vs target class > first shape
- *  with a target class > first shape. */
-export function resolveRootShapeFromTypes(
-  shapes: ShapeModel,
-  types: string[],
-  rootShape?: NamedNode,
-): NodeShapeIR | undefined {
-  if (rootShape) return shapes.nodeShapes.get(rootShape.value);
-
-  // A deactivated shape (SHACL §2.1.6) constrains nothing, so it is never the
-  // shape a form is built from — keep looking for a live one.
-  const live = (s: NodeShapeIR | undefined) => (s && !s.deactivated ? s : undefined);
-
-  for (const t of types) {
-    const id = shapes.byTargetClass.get(t);
-    const shape = id ? live(shapes.nodeShapes.get(id)) : undefined;
-    if (shape) return shape;
-  }
-
-  // Prefer the entry shape: a target-class shape that no other shape nests via
-  // sh:node. Order-independent, so it's robust to non-deterministic shape order
-  // from the parser (e.g. rudof's HashMap-backed AST).
-  const nested = new Set<string>();
-  for (const s of shapes.nodeShapes.values()) {
-    collectNodeRefs(s.properties, nested);
-    for (const c of s.conditionals ?? []) collectNodeRefs([...c.then, ...c.else], nested);
-  }
-  const active = [...shapes.nodeShapes.values()].filter((s) => !s.deactivated);
-  const targets = active.filter((s) => s.targetClasses.length > 0);
-  const root = targets.find((s) => !nested.has(s.id)) ?? targets[0];
-  if (root) return root;
-  return active[0];
-}
-
-/** Collect every `sh:node` reference reachable from these shapes (including
- *  logical and/or/xone/not branches, which are shapes and may carry one). */
-function collectNodeRefs(properties: ShapeIR[], out: Set<string>): void {
-  for (const ps of properties) {
-    if (ps.node) out.add(ps.node);
-    const { or, and, xone, not } = ps.logical;
-    for (const branch of [...(or ?? []), ...(and ?? []), ...(xone ?? []), ...(not ? [not] : [])]) {
-      collectNodeRefs([branch], out);
-    }
-  }
 }

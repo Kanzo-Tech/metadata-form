@@ -4,7 +4,7 @@ import { ValidationPanel } from "@/react/validation/ValidationPanel.js";
 import { computeFormReport, type IssueRow } from "@/react/validation/formReport.js";
 import { fieldKey, type FieldError } from "@/form/validation.js";
 import type { FieldModel, FormModel } from "@/form/FormModel.js";
-import { blankNode, literal, namedNode } from "@/engine/factory.js";
+import { blankNode, literal, namedNode } from "@/form/factory.js";
 import { resolveStrings } from "@/i18n/strings.js";
 import type { MetadataFormController } from "@/react/hooks/useMetadataForm.js";
 

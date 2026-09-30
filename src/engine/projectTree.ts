@@ -1,17 +1,7 @@
 import type { Term } from "@rdfjs/types";
-import { toTerm } from "./termValue.js";
+import { toTerm } from "../form/termValue.js";
+import type { ProjectedSlot, ProjectedValues } from "../form/buildFormModel.js";
 import type { NodeShapeIR, ProjectedForm, PropertyShapeIR, ShapeModel } from "../form/ShapeIR.js";
-
-/** One projected value occurrence: the value term, plus the sub-focus to recurse
- *  into for nested (sh:node) properties. */
-export interface ProjectedSlot {
-  value: Term;
-  nestedFocus?: Term;
-}
-
-/** Pre-projected values keyed by `${focusNode}|${pathKey}` — the sole value source
- *  for `buildFormModel`, projected recursively up front so the build stays sync. */
-export type ProjectedValues = Map<string, ProjectedSlot[]>;
 
 /** One node of the projected tree: a focus and the node shape it was projected
  *  against. The pair `validateFocus` needs — see {@link ProjectedTree.nodes}. */
@@ -96,3 +86,5 @@ function recurse(
     }
   }
 }
+
+export type { ProjectedSlot, ProjectedValues };

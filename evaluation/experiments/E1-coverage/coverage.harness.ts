@@ -34,7 +34,7 @@ import { allFields, type FieldModel } from "@/form/FormModel.js";
 import { fallbackEditorId } from "@/form/editors.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
-import { namedNode } from "@/engine/factory.js";
+import { namedNode } from "@/form/factory.js";
 import type { ShapeModel, PathExpr, PropertyShapeIR } from "@/form/ShapeIR.js";
 import { PROFILES, type ProfileSpec } from "./profiles.js";
 import {

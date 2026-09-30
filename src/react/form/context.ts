@@ -3,7 +3,8 @@ import type { Term } from "@rdfjs/types";
 import type { GraphState } from "../../engine/GraphState.js";
 import type { FormModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
-import type { FormAssist, WidgetRegistry } from "../widgets/widgets.js";
+import type { FormAssist } from "../../assist.js";
+import type { WidgetRegistry } from "../widgets/widgets.js";
 import type { FormReport } from "../validation/formReport.js";
 import type { Strings } from "../../i18n/strings.js";
 

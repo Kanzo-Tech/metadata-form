@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { mapResults, type ValidationResult } from "@/form/validation.js";
 import { resolveStrings } from "@/i18n/strings.js";
-import { namedNode } from "@/engine/factory.js";
+import { namedNode } from "@/form/factory.js";
 
 const SH = "http://www.w3.org/ns/shacl#";
 const MIN_COUNT = `${SH}MinCountConstraintComponent`;
@@ -19,7 +19,7 @@ function messageFor(result: ValidationResult, locale?: string): string {
 describe("localized validation messages (sh:message + fallback catalog)", () => {
   const authored: ValidationResult = {
     focusNode: focus,
-    path,
+    pathKey: path.value,
     severity: "violation",
     constraint: MIN_COUNT,
     messages: [
@@ -48,7 +48,7 @@ describe("localized validation messages (sh:message + fallback catalog)", () => 
   it("localizes the fallback catalog itself for es/ca when the author is silent", () => {
     const noAuthor: ValidationResult = {
       focusNode: focus,
-      path,
+      pathKey: path.value,
       severity: "violation",
       constraint: MIN_COUNT,
       messages: [{ value: "min count violation", language: "" }],
@@ -61,7 +61,7 @@ describe("localized validation messages (sh:message + fallback catalog)", () => 
     // Models a ShEx (or unknown-SHACL) result: no known constraint, one plain message.
     const shex: ValidationResult = {
       focusNode: focus,
-      path,
+      pathKey: path.value,
       severity: "violation",
       constraint: undefined,
       messages: [{ value: "does not satisfy the shape", language: "" }],
@@ -75,7 +75,7 @@ describe("localized validation messages (sh:message + fallback catalog)", () => 
     // dump. A sh: constraint must resolve to the catalog (or _fallback), never this.
     const astDump: ValidationResult = {
       focusNode: focus,
-      path,
+      pathKey: path.value,
       severity: "violation",
       constraint: `${SH}NodeConstraintComponent`,
       messages: [
@@ -100,7 +100,7 @@ describe("localized validation messages (sh:message + fallback catalog)", () => 
   it("falls back rather than echoing the engine for a sh: constraint with no catalog entry", () => {
     const unknownShacl: ValidationResult = {
       focusNode: focus,
-      path,
+      pathKey: path.value,
       severity: "violation",
       constraint: `${SH}SomeFutureConstraintComponent`,
       messages: [{ value: "IRShape { id: _:b0, … } not satisfied", language: "" }],
@@ -111,7 +111,7 @@ describe("localized validation messages (sh:message + fallback catalog)", () => 
   it("uses the localized generic fallback when nothing else matches", () => {
     const empty: ValidationResult = {
       focusNode: focus,
-      path,
+      pathKey: path.value,
       severity: "violation",
       constraint: undefined,
       messages: [],

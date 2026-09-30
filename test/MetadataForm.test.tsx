@@ -5,7 +5,7 @@ import { ValidationSummary } from "@/react/validation/ValidationSummary.js";
 import { FormAssistant } from "@/react/assistant/FormAssistant.js";
 import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
-import { namedNode } from "@/engine/factory.js";
+import { namedNode } from "@/form/factory.js";
 import { healthDcatApShapes } from "@examples/health-dcat-ap/index.js";
 
 const shapes = healthDcatApShapes;

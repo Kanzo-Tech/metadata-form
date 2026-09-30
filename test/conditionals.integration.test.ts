@@ -3,7 +3,7 @@ import { createRudofEngine } from "@/engine/index.js";
 import { projectTree } from "@/engine/projectTree.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import { allFields } from "@/form/FormModel.js";
-import { namedNode } from "@/engine/factory.js";
+import { namedNode } from "@/form/factory.js";
 import { evidenzeShapes, evidenzeRootShape } from "@examples/evidenze-dataspace/index.js";
 
 /**

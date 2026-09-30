@@ -34,7 +34,7 @@ import { it } from "vitest";
 import { render, renderHook, act, waitFor, cleanup } from "@testing-library/react";
 import React from "react";
 import { createRudofEngine } from "@/engine/index.js";
-import { namedNode, literal } from "@/engine/factory.js";
+import { namedNode, literal } from "@/form/factory.js";
 import { allFields } from "@/form/FormModel.js";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { MetadataForm } from "@/react/form/MetadataForm.js";

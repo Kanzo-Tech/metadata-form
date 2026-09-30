@@ -1,5 +1,5 @@
 import type { Quad, Term } from "@rdfjs/types";
-import { blankNode, namedNode, rdf } from "./factory.js";
+import { blankNode, namedNode, rdf } from "../form/factory.js";
 import {
   branchValues,
   chooseBranch,

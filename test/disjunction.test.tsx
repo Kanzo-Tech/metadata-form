@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { literal, namedNode, NS } from "@/engine/factory.js";
+import { literal, namedNode, NS } from "@/form/factory.js";
 import { createRudofEngine } from "@/engine/index.js";
 import { GraphState } from "@/engine/GraphState.js";
 import { buildFormModel, type Diagnostic } from "@/form/buildFormModel.js";
 import { allFields, type FieldModel } from "@/form/FormModel.js";
 import { alternativeFor } from "@/form/disjunction.js";
 import { branchValues } from "@/form/writePath.js";
-import { primitiveToTerm } from "@/react/widgets/widgets.js";
+import { primitiveToTerm } from "@/form/termBinding.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { SH_IRI } from "@/form/vocab/shacl.js";
 import { FieldRenderer } from "@/react/form/FieldRenderer.js";

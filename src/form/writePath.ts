@@ -1,5 +1,5 @@
 import type { NamedNode, Term } from "@rdfjs/types";
-import { namedNode } from "../engine/factory.js";
+import { namedNode } from "./factory.js";
 import type { PathExpr } from "./ShapeIR.js";
 
 /**

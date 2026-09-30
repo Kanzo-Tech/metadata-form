@@ -10,7 +10,7 @@ import {
   useListCollection,
 } from "@kanzo-tech/ui";
 import { XIcon } from "lucide-react";
-import type { WidgetOption } from "../widgets/widgets.js";
+import type { WidgetOption } from "../../assist.js";
 import { grow, row } from "../styles.js";
 
 /**

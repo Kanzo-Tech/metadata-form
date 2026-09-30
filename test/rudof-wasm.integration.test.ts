@@ -5,7 +5,7 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
-import { namedNode, literal } from "@/engine/factory.js";
+import { namedNode, literal } from "@/form/factory.js";
 import { mapResults } from "@/form/validation.js";
 import { computeFormReport } from "@/react/validation/formReport.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
@@ -318,7 +318,7 @@ describe("RudofEngine over the REAL wasm", () => {
 
     const results = await engine.validateTree(tree.nodes);
     const inner = results.find((r) => r.constraint?.endsWith("MinCountConstraintComponent"));
-    expect(inner?.path?.value).toBe(`${EX}name`);
+    expect(inner?.pathKey).toBe(`${EX}name`);
 
     // D7: the report keeps the actionable inner row and drops the outer rollup.
     const form = buildFormModel({
@@ -415,8 +415,7 @@ describe("RudofEngine over the REAL wasm", () => {
     const [result] = await engine.validate();
     expect(result.constraint).toBe("http://www.w3.org/ns/shacl#MinCountConstraintComponent");
 
-    // The term form cannot express it; the key can, and it is the canonical one.
-    expect(result.path).toBeUndefined();
+    // A term cannot express it; the key can, and it is the canonical one.
     expect(result.pathKey).toBe(`^${EX}owns`);
 
     // And that is what makes it land on a field instead of on the node.
