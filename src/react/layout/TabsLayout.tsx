@@ -32,7 +32,7 @@ export function TabsLayout({
       <TabsList className="w-full justify-start">
         {groups.map((group, i) => (
           <TabsTrigger key={group.id} value={group.id}>
-            {group.label || fill(chrome.group, { n: i + 1 })}
+            <span lang={group.labelLang}>{group.label || fill(chrome.group, { n: i + 1 })}</span>
             <GroupIssuesBadge issues={issues.get(group.id)} />
           </TabsTrigger>
         ))}

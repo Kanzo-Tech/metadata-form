@@ -27,7 +27,7 @@ function controllerFor(
       issues: { total: rows.length, hasViolations: rows.some((r) => r.severity === "violation"), rows },
     },
     strings: resolveStrings(extra.languages ?? ["en"], { es: es.strings, ca: ca.strings }),
-    messageOf: (e: FieldError) => e.messages[0].value,
+    resolveMessage: (e: FieldError) => ({ text: e.messages[0].value }),
     revealField: extra.revealField ?? (() => {}),
   } as unknown as MetadataFormController;
 }

@@ -67,7 +67,7 @@ export function StepsLayout({
               <StepsTrigger>
                 <StepsIndicator>{i + 1}</StepsIndicator>
                 <StepsTitle className="flex items-center gap-1.5">
-                  {group.label || fill(chrome.step, { n: i + 1 })}
+                  <span lang={group.labelLang}>{group.label || fill(chrome.step, { n: i + 1 })}</span>
                   <GroupIssuesBadge
                     issues={gi}
                     onJump={gi?.firstFieldId ? () => scrollToField(gi.firstFieldId!) : undefined}

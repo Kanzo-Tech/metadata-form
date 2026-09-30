@@ -274,6 +274,19 @@ function ThemedApp({
       />
       <div className="min-h-0 flex-1 overflow-auto p-3">
         <ValidationPanel form={form} openId={openIssue} onOpenChange={setOpenIssue} />
+        {/* What the form noticed about the profile, not the data: the texts it wrote
+            only in another language, the paths it cannot render. Collapsed, because a
+            profile in one language read in another names every field once. */}
+        {form.diagnostics.length > 0 && (
+          <details className="text-muted-foreground" style={{ marginTop: "1rem", fontSize: "0.8125rem" }}>
+            <summary>{fill(chrome.issues.notes, { n: form.diagnostics.length })}</summary>
+            <ul style={{ margin: "0.5rem 0 0", paddingInlineStart: "1.25rem" }}>
+              {form.diagnostics.map((d) => (
+                <li key={`${d.code}|${d.detail}|${d.message}`}>{d.message}</li>
+              ))}
+            </ul>
+          </details>
+        )}
       </div>
     </>
   );

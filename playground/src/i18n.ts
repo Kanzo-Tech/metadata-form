@@ -56,6 +56,9 @@ export interface Chrome {
     clean: string;
     /** `{blocking}`, `{total}` — the detail when it is not. */
     blocking: string;
+    /** `{n}` — the heading over what the form noticed about the profile itself (a
+     *  text lacking the reader's language, a path it cannot render), not the data. */
+    notes: string;
   };
   output: {
     /** Accessible name of the format select. */
@@ -121,6 +124,7 @@ const EN: Chrome = {
   issues: {
     clean: "Nothing found",
     blocking: "{blocking} blocking of {total}",
+    notes: "Notes on the profile · {n}",
   },
   output: {
     which: "Which output",
@@ -180,6 +184,7 @@ const ES: Chrome = {
   issues: {
     clean: "Sin incidencias",
     blocking: "bloqueantes: {blocking} de {total}",
+    notes: "Notas sobre el perfil · {n}",
   },
   output: {
     which: "Qué salida",
@@ -239,6 +244,7 @@ const CA: Chrome = {
   issues: {
     clean: "Sense incidències",
     blocking: "bloquejants: {blocking} de {total}",
+    notes: "Notes sobre el perfil · {n}",
   },
   output: {
     which: "Quina sortida",

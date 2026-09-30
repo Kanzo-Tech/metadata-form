@@ -77,7 +77,9 @@ export function ValidationSummary({ form, validLabel }: ValidationSummaryProps) 
                     {r.label}
                   </Button>
                 </span>
-                <span className="text-end">{form.messageOf(r)}</span>
+                <span className="text-end" lang={form.resolveMessage(r).lang}>
+                  {form.resolveMessage(r).text}
+                </span>
               </div>
             ))}
           </div>

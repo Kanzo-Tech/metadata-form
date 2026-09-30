@@ -26,7 +26,7 @@ export function SequentialLayout({
               legend={
                 group.label && (
                   <>
-                    {group.label}
+                    <span lang={group.labelLang}>{group.label}</span>
                     <GroupIssuesBadge issues={issues?.get(group.id)} />
                   </>
                 )

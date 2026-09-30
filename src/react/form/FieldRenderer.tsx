@@ -345,7 +345,7 @@ function FieldShell({
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const { strings, messageOf } = useFormContext();
+  const { strings, resolveMessage } = useFormContext();
   const violations = errors.filter((e) => e.severity === "violation");
   const rest = errors.filter((e) => e.severity !== "violation");
   return (
@@ -357,13 +357,13 @@ function FieldShell({
       invalid={violations.length > 0}
     >
       <div className="flex min-h-6 items-center justify-between gap-2">
-        <FieldLabel>
+        <FieldLabel lang={field.labelLang}>
           {field.label}
           {field.required && <FieldRequiredIndicator />}
         </FieldLabel>
         {action}
       </div>
-      {field.description && <FieldDescription>{field.description}</FieldDescription>}
+      {field.description && <FieldDescription lang={field.descriptionLang}>{field.description}</FieldDescription>}
       {/* A disabled control with no account of itself reads as a broken form; this
           is the account. A second line of description, since the helper is the
           findings' — see above. */}
@@ -373,16 +373,24 @@ function FieldShell({
         </FieldDescription>
       )}
       {children}
-      {violations.map((e, i) => (
-        <FieldError key={i}>{messageOf(e)}</FieldError>
-      ))}
+      {violations.map((e, i) => {
+        const message = resolveMessage(e);
+        return (
+          <FieldError key={i} lang={message.lang}>
+            {message.text}
+          </FieldError>
+        );
+      })}
       {rest.length > 0 && (
         <FieldHelper tone={rest.some((e) => e.severity === "warning") ? "warning" : "info"}>
-          {rest.map((e, i) => (
-            <span className="block" data-severity={e.severity} key={i}>
-              {messageOf(e)}
-            </span>
-          ))}
+          {rest.map((e, i) => {
+            const message = resolveMessage(e);
+            return (
+              <span className="block" data-severity={e.severity} key={i} lang={message.lang}>
+                {message.text}
+              </span>
+            );
+          })}
         </FieldHelper>
       )}
     </Field>

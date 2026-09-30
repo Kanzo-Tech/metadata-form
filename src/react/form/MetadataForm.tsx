@@ -49,7 +49,7 @@ export function MetadataForm({ form, widgets, assistUi, layout, grid, className 
       locale: form.locale,
       languages: form.languages,
       strings: form.strings,
-      messageOf: form.messageOf,
+      resolveMessage: form.resolveMessage,
       errors: form.errors,
       report: form.report,
       assist: form.assist,
@@ -58,7 +58,7 @@ export function MetadataForm({ form, widgets, assistUi, layout, grid, className 
       grid,
       revealTarget: form._revealTarget,
     };
-  }, [form.ready, form.graph, form.model, registry, form.locale, form.languages, form.strings, form.messageOf, form.errors, form.report, form.assist, assistUi, layout, grid, form._revealTarget]);
+  }, [form.ready, form.graph, form.model, registry, form.locale, form.languages, form.strings, form.resolveMessage, form.errors, form.report, form.assist, assistUi, layout, grid, form._revealTarget]);
 
   if (form.error) {
     return (

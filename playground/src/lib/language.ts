@@ -1,4 +1,4 @@
-import { pickByLanguage } from "metadata-form";
+import { resolveLanguage } from "metadata-form";
 
 /** A language range and what it falls back to, most specific first: `ca-ES` is `ca-ES`,
  *  then `ca` (RFC 4647 §3.4, lookup). */
@@ -13,6 +13,7 @@ const truncations = (range: string): string[] =>
  * `undefined` when the shapes are written in no language.
  */
 export function initialLanguage(available: readonly string[], preferred: readonly string[]): string | undefined {
-  // The picker falls to the first item when nothing matches: the most written one.
-  return pickByLanguage(available.map((language) => ({ value: language, language })), preferred.flatMap(truncations))?.value;
+  // Nothing asked for is written: the most written one, which is first.
+  const asked = resolveLanguage(available.map((language) => ({ value: language, language })), preferred.flatMap(truncations));
+  return asked && !asked.fallback ? asked.item.value : available[0];
 }

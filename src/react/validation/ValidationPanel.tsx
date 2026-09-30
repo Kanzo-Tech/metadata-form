@@ -166,7 +166,9 @@ export function ValidationPanel({ form, openId, onOpenChange, labels }: Validati
                 {/* The chevron alone; the name it carries is what `aria-label` is for. */}
                 <DiagnosticTrigger aria-label={words.detailsOf.replace("{field}", row.label)} />
               </DiagnosticActions>
-              <DiagnosticTitle className="basis-full">{form.messageOf(row)}</DiagnosticTitle>
+              <DiagnosticTitle className="basis-full" lang={form.resolveMessage(row).lang}>
+                {form.resolveMessage(row).text}
+              </DiagnosticTitle>
             </DiagnosticHeader>
             <DiagnosticContent>
               <DiagnosticDescription>

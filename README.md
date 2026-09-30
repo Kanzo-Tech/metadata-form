@@ -157,11 +157,26 @@ Editor's Draft, *Label and Language Resolution*: the order of the property shape
 `sh:languageIn`, then the application's list (`locale`), with the browser's
 `navigator.languages` as the default; tags match ranges by RFC 4647 §3.3.1 basic
 filtering (the tag `en-US` matches the range `en`, and `en` does not match `en-US`, so
-give `["es-ES", "es"]`, as a browser does); when nothing matches, an untagged literal,
-else any. A property is labelled by the draft's *Property Labels* order: its `sh:name`, then
+give `["es-ES", "es"]`, as a browser does). Among literals a range matches, and when
+nothing matches, the choice never depends on the order they were read in: an untagged
+literal, else the tagged ones by BCP-47 tag in code-point order, then by text. A property is labelled by the draft's *Property Labels* order: its `sh:name`, then
 the `rdfs:label` of its predicate in the data graph, then in the shapes graph, then the
 predicate's local name split into words; each step is picked by that same resolution, and the
 first step that has a label wins.
+
+**A text in a language nobody asked for.** SHACL says a result carries exactly the author's
+messages, so when a profile wrote a name, description, group name or message only in
+languages the reader did not ask for, that text is still what is shown. It is made visible
+in two ways. The element that shows it carries the text's own `lang` attribute (`lang="ca"`
+on a label, a description, a group title, an error), so a screen reader pronounces it in its
+language; a text in a requested language, and an untagged one, carry none. And the form
+reports it through `onDiagnostic` (also kept as `form.diagnostics`) as a diagnostic with
+`level: "info"` and `code: "missing-language"`, once per shape (or field) and kind (name,
+description, message) and requested languages, never per render: *No name in en for Nom;
+showing ca.* An untagged text is language-neutral and is not reported. The playground lists
+them under *Notes on the profile* in its Issues pane. The picker itself is
+`resolveLanguage(items, languages)`, which returns the literal and whether it was a
+fallback; `pickByLanguage` is the same choice without the flag.
 
 **Messages come from the engine.** A validation result carries its messages
 language-tagged, and the form picks the one to draw when it draws it, so changing `locale`
@@ -196,7 +211,7 @@ in the completion's keys hint) are in the strings table.
 **Not localised.** The accessible names Ark's machines carry by default (the calendar's
 "Open calendar", the tags input's delete button) are English: `@kanzo-tech/ui` does not
 expose them as props. The `Diagnostic` messages
-passed to `onDiagnostic` (developer-facing) and any text the AI adapter's prompts contain are
+passed to `onDiagnostic` (developer-facing, and `missing-language` among them) and any text the AI adapter's prompts contain are
 English. A shape's `sh:languageIn` orders the labels of its own property; it is not consulted
 when choosing a failure message. Plural forms follow `Intl.PluralRules` for the table's
 language, so a table must supply the forms its language uses.

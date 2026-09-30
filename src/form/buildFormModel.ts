@@ -1,6 +1,6 @@
 import type { Term } from "@rdfjs/types";
 import { namedNode } from "./factory.js";
-import { humanise, localName, pickByLanguage } from "./terms.js";
+import { humanise, langOf, localName, resolveLanguage, type Resolved } from "./terms.js";
 import { toTerm } from "./termValue.js";
 import { SH_IRI } from "./vocab/shacl.js";
 import { Editors } from "./vocab/shacl-ui.js";
@@ -50,6 +50,10 @@ export interface Diagnostic {
     /** The conjunction admits no value at all — the field is read-only, and the
      *  contradiction is a defect in the profile. */
     | "unsatisfiable-property"
+    /** A name, description or message the profile wrote only in languages the
+     *  reader did not ask for, so what is shown is another language's text (see
+     *  `resolveLanguage`). Once per shape and kind, never per render. */
+    | "missing-language"
     | string;
   message: string;
   /** The shape/path/node the diagnostic concerns, if any. */
@@ -109,6 +113,8 @@ type InnerArgs = Omit<BuildArgs, "values" | "labels" | "satisfied" | "languages"
   labels: Map<string, LangString[]>;
   satisfied: Map<string, Set<string>>;
   languages: readonly string[];
+  /** What this build has already reported once (see {@link reportMissingLanguage}). */
+  reported: Set<string>;
 };
 
 const DEFAULT_GROUP = "__default__";
@@ -122,6 +128,7 @@ export function buildFormModel(args: BuildArgs): FormModel {
       labels: args.labels ?? new Map(),
       satisfied: args.satisfied ?? new Map(),
       languages: args.languages ?? [],
+      reported: new Set(),
     },
     new Set(),
   );
@@ -131,6 +138,7 @@ interface FieldCtx {
   shapes: ShapeModel;
   focusNode: Term;
   languages: readonly string[];
+  reported: Set<string>;
   onDiagnostic?: DiagnosticSink;
   values: ProjectedValues;
   labels: Map<string, LangString[]>;
@@ -139,11 +147,11 @@ interface FieldCtx {
 }
 
 function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
-  const { shapes, focusNode, shape, languages, onDiagnostic, values, labels, satisfied, readStep } = args;
+  const { shapes, focusNode, shape, languages, reported, onDiagnostic, values, labels, satisfied, readStep } = args;
   const guardKey = `${shape.id}::${focusNode.value}`;
   const cyclic = visited.has(guardKey);
   const nextVisited = new Set(visited).add(guardKey);
-  const ctx: FieldCtx = { shapes, focusNode, languages, onDiagnostic, values, labels, satisfied, readStep };
+  const ctx: FieldCtx = { shapes, focusNode, languages, reported, onDiagnostic, values, labels, satisfied, readStep };
 
   // A deactivated shape constrains nothing (SHACL §2.1.6: every term conforms to
   // it, and the validator reports nothing for it), so it renders nothing — down to
@@ -174,7 +182,7 @@ function buildInner(args: InnerArgs, visited: Set<string>): FormModel {
   }
 
   const fields = buildFields(applicable, ctx, nextVisited, cyclic);
-  return { focusNode, shape: namedNode(shape.id), groups: groupFields(fields, shapes, languages) };
+  return { focusNode, shape: namedNode(shape.id), groups: groupFields(fields, ctx) };
 }
 
 const EMPTY_SET: ReadonlySet<string> = new Set();
@@ -308,8 +316,13 @@ function buildField(
   // SHACL-UI ED, "Language Resolution": the shape's own `sh:languageIn` order comes
   // before the application's languages.
   const languages = [...(ps.value.languageIn ?? []), ...ctx.languages];
-  const label = labelOf(ps, ctx.labels.get(id), languages, write);
-  const description = pickByLanguage(ps.presentation.descriptions, languages)?.value;
+  const named = labelOf(ps, ctx.labels.get(id), languages, write);
+  const label = named.text;
+  const described = resolveLanguage(ps.presentation.descriptions, languages);
+  const description = described?.item.value;
+  const subject = ps.id ?? ps.pathKey;
+  reportMissingLanguage(ctx, subject, label, "name", named.picked);
+  reportMissingLanguage(ctx, subject, label, "description", described);
 
   const v = ps.value;
   const constraints: FieldConstraints = {
@@ -418,7 +431,9 @@ function buildField(
     path,
     pathKind: ps.path.kind === "predicate" ? "predicate" : "complex",
     label,
+    labelLang: langOf(named.picked),
     description,
+    descriptionLang: langOf(described),
     editorId: effectiveEditor,
     editorSource: fromBranch ? "branch" : editorSource,
     editors: fromBranch ? undefined : ps.presentation.editors,
@@ -472,13 +487,38 @@ function labelOf(
   dataLabels: readonly LangString[] | undefined,
   languages: readonly string[],
   write: FieldWrite | undefined,
-): string {
-  return (
-    pickByLanguage(ps.presentation.names, languages)?.value ??
-    pickByLanguage(dataLabels ?? [], languages)?.value ??
-    pickByLanguage(ps.presentation.pathLabels ?? [], languages)?.value ??
-    fallbackLabel(ps, write)
-  );
+): { text: string; picked?: Resolved<LangString> } {
+  const picked =
+    resolveLanguage(ps.presentation.names, languages) ??
+    resolveLanguage(dataLabels ?? [], languages) ??
+    resolveLanguage(ps.presentation.pathLabels ?? [], languages);
+  return picked ? { text: picked.item.value, picked } : { text: fallbackLabel(ps, write) };
+}
+
+/**
+ * Say, once per build, that the text shown for `subject` is another language's: the
+ * profile wrote it, but not in any language the reader asked for. SHACL says the
+ * author's text is what is shown, so it still is; this is how the author finds out
+ * which texts lack which language. An untagged text is language-neutral (an
+ * identifier, a name), so it is not a finding.
+ */
+function reportMissingLanguage(
+  ctx: FieldCtx,
+  subject: string,
+  subjectLabel: string,
+  kind: "name" | "description",
+  picked: Resolved<LangString> | undefined,
+): void {
+  if (!langOf(picked) || ctx.languages.length === 0) return;
+  const key = `${subject}|${kind}|${ctx.languages.join(",")}`;
+  if (ctx.reported.has(key)) return;
+  ctx.reported.add(key);
+  ctx.onDiagnostic?.({
+    level: "info",
+    code: "missing-language",
+    message: `No ${kind} in ${ctx.languages.join(", ")} for ${subjectLabel}; showing ${picked!.item.language}.`,
+    detail: subject,
+  });
 }
 
 /**
@@ -528,6 +568,7 @@ function projectValues(
           focusNode: sub,
           shape: nestedShape,
           languages: ctx.languages,
+          reported: ctx.reported,
           onDiagnostic: ctx.onDiagnostic,
           values: ctx.values,
           labels: ctx.labels,
@@ -564,7 +605,7 @@ function optionsFrom(ps: PropertyShapeIR): FieldOption[] | undefined {
  * carries the property shape's path, not the shape's own IRI (a field can merge
  * several shapes on one path).
  */
-function groupFields(fields: FieldModel[], shapes: ShapeModel, languages: readonly string[]): GroupModel[] {
+function groupFields(fields: FieldModel[], ctx: FieldCtx): GroupModel[] {
   const byGroup = new Map<string, FieldModel[]>();
   const members: SequenceMember[] = [];
   for (const f of fields) {
@@ -577,14 +618,16 @@ function groupFields(fields: FieldModel[], shapes: ShapeModel, languages: readon
     byGroup.set(f.groupId, arr);
   }
   for (const [groupId, groupFieldsList] of byGroup) {
-    const meta = shapes.groups.get(groupId);
-    const label = meta ? pickByLanguage(meta.labels, languages)?.value : undefined;
+    const meta = ctx.shapes.groups.get(groupId);
+    const picked = meta && resolveLanguage(meta.labels, ctx.languages);
+    const label = picked?.item.value;
+    reportMissingLanguage(ctx, groupId, label ?? groupId, "name", picked);
     groupFieldsList.sort(orderCompare);
     members.push({
       order: meta?.order ?? Number.MAX_SAFE_INTEGER,
       label: label ?? "",
       id: groupId,
-      titled: { id: groupId, label },
+      titled: { id: groupId, label, labelLang: langOf(picked) },
       fields: groupFieldsList,
     });
   }
@@ -613,7 +656,7 @@ interface SequenceMember {
   order: number;
   label: string;
   id: string;
-  titled?: { id: string; label?: string };
+  titled?: { id: string; label?: string; labelLang?: string };
   fields: FieldModel[];
 }
 

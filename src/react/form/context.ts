@@ -37,8 +37,9 @@ export interface FormContextValue {
   languages: readonly string[];
   /** The interface strings, in the reader's language. */
   strings: ResolvedStrings;
-  /** The text of one validation failure, in the reader's language. */
-  messageOf: (error: Pick<FieldError, "messages">) => string;
+  /** The text of one validation failure, in the reader's language, and the `lang`
+   *  its element carries when that is not one the reader asked for. */
+  resolveMessage: (error: Pick<FieldError, "messages">) => { text: string; lang?: string };
   errors: Map<string, FieldError[]>;
   report: FormReport;
   assist?: FormAssist;

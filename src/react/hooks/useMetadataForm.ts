@@ -1,18 +1,18 @@
-import { useCallback, useDeferredValue, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode } from "../../form/factory.js";
 import { mapResults } from "../../form/validation.js";
-import { pickByLanguage } from "../../form/terms.js";
+import { langOf, localName, matchesLanguage, resolveLanguage } from "../../form/terms.js";
 import { shapeLanguages } from "../../form/languages.js";
 import { resolveStrings, type ResolvedStrings, type StringTables } from "../../i18n/strings.js";
 import { resolveLanguages } from "../../i18n/languages.js";
-import type { FormModel } from "../../form/FormModel.js";
+import { allFields, type FormModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
 import type { ShapeModel } from "../../form/ShapeIR.js";
 import { GraphState } from "../../engine/GraphState.js";
 import { createRudofEngine } from "../../engine/index.js";
 import type { RudofEngine } from "../../engine/RudofEngine.js";
-import { buildFormModel, type DiagnosticSink } from "../../form/buildFormModel.js";
+import { buildFormModel, type Diagnostic, type DiagnosticSink } from "../../form/buildFormModel.js";
 import type { FormAssist } from "../../assist.js";
 import { computeFormReport, type FormReport } from "../validation/formReport.js";
 
@@ -50,8 +50,9 @@ export interface UseMetadataFormOptions {
   /** The single assistance seam (reference search · suggestions · completion).
    * The lib never calls an LLM/service itself — these callbacks do. */
   assist?: FormAssist;
-  /** Receives non-fatal build issues (dropped paths, missing shapes) instead of
-   * them failing silently. */
+  /** Receives non-fatal build issues (dropped paths, missing shapes, texts the
+   * profile wrote only in languages the reader did not ask for) instead of them
+   * failing silently. */
   onDiagnostic?: DiagnosticSink;
 }
 
@@ -94,6 +95,14 @@ export interface MetadataFormController {
    *  the current language, so a change of `locale` re-words errors already
    *  reported. */
   messageOf(error: Pick<FieldError, "messages">): string;
+  /** {@link messageOf}, and the tag to put in the `lang` attribute of the element that
+   *  shows it: present only when the text is in a language the reader did not ask for
+   *  (English, which the engine's catalog always has, included). */
+  resolveMessage(error: Pick<FieldError, "messages">): { text: string; lang?: string };
+  /** The non-fatal issues of the current model — what `onDiagnostic` is handed, kept:
+   *  the last build's, plus the messages found lacking a language since. Each
+   *  `missing-language` is one shape and kind, not one render. */
+  diagnostics: Diagnostic[];
   /** The underlying editable graph (mutable, observable). */
   graph?: GraphState;
   assist?: FormAssist;
@@ -146,10 +155,18 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
 
   // The default messages are the engine's: a result carries one per language of its
   // catalog, so the reader's is picked, and English is what a language it lacks gets.
-  const messageOf = useCallback(
-    (error: Pick<FieldError, "messages">) => pickByLanguage(error.messages, [...languages, "en"])?.value ?? "",
+  const resolveMessage = useCallback(
+    (error: Pick<FieldError, "messages">) => {
+      const picked = resolveLanguage(error.messages, [...languages, "en"]);
+      const asked = !!picked && languages.some((range) => matchesLanguage(picked.item.language, range));
+      return {
+        text: picked?.item.value ?? "",
+        lang: langOf(picked && { ...picked, fallback: !asked }),
+      };
+    },
     [languages],
   );
+  const messageOf = useCallback((error: Pick<FieldError, "messages">) => resolveMessage(error).text, [resolveMessage]);
   const documents = typeof messagesOption === "string" ? [messagesOption] : (messagesOption ?? []);
   const documentsKey = documents.join("\0");
 
@@ -217,12 +234,16 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     // Single graph: re-derive field values from the engine session (sync, after
     // ready()) on every edit, then build the model over them.
     const { values, labels, satisfied, nodes } = engine.projectValues(prepared.shapes, prepared.focusNode, prepared.rootShapeId);
+    const diagnostics: Diagnostic[] = [];
     const model = buildFormModel({
       shapes: prepared.shapes,
       focusNode: prepared.focusNode,
       shape: prepared.shapes.nodeShapes.get(prepared.rootShapeId)!,
       languages,
-      onDiagnostic,
+      onDiagnostic: (d) => {
+        diagnostics.push(d);
+        onDiagnostic?.(d);
+      },
       values,
       labels,
       satisfied,
@@ -230,7 +251,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       // sequence path's intermediate resource exists and is unique (see BuildArgs).
       readStep: prepared.graph.readStep,
     });
-    return { model, nodes };
+    return { model, nodes, diagnostics };
     // `version` re-projects field values from the graph after each edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [engine, prepared, version, languages, onDiagnostic]);
@@ -261,6 +282,40 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   }, [errors]);
 
   const report = useMemo(() => computeFormReport(model, errors), [model, errors]);
+
+  // A message is a result of validation, not of the build, so its missing language is
+  // found here: once per field and requested languages, for as long as the session
+  // lasts (a new session, or a new language, starts the count again).
+  const reportedMessages = useRef(new Set<string>());
+  const [messageDiagnostics, setMessageDiagnostics] = useState<Diagnostic[]>([]);
+  useEffect(() => {
+    reportedMessages.current = new Set();
+    setMessageDiagnostics([]);
+  }, [prepared, languages]);
+  useEffect(() => {
+    const fresh: Diagnostic[] = [];
+    const labels = new Map((model ? allFields(model) : []).map((f) => [f.id, f.label]));
+    for (const [key, list] of errors) {
+      const path = key.slice(key.indexOf("|") + 1);
+      const once = `${key}|message|${languages.join(",")}`;
+      const lang = list.map((e) => resolveMessage(e).lang).find(Boolean);
+      if (!lang || reportedMessages.current.has(once)) continue;
+      reportedMessages.current.add(once);
+      fresh.push({
+        level: "info",
+        code: "missing-language",
+        message: `No message in ${languages.join(", ")} for ${labels.get(key) ?? localName(path)}; showing ${lang}.`,
+        detail: path,
+      });
+    }
+    if (fresh.length === 0) return;
+    setMessageDiagnostics((all) => [...all, ...fresh]);
+    for (const d of fresh) onDiagnostic?.(d);
+  }, [errors, model, languages, resolveMessage, onDiagnostic]);
+  const diagnostics = useMemo(
+    () => [...(projected?.diagnostics ?? []), ...messageDiagnostics],
+    [projected, messageDiagnostics],
+  );
 
   const getQuads = useCallback(
     () => (graph && model ? graph.subgraphFrom(model.focusNode) : []),
@@ -302,6 +357,8 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       availableLanguages,
       strings,
       messageOf,
+      resolveMessage,
+      diagnostics,
       graph,
       // rudof serializes just the focus's subgraph (one record), prefixes retained.
       toTurtle: () => (model ? engine.serializeFocus(model.focusNode, "text/turtle") : Promise.resolve("")),
@@ -314,6 +371,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       revealField,
       _revealTarget: revealTarget,
     }),
-    [model, error, getQuads, errors, isValid, report, locale, languages, availableLanguages, strings, messageOf, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
+    [model, error, getQuads, errors, isValid, report, locale, languages, availableLanguages, strings, messageOf, resolveMessage, diagnostics, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],
   );
 }

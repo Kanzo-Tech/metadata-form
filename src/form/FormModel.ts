@@ -134,7 +134,13 @@ export interface FieldModel {
   /** Whether the path is a plain predicate or one of the six composed kinds. */
   pathKind: "predicate" | "complex";
   label: string;
+  /** The tag of {@link label}, when the profile wrote it only in languages the
+   *  reader did not ask for — for the `lang` attribute of the element that shows
+   *  it. Absent for text in a requested language, and for untagged text. */
+  labelLang?: string;
   description?: string;
+  /** As {@link labelLang}, for {@link description}. */
+  descriptionLang?: string;
   editorId: EditorId;
   /** Where {@link editorId} comes from: an editor the profile `declared`, the best
    *  one the SHACL-UI score function `scored`, the editor of the first `sh:or`
@@ -192,6 +198,8 @@ export interface FieldModel {
 export interface GroupModel {
   id: string;
   label?: string;
+  /** As {@link FieldModel.labelLang}, for {@link label}. */
+  labelLang?: string;
   order: number;
   fields: FieldModel[];
 }
