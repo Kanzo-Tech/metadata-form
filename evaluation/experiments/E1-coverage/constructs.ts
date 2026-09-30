@@ -97,16 +97,16 @@ export const LEDGER: Record<string, { how: Consumption; why: string }> = {
   [`${SH}maxExclusive`]: { how: "carried", why: "Same as sh:minExclusive." },
   [`${SH}hasValue`]: {
     how: "carried",
-    why: "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change.",
+    why: "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).",
   },
   // --- reaches the IR, changes nothing ---
   [`${SH}or`]: {
-    how: "unrendered",
-    why: "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI.",
+    how: "consumed",
+    why: "Read by buildFormModel through planDisjunction: branches that constrain the value itself (datatype, nodeKind, class, in) become the field's alternatives; a branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic. The same term also carries the Core conditional, `sh:or ( [ sh:not C ] T )`.",
   },
-  [`${SH}xone`]: { how: "unrendered", why: "Same as sh:or. Exclusive choice has no control; the UI cannot offer the branch selector the construct describes." },
-  [`${SH}and`]: { how: "unrendered", why: "Same as sh:or. Conjoined constraints are not merged into the field's own facts." },
-  [`${SH}not`]: { how: "unrendered", why: "Negation has no form affordance; nothing narrows the input." },
+  [`${SH}xone`]: { how: "unrendered", why: "Not read (only sh:or is planned as a disjunction). Exclusive choice has no control; the UI cannot offer the branch selector the construct describes." },
+  [`${SH}and`]: { how: "unrendered", why: "Not read (only sh:or is planned as a disjunction). Conjoined constraints are not merged into the field's own facts." },
+  [`${SH}not`]: { how: "unrendered", why: "Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)" },
   [`${SH}qualifiedValueShape`]: {
     how: "unrendered",
     why: "No slot in the typed IR. 'at least n of the values must match shape S' is a per-value constraint the field, which models one editor for all its values, cannot express.",
@@ -114,8 +114,8 @@ export const LEDGER: Record<string, { how: Consumption; why: string }> = {
   [`${SH}qualifiedMinCount`]: { how: "unrendered", why: "Parameter of sh:qualifiedValueShape." },
   [`${SH}qualifiedMaxCount`]: { how: "unrendered", why: "Parameter of sh:qualifiedValueShape." },
   [`${SH}deactivated`]: {
-    how: "unrendered",
-    why: "WRONGLY RENDERED, not merely ignored: the component is recorded but never honoured, so a property the profile switched off still gets a field. A correctness bug, not a missing feature.",
+    how: "consumed",
+    why: "Honoured (SHACL 2.1.6): a deactivated property shape builds no field and a deactivated node shape builds none of its fields; either is reported as a `deactivated-shape` diagnostic.",
   },
   [`${SH}closed`]: {
     how: "unrendered",

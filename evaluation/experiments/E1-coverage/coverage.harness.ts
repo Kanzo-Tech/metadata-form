@@ -5,8 +5,8 @@
  * no per-profile code and no modification to the profile?
  *
  * This measures the honest baseline: rudof reads only `shui:editor`, so the DASH
- * annotations most real profiles carry are ignored and every editor is inferred
- * from datatype/nodeKind facts. That is exactly what a data space adopting an
+ * annotations most real profiles carry are ignored and every editor is chosen by
+ * the engine (SHACL-UI score function over the shape's facts, else its fallback). That is exactly what a data space adopting an
  * official profile gets today. (Verified, not assumed — see the `dashHonoured`
  * assertion at the bottom of this file, which fails the run if it ever changes.)
  *
@@ -554,7 +554,8 @@ function markdown(results: ProfileResult[], stamp: string): string {
   L.push(`Generated ${stamp} by \`coverage.harness.ts\`. Do not edit by hand.`, "");
   L.push("**Baseline measured:** rudof reads only `shui:editor`, so the `dash:editor`");
   L.push("hints most published profiles carry are recorded and ignored, and every");
-  L.push("editor is inferred from datatype/nodeKind facts. This is what a data space");
+  L.push("editor is chosen by the engine (the SHACL-UI score function over the shape's");
+  L.push("facts, else the engine's own fallback). This is what a data space");
   L.push("adopting an official profile gets today, unmodified. The harness asserts");
   L.push("this rather than assuming it.", "");
   L.push(`**n = ${primary.length} independent profiles, ${external.length} of them externally authored.**`);
@@ -588,7 +589,7 @@ function markdown(results: ProfileResult[], stamp: string): string {
   const nothing = primary.filter((r) => r.parsed && r.form.noWidget > 0);
   L.push(nothing.length
     ? `Fields with no widget at all: ${nothing.map((r) => `${short(r)}=${r.form.noWidget}`).join(", ")}.`
-    : "**No widget** is zero in every profile: the type-fact fallback always resolves " +
+    : "**No widget** is zero in every profile: the engine's fallback always resolves " +
       "to *something*, so nothing fails to render outright. The whole question is what " +
       "it degrades to, which is why the literal 'renders with zero custom widget code' " +
       "figure would be 100% everywhere and is not the number reported.", "");

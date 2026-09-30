@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03",
+  "generated": "2026-09-30",
   "n": 11,
   "nExternal": 9,
   "results": [
@@ -26,36 +26,36 @@
         ],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 87,
-          "DatePickerEditor": 7,
-          "DetailsEditor": 24,
-          "IRIEditor": 22,
+          "AutoCompleteEditor": 4,
+          "DatePickerEditor": 5,
+          "InstancesSelectEditor": 83,
+          "IRIEditor": 46,
           "NumberFieldEditor": 3,
-          "TextFieldEditor": 154
+          "TextFieldEditor": 156
+        },
+        "editorSources": {
+          "branch": 8,
+          "declared": 0,
+          "fallback": 131,
+          "scored": 158
         },
         "fields": 297,
-        "inferred": 154,
+        "inferred": 273,
         "nested": 24,
         "noWidget": 0,
-        "plainTextFallback": 154,
+        "plainTextFallback": 156,
         "readOnly": 0,
         "shapesBuilt": 91,
         "shapesFailed": [],
-        "statedEditorHonoured": 119,
-        "typedWidget": 119
+        "statedEditorHonoured": 0,
+        "typedWidget": 117
       },
       "gaps": [
         {
           "count": 16,
           "kind": "carried",
           "term": "sh:hasValue",
-          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
-        },
-        {
-          "count": 9,
-          "kind": "dropped",
-          "term": "sh:or",
-          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
+          "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
         },
         {
           "count": 5,
@@ -78,11 +78,12 @@
         "conditionals": 0,
         "described": 27,
         "editors": {
-          "AutoCompleteEditor": 84,
-          "DetailsEditor": 35,
-          "IRIEditor": 22,
+          "AutoCompleteEditor": 4,
+          "DetailsEditor": 8,
+          "InstancesSelectEditor": 80,
+          "IRIEditor": 47,
           "NumberFieldEditor": 3,
-          "TextFieldEditor": 154
+          "TextFieldEditor": 156
         },
         "groups": 0,
         "named": 0,
@@ -145,9 +146,9 @@
           "file": "shapes.ttl",
           "nested": 0,
           "nodeShapes": 25,
-          "plain": 112,
+          "plain": 114,
           "readOnly": 0,
-          "typed": 18
+          "typed": 16
         },
         {
           "fields": 36,
@@ -160,6 +161,7 @@
         }
       ],
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {
           "en": 51
@@ -191,40 +193,41 @@
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme"
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column"
         ],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 25,
-          "DetailsEditor": 34,
-          "IRIEditor": 27,
+          "AutoCompleteEditor": 9,
+          "DetailsEditor": 10,
+          "InstancesSelectEditor": 16,
+          "IRIEditor": 51,
           "NumberFieldEditor": 4,
           "TextFieldEditor": 44
         },
+        "editorSources": {
+          "branch": 0,
+          "declared": 0,
+          "fallback": 40,
+          "scored": 94
+        },
         "fields": 134,
-        "inferred": 44,
+        "inferred": 100,
         "nested": 34,
         "noWidget": 0,
         "plainTextFallback": 44,
         "readOnly": 0,
         "shapesBuilt": 52,
         "shapesFailed": [],
-        "statedEditorHonoured": 56,
+        "statedEditorHonoured": 0,
         "typedWidget": 56
       },
       "gaps": [
         {
-          "count": 25,
+          "count": 24,
           "kind": "carried",
           "term": "sh:hasValue",
-          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
-        },
-        {
-          "count": 2,
-          "kind": "dropped",
-          "term": "sh:or",
-          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
+          "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
         }
       ],
       "id": "healthdcat-ap",
@@ -241,9 +244,10 @@
         "conditionals": 0,
         "described": 6,
         "editors": {
-          "AutoCompleteEditor": 25,
-          "DetailsEditor": 34,
-          "IRIEditor": 27,
+          "AutoCompleteEditor": 9,
+          "DetailsEditor": 10,
+          "InstancesSelectEditor": 16,
+          "IRIEditor": 51,
           "NumberFieldEditor": 4,
           "TextFieldEditor": 49
         },
@@ -313,6 +317,7 @@
         }
       ],
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {
           "en": 17
@@ -351,23 +356,29 @@
         "diagnosticSamples": [],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 1,
           "DateTimePickerEditor": 11,
           "DetailsEditor": 23,
           "EnumSelectEditor": 2,
+          "InstancesSelectEditor": 1,
           "IRIEditor": 74,
           "NumberFieldEditor": 5,
           "TextFieldEditor": 27
         },
+        "editorSources": {
+          "branch": 0,
+          "declared": 0,
+          "fallback": 25,
+          "scored": 118
+        },
         "fields": 143,
-        "inferred": 27,
+        "inferred": 120,
         "nested": 23,
         "noWidget": 0,
         "plainTextFallback": 27,
         "readOnly": 0,
         "shapesBuilt": 14,
         "shapesFailed": [],
-        "statedEditorHonoured": 93,
+        "statedEditorHonoured": 0,
         "typedWidget": 93
       },
       "gaps": [
@@ -407,10 +418,10 @@
         "conditionals": 0,
         "described": 123,
         "editors": {
-          "AutoCompleteEditor": 1,
           "DateTimePickerEditor": 11,
           "DetailsEditor": 23,
           "EnumSelectEditor": 2,
+          "InstancesSelectEditor": 1,
           "IRIEditor": 74,
           "NumberFieldEditor": 5,
           "TextFieldEditor": 27
@@ -575,6 +586,7 @@
         }
       ],
       "source": {
+        "conditionals": 0,
         "dashEditor": 141,
         "langTags": {
           "en": 321
@@ -604,43 +616,49 @@
           "unrenderable-alternative": 2
         },
         "diagnosticSamples": [
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/plannedAvailability",
+          "[unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Catalog_dct_spatial_v_IRIorClass",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#algorithm",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
+          "[unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Dataset_dct_spatial_v_IRIorClass",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/type",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#granularity"
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher"
         ],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 27,
           "DetailsEditor": 2,
+          "InstancesSelectEditor": 27,
           "IRIEditor": 21,
           "TextFieldEditor": 54
         },
+        "editorSources": {
+          "branch": 2,
+          "declared": 0,
+          "fallback": 53,
+          "scored": 49
+        },
         "fields": 104,
-        "inferred": 54,
+        "inferred": 102,
         "nested": 2,
         "noWidget": 0,
         "plainTextFallback": 54,
         "readOnly": 0,
         "shapesBuilt": 29,
         "shapesFailed": [],
-        "statedEditorHonoured": 48,
+        "statedEditorHonoured": 0,
         "typedWidget": 48
       },
       "gaps": [
         {
-          "count": 28,
+          "count": 27,
           "kind": "dropped",
           "term": "sh:hasValue",
-          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+          "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
         },
         {
           "count": 19,
@@ -649,25 +667,13 @@
           "why": "A property shape nested INSIDE another property shape — reached as a constraint parameter (under sh:or, sh:qualifiedValueShape…) rather than from a node shape. Only node-shape properties are built into fields, so these are invisible. (The ordinary node-shape sh:property is the mechanism itself and is of course read; it is filtered out of this count.)"
         },
         {
-          "count": 4,
-          "kind": "unrendered",
-          "term": "sh:or",
-          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
-        },
-        {
-          "count": 3,
-          "kind": "dropped",
-          "term": "sh:deactivated",
-          "why": "WRONGLY RENDERED, not merely ignored: the component is recorded but never honoured, so a property the profile switched off still gets a field. A correctness bug, not a missing feature."
-        },
-        {
-          "count": 3,
+          "count": 2,
           "kind": "unrendered",
           "term": "sh:qualifiedMinCount",
           "why": "Parameter of sh:qualifiedValueShape."
         },
         {
-          "count": 3,
+          "count": 2,
           "kind": "unrendered",
           "term": "sh:qualifiedValueShape",
           "why": "No slot in the typed IR. 'at least n of the values must match shape S' is a per-value constraint the field, which models one editor for all its values, cannot express."
@@ -703,10 +709,10 @@
         "conditionals": 0,
         "described": 1,
         "editors": {
-          "AutoCompleteEditor": 27,
-          "DetailsEditor": 2,
+          "DetailsEditor": 3,
+          "InstancesSelectEditor": 27,
           "IRIEditor": 21,
-          "TextFieldEditor": 71
+          "TextFieldEditor": 70
         },
         "groups": 0,
         "named": 0,
@@ -779,13 +785,14 @@
         }
       ],
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {
-          "de": 251
+          "de": 214
         },
         "shGroup": 0,
-        "shMessage": 183,
-        "shMessageLangTagged": 179,
+        "shMessage": 147,
+        "shMessageLangTagged": 143,
         "shName": 23,
         "shuiEditor": 0
       },
@@ -817,15 +824,21 @@
           "IRIEditor": 14,
           "TextFieldEditor": 8
         },
+        "editorSources": {
+          "branch": 0,
+          "declared": 0,
+          "fallback": 7,
+          "scored": 30
+        },
         "fields": 37,
-        "inferred": 8,
+        "inferred": 30,
         "nested": 7,
         "noWidget": 0,
         "plainTextFallback": 8,
         "readOnly": 0,
         "shapesBuilt": 13,
         "shapesFailed": [],
-        "statedEditorHonoured": 22,
+        "statedEditorHonoured": 0,
         "typedWidget": 22
       },
       "gaps": [
@@ -961,6 +974,7 @@
         }
       ],
       "source": {
+        "conditionals": 0,
         "dashEditor": 27,
         "langTags": {},
         "shGroup": 0,
@@ -984,23 +998,28 @@
         "diagnosticSamples": [],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 961,
           "DateTimePickerEditor": 160,
           "EnumSelectEditor": 26,
-          "IRIEditor": 4,
+          "InstancesSelectEditor": 961,
           "NumberFieldEditor": 5,
-          "TextFieldEditor": 90
+          "TextFieldEditor": 94
+        },
+        "editorSources": {
+          "branch": 199,
+          "declared": 0,
+          "fallback": 12,
+          "scored": 1035
         },
         "fields": 1246,
-        "inferred": 90,
+        "inferred": 1175,
         "nested": 0,
         "noWidget": 0,
-        "plainTextFallback": 90,
+        "plainTextFallback": 94,
         "readOnly": 71,
         "shapesBuilt": 1744,
         "shapesFailed": [],
-        "statedEditorHonoured": 1085,
-        "typedWidget": 1085
+        "statedEditorHonoured": 0,
+        "typedWidget": 1081
       },
       "gaps": [
         {
@@ -1028,12 +1047,6 @@
           "why": "Parameter of sh:closed."
         },
         {
-          "count": 199,
-          "kind": "unrendered",
-          "term": "sh:or",
-          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
-        },
-        {
           "count": 96,
           "kind": "dropped",
           "term": "sh:target",
@@ -1059,12 +1072,11 @@
         "conditionals": 0,
         "described": 0,
         "editors": {
-          "AutoCompleteEditor": 961,
           "DateTimePickerEditor": 160,
           "EnumSelectEditor": 26,
-          "IRIEditor": 4,
+          "InstancesSelectEditor": 961,
           "NumberFieldEditor": 5,
-          "TextFieldEditor": 90
+          "TextFieldEditor": 94
         },
         "groups": 0,
         "named": 0,
@@ -1091,6 +1103,7 @@
       "origin": "external",
       "parsed": true,
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {},
         "shGroup": 0,
@@ -1120,6 +1133,12 @@
         "duplicatePath": 0,
         "editorIds": {
           "TextFieldEditor": 641
+        },
+        "editorSources": {
+          "branch": 0,
+          "declared": 0,
+          "fallback": 641,
+          "scored": 0
         },
         "fields": 641,
         "inferred": 641,
@@ -1164,6 +1183,7 @@
       "origin": "external",
       "parsed": true,
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {},
         "shGroup": 0,
@@ -1187,36 +1207,42 @@
         "diagnosticSamples": [],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 43,
+          "AutoCompleteEditor": 19,
           "BooleanEditor": 5,
           "EnumSelectEditor": 28,
-          "IRIEditor": 13,
-          "NumberFieldEditor": 9,
-          "TextFieldEditor": 95
+          "InstancesSelectEditor": 24,
+          "NumberFieldEditor": 7,
+          "TextFieldEditor": 110
+        },
+        "editorSources": {
+          "branch": 0,
+          "declared": 0,
+          "fallback": 9,
+          "scored": 184
         },
         "fields": 193,
-        "inferred": 95,
+        "inferred": 193,
         "nested": 0,
         "noWidget": 0,
-        "plainTextFallback": 95,
+        "plainTextFallback": 110,
         "readOnly": 0,
         "shapesBuilt": 64,
         "shapesFailed": [],
-        "statedEditorHonoured": 98,
-        "typedWidget": 98
+        "statedEditorHonoured": 0,
+        "typedWidget": 83
       },
       "gaps": [
         {
           "count": 12,
           "kind": "dropped",
           "term": "sh:hasValue",
-          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+          "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
         },
         {
           "count": 12,
           "kind": "unrendered",
           "term": "sh:not",
-          "why": "Negation has no form affordance; nothing narrows the input."
+          "why": "Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)"
         }
       ],
       "id": "spdx-3",
@@ -1234,12 +1260,12 @@
         "conditionals": 0,
         "described": 0,
         "editors": {
-          "AutoCompleteEditor": 43,
+          "AutoCompleteEditor": 19,
           "BooleanEditor": 5,
           "EnumSelectEditor": 28,
-          "IRIEditor": 13,
-          "NumberFieldEditor": 9,
-          "TextFieldEditor": 95
+          "InstancesSelectEditor": 24,
+          "NumberFieldEditor": 7,
+          "TextFieldEditor": 110
         },
         "groups": 0,
         "named": 0,
@@ -1267,6 +1293,7 @@
       "origin": "external",
       "parsed": true,
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {
           "en": 530
@@ -1296,19 +1323,25 @@
         "diagnosticSamples": [],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 2,
+          "InstancesSelectEditor": 2,
           "NumberFieldEditor": 1,
           "TextFieldEditor": 3
         },
+        "editorSources": {
+          "branch": 0,
+          "declared": 0,
+          "fallback": 1,
+          "scored": 5
+        },
         "fields": 6,
-        "inferred": 3,
+        "inferred": 6,
         "nested": 0,
         "noWidget": 0,
         "plainTextFallback": 3,
         "readOnly": 0,
         "shapesBuilt": 1,
         "shapesFailed": [],
-        "statedEditorHonoured": 3,
+        "statedEditorHonoured": 0,
         "typedWidget": 3
       },
       "gaps": [],
@@ -1322,7 +1355,7 @@
         "conditionals": 0,
         "described": 0,
         "editors": {
-          "AutoCompleteEditor": 2,
+          "InstancesSelectEditor": 2,
           "NumberFieldEditor": 1,
           "TextFieldEditor": 3
         },
@@ -1393,6 +1426,7 @@
         }
       ],
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {
           "en": 15
@@ -1426,29 +1460,35 @@
           "TextFieldEditor": 8,
           "TextFieldWithLangEditor": 5
         },
+        "editorSources": {
+          "branch": 0,
+          "declared": 10,
+          "fallback": 1,
+          "scored": 37
+        },
         "fields": 48,
-        "inferred": 8,
+        "inferred": 38,
         "nested": 8,
         "noWidget": 0,
         "plainTextFallback": 8,
         "readOnly": 0,
-        "shapesBuilt": 10,
+        "shapesBuilt": 11,
         "shapesFailed": [],
-        "statedEditorHonoured": 32,
+        "statedEditorHonoured": 2,
         "typedWidget": 32
       },
       "gaps": [
         {
-          "count": 2,
+          "count": 1,
           "kind": "carried",
           "term": "sh:hasValue",
-          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+          "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
         },
         {
-          "count": 2,
+          "count": 1,
           "kind": "dropped",
-          "term": "sh:or",
-          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
+          "term": "sh:not",
+          "why": "Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)"
         }
       ],
       "id": "evidenze-health",
@@ -1477,7 +1517,7 @@
         },
         "groups": 13,
         "named": 47,
-        "nodeShapes": 10,
+        "nodeShapes": 11,
         "nodeShapesWithProperties": 10,
         "parameters": {
           "class": 8,
@@ -1508,19 +1548,20 @@
       "origin": "ours",
       "parsed": true,
       "source": {
+        "conditionals": 1,
         "dashEditor": 0,
         "langTags": {
-          "ca": 82,
-          "es": 106
+          "ca": 83,
+          "es": 107
         },
         "shGroup": 47,
-        "shMessage": 14,
-        "shMessageLangTagged": 14,
+        "shMessage": 16,
+        "shMessageLangTagged": 16,
         "shName": 47,
-        "shuiEditor": 11
+        "shuiEditor": 10
       },
-      "turtleBytes": 34356,
-      "turtleLines": 804
+      "turtleBytes": 33892,
+      "turtleLines": 795
     },
     {
       "fileNames": [
@@ -1543,15 +1584,21 @@
           "TextFieldEditor": 8,
           "TextFieldWithLangEditor": 2
         },
+        "editorSources": {
+          "branch": 0,
+          "declared": 7,
+          "fallback": 1,
+          "scored": 25
+        },
         "fields": 33,
-        "inferred": 8,
+        "inferred": 26,
         "nested": 4,
         "noWidget": 0,
         "plainTextFallback": 8,
         "readOnly": 0,
-        "shapesBuilt": 7,
+        "shapesBuilt": 8,
         "shapesFailed": [],
-        "statedEditorHonoured": 21,
+        "statedEditorHonoured": 3,
         "typedWidget": 21
       },
       "gaps": [
@@ -1559,7 +1606,13 @@
           "count": 1,
           "kind": "carried",
           "term": "sh:hasValue",
-          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+          "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
+        },
+        {
+          "count": 1,
+          "kind": "dropped",
+          "term": "sh:not",
+          "why": "Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)"
         }
       ],
       "id": "evidenze-dataspace",
@@ -1590,7 +1643,7 @@
         },
         "groups": 10,
         "named": 32,
-        "nodeShapes": 7,
+        "nodeShapes": 8,
         "nodeShapesWithProperties": 7,
         "parameters": {
           "class": 4,
@@ -1622,19 +1675,20 @@
       "origin": "ours",
       "parsed": true,
       "source": {
+        "conditionals": 1,
         "dashEditor": 0,
         "langTags": {
-          "ca": 87,
-          "es": 113
+          "ca": 88,
+          "es": 114
         },
         "shGroup": 32,
-        "shMessage": 8,
-        "shMessageLangTagged": 8,
+        "shMessage": 10,
+        "shMessageLangTagged": 10,
         "shName": 32,
         "shuiEditor": 7
       },
-      "turtleBytes": 29088,
-      "turtleLines": 600
+      "turtleBytes": 28628,
+      "turtleLines": 591
     },
     {
       "fileNames": [
@@ -1649,34 +1703,40 @@
           "conjoined-property": 119
         },
         "diagnosticSamples": [
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/source",
-          "[conjoined-property] 4 property shapes state this path; the field is their conjunction. — http://xmlns.com/foaf/0.1/primaryTopic",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/language",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/modified",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/issued",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#endpointDescription",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#centroid",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/locn#geometry",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#bbox",
           "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/title",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license",
-          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/accessRights",
-          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://xmlns.com/foaf/0.1/page"
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#hadRole",
+          "[conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/relation",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#mediaType",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/format",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#checksum",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#spatialResolutionInMeters",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/odrl/2/hasPolicy",
+          "[conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status"
         ],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 85,
+          "InstancesSelectEditor": 85,
           "NumberFieldEditor": 3,
           "TextFieldEditor": 43
         },
+        "editorSources": {
+          "branch": 0,
+          "declared": 0,
+          "fallback": 5,
+          "scored": 126
+        },
         "fields": 131,
-        "inferred": 43,
+        "inferred": 131,
         "nested": 0,
         "noWidget": 0,
         "plainTextFallback": 43,
         "readOnly": 0,
         "shapesBuilt": 40,
         "shapesFailed": [],
-        "statedEditorHonoured": 88,
+        "statedEditorHonoured": 0,
         "typedWidget": 88
       },
       "gaps": [
@@ -1705,7 +1765,7 @@
         "conditionals": 0,
         "described": 292,
         "editors": {
-          "AutoCompleteEditor": 85,
+          "InstancesSelectEditor": 85,
           "NumberFieldEditor": 3,
           "TextFieldEditor": 204
         },
@@ -1754,6 +1814,7 @@
         }
       ],
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {
           "en": 762
@@ -1789,21 +1850,28 @@
         ],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 17,
+          "AutoCompleteEditor": 1,
           "DetailsEditor": 8,
+          "InstancesSelectEditor": 16,
           "IRIEditor": 11,
           "NumberFieldEditor": 4,
           "TextFieldEditor": 43
         },
+        "editorSources": {
+          "branch": 0,
+          "declared": 0,
+          "fallback": 37,
+          "scored": 46
+        },
         "fields": 83,
-        "inferred": 43,
+        "inferred": 75,
         "nested": 8,
         "noWidget": 0,
         "plainTextFallback": 43,
         "readOnly": 0,
         "shapesBuilt": 17,
         "shapesFailed": [],
-        "statedEditorHonoured": 32,
+        "statedEditorHonoured": 0,
         "typedWidget": 32
       },
       "gaps": [
@@ -1811,7 +1879,7 @@
           "count": 1,
           "kind": "carried",
           "term": "sh:hasValue",
-          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+          "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
         }
       ],
       "id": "healthdcat-ap-restricted",
@@ -1828,8 +1896,9 @@
         "conditionals": 0,
         "described": 2,
         "editors": {
-          "AutoCompleteEditor": 17,
+          "AutoCompleteEditor": 1,
           "DetailsEditor": 8,
+          "InstancesSelectEditor": 16,
           "IRIEditor": 11,
           "NumberFieldEditor": 4,
           "TextFieldEditor": 47
@@ -1891,6 +1960,7 @@
         }
       ],
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {
           "en": 14
@@ -1917,20 +1987,26 @@
         "diagnosticSamples": [],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 64,
           "DatePickerEditor": 5,
+          "InstancesSelectEditor": 64,
           "NumberFieldEditor": 3,
           "TextFieldEditor": 37
         },
+        "editorSources": {
+          "branch": 6,
+          "declared": 0,
+          "fallback": 17,
+          "scored": 86
+        },
         "fields": 109,
-        "inferred": 37,
+        "inferred": 109,
         "nested": 0,
         "noWidget": 0,
         "plainTextFallback": 37,
         "readOnly": 0,
         "shapesBuilt": 21,
         "shapesFailed": [],
-        "statedEditorHonoured": 72,
+        "statedEditorHonoured": 0,
         "typedWidget": 72
       },
       "gaps": [
@@ -1939,12 +2015,6 @@
           "kind": "unrendered",
           "term": "sh:shape",
           "why": "Not a SHACL 1.2 term at all — a leftover from a pre-REC draft, still shipped by DCAT-AP 3.0.1. It is recorded and ignored."
-        },
-        {
-          "count": 2,
-          "kind": "dropped",
-          "term": "sh:or",
-          "why": "Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI."
         },
         {
           "count": 1,
@@ -1956,7 +2026,7 @@
           "count": 1,
           "kind": "carried",
           "term": "sh:hasValue",
-          "why": "Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change."
+          "why": "Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it)."
         }
       ],
       "id": "dcat-ap-vendored",
@@ -1973,8 +2043,8 @@
         "conditionals": 0,
         "described": 0,
         "editors": {
-          "AutoCompleteEditor": 63,
           "DetailsEditor": 6,
+          "InstancesSelectEditor": 63,
           "NumberFieldEditor": 3,
           "TextFieldEditor": 37
         },
@@ -2005,6 +2075,7 @@
       "origin": "external",
       "parsed": true,
       "source": {
+        "conditionals": 0,
         "dashEditor": 0,
         "langTags": {
           "en": 16
@@ -2036,23 +2107,29 @@
         "diagnosticSamples": [],
         "duplicatePath": 0,
         "editorIds": {
-          "AutoCompleteEditor": 1,
           "DateTimePickerEditor": 11,
           "DetailsEditor": 23,
           "EnumSelectEditor": 2,
+          "InstancesSelectEditor": 1,
           "IRIEditor": 74,
           "NumberFieldEditor": 5,
           "TextFieldEditor": 27
         },
+        "editorSources": {
+          "branch": 0,
+          "declared": 0,
+          "fallback": 25,
+          "scored": 118
+        },
         "fields": 143,
-        "inferred": 27,
+        "inferred": 120,
         "nested": 23,
         "noWidget": 0,
         "plainTextFallback": 27,
         "readOnly": 0,
         "shapesBuilt": 14,
         "shapesFailed": [],
-        "statedEditorHonoured": 93,
+        "statedEditorHonoured": 0,
         "typedWidget": 93
       },
       "gaps": [
@@ -2092,10 +2169,10 @@
         "conditionals": 0,
         "described": 123,
         "editors": {
-          "AutoCompleteEditor": 1,
           "DateTimePickerEditor": 11,
           "DetailsEditor": 23,
           "EnumSelectEditor": 2,
+          "InstancesSelectEditor": 1,
           "IRIEditor": 74,
           "NumberFieldEditor": 5,
           "TextFieldEditor": 27
@@ -2188,6 +2265,7 @@
         }
       ],
       "source": {
+        "conditionals": 0,
         "dashEditor": 182,
         "langTags": {
           "en": 440
@@ -2204,19 +2282,19 @@
     }
   ],
   "widgetRegistry": [
-    "http://www.w3.org/ns/shacl-ui#AutoCompleteEditor",
-    "http://www.w3.org/ns/shacl-ui#BooleanEditor",
-    "http://www.w3.org/ns/shacl-ui#DatePickerEditor",
-    "http://www.w3.org/ns/shacl-ui#DateTimePickerEditor",
-    "http://www.w3.org/ns/shacl-ui#EnumSelectEditor",
-    "http://www.w3.org/ns/shacl-ui#IRIEditor",
-    "http://www.w3.org/ns/shacl-ui#InstancesSelectEditor",
-    "http://www.w3.org/ns/shacl-ui#NumberFieldEditor",
-    "http://www.w3.org/ns/shacl-ui#RichTextEditor",
-    "http://www.w3.org/ns/shacl-ui#SubClassEditor",
-    "http://www.w3.org/ns/shacl-ui#TextAreaEditor",
-    "http://www.w3.org/ns/shacl-ui#TextAreaWithLangEditor",
-    "http://www.w3.org/ns/shacl-ui#TextFieldEditor",
-    "http://www.w3.org/ns/shacl-ui#TextFieldWithLangEditor"
+    "http://www.w3.org/ns/shacl-ui/AutoCompleteEditor",
+    "http://www.w3.org/ns/shacl-ui/BooleanEditor",
+    "http://www.w3.org/ns/shacl-ui/DatePickerEditor",
+    "http://www.w3.org/ns/shacl-ui/DateTimePickerEditor",
+    "http://www.w3.org/ns/shacl-ui/EnumSelectEditor",
+    "http://www.w3.org/ns/shacl-ui/IRIEditor",
+    "http://www.w3.org/ns/shacl-ui/InstancesSelectEditor",
+    "http://www.w3.org/ns/shacl-ui/NumberFieldEditor",
+    "http://www.w3.org/ns/shacl-ui/RichTextEditor",
+    "http://www.w3.org/ns/shacl-ui/SubClassEditor",
+    "http://www.w3.org/ns/shacl-ui/TextAreaEditor",
+    "http://www.w3.org/ns/shacl-ui/TextAreaWithLangEditor",
+    "http://www.w3.org/ns/shacl-ui/TextFieldEditor",
+    "http://www.w3.org/ns/shacl-ui/TextFieldWithLangEditor"
   ]
 }

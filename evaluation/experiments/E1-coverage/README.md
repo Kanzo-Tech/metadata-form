@@ -61,66 +61,52 @@ Recorded so the corpus is not mistaken for a convenience sample.
 
 ## Tab. 3
 
-Full table with all columns in `results/coverage.md`. Headline:
+The full table, with every column, is `results/coverage.md` (generated; not
+copied here, so it cannot go stale). Columns:
 
-| Profile | Node shapes | Property shapes | Groups | Labelled | Typed widget | Nested | Plain text | Read-only | **Zero-code control** |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| DCAT-AP 3.0.1 | 91 | 298 | 0 | 0% | 108 | 35 | 153 | 2 | **48.0%** |
-| HealthDCAT-AP R5 | 52 | 139 | 0 | 0% | 56 | 34 | 47 | 2 | **64.7%** |
-| Health-RI Core | 14 | 143 | 0 | 100% | 93 | 23 | 27 | 0 | **81.1%** |
-| DCAT-AP.de 2.0 | 29 | 121 | 0 | 0% | 46 | 2 | 70 | 3 | **39.7%** |
-| FAIR Data Point | 13 | 37 | 0 | 2.7% | 22 | 7 | 8 | 0 | **78.4%** |
-| SPHN 2026.1 | 1744 | 1246 | 0 | 0% | 891 | 0 | 258 | 97 | **71.5%** |
-| Bioschemas v20250219 | 32 | 643 | 0 | 0% | 0 | 0 | 113 | 530 | **0.0%** |
-| SPDX 3.0.1 | 64 | 193 | 0 | 0% | 98 | 0 | 95 | 0 | **50.8%** |
-| Health-RI modules | 1 | 6 | 0 | 0% | 3 | 0 | 3 | 0 | **50.0%** |
-| Evidenze health (ours) | 10 | 48 | 13 | 97.9% | 32 | 8 | 8 | 0 | **83.3%** |
-| Evidenze data space (ours) | 7 | 33 | 10 | 97.0% | 21 | 4 | 8 | 0 | **75.8%** |
-
-**Zero-code control** = (typed widget + nested sub-form) / property shapes: the
-share that gets a control reflecting what the property actually *is*, with no
-per-profile code and no edit to the profile.
+- *Typed widget*, *Nested form*, *Plain-text floor*, *Read-only*, *No widget*: what
+  the field got. **Zero-code control** = (typed widget + nested form) / fields.
+- *Declared* / *Scored* / *Branch* / *Fallback*: where the engine took each field's
+  editor from (`editorSource`): a `shui:editor` the profile states; the SHACL-UI
+  Editor's Draft score function over the shape's facts (a declared editor counts
+  40); the first renderable `sh:or` branch; or the engine's own fallback (nested
+  form for `sh:node`, text field otherwise). Only the first two are SHACL-UI.
 
 The literal metric the spec asked for — "% that render with zero custom widget
-code" — is **100% in every profile**, because the type-fact fallback always
-resolves to a registered editor and nothing fails outright. That number is
-vacuous, so it is reported once, here, and the table reports what the property
+code" — is **100% in every profile** (*No widget* is 0 everywhere; the fallback
+always answers). That number is vacuous, so the table reports what the property
 degrades *to*.
 
 ## Findings
 
 ### F1 — the range is 0% to 83%, and the spread is about the profile, not us
 
-The nine external profiles span 0.0% to 81.1%. Our own two, designed against this
-engine, sit at 83.3% and 75.8% — **one of them below** Health-RI's 81.1%, which
-was authored with no knowledge of us. Type-fact inference is doing nearly all the
-work, and the adoption cost of shape-driven authoring is close to zero for a
-profile that already states its types: designing the profile for this engine buys
-2.2 points over the best profile that was not.
+The nine external profiles span 0.0% to 86.8% (SPHN). Our own two, designed
+against this engine, sit at 83.3% and 75.8% — **one of them below** Health-RI's
+81.1%, which was authored with no knowledge of us. What picks the widget is what
+the profile says its values *are* (datatype, class, node kind, `sh:in`), not
+annotation aimed at this engine: designing the profile for this engine buys 2.2
+points over the best profile that was not authored for it (like for like: our
+HealthDCAT-AP onboarding against Health-RI Core).
 
 The spread is explained almost entirely by whether the profile bothers to say
-what its values *are*: SPHN (765 `sh:class`, 256 `sh:datatype`) gets 71.5%,
+what its values *are*: SPHN (765 `sh:class`, 256 `sh:datatype`) gets 86.8%,
 Bioschemas (none of either) gets 0.0%.
 
 ### F2 — Bioschemas is the profile that breaks it, and the break is a path
 
-**0.0% zero-code control. 530 of 643 property shapes render read-only.** Nothing
-crashed; nothing failed to parse; the form is simply not editable.
+**0.0% zero-code control.** All 641 fields fall to the engine's fallback (a text
+field): none of the Bioschemas shapes states a datatype or a class, so the score
+function has nothing to score. Nothing crashed and nothing failed to parse.
 
 Every path in Bioschemas is `[ sh:alternativePath ( http://schema.org/x
-https://schema.org/x ) ]` — a complex path used to paper over the schema.org
-http/https namespace split, not to express a choice. Our engine projects complex
-paths correctly and then renders them read-only, because there is no
-well-defined "which branch do I write to" for an alternative path. For a profile
-that uses it once, that is a fair degradation. For a profile that uses it 530
-times as a portability workaround, it is total.
+https://schema.org/x ) ]` (530 alternative paths in the source, 528 fields) — a
+complex path used to paper over the schema.org http/https namespace split, not to
+express a choice. With this engine these fields are *editable* (Read-only = 0 for
+Bioschemas in `results/coverage.md`); the earlier run of this experiment rendered
+them read-only. The floor here is the missing type facts, not the path.
 
-This is the E1 result the spec's trap was written for. It is recorded, not
-excluded. It also suggests a cheap, principled fix worth a sentence in §8: an
-alternative path whose branches differ only in scheme/authority has an obvious
-canonical write target, and could be made editable.
-
-### F3 — Finding 6 of the earlier run was WRONG. Complex paths ship.
+### F3 — complex paths ship, and most of them are editable now
 
 The earlier README said "no published profile uses a complex path" and told §8 to
 concede the point. With n=2 external profiles that was true. With n=9 it is not:
@@ -134,9 +120,9 @@ concede the point. With n=2 external profiles that was true. With n=9 it is not:
 | HealthDCAT-AP | · | · | 2 |
 
 Five of nine external profiles ship at least one, across three of the seven path
-kinds. The full `PathExpr` union is *used*, not speculative — but note what F2
-says about it: parsing them is not the same as rendering them, and **all 634**
-complex-path fields in the corpus render read-only.
+kinds. The full `PathExpr` union is *used*, not speculative. The corpus holds 632
+complex-path fields (`form.complexPathFields` in `results/coverage.json`); **71**
+of them render read-only — all SPHN sequence paths — and the rest are editable.
 
 ### F4 — annotation does not predict usability, and one profile proves it twice
 
@@ -144,14 +130,16 @@ DCAT-AP 3.0.1 publishes the **same specification as SHACL twice**:
 
 | Encoding | `sh:name` on property shapes | Zero-code control |
 |---|---:|---:|
-| `html/shacl/` (hand-maintained) | 0 / 298 (0%) | **48.0%** |
-| `shacl/` (generated from UML) | 292 / 292 (100%) | **30.1%** |
+| `html/shacl/` (hand-maintained) | 0 / 298 (0%) | **47.5%** |
+| `shacl/` (generated from UML) | 292 / 292 (100%) | **67.2%** |
 
-The fully-labelled encoding renders *worse*. Labels are annotation; the widget
-comes from type facts, and the generated encoding drops the `sh:node`
-composition (0 nested sub-forms vs 35) in favour of a flat, closed, thoroughly
-documented list. A profile author optimising for readable documentation can make
-the form worse while making the spec better.
+The fully-labelled encoding now renders *better* (67.2% against 47.5%), which
+reverses the earlier run (48.0% against 30.1%): the two encodings' relative order
+depends on how the engine chooses an editor, not on the spec. What stays true is
+that labels are annotation and the widget comes from type facts, and that the same
+specification, encoded twice, does not produce the same form. The generated
+encoding still has no `sh:node` composition (0 nested sub-forms; the hand-written
+one has 24) and flattens the spec into a closed, documented list.
 
 This is a controlled comparison — same spec, same release, same day — and it is
 the strongest single piece of evidence in E1.
@@ -163,8 +151,8 @@ files. Loaded alone:
 
 | File | Fields | Zero-code control |
 |---|---:|---:|
-| `shapes.ttl` (core constraints) | 130 | **13.8%** |
-| `range.ttl` (class ranges) | 82 | **98.8%** |
+| `shapes.ttl` (core constraints) | 130 | **12.3%** |
+| `range.ttl` (class ranges) | 82 | **100.0%** |
 | `mdr-vocabularies.shape.ttl` | 42 | **100.0%** |
 | `shapes_recommended.ttl` | 36 | **0.0%** |
 | `deprecateduris.ttl` | 8 | **25.0%** |
@@ -178,7 +166,7 @@ are then described by two shapes at once.
 
 `results/coverage.md` reports this per-file table for every multi-file profile.
 It is worth a paragraph in §7.1: real profiles ship split, most tooling assumes a
-single graph, and *which* split a consumer picks moves the headline number by 34
+single graph, and *which* split a consumer picks moves the headline number by 35
 points.
 
 ### F6 — no external profile uses `sh:group`. Still true, now with n=9.
@@ -219,23 +207,26 @@ fails the run if `dash:editor` ever starts selecting a widget, or if
 
 ### F9 — monolingual, with one exception
 
-Language tags across the corpus: `en` everywhere, `de` only in DCAT-AP.de (251
-`@de` to 22 `@en`), `es`/`ca` only in ours. SPHN, Bioschemas and FDP carry no
+Language tags across the corpus: `en` everywhere, `de` only in DCAT-AP.de (214
+`@de` outside comments; 251 counting commented-out lines), `es`/`ca` only in ours. SPHN, Bioschemas and FDP carry no
 language tags at all.
 
 The shapes meant to onboard health data holders across the EU are published in
 one language. DCAT-AP.de is the counter-example that shows it is achievable, and
-it does it in the place that matters most — 102 lang-tagged `sh:message`s. Feed
+it does it in the place that matters most — 143 lang-tagged `sh:message`s. Feed
 this to §5 and E3, and note that a validator which flattens lang tags removes the
 only incentive to write them.
 
 ### F10 — nothing broke the engine
 
-15 shapes graphs, 2.0 MB of Turtle, 2 149 node shapes and 2 907 property shapes
-in the 11 counted profiles: **0 parse failures, 0
-shapes that failed to build, 0 diagnostics.** SPHN's 930 kB single file (1744
-node shapes, 233 of them closed, ~480 SPARQL constraints) parses and builds
-without complaint.
+15 shapes graphs, 2.1 MB of Turtle, 2 059 node shapes and 2 907 property shapes
+in the 11 counted profiles: **0 parse failures, 0 shapes that failed to build.**
+Diagnostics are not zero any more (the form builder reports what it declines to
+do): `conjoined-property` (two property shapes on one path), `conflicting-constraint`
+(2, DCAT-AP), `unrenderable-alternative` (2, DCAT-AP.de: an `sh:or` branch that asks
+for a blank node); see the per-profile sections of `results/coverage.md`. SPHN's
+930 kB single file (1744 node shapes, 233 of them closed, ~480 SPARQL
+constraints) parses and builds without complaint.
 
 The harness is written to make a failure a first-class result: on a parse error
 it re-parses the profile file by file and reports which file and which message,
@@ -260,29 +251,31 @@ Ranked by occurrences across the corpus:
 | `sh:sparql` | dropped | 480 | sphn | SPARQL constraint: validation-only, no affordance a form can derive from a query. |
 | `sh:closed` | dropped | 233 | sphn | The form offers exactly the declared fields so it cannot *violate* closedness — but it cannot show the user that nothing else is allowed. |
 | `sh:ignoredProperties` | dropped | 233 | sphn | Parameter of `sh:closed`. |
-| `sh:or` | unrendered | 216 | sphn, dcat-ap-3, dcat-ap-de, healthdcat-ap, evidenze-health | Parsed into `logical.or` and never read. The disjuncts — usually the real datatype/class alternatives — are invisible and unenforced in the UI. |
+| `sh:or` | **read** (was: unrendered) | 216 | sphn, dcat-ap-3, dcat-ap-de, healthdcat-ap, ours | Now read: `planDisjunction` turns branches that constrain the value itself (datatype, nodeKind, class, `sh:in`) into the field's alternatives. A branch about the value's own structure is not offered and is reported as an `unrenderable-alternative` diagnostic (2 in the corpus, DCAT-AP.de). Removed from the "cannot render" table of `results/coverage.md`. |
 | `dash:editor` | unrendered | 168 | health-ri-core, fair-data-point | Recorded, not acted on. Only `shui:editor` selects a widget. This is the measured baseline. |
 | `dash:viewer` | unrendered | 165 | health-ri-core, fair-data-point | As `dash:editor`. |
 | `sh:target` | dropped | 96 | sphn | SPARQL/custom target; only `sh:targetClass` resolves a root shape. |
-| `sh:hasValue` | carried | 84 | dcat-ap-de, healthdcat-ap, dcat-ap-3, spdx-3, ours | Reaches `FieldConstraints`; no widget reads it. A property pinned to one value renders as a free input the user can wrongly change. |
+| `sh:hasValue` | carried | 81 | dcat-ap-de, healthdcat-ap, dcat-ap-3, spdx-3, ours | Seeds a new instance's graph, and reaches `FieldConstraints`; no widget reads it. A property pinned to one value renders as a free input the user can change (the validator then reports it). |
 | `sh:property` (nested) | unrendered | 19 | dcat-ap-de | A property shape *inside* another property shape (under `sh:or`, `sh:qualifiedValueShape`). Only node-shape properties become fields. |
-| `sh:not` | unrendered | 12 | spdx-3 | Negation has no form affordance. |
+| `sh:not` | unrendered | 14 | spdx-3, ours | Negation has no form affordance. (Inside the Core conditional `sh:or ( [ sh:not C ] T )` it is consumed by the engine's conditional evaluation: our two profiles state one each.) |
 | `sh:shape` | unrendered | 5 | dcat-ap-3 | Not a SHACL 1.2 term at all — a pre-REC leftover DCAT-AP 3.0.1 still ships. |
-| `sh:deactivated` | dropped | 3 | dcat-ap-de | **Wrongly rendered, not merely ignored**: a property the profile switched off still gets a field. A correctness bug. |
-| `sh:qualifiedValueShape` (+`Min`/`MaxCount`) | unrendered | 7 | dcat-ap-de | "at least n values matching shape S" is per-value; a field models one editor for all its values. |
+| `sh:deactivated` | **honoured** (was: dropped) | 3 | dcat-ap-de | Fixed: a deactivated property or node shape builds no field, with a `deactivated-shape` diagnostic (`test/deactivated.test.ts`). Removed from the "cannot render" table. |
+| `sh:qualifiedValueShape` (+`Min`/`MaxCount`) | unrendered | 5 | dcat-ap-de | "at least n values matching shape S" is per-value; a field models one editor for all its values. |
 | `sh:targetObjectsOf` | dropped | 1 | dcat-ap-de | Target selector; not used for root-shape resolution. |
 | `sh:entailment` | dropped | 1 | sphn | Entailment regime; ignored. |
 | `sh:minExclusive` | carried | 1 | health-ri-core | No numeric control takes an exclusive bound and no epsilon is right for both `xsd:integer` and `xsd:double`. Rejected on commit, invisible in the UI. |
 | `sh:equals` / `sh:disjoint` / `sh:lessThan` / `sh:lessThanOrEquals` | unrendered | 0 | — | Cross-property constraints; the field model is per-property with no view of a sibling. In the ledger, unused by this corpus. |
 
-Two of these deserve §8 in their own right rather than a table row:
+Two entries of the earlier run no longer belong to the list:
 
-1. **`sh:deactivated` is a bug, not a gap.** Everything else here degrades. This
-   one renders a property the author explicitly turned off. Small fix, and it is
-   dishonest to report it as a limitation.
-2. **`sh:or` is the largest real gap** (216 occurrences, five profiles). It is
-   the standard way to say "an IRI *or* a literal", "a `dct:LicenseDocument` *or*
-   a URL", and we show a field derived from neither branch.
+1. **`sh:deactivated` was a bug, not a gap**, and is fixed: the engine now drops a
+   deactivated shape (SHACL 2.1.6).
+2. **`sh:or` was the largest real gap** (216 occurrences) and is now read. It is
+   still the standard way to say "an IRI *or* a literal"; the field now offers the
+   branches it can render as alternatives.
+
+The largest remaining gap is validation-only constructs (`sh:sparql`, `sh:closed`)
+in SPHN, which have no form affordance by nature.
 
 ## Methodology notes
 
@@ -328,7 +321,7 @@ counting anything.
   profile uses, since E1 validates nothing. The histogram is what a report *would*
   cite. E5 measures the observed distribution.
 - **Profile boundaries are a judgement call** and they move the numbers.
-  `dcat-ap-3` is the whole published SHACL set of the release (48.0%); the
+  `dcat-ap-3` is the whole published SHACL set of the release (47.5%); the
   `dcat-ap-vendored` variant, which is `shapes.ttl` alone as Health-RI copied it,
   scores 66.1%. Both are in `coverage.md`; F5 is the honest way to read the pair.
 - **`health-ri-modules` is tiny** (6 property shapes) and its 50.0% is one

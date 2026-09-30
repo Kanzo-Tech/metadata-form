@@ -25,7 +25,7 @@ Excluded from the measurement, kept for completeness:
 
 ## Why it is in the corpus
 
-It is the only profile here that is genuinely multilingual (251 `@de`, 22 `@en`)
+It is the only profile here that is genuinely multilingual (214 `@de` in triples, 251 counting commented-out lines)
 and it is by some way the most construct-diverse: `sh:or`, `sh:qualifiedValueShape`
 with `sh:qualifiedMinCount`/`sh:qualifiedMaxCount`, `sh:deactivated`,
 `sh:pattern` + `sh:flags`, `sh:targetObjectsOf`, `sh:alternativePath`, and

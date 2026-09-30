@@ -1,10 +1,11 @@
 # E1 — coverage across published SHACL profiles
 
-Generated 2026-09-03 by `coverage.harness.ts`. Do not edit by hand.
+Generated 2026-09-30 by `coverage.harness.ts`. Do not edit by hand.
 
 **Baseline measured:** rudof reads only `shui:editor`, so the `dash:editor`
 hints most published profiles carry are recorded and ignored, and every
-editor is inferred from datatype/nodeKind facts. This is what a data space
+editor is chosen by the engine (the SHACL-UI score function over the shape's
+facts, else the engine's own fallback). This is what a data space
 adopting an official profile gets today, unmodified. The harness asserts
 this rather than assuming it.
 
@@ -15,19 +16,19 @@ out of the headline tables. See each one's note for the evidence.
 
 ## Tab. 3 — coverage
 
-| Profile | Node shapes | Property shapes | Groups | Labelled | Fields | Typed widget | Nested form | Plain-text floor | Read-only | No widget | **Zero-code control** |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| DCAT-AP 3.0.1 (SEMIC) | 91 | 298 | 0 | 0 (0.0%) | 297 | 119 | 24 | 154 | 0 | 0 | **48.1%** |
-| HealthDCAT-AP Release 5 (European Commission) | 52 | 139 | 0 | 0 (0.0%) | 134 | 56 | 34 | 44 | 0 | 0 | **67.2%** |
-| Health-RI Core (HealthDCAT-AP national implementation) | 14 | 143 | 0 | 143 (100.0%) | 143 | 93 | 23 | 27 | 0 | 0 | **81.1%** |
-| DCAT-AP.de 2.0 (national extension, Germany) | 29 | 121 | 0 | 0 (0.0%) | 104 | 48 | 2 | 54 | 0 | 0 | **48.1%** |
-| FAIR Data Point (FAIRDataTeam reference implementation) | 13 | 37 | 0 | 1 (2.7%) | 37 | 22 | 7 | 8 | 0 | 0 | **78.4%** |
-| SPHN 2026.1 (Swiss Personalized Health Network) | 1744 | 1246 | 0 | 0 (0.0%) | 1246 | 1085 | 0 | 90 | 71 | 0 | **87.1%** |
-| Bioschemas profiles v20250219 | 32 | 643 | 0 | 0 (0.0%) | 641 | 0 | 0 | 641 | 0 | 0 | **0.0%** |
-| SPDX 3.0.1 model | 64 | 193 | 0 | 0 (0.0%) | 193 | 98 | 0 | 95 | 0 | 0 | **50.8%** |
-| Health-RI domain modules (health, imaging, omics) | 1 | 6 | 0 | 0 (0.0%) | 6 | 3 | 0 | 3 | 0 | 0 | **50.0%** |
-| Evidenze HealthDCAT-AP onboarding (ours) | 10 | 48 | 13 | 47 (97.9%) | 48 | 32 | 8 | 8 | 0 | 0 | **83.3%** |
-| Evidenze data space onboarding (ours) | 7 | 33 | 10 | 32 (97.0%) | 33 | 21 | 4 | 8 | 0 | 0 | **75.8%** |
+| Profile | Node shapes | Property shapes | Groups | Labelled | Fields | Typed widget | Nested form | Plain-text floor | Read-only | No widget | **Zero-code control** | Declared | Scored | Branch | Fallback |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| DCAT-AP 3.0.1 (SEMIC) | 91 | 298 | 0 | 0 (0.0%) | 297 | 117 | 24 | 156 | 0 | 0 | **47.5%** | 0 | 158 | 8 | 131 |
+| HealthDCAT-AP Release 5 (European Commission) | 52 | 139 | 0 | 0 (0.0%) | 134 | 56 | 34 | 44 | 0 | 0 | **67.2%** | 0 | 94 | 0 | 40 |
+| Health-RI Core (HealthDCAT-AP national implementation) | 14 | 143 | 0 | 143 (100.0%) | 143 | 93 | 23 | 27 | 0 | 0 | **81.1%** | 0 | 118 | 0 | 25 |
+| DCAT-AP.de 2.0 (national extension, Germany) | 29 | 121 | 0 | 0 (0.0%) | 104 | 48 | 2 | 54 | 0 | 0 | **48.1%** | 0 | 49 | 2 | 53 |
+| FAIR Data Point (FAIRDataTeam reference implementation) | 13 | 37 | 0 | 1 (2.7%) | 37 | 22 | 7 | 8 | 0 | 0 | **78.4%** | 0 | 30 | 0 | 7 |
+| SPHN 2026.1 (Swiss Personalized Health Network) | 1744 | 1246 | 0 | 0 (0.0%) | 1246 | 1081 | 0 | 94 | 71 | 0 | **86.8%** | 0 | 1035 | 199 | 12 |
+| Bioschemas profiles v20250219 | 32 | 643 | 0 | 0 (0.0%) | 641 | 0 | 0 | 641 | 0 | 0 | **0.0%** | 0 | 0 | 0 | 641 |
+| SPDX 3.0.1 model | 64 | 193 | 0 | 0 (0.0%) | 193 | 83 | 0 | 110 | 0 | 0 | **43.0%** | 0 | 184 | 0 | 9 |
+| Health-RI domain modules (health, imaging, omics) | 1 | 6 | 0 | 0 (0.0%) | 6 | 3 | 0 | 3 | 0 | 0 | **50.0%** | 0 | 5 | 0 | 1 |
+| Evidenze HealthDCAT-AP onboarding (ours) | 11 | 48 | 13 | 47 (97.9%) | 48 | 32 | 8 | 8 | 0 | 0 | **83.3%** | 10 | 37 | 0 | 1 |
+| Evidenze data space onboarding (ours) | 8 | 33 | 10 | 32 (97.0%) | 33 | 21 | 4 | 8 | 0 | 0 | **75.8%** | 7 | 25 | 0 | 1 |
 
 *Labelled* = property shapes carrying an `sh:name`; the rest fall back to the
 local name of their predicate. *Fields* ≤ *property shapes*: two property
@@ -37,7 +38,10 @@ number, boolean, enum select, autocomplete, IRI, lang-string…). *Nested form* 
 an `sh:node` reference, rendered as a sub-form. *Plain-text floor* = the engine
 could say nothing better than a bare text input. *Read-only* = the path is not
 a simple predicate, so values are shown but not editable. *No widget* = nothing
-rendered at all.
+rendered at all. *Declared* / *Scored* / *Branch* / *Fallback* count the fields by
+where the engine took the editor from: a `shui:editor` the profile states, the
+SHACL-UI score function, the first `sh:or` branch, or the engine's own fallback
+(the last two are not SHACL-UI).
 
 **Zero-code control** = (typed widget + nested form) / fields: the share that
 gets a control reflecting what the property actually *is*, with no per-profile
@@ -45,14 +49,14 @@ code and no edit to the profile. The plain-text floor and the read-only column
 are the complement and are deliberately not folded in — a bare text box for a
 controlled vocabulary is a form that renders, not a form that works.
 
-**No widget** is zero in every profile: the type-fact fallback always resolves to *something*, so nothing fails to render outright. The whole question is what it degrades to, which is why the literal 'renders with zero custom widget code' figure would be 100% everywhere and is not the number reported.
+**No widget** is zero in every profile: the engine's fallback always resolves to *something*, so nothing fails to render outright. The whole question is what it degrades to, which is why the literal 'renders with zero custom widget code' figure would be 100% everywhere and is not the number reported.
 
 ### What authoring a profile for this engine buys
 
 | Comparison | Ours | | Externally authored | | Difference |
 |---|---|---:|---|---:|---:|
 | like for like — the same profile, authored twice | Evidenze HealthDCAT-AP onboarding | 83.3% | Health-RI Core | 81.1% | **+2.2 points** |
-| corpus extremes — best of each origin | Evidenze HealthDCAT-AP onboarding | 83.3% | SPHN 2026.1 | 87.1% | **-3.7 points** |
+| corpus extremes — best of each origin | Evidenze HealthDCAT-AP onboarding | 83.3% | SPHN 2026.1 | 86.8% | **-3.4 points** |
 
 The first row is the adoption-cost measurement: both are implementations of
 the same application profile, one written with complete knowledge of this
@@ -82,14 +86,14 @@ produce the same form.
 | DCAT-AP 3.0.1 (SEMIC) | 5 | 65 | 0 | 0 | 0 | 0 | 11 | 6 (54.5%) | en (51) |
 | HealthDCAT-AP Release 5 (European Commission) | 4 | 50 | 0 | 0 | 0 | 0 | 43 | 0 (0.0%) | en (17) |
 | Health-RI Core (HealthDCAT-AP national implementation) | 14 | 83 | 0 | 141 | 0 | 143 | 0 | — | en (321) |
-| DCAT-AP.de 2.0 (national extension, Germany) | 4 | 70 | 0 | 0 | 0 | 23 | 183 | 179 (97.8%) | de (251) |
+| DCAT-AP.de 2.0 (national extension, Germany) | 4 | 70 | 0 | 0 | 0 | 23 | 147 | 143 (97.3%) | de (214) |
 | FAIR Data Point (FAIRDataTeam reference implementation) | 8 | 9 | 0 | 27 | 0 | 1 | 0 | — | — |
 | SPHN 2026.1 (Swiss Personalized Health Network) | 1 | 930 | 0 | 0 | 0 | 0 | 636 | 0 (0.0%) | — |
 | Bioschemas profiles v20250219 | 1 | 222 | 0 | 0 | 0 | 0 | 0 | — | — |
 | SPDX 3.0.1 model | 1 | 179 | 0 | 0 | 0 | 0 | 0 | — | en (530) |
 | Health-RI domain modules (health, imaging, omics) | 5 | 5 | 0 | 0 | 0 | 1 | 0 | — | en (15) |
-| Evidenze HealthDCAT-AP onboarding (ours) | 1 | 34 | 11 | 0 | 47 | 47 | 14 | 14 (100.0%) | es (106), ca (82) |
-| Evidenze data space onboarding (ours) | 1 | 28 | 7 | 0 | 32 | 32 | 8 | 8 (100.0%) | es (113), ca (87) |
+| Evidenze HealthDCAT-AP onboarding (ours) | 1 | 33 | 10 | 0 | 47 | 47 | 16 | 16 (100.0%) | es (107), ca (83) |
+| Evidenze data space onboarding (ours) | 1 | 28 | 7 | 0 | 32 | 32 | 10 | 10 (100.0%) | es (114), ca (88) |
 
 These are textual counts over the whole profile, i.e. what the author wrote.
 They can exceed the *Labelled* column of Tab. 3, which counts only property
@@ -159,17 +163,15 @@ not the same problem:
 | `sh:sparql` | dropped | 480 | sphn=480 | SPARQL-based constraint. Validation-only; there is no affordance a form can derive from a query. |
 | `sh:closed` | dropped | 233 | sphn=233 | Node-level closedness. A form offers exactly the fields the shape declares, so it cannot violate closedness — but it also cannot show the user that no other property is permitted. |
 | `sh:ignoredProperties` | dropped | 233 | sphn=233 | Parameter of sh:closed. |
-| `sh:or` | dropped / unrendered | 216 | dcat-ap-3=9, healthdcat-ap=2, dcat-ap-de=4, sphn=199, evidenze-health=2 | Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI. |
 | `dash:editor` | unrendered | 168 | health-ri-core=141, fair-data-point=27 | The DASH editor vocabulary. The engine records the term and does not act on it: only `shui:editor` selects a widget. This is the measured baseline — see the note above the coverage table. |
 | `dash:viewer` | unrendered | 165 | health-ri-core=141, fair-data-point=24 | See dash:editor. |
 | `sh:target` | dropped | 96 | sphn=96 | SPARQL/custom target; not used for root-shape resolution. |
-| `sh:hasValue` | carried / dropped | 84 | dcat-ap-3=16, healthdcat-ap=25, dcat-ap-de=28, spdx-3=12, evidenze-health=2, evidenze-dataspace=1 | Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change. |
+| `sh:hasValue` | carried / dropped | 81 | dcat-ap-3=16, healthdcat-ap=24, dcat-ap-de=27, spdx-3=12, evidenze-health=1, evidenze-dataspace=1 | Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it). |
 | `sh:property` | unrendered | 19 | dcat-ap-de=19 | A property shape nested INSIDE another property shape — reached as a constraint parameter (under sh:or, sh:qualifiedValueShape…) rather than from a node shape. Only node-shape properties are built into fields, so these are invisible. (The ordinary node-shape sh:property is the mechanism itself and is of course read; it is filtered out of this count.) |
-| `sh:not` | unrendered | 12 | spdx-3=12 | Negation has no form affordance; nothing narrows the input. |
+| `sh:not` | dropped / unrendered | 14 | spdx-3=12, evidenze-health=1, evidenze-dataspace=1 | Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.) |
 | `sh:shape` | unrendered | 5 | dcat-ap-3=5 | Not a SHACL 1.2 term at all — a leftover from a pre-REC draft, still shipped by DCAT-AP 3.0.1. It is recorded and ignored. |
-| `sh:deactivated` | dropped | 3 | dcat-ap-de=3 | WRONGLY RENDERED, not merely ignored: the component is recorded but never honoured, so a property the profile switched off still gets a field. A correctness bug, not a missing feature. |
-| `sh:qualifiedMinCount` | unrendered | 3 | dcat-ap-de=3 | Parameter of sh:qualifiedValueShape. |
-| `sh:qualifiedValueShape` | unrendered | 3 | dcat-ap-de=3 | No slot in the typed IR. 'at least n of the values must match shape S' is a per-value constraint the field, which models one editor for all its values, cannot express. |
+| `sh:qualifiedMinCount` | unrendered | 2 | dcat-ap-de=2 | Parameter of sh:qualifiedValueShape. |
+| `sh:qualifiedValueShape` | unrendered | 2 | dcat-ap-de=2 | No slot in the typed IR. 'at least n of the values must match shape S' is a per-value constraint the field, which models one editor for all its values, cannot express. |
 | `sh:entailment` | dropped | 1 | sphn=1 | Entailment regime declaration; ignored. |
 | `sh:minExclusive` | carried | 1 | health-ri-core=1 | No numeric control here takes an exclusive bound, and no epsilon is right for both xsd:integer and xsd:double. Enforced on commit by the validator, invisible in the UI. |
 | `sh:qualifiedMaxCount` | unrendered | 1 | dcat-ap-de=1 | Parameter of sh:qualifiedValueShape. |
@@ -183,10 +185,11 @@ not the same problem:
 - node shapes: 91 (61 carry property shapes)
 - property shapes: 298; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 27 (9.1%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 119 from a stated `shui:editor`, 154 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 273 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=158, branch=8, fallback=131
 
-**Editors resolved:** TextFieldEditor=154, AutoCompleteEditor=87, DetailsEditor=24, IRIEditor=22, DatePickerEditor=7, NumberFieldEditor=3
+**Editors resolved:** TextFieldEditor=156, InstancesSelectEditor=83, IRIEditor=46, DatePickerEditor=5, AutoCompleteEditor=4, NumberFieldEditor=3
 
 **SHACL parameters present:** path=298, severity=281, nodeKind=144, class=84, minCount=71, maxCount=54, node=38, description=27, hasValue=16, datatype=6, message=6, shape=5
 
@@ -203,13 +206,12 @@ not the same problem:
 | `deprecateduris.ttl` | 5 | 8 | 1 | 1 | 6 | 0 | 25.0% |
 | `mdr-vocabularies.shape.ttl` | 28 | 42 | 18 | 24 | 0 | 0 | 100.0% |
 | `range.ttl` | 15 | 82 | 82 | 0 | 0 | 0 | 100.0% |
-| `shapes.ttl` | 25 | 130 | 18 | 0 | 112 | 0 | 13.8% |
+| `shapes.ttl` | 25 | 130 | 16 | 0 | 114 | 0 | 12.3% |
 | `shapes_recommended.ttl` | 19 | 36 | 0 | 0 | 36 | 0 | 0.0% |
 
 **Cannot render:**
 
-- `sh:hasValue` ×16 (carried) — Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change.
-- `sh:or` ×9 (dropped) — Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI.
+- `sh:hasValue` ×16 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
 - `sh:shape` ×5 (unrendered) — Not a SHACL 1.2 term at all — a leftover from a pre-REC draft, still shipped by DCAT-AP 3.0.1. It is recorded and ignored.
 
 ## HealthDCAT-AP Release 5 (European Commission)
@@ -220,10 +222,11 @@ not the same problem:
 - node shapes: 52 (47 carry property shapes)
 - property shapes: 139; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 6 (4.3%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 56 from a stated `shui:editor`, 44 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 100 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=94, branch=0, fallback=40
 
-**Editors resolved:** TextFieldEditor=44, DetailsEditor=34, IRIEditor=27, AutoCompleteEditor=25, NumberFieldEditor=4
+**Editors resolved:** IRIEditor=51, TextFieldEditor=44, InstancesSelectEditor=16, DetailsEditor=10, AutoCompleteEditor=9, NumberFieldEditor=4
 
 **SHACL parameters present:** path=139, severity=112, nodeKind=85, message=65, minCount=62, node=36, class=25, hasValue=24, maxCount=17, description=6, datatype=4
 
@@ -232,8 +235,8 @@ not the same problem:
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://healthdataportal.eu/ns/health#hdab
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/930/custodian
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#theme
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/csvw#column
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
@@ -246,8 +249,7 @@ not the same problem:
 
 **Cannot render:**
 
-- `sh:hasValue` ×25 (carried) — Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change.
-- `sh:or` ×2 (dropped) — Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI.
+- `sh:hasValue` ×24 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
 
 ## Health-RI Core (HealthDCAT-AP national implementation)
 
@@ -257,10 +259,11 @@ not the same problem:
 - node shapes: 14 (13 carry property shapes)
 - property shapes: 143; property groups: 0
 - carrying sh:name: 143 (100.0%); sh:description: 123 (86.0%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 93 from a stated `shui:editor`, 27 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 120 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=118, branch=0, fallback=25
 
-**Editors resolved:** IRIEditor=74, TextFieldEditor=27, DetailsEditor=23, DateTimePickerEditor=11, NumberFieldEditor=5, EnumSelectEditor=2, AutoCompleteEditor=1
+**Editors resolved:** IRIEditor=74, TextFieldEditor=27, DetailsEditor=23, DateTimePickerEditor=11, NumberFieldEditor=5, EnumSelectEditor=2, InstancesSelectEditor=1
 
 **SHACL parameters present:** name=143, path=143, editor=141, viewer=141, description=123, nodeKind=112, maxCount=67, minCount=44, node=23, datatype=20, pattern=13, uniqueLang=13, defaultValue=2, in=2, class=1, minExclusive=1
 
@@ -297,27 +300,28 @@ not the same problem:
 - node shapes: 29 (23 carry property shapes)
 - property shapes: 121; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 1 (0.8%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 48 from a stated `shui:editor`, 54 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 102 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=49, branch=2, fallback=53
 
-**Editors resolved:** TextFieldEditor=54, AutoCompleteEditor=27, IRIEditor=21, DetailsEditor=2
+**Editors resolved:** TextFieldEditor=54, InstancesSelectEditor=27, IRIEditor=21, DetailsEditor=2
 
 **SHACL parameters present:** path=121, message=102, severity=99, nodeKind=30, class=27, maxCount=19, property=19, minCount=17, flags=3, node=3, pattern=3, or=2, qualifiedMinCount=2, qualifiedValueShape=2, description=1, qualifiedMaxCount=1
 
 **Diagnostics:** conjoined-property=17, unrenderable-alternative=2
 
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/plannedAvailability
+- [unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Catalog_dct_spatial_v_IRIorClass
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#algorithm
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/startDate
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://schema.org/endDate
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://data.europa.eu/r5r#availability
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
+- [unrenderable-alternative] sh:or alternative 2 is not offered: it asks for a blank node, which has no form a user can enter. — http://dcat-ap.de/def/dcatde/Dataset_dct_spatial_v_IRIorClass
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/type
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://dcat-ap.de/def/dcatde/politicalGeocodingLevelURI
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/publisher
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#granularity
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
@@ -330,12 +334,10 @@ not the same problem:
 
 **Cannot render:**
 
-- `sh:hasValue` ×28 (dropped) — Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change.
+- `sh:hasValue` ×27 (dropped) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
 - `sh:property` ×19 (unrendered) — A property shape nested INSIDE another property shape — reached as a constraint parameter (under sh:or, sh:qualifiedValueShape…) rather than from a node shape. Only node-shape properties are built into fields, so these are invisible. (The ordinary node-shape sh:property is the mechanism itself and is of course read; it is filtered out of this count.)
-- `sh:or` ×4 (unrendered) — Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI.
-- `sh:deactivated` ×3 (dropped) — WRONGLY RENDERED, not merely ignored: the component is recorded but never honoured, so a property the profile switched off still gets a field. A correctness bug, not a missing feature.
-- `sh:qualifiedMinCount` ×3 (unrendered) — Parameter of sh:qualifiedValueShape.
-- `sh:qualifiedValueShape` ×3 (unrendered) — No slot in the typed IR. 'at least n of the values must match shape S' is a per-value constraint the field, which models one editor for all its values, cannot express.
+- `sh:qualifiedMinCount` ×2 (unrendered) — Parameter of sh:qualifiedValueShape.
+- `sh:qualifiedValueShape` ×2 (unrendered) — No slot in the typed IR. 'at least n of the values must match shape S' is a per-value constraint the field, which models one editor for all its values, cannot express.
 - `sh:qualifiedMaxCount` ×1 (unrendered) — Parameter of sh:qualifiedValueShape.
 - `sh:targetObjectsOf` ×1 (dropped) — Target selector; not used for root-shape resolution.
 
@@ -347,8 +349,9 @@ not the same problem:
 - node shapes: 13 (11 carry property shapes)
 - property shapes: 37; property groups: 0
 - carrying sh:name: 1 (2.7%); sh:description: 0 (0.0%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 22 from a stated `shui:editor`, 8 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 30 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=30, branch=0, fallback=7
 
 **Editors resolved:** IRIEditor=14, TextFieldEditor=8, DetailsEditor=7, DateTimePickerEditor=6, DatePickerEditor=2
 
@@ -380,10 +383,11 @@ not the same problem:
 - node shapes: 1744 (233 carry property shapes)
 - property shapes: 1246; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 0 (0.0%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 1085 from a stated `shui:editor`, 90 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 1175 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=1035, branch=199, fallback=12
 
-**Editors resolved:** AutoCompleteEditor=961, DateTimePickerEditor=160, TextFieldEditor=90, EnumSelectEditor=26, NumberFieldEditor=5, IRIEditor=4
+**Editors resolved:** InstancesSelectEditor=961, DateTimePickerEditor=160, TextFieldEditor=94, EnumSelectEditor=26, NumberFieldEditor=5
 
 **SHACL parameters present:** path=1246, minCount=1220, maxCount=962, class=765, datatype=256, or=199, in=26
 
@@ -393,7 +397,6 @@ not the same problem:
 - `sh:sparql` ×480 (dropped) — SPARQL-based constraint. Validation-only; there is no affordance a form can derive from a query.
 - `sh:closed` ×233 (dropped) — Node-level closedness. A form offers exactly the fields the shape declares, so it cannot violate closedness — but it also cannot show the user that no other property is permitted.
 - `sh:ignoredProperties` ×233 (dropped) — Parameter of sh:closed.
-- `sh:or` ×199 (unrendered) — Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI.
 - `sh:target` ×96 (dropped) — SPARQL/custom target; not used for root-shape resolution.
 - `sh:entailment` ×1 (dropped) — Entailment regime declaration; ignored.
 
@@ -405,8 +408,9 @@ not the same problem:
 - node shapes: 32 (32 carry property shapes)
 - property shapes: 643; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 643 (100.0%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 0 from a stated `shui:editor`, 641 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 641 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=0, branch=0, fallback=641
 
 **Editors resolved:** TextFieldEditor=641
 
@@ -425,17 +429,18 @@ not the same problem:
 - node shapes: 64 (52 carry property shapes)
 - property shapes: 193; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 0 (0.0%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 98 from a stated `shui:editor`, 95 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 193 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=184, branch=0, fallback=9
 
-**Editors resolved:** TextFieldEditor=95, AutoCompleteEditor=43, EnumSelectEditor=28, IRIEditor=13, NumberFieldEditor=9, BooleanEditor=5
+**Editors resolved:** TextFieldEditor=110, EnumSelectEditor=28, InstancesSelectEditor=24, AutoCompleteEditor=19, NumberFieldEditor=7, BooleanEditor=5
 
 **SHACL parameters present:** path=193, nodeKind=184, maxCount=134, datatype=113, class=71, minCount=54, in=28, pattern=21, message=9, not=9
 
 **Cannot render:**
 
-- `sh:hasValue` ×12 (dropped) — Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change.
-- `sh:not` ×12 (unrendered) — Negation has no form affordance; nothing narrows the input.
+- `sh:hasValue` ×12 (dropped) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
+- `sh:not` ×12 (unrendered) — Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)
 
 ## Health-RI domain modules (health, imaging, omics)
 
@@ -445,10 +450,11 @@ not the same problem:
 - node shapes: 1 (1 carry property shapes)
 - property shapes: 6; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 0 (0.0%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 3 from a stated `shui:editor`, 3 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 6 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=5, branch=0, fallback=1
 
-**Editors resolved:** TextFieldEditor=3, AutoCompleteEditor=2, NumberFieldEditor=1
+**Editors resolved:** TextFieldEditor=3, InstancesSelectEditor=2, NumberFieldEditor=1
 
 **SHACL parameters present:** minCount=6, path=6, datatype=4, class=2
 
@@ -466,12 +472,13 @@ not the same problem:
 
 > Pure SHACL 1.2 + SHACL-UI. The deployment.
 
-- source: 1 file(s), 804 lines, 34 kB
-- node shapes: 10 (10 carry property shapes)
+- source: 1 file(s), 795 lines, 33 kB
+- node shapes: 11 (10 carry property shapes)
 - property shapes: 48; property groups: 13
 - carrying sh:name: 47 (97.9%); sh:description: 23 (47.9%)
-- SHACL 1.2 conditionals (`sh:if`): 1
-- editor resolution: 32 from a stated `shui:editor`, 8 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 1 in the source, 1 reported by the engine
+- editor resolution: 2 from a declared `shui:editor`, 38 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=10, scored=37, branch=0, fallback=1
 
 **Editors resolved:** EnumSelectEditor=15, IRIEditor=9, DetailsEditor=8, TextFieldEditor=8, TextFieldWithLangEditor=5, TextAreaEditor=2, BooleanEditor=1
 
@@ -479,19 +486,20 @@ not the same problem:
 
 **Cannot render:**
 
-- `sh:hasValue` ×2 (carried) — Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change.
-- `sh:or` ×2 (dropped) — Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI.
+- `sh:hasValue` ×1 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
+- `sh:not` ×1 (dropped) — Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)
 
 ## Evidenze data space onboarding (ours)
 
 > Pure SHACL 1.2 + SHACL-UI.
 
-- source: 1 file(s), 600 lines, 28 kB
-- node shapes: 7 (7 carry property shapes)
+- source: 1 file(s), 591 lines, 28 kB
+- node shapes: 8 (7 carry property shapes)
 - property shapes: 33; property groups: 10
 - carrying sh:name: 32 (97.0%); sh:description: 32 (97.0%)
-- SHACL 1.2 conditionals (`sh:if`): 1
-- editor resolution: 21 from a stated `shui:editor`, 8 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 1 in the source, 1 reported by the engine
+- editor resolution: 3 from a declared `shui:editor`, 26 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=7, scored=25, branch=0, fallback=1
 
 **Editors resolved:** EnumSelectEditor=8, TextFieldEditor=8, IRIEditor=5, DetailsEditor=4, TextAreaEditor=3, BooleanEditor=2, TextFieldWithLangEditor=2, NumberFieldEditor=1
 
@@ -499,7 +507,8 @@ not the same problem:
 
 **Cannot render:**
 
-- `sh:hasValue` ×1 (carried) — Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change.
+- `sh:hasValue` ×1 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
+- `sh:not` ×1 (dropped) — Negation has no form affordance; nothing narrows the input. (`sh:not` inside the Core conditional `sh:or ( [ sh:not C ] T )` is consumed by the engine's conditional evaluation, not by a widget.)
 
 ## DCAT-AP 3.0.1 — generated encoding *(variant of `dcat-ap-3` — excluded from headline)*
 
@@ -509,27 +518,28 @@ not the same problem:
 - node shapes: 40 (15 carry property shapes)
 - property shapes: 292; property groups: 0
 - carrying sh:name: 292 (100.0%); sh:description: 292 (100.0%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 88 from a stated `shui:editor`, 43 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 131 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=126, branch=0, fallback=5
 
-**Editors resolved:** AutoCompleteEditor=85, TextFieldEditor=43, NumberFieldEditor=3
+**Editors resolved:** InstancesSelectEditor=85, TextFieldEditor=43, NumberFieldEditor=3
 
 **SHACL parameters present:** description=292, name=292, path=292, seeAlso=292, nodeKind=131, class=85, maxCount=50, minCount=20, datatype=6
 
 **Diagnostics:** conjoined-property=119
 
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/source
-- [conjoined-property] 4 property shapes state this path; the field is their conjunction. — http://xmlns.com/foaf/0.1/primaryTopic
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/language
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/modified
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/issued
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/conformsTo
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#endpointDescription
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#centroid
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/locn#geometry
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#bbox
 - [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/title
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/license
-- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/accessRights
-- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://xmlns.com/foaf/0.1/page
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#hadRole
+- [conjoined-property] 2 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/relation
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#mediaType
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://purl.org/dc/terms/format
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://spdx.org/rdf/terms#checksum
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/dcat#spatialResolutionInMeters
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/odrl/2/hasPolicy
+- [conjoined-property] 3 property shapes state this path; the field is their conjunction. — http://www.w3.org/ns/adms#status
 
 **Each file loaded alone** — a profile is only a graph once someone concatenates it:
 
@@ -551,10 +561,11 @@ not the same problem:
 - node shapes: 17 (16 carry property shapes)
 - property shapes: 87; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 2 (2.3%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 32 from a stated `shui:editor`, 43 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 75 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=46, branch=0, fallback=37
 
-**Editors resolved:** TextFieldEditor=43, AutoCompleteEditor=17, IRIEditor=11, DetailsEditor=8, NumberFieldEditor=4
+**Editors resolved:** TextFieldEditor=43, InstancesSelectEditor=16, IRIEditor=11, DetailsEditor=8, NumberFieldEditor=4, AutoCompleteEditor=1
 
 **SHACL parameters present:** path=87, severity=83, message=40, minCount=40, nodeKind=35, class=17, maxCount=17, node=8, datatype=4, description=2, hasValue=1
 
@@ -575,7 +586,7 @@ not the same problem:
 
 **Cannot render:**
 
-- `sh:hasValue` ×1 (carried) — Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change.
+- `sh:hasValue` ×1 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
 
 ## DCAT-AP as vendored by Health-RI *(variant of `dcat-ap-3` — excluded from headline)*
 
@@ -585,19 +596,19 @@ not the same problem:
 - node shapes: 21 (14 carry property shapes)
 - property shapes: 109; property groups: 0
 - carrying sh:name: 0 (0.0%); sh:description: 0 (0.0%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 72 from a stated `shui:editor`, 37 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 109 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=86, branch=6, fallback=17
 
-**Editors resolved:** AutoCompleteEditor=64, TextFieldEditor=37, DatePickerEditor=5, NumberFieldEditor=3
+**Editors resolved:** InstancesSelectEditor=64, TextFieldEditor=37, DatePickerEditor=5, NumberFieldEditor=3
 
 **SHACL parameters present:** path=109, severity=109, class=63, maxCount=47, nodeKind=27, minCount=18, node=6, datatype=5, shape=5, dateTime=1, hasValue=1
 
 **Cannot render:**
 
 - `sh:shape` ×5 (unrendered) — Not a SHACL 1.2 term at all — a leftover from a pre-REC draft, still shipped by DCAT-AP 3.0.1. It is recorded and ignored.
-- `sh:or` ×2 (dropped) — Parsed into the IR's `logical.or` and never read by buildFormModel. The field renders from its own facts only, so the disjuncts — often the real datatype/class alternatives — are invisible and unenforced in the UI.
 - `sh:dateTime` ×1 (unrendered) — Not in the construct ledger — unclassified, and therefore unread by the form layer.
-- `sh:hasValue` ×1 (carried) — Reaches FieldConstraints and no widget reads it. A property pinned to one value still renders as a free input the user can wrongly change.
+- `sh:hasValue` ×1 (carried) — Seeds a new instance's graph (RudofEngine.seedIntoBackend) and reaches FieldConstraints, but no widget reads it: a property pinned to one value still renders as a free input the user can change (the validator then reports it).
 
 ## Health-RI FAIR Data Point shapes *(variant of `health-ri-core` — excluded from headline)*
 
@@ -607,10 +618,11 @@ not the same problem:
 - node shapes: 14 (13 carry property shapes)
 - property shapes: 143; property groups: 0
 - carrying sh:name: 143 (100.0%); sh:description: 123 (86.0%)
-- SHACL 1.2 conditionals (`sh:if`): 0
-- editor resolution: 93 from a stated `shui:editor`, 27 inferred, 0 degraded to the type-fact fallback
+- conditionals stated as an implication (`sh:or ( [ sh:not C ] T )`): 0 in the source, 0 reported by the engine
+- editor resolution: 0 from a declared `shui:editor`, 120 chosen by the engine, 0 declared but unregistered (rendered as a text field)
+- editor source: declared=0, scored=118, branch=0, fallback=25
 
-**Editors resolved:** IRIEditor=74, TextFieldEditor=27, DetailsEditor=23, DateTimePickerEditor=11, NumberFieldEditor=5, EnumSelectEditor=2, AutoCompleteEditor=1
+**Editors resolved:** IRIEditor=74, TextFieldEditor=27, DetailsEditor=23, DateTimePickerEditor=11, NumberFieldEditor=5, EnumSelectEditor=2, InstancesSelectEditor=1
 
 **SHACL parameters present:** name=143, path=143, editor=141, viewer=141, description=123, nodeKind=112, maxCount=67, minCount=44, node=23, datatype=20, pattern=13, uniqueLang=13, defaultValue=2, in=2, class=1, minExclusive=1
 
