@@ -1,85 +1,110 @@
-# E7 verification, run 2026-08-28T16:36:28Z
-# repo:     /Users/angel.ip/dev/kanzo/keasy/metadata-form @ 21d9931 (feat/kanzo-ui)
-# fork:     /Users/angel.ip/dev/kanzo/keasy/rudof-fork
+# E7 verification, run 2026-09-30T14:38:41Z
+# repo:     /Users/angel.ip/dev/kanzo/keasy/metadata-form @ a5c6e68 (feat/kanzo-ui), working tree: DIRTY
+# installed engine: @kanzo-tech/rudof-wasm@0.3.10   design system: @kanzo-tech/ui@0.12.0
 
-## 1. npm packages
-   @kanzo-tech/rudof-wasm  latest=0.3.5
-   @kanzo-tech/ui  latest=0.1.0
-   @kanzo-tech/ai  latest=0.1.0
-   @kanzo-tech/theme  latest=0.1.0
-   metadata-form  NOT PUBLISHED (404)
+## 1. npm — what is published under each name
+   @kanzo-tech/rudof-wasm  latest=0.3.10  published=2026-09-30T14:08:40.851Z  license=MIT OR Apache-2.0
+       repository=git+https://github.com/Kanzo-Tech/rudof.git
+       provenance attestation on 0.3.10: https://slsa.dev/provenance/v1
+   @kanzo-tech/ui  latest=0.12.0  published=2026-09-30T11:27:57.524Z  license=MIT
+       repository=git+https://github.com/Kanzo-Tech/ui.git
+       provenance attestation on 0.12.0: https://slsa.dev/provenance/v1
+   @kanzo-tech/ai  latest=0.12.0  published=2026-09-30T11:24:48.114Z  license=MIT
+       repository=git+https://github.com/Kanzo-Tech/ui.git
+       provenance attestation on 0.12.0: https://slsa.dev/provenance/v1
+   @kanzo-tech/theme  latest=0.12.0  published=2026-09-30T11:24:36.958Z  license=MIT
+       repository=git+https://github.com/Kanzo-Tech/ui.git
+       provenance attestation on 0.12.0: https://slsa.dev/provenance/v1
+   metadata-form  NOT PUBLISHED (npm view -> 404)
+   @kanzo-tech/metadata-form  NOT PUBLISHED (npm view -> 404)
 
-   @kanzo-tech/rudof-wasm versions: ["0.3.4","0.3.5"]
-   0.3.4 dist.attestations:
-   0.3.5 dist.attestations:
-     {
-       "url": "https://registry.npmjs.org/-/npm/v1/attestations/@kanzo-tech%2frudof-wasm@0.3.5",
-       "provenance": {
-         "predicateType": "https://slsa.dev/provenance/v1"
-       }
-     }
+   @kanzo-tech/rudof-wasm versions: ["0.3.4","0.3.5","0.3.6","0.3.7","0.3.8","0.3.9","0.3.10"]
+     0.3.4  provenance: none
+     0.3.5  provenance: https://slsa.dev/provenance/v1
+     0.3.6  provenance: https://slsa.dev/provenance/v1
+     0.3.7  provenance: https://slsa.dev/provenance/v1
+     0.3.8  provenance: https://slsa.dev/provenance/v1
+     0.3.9  provenance: https://slsa.dev/provenance/v1
+     0.3.10  provenance: https://slsa.dev/provenance/v1
 
-## 2. provenance — what the attestation actually binds
-   subject:    pkg:npm/%40kanzo-tech/rudof-wasm@0.3.5
+## 2. what this repository depends on, and what is installed
+   package.json: name=metadata-form version=0.1.0 license=MIT private=False
+   dependencies          @kanzo-tech/rudof-wasm   ^0.3.10    installed 0.3.10
+   peerDependencies      @kanzo-tech/ai           ^0.12.0    installed 0.12.0
+   peerDependencies      @kanzo-tech/ui           ^0.12.0    installed 0.12.0
+   devDependencies       @kanzo-tech/ai           ^0.12.0    installed 0.12.0
+   devDependencies       @kanzo-tech/theme        ^0.12.0    installed 0.12.0
+   devDependencies       @kanzo-tech/ui           ^0.12.0    installed 0.12.0
+   lockfile @kanzo-tech/ai           0.12.0  resolved=https://registry.npmjs.org/@kanzo-tech/ai/-/ai-0.12.0.tgz
+   lockfile @kanzo-tech/mosaic       0.12.0  resolved=https://registry.npmjs.org/@kanzo-tech/mosaic/-/mosaic-0.12.0.tgz
+   lockfile @kanzo-tech/rudof-wasm   0.3.10  resolved=https://registry.npmjs.org/@kanzo-tech/rudof-wasm/-/rudof-wasm-0.3.10.
+   lockfile @kanzo-tech/theme        0.12.0  resolved=https://registry.npmjs.org/@kanzo-tech/theme/-/theme-0.12.0.tgz
+   lockfile @kanzo-tech/ui           0.12.0  resolved=https://registry.npmjs.org/@kanzo-tech/ui/-/ui-0.12.0.tgz
+   vendored tarballs in the repo: 0  (0 = the design system comes from the registry)
+
+## 3. provenance — what the engine's attestation binds
+   subject:    pkg:npm/%40kanzo-tech/rudof-wasm@0.3.10
    repository: https://github.com/Kanzo-Tech/rudof
-   ref:        refs/tags/rudof-wasm-v0.3.5
+   ref:        refs/tags/rudof-wasm-v0.3.10
    workflow:   .github/workflows/publish-wasm.yml
+   commit:     ce4ed73490720f923564874380f1781de5997c0a
    builder:    https://github.com/actions/runner/github-hosted
+   gitHead in the npm metadata:  ce4ed73490720f923564874380f1781de5997c0a
+   tag on GitHub (peeled):       ce4ed73490720f923564874380f1781de5997c0a refs/tags/rudof-wasm-v0.3.10;
 
-   A reviewer verifies it with:
-     npm i @kanzo-tech/rudof-wasm@0.3.5 && npm audit signatures
+   A reviewer verifies with:
+     npm i @kanzo-tech/rudof-wasm@0.3.10 @kanzo-tech/ui@0.12.0 @kanzo-tech/ai@0.12.0 @kanzo-tech/theme@0.12.0 && npm audit signatures
    running it here, in a throwaway project:
-     audited 1 package in 0s
+     audited 148 packages in 1s
      
-     1 package has a verified registry signature
+     148 packages have verified registry signatures
      
-     1 package has a verified attestation
+     15 packages have verified attestations
      
 
-## 3. the tag the attestation names, and the commit it resolves to
-   93a2c6346d10746bc3f3be8c71293d0a9c992c3f	refs/tags/rudof-wasm-v0.3.4
-   3978c35ad1f25809168b34f5277f225fa7f39126	refs/tags/rudof-wasm-v0.3.5
-   8bf8bcc5a43ddf832e515146e3c4ce1f477aea43	refs/tags/rudof-wasm-v0.3.5^{}
+## 4. repositories, licence, and what the public branch contains
+   Kanzo-Tech/metadata-form: visibility=public default_branch=main license=MIT pushed_at=2026-09-02T10:27:31Z
+   Kanzo-Tech/rudof: visibility=public default_branch=master license=Apache-2.0 pushed_at=2026-09-30T13:46:52Z
+   Kanzo-Tech/ui: visibility=public default_branch=main license=null pushed_at=2026-09-30T11:17:45Z
+   LICENSE file in this repo: MIT License, package.json license: MIT
+   repository field of package.json: None
+   origin: git@github.com-kanzo:Kanzo-Tech/metadata-form.git
+   public main is at:      0dba201290479ac8ebdc380c36af6fc16a9cc620
+   this checkout's HEAD:   a5c6e68edf5bb3a5e7d4397608232d19bd674a16
+   commits in HEAD not in public main: 54
+   public main is an ancestor of HEAD: yes
+   tags on the public repo: v0.0.1-alpha 
+   GitHub releases: 1
 
-## 4. playground deployment
+## 5. playground deployment
    https://kanzo-tech.github.io/metadata-form/ -> HTTP 200
-   permalink codec on origin/main (what the deployment is built from):
-     v2 markers: 0
-   permalink codec on this branch:
-     v2 markers: 4
-   fragments this repo can produce for health-dcat-ap / covid:
-       v2 by-reference: 67 chars -> N4IgbiBcBMA0IFMAeUQAsEEMA2AXNAtACYDGmuBmADiPFQE4IDOCuqJA9mAJZEgC+QA
-       v1 embedded:     4538 chars (not printed)
-
-## 5. fork divergence from real upstream (GitHub API — authoritative)
-   base..fork:    ahead_by 70 files 300
-   master..fork:  status diverged ahead_by 70 behind_by 297
-   local clone is shallow: YES
-   (a shallow clone makes `git rev-list --left-right --count` overcount the
-    'behind' side by every commit before the graft point — use the API above)
-   local left-right count (WRONG if shallow): 70	3051
-   fork working tree:
-      M rudof_wasm/src/dto.rs
-      M rudof_wasm/src/shapes.rs
-      M shacl/src/ast/property_shape.rs
-     ^^ DIRTY — a DOI cannot pin this
-   is sh:if support upstream? `IfConstraintComponent` in rudof-upstream/master:
-     hits: 0  (0 = fork-only)
+   deployed entry script: assets/index-k2F9eP88.js
+   pages source: main build_type=workflow
+   last deploy workflow runs: success sha=0dba201 at 2026-09-02T10:27:35Z
+   SHACL-UI namespace strings in the deployed bundle (slash = Editor's Draft, hash = the older one):
+        3 shacl-ui#
+   the committed permalink (data/permalink-v1-covid.txt), decoded — the codec, not a browser:
+       fragment chars: 4538 | v: 1 | example: health-dcat-ap | shapes chars: 8069 | data chars: 692
+   permalink versions this checkout can write:
+     v: 2 markers in playground/src/lib/permalink.ts (this checkout): 4
+     v: 2 markers in the same file on public main:                    4
+   NOT verified here: that the permalink loads the example in a browser (needs one).
 
 ## 6. can each experiment be re-run with ONE command?
    E1-coverage: vitest harness only (no wrapper)   (python steps: 0)
-   E2-migration: Makefile (make)   (python steps: 3)
-   E3-multilingual: run.sh   (python steps: 0)
+   E2-migration: Makefile (make)   (python steps: 2)
+   E3-multilingual: run.sh + run-current.sh   (python steps: 0)
    E4-performance: run.sh   (python steps: 0)
-   E5-errors-in-the-wild: NO single command   (python steps: 6)
+   E5-errors-in-the-wild: vitest harness only (no wrapper)   (python steps: 10)
    E6-llm-assist: run.sh   (python steps: 0)
    E7-availability: run.sh   (python steps: 0)
 
-## 7. licences
-   metadata-form:        MIT
-   rudof (fork + upstream): MIT OR Apache-2.0
-   rudof LICENSE files:  LICENSE-APACHE LICENSE-MIT 
-   @kanzo-tech/rudof-wasm on npm: MIT OR Apache-2.0
+## 7. licences of what the paper describes
+   metadata-form:            MIT
+   @kanzo-tech/rudof-wasm@0.3.10: license field = MIT OR Apache-2.0; tarball: 5 files; licence files: none
+   @kanzo-tech/ui@0.12.0: license field = MIT; tarball: 521 files; licence files: none
+   @kanzo-tech/ai@0.12.0: license field = MIT; tarball: 60 files; licence files: none
+   @kanzo-tech/theme@0.12.0: license field = MIT; tarball: 44 files; licence files: none
    vendored shapes, one PROVENANCE.md each:
      E1-coverage/data/bioschemas/PROVENANCE.md  ->  CC-BY-SA-4.0** (`src/LICENSE`, Attribution-ShareAlike 4.0 In
      E1-coverage/data/dcat-ap-3/PROVENANCE.md  ->  CC-BY-4.0** (declared on the repository) — redistribution pe
@@ -91,10 +116,5 @@
      E1-coverage/data/sphn/PROVENANCE.md  ->  CC-BY-4.0** (`src/LICENSE`, Attribution 4.0 International; G
      E2-migration/data/PROVENANCE.md  ->  <see file>
      E5-errors-in-the-wild/data/dcat-ap-3.0.1/PROVENANCE.md  ->  CC-BY-4.0 (repository `LICENSE`) — redistributable with attr
-
-   vendored @kanzo-tech tarballs in the repo (NOT the npm versions):
-     kanzo-tech-ai-0.0.0.tgz  sha256=c3b65d2a0a08bb3c…  tracked=yes
-     kanzo-tech-theme-0.0.0.tgz  sha256=eeb66e637f8b1e50…  tracked=yes
-     kanzo-tech-ui-0.0.0.tgz  sha256=5eefb3b9604b309b…  tracked=yes
 
 # end
