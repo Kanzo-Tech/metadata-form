@@ -7,7 +7,7 @@ import type { LangString } from "../../form/ShapeIR.js";
  * The single derived model of a form's state. Everything the validation and
  * assistant surfaces show is a projection of this — computed in ONE traversal,
  * so there's no duplicated walking of the model. Exposed as `form.report` by the
- * controller; `<ValidationSummary>`, the per-group badges and `<FormAssistant>`
+ * controller; `<ValidationSummary>`, the per-group badges and the playground companion
  * all read from it.
  */
 

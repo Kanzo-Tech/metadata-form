@@ -87,7 +87,7 @@ export interface MetadataFormController {
   graph?: GraphState;
   assist?: FormAssist;
   /** Reveal a field by id: switch to its tab/step if needed, scroll, focus and
-   * pulse it. Lets `<FormAssistant>`/`<ValidationSummary>` (rendered outside the
+   * pulse it. Lets a companion or `<ValidationSummary>` (rendered outside the
    * form) drive navigation through the shared controller. */
   revealField(fieldId: string): void;
   /** Internal: the current reveal request (id + bump counter). */
