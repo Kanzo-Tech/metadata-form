@@ -24,7 +24,6 @@ import {
   TagsInputItemText,
   Textarea,
   useDebouncedCommit,
-  useField,
   type DebouncedCommit,
 } from "@kanzo-tech/ui";
 import { Editors } from "../../form/vocab/shacl-ui.js";
@@ -53,12 +52,11 @@ import { useFormContext, useStrings } from "../form/context.js";
  * `KanzoThemeProvider`) — Ark's overlays portal to `document.body`, so a wrapper
  * element cannot theme them.
  *
- * **Almost nothing here passes `invalid` or `disabled`.** `Input`, `Textarea`,
- * `NativeSelect`, `NumberInput`, `Combobox`, `TagsInput` and `Switch` are all Ark
- * `Field` parts: they read both from the `Field` context `FieldRenderer` puts them
- * in. The two exceptions are named where they are — `DateField` and the segmented
- * controls, whose machines read no `Field` context at all — and they take the state
- * from that same context rather than from a prop, so it still cannot drift.
+ * **Nothing here passes `invalid`, `disabled` or `readOnly`.** Every control under
+ * a `Field` — `Input`, `Textarea`, `NativeSelect`, `NumberInput`, `Combobox`,
+ * `TagsInput`, `Switch`, `DatePicker`, `SegmentGroup`, `LanguagePicker` — reads
+ * them from the `Field` context `FieldRenderer` puts them in, so the accessible
+ * state and the painted one cannot drift.
  *
  * An entry may also declare `multi`: the same editor rendered as ONE control for a
  * repeatable field. See {@link MultiWidgetProps} for why that is keyed on
@@ -356,29 +354,21 @@ const TagsMulti: MultiWidget = (p) => {
  * The segmented form of a small closed set: every option visible, one click, no
  * list to open.
  *
- * Ark's segment group is a radio group and reads no `Field` context, so
- * `disabled`/`readOnly` come from that context by hand. There is no `invalid`
- * state on the machine at all — a segmented control has nothing to paint red that
- * would not also read as "this option is wrong" — so the field's error text below
- * carries it alone.
+ * There is no `invalid` state on the machine at all — a segmented control has
+ * nothing to paint red that would not also read as "this option is wrong" — so the
+ * field's error text below carries it alone.
  */
-function segments(items: { value: string; label: string }[], required: boolean, notSet: string) {
+function SegmentField(p: WidgetProps & { items: { value: string; label: string }[] }) {
+  const { chrome } = useStrings();
   // An optional field has one more answer than the shape lists: "not answered".
   // Leaving it off would make the first click unrepeatable — there would be no way
   // back to empty.
-  return required ? items : [...items, { value: NONE, label: notSet }];
-}
-
-function SegmentField(p: WidgetProps & { items: { value: string; label: string }[] }) {
-  const field = useField();
-  const { chrome } = useStrings();
+  const options = p.required ? p.items : [...p.items, { value: NONE, label: chrome.notSet }];
   return (
     <SegmentGroup
       variant="solid"
-      options={segments(p.items, !!p.required, chrome.notSet)}
+      options={options}
       value={p.value ?? NONE}
-      disabled={field?.disabled}
-      readOnly={field?.readOnly}
       onValueChange={(d) => p.onChange(d.value === NONE ? null : d.value)}
     />
   );
@@ -458,8 +448,6 @@ const BooleanField: Widget = (p) => {
     { value: "true", label: chrome.yes },
     { value: "false", label: chrome.no },
   ];
-  // The branch is safe because `SegmentField` is a component, not a call: its
-  // `useField` belongs to its own render, not to this one.
   if (settled) {
     return (
       <Switch

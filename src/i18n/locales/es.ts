@@ -43,6 +43,7 @@ export const strings: Strings = {
     notSet: "Sin definir",
     yes: "Sí",
     no: "No",
+    time: "Hora",
     noMatches: "Sin coincidencias",
     remove: "Quitar",
     kindOfValue: "{field} — tipo de valor",

@@ -11,13 +11,13 @@ import {
   DatePicker,
   DatePickerContent,
   DatePickerInput,
-  Input,
+  DatePickerTimer,
   parseDate,
-  useField,
   type DateValue,
 } from "@kanzo-tech/ui";
+import { useId } from "react";
+import { useStrings } from "../form/context.js";
 import type { WidgetProps } from "./widgets.js";
-import { grow, row } from "../styles.js";
 
 /**
  * `xsd:date` / `xsd:dateTime` over the design system's date picker.
@@ -28,16 +28,9 @@ import { grow, row } from "../styles.js";
  * both representations), and putting a *stored* one back is the half that costs
  * anything.
  *
- * The picker is date-only, so `xsd:dateTime` is a date plus a time input rather
+ * The picker is date-only, so `xsd:dateTime` is a date plus `DatePickerTimer` rather
  * than a second machine. `null` for either half means the value is not a dateTime
  * yet, and midnight is the only defensible completion of a date the user did pick.
- *
- * **The one widget here that threads `disabled`/`invalid` by hand.** Ark's date
- * picker reads no `Field` context (`use-date-picker.js` takes only environment and
- * locale), so a `Field disabled` left the calendar fully interactive: the input
- * greyed, the popover still opened, and a click still wrote a value. Its machine
- * has the props; nothing was handing them over. Read them from the same context
- * `Field` publishes so the accessible state and the painted one still cannot drift.
  */
 
 const splitIso = (iso: string | null) => {
@@ -59,48 +52,52 @@ function toDateValues(iso: string): DateValue[] {
 export function makeDateField(withTime: boolean) {
   return function DateField(p: WidgetProps) {
     const { date, time } = splitIso(p.value);
-    const field = useField();
+    const { chrome } = useStrings();
+    const timeId = useId();
 
     const commit = (nextDate: string, nextTime: string) => {
       if (!nextDate) return p.onChange(null);
       p.onChange(withTime ? `${nextDate}T${nextTime || "00:00"}` : nextDate);
     };
 
+    const picker = (
+      <DatePicker
+        className="flex-1"
+        value={toDateValues(date)}
+        onValueChange={(d) => commit(d.valueAsString[0] ?? "", time)}
+        positioning={{ placement: "bottom-end" }}
+      >
+        <DatePickerInput />
+        <DatePickerContent>
+          <CalendarView view="day">
+            <CalendarViewControl>
+              <CalendarPrevTrigger />
+              <CalendarMonthSelect />
+              <CalendarYearSelect />
+              <CalendarNextTrigger />
+            </CalendarViewControl>
+            <CalendarTable>
+              <CalendarWeekDays />
+              <CalendarTableDays />
+            </CalendarTable>
+          </CalendarView>
+        </DatePickerContent>
+      </DatePicker>
+    );
+    if (!withTime) return picker;
+
     return (
-      <div style={{ ...row, ...grow }}>
-        <DatePicker
-          style={{ flex: 1 }}
-          value={toDateValues(date)}
-          onValueChange={(d) => commit(d.valueAsString[0] ?? "", time)}
-          positioning={{ placement: "bottom-end" }}
-          disabled={field?.disabled}
-          readOnly={field?.readOnly}
-          invalid={field?.invalid}
-        >
-          <DatePickerInput />
-          <DatePickerContent>
-            <CalendarView view="day">
-              <CalendarViewControl>
-                <CalendarPrevTrigger />
-                <CalendarMonthSelect />
-                <CalendarYearSelect />
-                <CalendarNextTrigger />
-              </CalendarViewControl>
-              <CalendarTable>
-                <CalendarWeekDays />
-                <CalendarTableDays />
-              </CalendarTable>
-            </CalendarView>
-          </DatePickerContent>
-        </DatePicker>
-        {withTime && (
-          <Input
-            style={{ width: "8rem" }}
-            type="time"
-            value={time}
-            onChange={(e) => commit(date, e.target.value)}
-          />
-        )}
+      <div className="flex gap-2">
+        {picker}
+        <label className="sr-only" htmlFor={timeId}>
+          {chrome.time}
+        </label>
+        <DatePickerTimer
+          className="w-32"
+          id={timeId}
+          value={time}
+          onChange={(e) => commit(date, e.target.value)}
+        />
       </div>
     );
   };

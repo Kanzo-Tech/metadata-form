@@ -69,6 +69,8 @@ export interface Strings {
     notSet: string;
     yes: string;
     no: string;
+    /** Accessible name of the time input of a date-time field. */
+    time: string;
     noMatches: string;
     remove: string;
     /** Accessible name of the value-kind selector. `{field}` is the field label. */
@@ -142,6 +144,7 @@ export const EN: Strings = {
     notSet: "Not set",
     yes: "Yes",
     no: "No",
+    time: "Time",
     noMatches: "No matches",
     remove: "Remove",
     kindOfValue: "{field} — kind of value",
