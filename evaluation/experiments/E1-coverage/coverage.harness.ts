@@ -214,6 +214,9 @@ interface ProfileResult {
     /** `sh:message` values written, and how many carry a language tag. The
      *  multilingual half of SHACL messages is invisible without this pair. */
     shMessage: number; shMessageLangTagged: number;
+    /** Conditionals as written: an implication `sh:or ( [ sh:not C ] T )` (SHACL
+     *  Core §4.6.1, §4.6.3), plus any `sh:if`. Counted over comment-stripped text. */
+    conditionals: number;
   };
   /** Structural counts from the parsed IR. */
   ir: {
@@ -331,6 +334,7 @@ async function analyse(spec: ProfileSpec): Promise<ProfileResult> {
       langTags,
       shMessage: messages.total,
       shMessageLangTagged: messages.langTagged,
+      conditionals: count(/\b(?:sh|shacl):or\s*\(\s*\[\s*(?:sh|shacl):not\b/g) + count(/\b(?:sh|shacl):if(?![\w-])/g),
     },
     ir: {
       nodeShapes: 0, nodeShapesWithProperties: 0, propertyShapes: 0, named: 0, described: 0, groups: 0,
@@ -727,7 +731,7 @@ function markdown(results: ProfileResult[], stamp: string): string {
     L.push(`- node shapes: ${r.ir.nodeShapes} (${r.ir.nodeShapesWithProperties} carry property shapes)`);
     L.push(`- property shapes: ${r.ir.propertyShapes}; property groups: ${r.ir.groups}`);
     L.push(`- carrying sh:name: ${r.ir.named} (${pct(r.ir.named, r.ir.propertyShapes)}); sh:description: ${r.ir.described} (${pct(r.ir.described, r.ir.propertyShapes)})`);
-    L.push(`- SHACL 1.2 conditionals (\`sh:if\`): ${r.ir.conditionals}`);
+    L.push(`- conditionals stated as an implication (\`sh:or ( [ sh:not C ] T )\`): ${r.source.conditionals} in the source, ${r.ir.conditionals} reported by the engine`);
     if (r.form.duplicatePath) L.push(`- property shapes sharing a path with a sibling on the same node shape: ${r.form.duplicatePath} (they collapse into one control)`);
     L.push(`- editor resolution: ${r.form.statedEditorHonoured} from a stated \`shui:editor\`, ${r.form.inferred} inferred, ${r.form.degradedToFallback} degraded to the type-fact fallback`);
     L.push("");
