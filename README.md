@@ -31,17 +31,29 @@ field's **SHACL-UI editor** to a widget and renders the form.
 ## Install
 
 ```sh
-npm install metadata-form react react-dom @kanzo-tech/ui lucide-react
+npm install metadata-form react react-dom lucide-react tailwindcss \
+  @kanzo-tech/ui @kanzo-tech/ai
 ```
 
-ESM-only, React 19+. The UI is built on **@kanzo-tech/ui** (icons from
-[lucide](https://lucide.dev)): import its stylesheet and put the theme attributes
+ESM-only, React 19+, Tailwind CSS v4. The UI is built on **@kanzo-tech/ui**
+(icons from [lucide](https://lucide.dev)), which ships Tailwind *source*, not
+compiled CSS: your build compiles it, together with this library's classes, in
+one stylesheet.
+
+```css
+@import "tailwindcss";
+@import "@kanzo-tech/ui/tailwind.css";
+@import "@kanzo-tech/ai/tailwind.css";
+@import "metadata-form/tailwind.css";
+```
+
+(With Vite, add `@tailwindcss/vite`.) Then put the theme attributes
 on `<html>` with `KanzoThemeProvider`. There is **no wrapper component to render
 inside** — Ark's overlays portal to `document.body`, outside anything a wrapper
 could reach, and density sets the root font-size the whole `rem` scale resolves
 against.
 
-`@kanzo-tech/ai` is an optional peer, needed only if you wire the `assist` seam.
+`@kanzo-tech/ai` is a required peer for now: the library imports it unconditionally.
 
 ### The wasm engine
 
@@ -75,7 +87,6 @@ reactively, so there is no `onChange`:
 ```tsx
 import { useMetadataForm, MetadataForm, ValidationSummary } from "metadata-form";
 import { KanzoThemeProvider } from "@kanzo-tech/ui";
-import "@kanzo-tech/ui/styles.css";
 
 export function App({ shape, graph }: { shape: string; graph?: string }) {
   const form = useMetadataForm({ shapes: shape, data: graph });

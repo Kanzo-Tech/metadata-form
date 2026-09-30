@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 // This config owns the standalone playground app. The library has its own
 // `../vite.config.ts` (pure lib build) — the two are fully decoupled.
@@ -9,7 +10,7 @@ const lib = (p: string) => resolve(root, "..", p);
 
 export default defineConfig({
   root,
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   // wasm-pack `--target web`: keep it out of Vite's dep pre-bundle so the .wasm
   // is served verbatim from node_modules. Pre-bundling rewrites the binding's
   // `new URL('rudof_wasm_bg.wasm', import.meta.url)` into `.vite/deps/` (no .wasm

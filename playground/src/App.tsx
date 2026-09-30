@@ -39,7 +39,6 @@ import { INSTANCE, brandingFor, defaultThemeFor, policyFor } from "./instance.js
 import { ChromeContext, fill, pickChrome } from "./i18n.js";
 import type { ExampleBranding } from "./presets.js";
 import { makeAssist } from "./lib/assist.js";
-import "@kanzo-tech/ui/styles.css";
 
 /** The form keeps what the panels do not take: 24% each, down to a floor of 34%.
  *  Written as a sum rather than a table of splits — there are eight open-sets with

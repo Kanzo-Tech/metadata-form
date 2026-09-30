@@ -1,3 +1,10 @@
+@import "tailwindcss";
+@import "@kanzo-tech/ui/tailwind.css";
+@import "@kanzo-tech/ai/tailwind.css";
+/* The playground consumes the library from `../src` (live sources), not from
+   `dist`, so it scans that instead of `metadata-form/tailwind.css`. */
+@source "../src";
+
 /* Radix <Theme> sets min-height:100vh on its root; the browser's default
    8px body margin then pushes the page past the viewport → a vertical
    scrollbar even when content is short. Resetting the margin fixes it.

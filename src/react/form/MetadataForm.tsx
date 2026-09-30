@@ -24,7 +24,7 @@ export interface MetadataFormProps {
  *   const form = useMetadataForm({ shapes, data });
  *   <MetadataForm form={form} />
  *
- * Requires `@kanzo-tech/ui/styles.css`, and the theme attributes on `<html>` —
+ * Requires the Tailwind entries in README (`metadata-form/tailwind.css`), and the theme attributes on `<html>` —
  * `KanzoThemeProvider` puts them there. Not a wrapper element: Ark's overlays
  * portal to `document.body`, outside anything this component could wrap, and
  * density sets the root font-size the whole `rem` scale resolves against.
