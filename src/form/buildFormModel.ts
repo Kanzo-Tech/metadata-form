@@ -550,30 +550,74 @@ function optionsFrom(ps: PropertyShapeIR): FieldOption[] | undefined {
   }));
 }
 
+/**
+ * SHACL 1.2 UI, "Grouping, Ordering, and Layout Hints" (#grouping-and-ordering):
+ * at each level property groups and UNGROUPED property shapes are members of one
+ * sequence. A group sits at the group's own `sh:order`; a grouped property's
+ * `sh:order` only orders it inside its group. Members are sorted by ascending
+ * order, those with none after all that have one, and ties (or a run of members
+ * with no order) break by resolved label, then by identifier.
+ *
+ * A run of consecutive ungrouped fields is one untitled section. Two runs cut
+ * apart by a group are two sections, so only the first keeps the id
+ * {@link DEFAULT_GROUP}. The identifier tie-break uses the field id, which
+ * carries the property shape's path, not the shape's own IRI (a field can merge
+ * several shapes on one path).
+ */
 function groupFields(fields: FieldModel[], shapes: ShapeModel, languages: readonly string[]): GroupModel[] {
   const byGroup = new Map<string, FieldModel[]>();
+  const members: SequenceMember[] = [];
   for (const f of fields) {
+    if (f.groupId === DEFAULT_GROUP) {
+      members.push({ order: f.order, label: f.label, id: f.id, fields: [f] });
+      continue;
+    }
     const arr = byGroup.get(f.groupId) ?? [];
     arr.push(f);
     byGroup.set(f.groupId, arr);
   }
-
-  const groups: GroupModel[] = [];
   for (const [groupId, groupFieldsList] of byGroup) {
     const meta = shapes.groups.get(groupId);
+    const label = meta ? pickByLanguage(meta.labels, languages)?.value : undefined;
     groupFieldsList.sort(orderCompare);
-    groups.push({
+    members.push({
+      order: meta?.order ?? Number.MAX_SAFE_INTEGER,
+      label: label ?? "",
       id: groupId,
-      label: meta ? pickByLanguage(meta.labels, languages)?.value : undefined,
-      order: meta?.order ?? (groupId === DEFAULT_GROUP ? Number.MAX_SAFE_INTEGER : 0),
+      titled: { id: groupId, label },
       fields: groupFieldsList,
     });
   }
-  groups.sort((a, b) => a.order - b.order);
+  members.sort(orderCompare);
+
+  const groups: GroupModel[] = [];
+  let run: GroupModel | undefined; // the open run of ungrouped fields
+  for (const m of members) {
+    if (m.titled) {
+      groups.push({ ...m.titled, order: m.order, fields: m.fields });
+      run = undefined;
+    } else if (run) {
+      run.fields.push(...m.fields);
+    } else {
+      const id = groups.some((g) => g.id === DEFAULT_GROUP) ? `${DEFAULT_GROUP}#${groups.length}` : DEFAULT_GROUP;
+      run = { id, order: m.order, fields: [...m.fields] };
+      groups.push(run);
+    }
+  }
   return groups;
 }
 
-function orderCompare(a: FieldModel, b: FieldModel): number {
+/** One member of the sequence {@link groupFields} orders: a property group with
+ *  its fields (`titled`), or a single ungrouped field. */
+interface SequenceMember {
+  order: number;
+  label: string;
+  id: string;
+  titled?: { id: string; label?: string };
+  fields: FieldModel[];
+}
+
+function orderCompare(a: { order: number; label: string; id: string }, b: { order: number; label: string; id: string }): number {
   if (a.order !== b.order) return a.order - b.order;
-  return a.label.localeCompare(b.label);
+  return a.label.localeCompare(b.label) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 }
