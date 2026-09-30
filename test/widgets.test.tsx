@@ -127,21 +127,37 @@ describe("an enumeration too long for a select", () => {
 });
 
 describe("the language tag of a langString", () => {
+  const tagged = (language: string) =>
+    form.quads.some((q) => q.predicate.value === `${ex}title` && (q.object as { language?: string }).language === language);
+
   it("offers exactly sh:languageIn, and tags the text when one is picked", async () => {
     render(<Form />);
     await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
 
     const [text, tag] = fieldOf("title").querySelectorAll<HTMLInputElement>("input");
-    expect(tag).toBeDisabled(); // nothing to tag yet
     type(text, "Hola");
     await act(() => new Promise((r) => setTimeout(r, 400)));
-    await waitFor(() => expect(tag).not.toBeDisabled());
 
     fireEvent.focus(tag);
     fireEvent.click(tag);
     expect((await screen.findAllByRole("option")).map((o) => o.textContent)).toEqual(["English · en", "Español · es"]);
     fireEvent.click(screen.getByRole("option", { name: "Español · es" }));
-    await waitFor(() => expect(form.quads.some((q) => q.predicate.value === `${ex}title` && (q.object as { language?: string }).language === "es")).toBe(true));
+    await waitFor(() => expect(tagged("es")).toBe(true));
+  });
+
+  it("can be chosen before there is any text, and the text then carries it", async () => {
+    render(<Form />);
+    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
+
+    const [text, tag] = fieldOf("title").querySelectorAll<HTMLInputElement>("input");
+    expect(tag).not.toBeDisabled();
+    fireEvent.focus(tag);
+    fireEvent.click(tag);
+    fireEvent.click(await screen.findByRole("option", { name: "Español · es" }));
+    expect(form.quads.some((q) => q.predicate.value === `${ex}title`)).toBe(false); // a tag alone is not a value
+
+    type(text, "Hola");
+    await waitFor(() => expect(tagged("es")).toBe(true), { timeout: 3000 });
   });
 });
 

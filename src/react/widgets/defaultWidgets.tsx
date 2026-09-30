@@ -26,6 +26,7 @@ import {
   useDebouncedCommit,
   type DebouncedCommit,
 } from "@kanzo-tech/ui";
+import { useState } from "react";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import type {
   MultiWidget,
@@ -156,21 +157,40 @@ const NumberField: Widget = (p) => {
   );
 };
 
+/**
+ * The language of a row, which the row has **before** it has a value.
+ *
+ * A tag exists in the graph only on a literal, so with no text there is nowhere
+ * to write it — and the picker used to be disabled until something was typed,
+ * which made "choose the language, then write" a control that did nothing. The
+ * choice is held here instead and rides on the text's first commit; once there is
+ * a literal, its own tag is the truth.
+ */
+function useLanguage(p: WidgetProps) {
+  const [pending, setPending] = useState("");
+  const language = p.language || pending;
+  return {
+    language,
+    /** Pick a tag: remembered, and written at once when there is text to carry it. */
+    pick: (tag: string, text: string) => {
+      setPending(tag);
+      if (text) p.onChange(text, tag);
+    },
+  };
+}
+
 /** The language picker, in the trailing slot of whatever it tags.
  *  `align="inline-end"` is logical — it follows the writing direction rather
  *  than assuming LTR. */
-function LangSlot(p: WidgetProps & { text: string }) {
+function LangSlot(p: WidgetProps & { text: string; lang: ReturnType<typeof useLanguage> }) {
   const { label, ...translations } = useStrings().languagePicker;
   return (
     <LanguagePicker
       inline
       aria-label={label}
-      value={p.language ?? ""}
-      onValueChange={(tag) => p.onChange(p.text || null, tag)}
+      value={p.lang.language}
+      onValueChange={(tag) => p.lang.pick(tag, p.text)}
       languages={p.languageIn}
-      // A language tags a value — meaningless with no text, so disable it until
-      // something is typed.
-      disabled={!p.text}
       translations={translations}
     />
   );
@@ -178,7 +198,8 @@ function LangSlot(p: WidgetProps & { text: string }) {
 
 /** rdf:langString on one line. */
 const LangField: Widget = (p) => {
-  const text = useText(p.value, (v) => p.onChange(v, p.language || ""));
+  const lang = useLanguage(p);
+  const text = useText(p.value, (v) => p.onChange(v, lang.language));
   return (
     <InputGroup>
       <InputGroupInput
@@ -187,7 +208,7 @@ const LangField: Widget = (p) => {
         onBlur={text.flush}
       />
       <InputGroupAddon align="inline-end">
-        <LangSlot {...p} text={text.draft ?? ""} />
+        <LangSlot {...p} lang={lang} text={text.draft ?? ""} />
       </InputGroupAddon>
     </InputGroup>
   );
@@ -196,12 +217,13 @@ const LangField: Widget = (p) => {
 /** rdf:langString as a paragraph. Distinct from {@link LangField} by exactly the
  *  thing the author asked for when they wrote `shui:TextAreaWithLangEditor`. */
 const LangArea: Widget = (p) => {
-  const text = useText(p.value, (v) => p.onChange(v, p.language || ""));
+  const lang = useLanguage(p);
+  const text = useText(p.value, (v) => p.onChange(v, lang.language));
   return (
     <div className="flex flex-col gap-1">
       <AssistedTextarea text={text} complete={p.complete} placeholder={p.placeholder} />
       <div className="ms-auto w-fit">
-        <LangSlot {...p} text={text.draft ?? ""} />
+        <LangSlot {...p} lang={lang} text={text.draft ?? ""} />
       </div>
     </div>
   );

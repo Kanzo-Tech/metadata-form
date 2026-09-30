@@ -72,7 +72,9 @@ export function makeDateField(withTime: boolean) {
         positioning={{ placement: "bottom-end" }}
       >
         <DatePickerInput aria-label={p.label} />
-        <DatePickerContent>
+        {/* A column with a gap: the content gives its children no spacing of its own,
+            and the timer under the calendar sat flush against its last week. */}
+        <DatePickerContent className="flex flex-col gap-3">
           <CalendarView view="day">
             <CalendarViewControl>
               <CalendarPrevTrigger />
