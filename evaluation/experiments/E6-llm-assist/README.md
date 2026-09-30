@@ -48,12 +48,14 @@ the commit path directly.
 Four measurements, all static or in-process:
 
 1. **The separation.** Parse the imports of every `.ts`/`.tsx` under `src/` and
-   count which ones import `ai`, `zod` or a provider package. Assert the answer
-   is exactly `src/ai/index.ts`, that the main barrel does not re-export it, and
-   that it is published on its own `./ai` export subpath.
+   count which ones import `ai`, `zod`, `@kanzo-tech/ai` or a provider package.
+   Assert the answer is exactly the two files under `src/ai/`, that the main
+   barrel does not re-export them, and that they are published on their own
+   `./ai` export subpath.
 2. **Where the ✨ is offered.** Load each profile with the real engine, build the
    form model, resolve each field through the widget registry the app uses, and
-   record the assistance the resolved widget declares.
+   record the assistance the resolved widget declares, and what `fieldContext`
+   (the default prompts' source) states about each assisted field.
 3. **What survives the commit.** Push a fixed battery of hostile candidate
    strings through `primitiveToTerm` — the single function every suggestion
    passes through on its way into the graph — and record the term that comes out.
@@ -66,11 +68,13 @@ Full detail in `results/assist.md`. The three that matter for §8:
 
 ### 1. The separation is real and is the claim
 
-One of 45 files under `src/` imports a model SDK, and it is published on its own
-subpath with `ai`/`zod` as **optional** peer dependencies. The core defines
-`FormAssist` — an async-iterable contract over plain strings — and no
-implementation. The test suite fills it with a generator that yields fixed
-values, so the seam is exercised with no network and no key.
+Two of the files under `src/` import an AI package (`src/ai/adapter.ts`: `ai`,
+`zod`; `src/ai/ui.ts`: `@kanzo-tech/ai`), both on the `./ai` subpath, with all three
+as **optional** peer dependencies. The core defines `FormAssist` — an
+async-iterable contract over plain strings — and `AssistUi`, the parts of the UI it
+composes, and implements neither: without an `assistUi` it draws plain inputs. The
+test suite fills the seam with a generator that yields fixed values, so it is
+exercised with no network and no key.
 
 ### 2. The shape bounds the suggestion by *exclusion*, and that is the only place it bounds it
 
@@ -84,20 +88,21 @@ a constraint bounds a suggestion by deciding which editor the property gets:
 - **`sh:datatype`** decides which *term* the answer becomes, at the commit. It
   coerces; it does not reject. And every assisted field in the corpus is a string
   field, so there is no non-string datatype for it to enforce.
-- **`sh:pattern`, `sh:maxCount`, `sh:class` — not bounded.** They reach neither
-  the prompt nor the commit.
+- **`sh:pattern`, `sh:maxCount`, `sh:class` — asked for, not enforced.** They
+  reach the prompt (`fieldContext`) and not the commit.
 
-### 3. The default prompt carries the field's label and nothing else
+### 3. The default prompt states the field's shape; nothing checks the answer against it
 
-`defaultSuggestPrompt` passes `field.label` plus a best-effort dataset title. Not
-`sh:in`, not `sh:datatype`, not `sh:pattern`, not the cardinality, not even the
-field's `sh:description`. **The bounding is entirely structural**; once a model
-has answered, nothing checks the answer against the shape before it is committed.
-`CreateFormAssistOptions` lets a consumer put the constraints into the prompt
-themselves — the shipped default does not.
-
-That is weaker than "suggestions are bounded by the shape" invites a reader to
-assume, and the report says so in those words.
+`fieldContext` reads the field model and states, per field, whatever it has: label,
+description, value type, `sh:in`, `sh:pattern`, length and numeric bounds,
+`sh:languageIn`, cardinality (plus the literals already entered on the same
+resource). The harness reads that text for every assisted field and reports, per
+fact, how many fields state it and how many have it in the prompt. **The bounding
+is structural plus a request**: the shape decides which fields a model may be asked
+about and tells it the constraints, but once a model has answered, nothing checks
+the answer against the shape before it is committed. Before this version the
+default prompt carried the label alone, and this finding was that the shape
+reached the model only through the field's name.
 
 ### A defect found while measuring
 
@@ -119,3 +124,5 @@ constraint and satisfying it.
    that.
 3. The prompt is a default. Overriding it changes what the model sees; the
    ✨/no-✨ decision is the only part of the bounding that survives an override.
+4. "In the prompt" is a fact about the text sent. No model is called, so whether
+   one honours a stated constraint is unmeasured.

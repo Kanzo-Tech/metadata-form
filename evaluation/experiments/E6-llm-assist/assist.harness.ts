@@ -8,11 +8,14 @@
  *
  * What it measures, per bundled profile:
  *
- *   1. **The separation.** Which modules of `src/` import an LLM SDK. (Answer:
- *      one, on its own export subpath.) Counted by parsing the imports, not
- *      asserted.
+ *   1. **The separation.** Which modules of `src/` import an AI package
+ *      (`ai`, `zod`, `@kanzo-tech/ai`, a provider). (Answer: only those under
+ *      `src/ai/`, which is its own export subpath.) Counted by parsing the
+ *      imports, not asserted.
  *   2. **Where the ✨ is offered and where it is withheld**, per field, from the
- *      real engine → `buildFormModel` → widget registry path the app uses.
+ *      real engine → `buildFormModel` → widget registry path the app uses, and
+ *      **what the default prompt states about each assisted field**
+ *      (`fieldContext`, the one place a constraint can reach the model).
  *   3. **What survives the commit.** Every suggestion reaches the graph through
  *      one function, `primitiveToTerm`. The harness pushes a battery of hostile
  *      candidate strings through it, per field, and records the term that comes
@@ -34,8 +37,10 @@ import { createRudofEngine } from "@/engine/index.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
 import { allFields, type FieldModel } from "@/form/FormModel.js";
 import { fallbackEditorId } from "@/form/editors.js";
+import { fieldContext } from "@/ai/context.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
-import { primitiveToTerm, widgetAssist } from "@/react/widgets/widgets.js";
+import { widgetAssist } from "@/react/widgets/widgets.js";
+import { primitiveToTerm } from "@/form/termBinding.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { namedNode } from "@/form/factory.js";
 import { healthDcatApShapes, healthDcatApRootShape } from "@examples/health-dcat-ap/index.js";
@@ -62,7 +67,7 @@ function cite(file: string, needle: string): string {
 
 // ------------------------------------------------------- the separation claim
 
-const SDK_IMPORT = /^\s*import\s[^;]*?from\s+["'](ai|zod|@ai-sdk\/[^"']+|openai|@anthropic-ai\/[^"']+)["']/m;
+const SDK_IMPORT = /^\s*import\s[^;]*?from\s+["'](ai|zod|@kanzo-tech\/ai|@ai-sdk\/[^"']+|openai|@anthropic-ai\/[^"']+)["']/m;
 
 /** Every `.ts`/`.tsx` under a directory. */
 function sourcesUnder(dir: string): string[] {
@@ -77,7 +82,7 @@ function sourcesUnder(dir: string): string[] {
 
 interface Separation {
   sourceFiles: number;
-  /** Files importing a model SDK (`ai`, `zod`, a provider), and what they import. */
+  /** Files importing an AI package (`ai`, `zod`, `@kanzo-tech/ai`, a provider), and what they import. */
   sdkImporters: { file: string; imports: string[] }[];
   /** The subpath those files are published under, from package.json `exports`. */
   subpath: string | null;
@@ -152,9 +157,25 @@ interface FieldRow {
   };
   /** Which constraints the field carries, and how each one bounds a suggestion. */
   bounding: Record<string, Bound>;
+  /** What the field's shape states, and what of it `fieldContext` puts in the
+   *  prompt — computed by reading the context the model would be sent. */
+  facets: { facet: string; stated: boolean; carried: boolean }[];
   /** Hostile candidate → the term `primitiveToTerm` commits, or null if rejected. */
   commits: { candidate: string; term: string | null }[];
 }
+
+/** The facts a field can state that a prompt could carry, with the line
+ *  `fieldContext` opens it with when it does. */
+const FACETS: [string, string, (f: FieldModel) => boolean][] = [
+  ["sh:description", "Description:", (f) => !!f.description],
+  ["sh:datatype / sh:nodeKind / sh:class", "Value type:", (f) => !!(f.constraints.datatype ?? f.constraints.nodeKind ?? f.constraints.classIri)],
+  ["sh:in", "Allowed values:", (f) => !!f.constraints.options?.length],
+  ["sh:pattern", "Must match", (f) => !!f.constraints.pattern],
+  ["sh:minLength / sh:maxLength", "Length:", (f) => f.constraints.minLength !== undefined || f.constraints.maxLength !== undefined],
+  ["numeric bounds", "Range:", (f) => ["minInclusive", "maxInclusive", "minExclusive", "maxExclusive"].some((k) => (f.constraints as Record<string, unknown>)[k] !== undefined)],
+  ["sh:languageIn", "Language tags allowed:", (f) => !!f.constraints.languageIn?.length],
+  ["sh:minCount / sh:maxCount", "Cardinality:", () => true],
+];
 
 const term = (t: ReturnType<typeof primitiveToTerm>): string | null => {
   if (!t) return null;
@@ -206,19 +227,36 @@ async function analyse(
           ? "the widget declares complete"
           : `the widget (${short(eff)}) declares no assistance`;
 
-    // How each constraint the field carries bounds a suggestion.
+    // What the prompt says about the field: read off the context the model is
+    // sent, not assumed from what the shape states.
+    const assisted = !!(caps.suggest || caps.complete);
+    const prompt = assisted ? fieldContext(f) : "";
+    const facets = FACETS.map(([facet, line, states]) => ({
+      facet,
+      stated: states(f),
+      carried: prompt.includes(line),
+    }));
+    const inPrompt = (facet: string) => facets.find((x) => x.facet === facet)!.carried;
+
+    // How each constraint the field carries bounds a suggestion: by EXCLUSION
+    // (no ✨), at the COMMIT (`shape`), by the PROMPT (asked, not enforced), or not
+    // at all.
     const bounding: Record<string, Bound> = {};
     if (c.options?.length) {
       // sh:in routes to a discrete widget, which declares no assistance: the ✨
       // never appears, so the enum is bounded by EXCLUSION, not by filtering.
-      bounding["sh:in"] = caps.suggest || caps.complete ? "unbounded" : "shape";
+      bounding["sh:in"] = assisted ? (inPrompt("sh:in") ? "prompt" : "unbounded") : "shape";
     }
-    if (c.datatype) bounding["sh:datatype"] = caps.suggest || caps.complete ? "shape" : "n/a";
-    if (c.pattern) bounding["sh:pattern"] = caps.suggest || caps.complete ? "unbounded" : "n/a";
+    if (c.datatype) bounding["sh:datatype"] = assisted ? "shape" : "n/a";
+    if (c.pattern) {
+      bounding["sh:pattern"] = assisted ? (inPrompt("sh:pattern") ? "prompt" : "unbounded") : "n/a";
+    }
     if (f.maxCount !== undefined) {
-      bounding["sh:maxCount"] = caps.suggest || caps.complete ? "unbounded" : "n/a";
+      bounding["sh:maxCount"] = assisted ? (inPrompt("sh:minCount / sh:maxCount") ? "prompt" : "unbounded") : "n/a";
     }
-    if (c.classIri) bounding["sh:class"] = caps.suggest || caps.complete ? "unbounded" : "n/a";
+    if (c.classIri) {
+      bounding["sh:class"] = assisted ? (inPrompt("sh:datatype / sh:nodeKind / sh:class") ? "prompt" : "unbounded") : "n/a";
+    }
 
     rows.push({
       profile,
@@ -240,6 +278,7 @@ async function analyse(
         classIri: c.classIri,
       },
       bounding,
+      facets,
       commits:
         caps.suggest || caps.complete
           ? HOSTILE.map((candidate) => ({ candidate, term: term(primitiveToTerm(f, candidate)) }))
@@ -398,6 +437,11 @@ it("E6 — where the shape bounds a suggestion, and where it does not", async ()
           return a;
         }, {}),
     ).sort((a, b) => b[1] - a[1]),
+    /** Per facet, over the assisted fields: how many state it, how many have it in the prompt. */
+    promptCoverage: FACETS.map(([facet]) => {
+      const cells = rows.filter((r) => r.suggest || r.complete).map((r) => r.facets.find((x) => x.facet === facet)!);
+      return { facet, stated: cells.filter((x) => x.stated).length, carried: cells.filter((x) => x.stated && x.carried).length };
+    }),
     rows,
     posthoc,
     langProbe,
@@ -409,11 +453,13 @@ it("E6 — where the shape bounds a suggestion, and where it does not", async ()
 
   // Guards — the claims in the report, asserted so a refactor breaks the run
   // rather than the paper.
-  expect(separation.sdkImporters.map((s) => s.file)).toEqual(["src/ai/index.ts"]);
+  expect(separation.sdkImporters.map((s) => s.file).sort()).toEqual(["src/ai/adapter.ts", "src/ai/ui.ts"]);
   expect(separation.barrelReexportsAi).toBe(false);
   expect(separation.subpath).toBe("./ai");
   expect(summary.enumFieldsAssisted).toBe(0); // sh:in is bounded by exclusion
-  expect(patterned.length).toBeGreaterThan(0); // sh:pattern is not
+  expect(patterned.length).toBeGreaterThan(0); // sh:pattern is asked for, never enforced
+  // Whatever a field states, the prompt carries: a constraint stated and not carried is a gap.
+  expect(summary.promptCoverage.every((c) => c.stated === c.carried)).toBe(true);
 });
 
 /**
@@ -441,9 +487,12 @@ function report(
   posthoc: PostHoc | null,
 ): string {
   const C = {
-    adapter: cite("src/ai/index.ts", "export function createFormAssist"),
-    suggestPrompt: cite("src/ai/index.ts", "function defaultSuggestPrompt"),
-    completePrompt: cite("src/ai/index.ts", "function defaultCompletePrompt"),
+    adapter: cite("src/ai/adapter.ts", "export function createFormAssist"),
+    suggestPrompt: cite("src/ai/adapter.ts", "const suggestPrompt"),
+    completePrompt: cite("src/ai/adapter.ts", "const completePrompt"),
+    fieldContext: cite("src/ai/context.ts", "export function fieldContext"),
+    assistUi: cite("src/ai/ui.ts", "export const assistUi"),
+    assistUiSlot: cite("src/react/assistUi.ts", "export interface AssistUi"),
     seam: cite("src/assist.ts", "export interface FormAssist"),
     caps: cite("src/react/widgets/widgets.ts", "export interface AssistSupport"),
     wire: cite("src/react/form/FieldRenderer.tsx", "const suggests = assist?.suggest"),
@@ -453,7 +502,7 @@ function report(
     enumOptOut: cite("src/react/widgets/defaultWidgets.tsx", "[Editors.EnumSelect]:"),
     enumWhy: cite("src/react/widgets/defaultWidgets.tsx", "an LLM ✨ suggestion is redundant"),
     patternNote: cite("src/react/form/FieldRenderer.tsx", "never as an HTML `pattern` attribute"),
-    ghost: cite("src/react/widgets/defaultWidgets.tsx", "const Area: Widget"),
+    ghost: cite("src/react/widgets/defaultWidgets.tsx", "function AssistedTextarea"),
     playgroundWiring: cite("playground/src/lib/assist.ts", "export function makeAssist"),
     fallback: cite("src/form/editors.ts", "export function fallbackEditorId"),
     factoryLiteral: cite("src/form/factory.ts", "export function literal"),
@@ -501,16 +550,17 @@ bounds what a model may put into the graph, and where it does not.
 
 ## 1. The seam
 
-The library core never imports a model SDK. Measured, not asserted: of
+The library core never imports an AI package. Measured, not asserted: of
 **${s.separation.sourceFiles}** TypeScript files under \`src/\`,
-**${s.separation.sdkImporters.length}** imports \`ai\`, \`zod\`, or any provider
+**${s.separation.sdkImporters.length}** import \`ai\`, \`zod\`, \`@kanzo-tech/ai\`, or any provider
 package —
 
 ${s.separation.sdkImporters.map((i: any) => `- \`${i.file}\` → ${i.imports.map((m: string) => `\`${m}\``).join(", ")}`).join("\n")}
 
-— and that file is published on its own export subpath, \`metadata-form${s.separation.subpath?.slice(1)}\`.
-The main barrel does not re-export it (\`barrelReexportsAi = ${s.separation.barrelReexportsAi}\`),
-and \`ai\`/\`zod\` are **optional** peer dependencies
+— all of them under \`src/ai/\`, which is published on its own export subpath,
+\`metadata-form${s.separation.subpath?.slice(1)}\`. The main barrel does not re-export it
+(\`barrelReexportsAi = ${s.separation.barrelReexportsAi}\`), and the form draws no assistance UI
+unless it is handed one, so the packages are **optional** peer dependencies
 (${Object.entries(s.separation.peerOptional)
     .map(([k, v]) => `\`${k}\`: ${v ? "optional" : "required"}`)
     .join(", ")}). A consumer who wires no model pays nothing and installs nothing.
@@ -521,6 +571,9 @@ What the core *does* define is an interface, not an implementation:
 |---|---|
 | \`FormAssist\` — the whole seam (\`search\`, \`suggest\`, \`complete\`) | \`${C.seam}\` |
 | \`AssistSupport\` — which assistance a *widget* declares it accepts | \`${C.caps}\` |
+| \`AssistUi\` — the parts of the ✨ and ghost-text UI the form composes, supplied by the consumer | \`${C.assistUiSlot}\` |
+| \`assistUi\` — that UI, from \`@kanzo-tech/ai\` | \`${C.assistUi}\` |
+| \`fieldContext\` — what the default prompts state about a field | \`${C.fieldContext}\` |
 | \`createFormAssist\` — the optional Vercel-AI-SDK adapter | \`${C.adapter}\` |
 | the playground's wiring of a real provider | \`${C.playgroundWiring}\` |
 
@@ -613,44 +666,51 @@ defect in the assist path, not in the shape.`
     : ""
 }
 
-**\`sh:pattern\` — not bounded.** ${s.patternFields} of the ${s.fields} fields carry
-\`sh:pattern\`, and **${s.patternFieldsAssisted}** of those ${s.patternFieldsAssisted === 1 ? "is" : "are"} assisted;
-the pattern reaches neither the prompt nor the commit. It is deliberately not
-applied in the UI either — an unanchored XPath regex is not an HTML \`pattern\`
-attribute, and treating it as one would reject values the shape accepts
-(\`${C.patternNote}\`).
+**\`sh:pattern\` — asked for, not enforced.** ${s.patternFields} of the ${s.fields} fields carry
+\`sh:pattern\`, and **${s.patternFieldsAssisted}** of those ${s.patternFieldsAssisted === 1 ? "is" : "are"} assisted.
+The pattern reaches the prompt (\`${C.fieldContext}\`: *Must match the regular expression*) and
+not the commit. It is deliberately not applied in the UI either — an unanchored XPath
+regex is not an HTML \`pattern\` attribute, and treating it as one would reject values
+the shape accepts (\`${C.patternNote}\`).
 ${patterned.map((r) => `On **${r.label}** (\`${r.constraints.pattern}\`):\n\n${commitTable(r)}`).join("\n\n")}
 
 The last two rows are the point: the shape distinguishes \`did:web:…\` from
-\`web:…\` and the assist path does not.
+\`web:…\` and the commit does not. A model that was told the pattern is asked to
+satisfy it; nothing checks that it did.
 
-**Cardinality — not bounded.** \`sh:maxCount\` gates the *+ Add* button but not
-\`applySuggestion\`, which calls \`addValue\` directly (\`${C.apply}\`). A stream of
-candidates picked one after another on a repeatable field is not stopped at
-\`maxCount\` by this code path.
+**Cardinality — asked for, not enforced.** \`sh:maxCount\` is in the prompt
+(*Cardinality*) and gates the *+ Add* button, but not \`applySuggestion\`, which calls
+\`addValue\` directly (\`${C.apply}\`). A stream of candidates picked one after another
+on a repeatable field is not stopped at \`maxCount\` by this code path.
 
-**\`sh:class\` — not bounded, and not the same problem.** Reference fields declare
-\`suggest\`, so a model may be asked for an IRI it has no way to know exists. The
-adapter's docblock is explicit that \`reference\` autocomplete should hit a real
-vocabulary service and ships no \`search\` for that reason (\`${C.adapter}\`) — but
-\`suggest\` is still offered on those fields.
+**\`sh:class\` — asked for, and not the same problem.** Reference fields declare
+\`suggest\`, and the prompt names the class (*Value type*), but a model may still be
+asked for an IRI it has no way to know exists. The adapter's docblock is explicit
+that \`reference\` autocomplete should hit a real vocabulary service and ships no
+\`search\` for that reason (\`${C.adapter}\`) — but \`suggest\` is still offered on those
+fields.
 
 ### What the prompt carries
 
-The default prompts (\`${C.suggestPrompt}\`, \`${C.completePrompt}\`) pass the field's
-**label** and a best-effort dataset title. They do **not** pass \`sh:in\`,
-\`sh:datatype\`, \`sh:pattern\`, \`sh:minCount\`/\`sh:maxCount\`, \`sh:class\`, or the
-field's \`sh:description\`. Nothing about the shape reaches the model except the
-name of the field.
+The default prompts (\`${C.suggestPrompt}\`, \`${C.completePrompt}\`) are written from
+\`fieldContext\` (\`${C.fieldContext}\`), which reads the field model and states each
+fact the field has, and from the literals already entered on the same resource.
+Over the **${s.assisted}** assisted fields, per fact the shape can state, how many
+state it and how many have it in the prompt — computed by reading the context
+that would be sent:
 
-**That is the finding, and it is weaker than the architecture invites a reader to
-assume.** The bounding that exists is entirely *structural*: the shape decides
-which fields a model may be asked about, and on those fields nothing further is
-constrained. Once a model has answered, \`sh:datatype\` decides which kind of term
+| Fact | Fields stating it | Of those, in the prompt |
+|---|--:|--:|
+${s.promptCoverage.map((c: { facet: string; stated: number; carried: number }) => `| ${c.facet} | ${c.stated} | ${c.carried} |`).join("\n")}
+
+**That is the finding, and it is the reverse of what the first version of this
+experiment measured** (a default prompt that carried only the label): the shape now
+reaches the model in full. What it does not do is reach the *answer*. The bounding
+is structural (which fields a model may be asked about) plus a **request** (what the
+prompt says); once a model has answered, \`sh:datatype\` decides which kind of term
 the answer becomes and no constraint decides whether the answer is admissible.
-\`CreateFormAssistOptions\` exposes \`suggestPrompt\`/\`completePrompt\` so a consumer
-can put the constraints into the prompt themselves; the shipped default does not,
-and nothing filters what comes back.
+Overriding \`suggestPrompt\`/\`completePrompt\` replaces the request; nothing filters
+what comes back.
 
 ## 3. Worked example — title, description, keywords
 
@@ -755,5 +815,7 @@ above. Nothing beyond it is.
 4. **The prompt is a default, not a contract.** A consumer overriding
    \`suggestPrompt\` changes what the model sees; the ✨/no-✨ decision is the only
    part of the bounding that survives such an override.
+5. **"In the prompt" is a fact about the text sent, not about the answer.** No
+   model was called, so whether a model honours a stated constraint is unmeasured.
 `;
 }
