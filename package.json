@@ -70,7 +70,7 @@
     }
   },
   "dependencies": {
-    "@kanzo-tech/rudof-wasm": "^0.3.8",
+    "@kanzo-tech/rudof-wasm": "^0.3.9",
     "@rdfjs/types": "^1.1.2"
   },
   "devDependencies": {
