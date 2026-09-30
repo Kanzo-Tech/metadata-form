@@ -90,7 +90,7 @@ since 2 Sep, so nothing suggests it stopped working, but this run did not open i
 The 28 Aug audit found the short v2 link (67 characters, by reference to a bundled
 example) dead on the deployment, because `main` was v1-only then. That has changed:
 the public `main` now carries the v2 codec (four `v: 2` markers in
-`playground/src/lib/permalink.ts`, as on this branch), (on the branch and on `main`; the deployment was built from `main`). **A v2 link resolving on the deployment has not been
+`playground/src/lib/permalink.ts`, on this branch and on `main`, which is what the deployment was built from). **A v2 link resolving on the deployment has not been
 verified in a browser**; do not cite one until it has.
 
 ---
