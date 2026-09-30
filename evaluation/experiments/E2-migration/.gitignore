@@ -1,3 +1,0 @@
-# Local measurement environment (rdflib only) — recreate with `make venv`.
-.venv/
-__pycache__/
