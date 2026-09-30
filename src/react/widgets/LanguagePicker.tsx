@@ -9,18 +9,11 @@ import {
   createListCollection,
   useFilter,
 } from "@kanzo-tech/ui";
-import type { Strings } from "../../i18n/strings.js";
+import { DEFAULTS, type Strings } from "../../i18n/strings.js";
 
-/** UI chrome, injectable for i18n. English defaults keep the widget usable
- *  standalone (outside a <MetadataForm>, which otherwise supplies the catalog). */
+/** UI chrome, injectable for i18n; standalone (outside a <MetadataForm>, which
+ *  otherwise supplies the catalog) it reads the built-in English one. */
 type PickerStrings = Strings["languagePicker"];
-const DEFAULT_STRINGS: PickerStrings = {
-  label: "Language",
-  searchPlaceholder: "Search or type a tag…",
-  filterPlaceholder: "Filter…",
-  noMatches: "No matches",
-  enterToUse: "Press Enter to use this tag",
-};
 
 /**
  * A compact, searchable language-tag picker for `rdf:langString` values, designed
@@ -84,7 +77,7 @@ export function LanguagePicker({
   onChange,
   allowed,
   disabled,
-  strings = DEFAULT_STRINGS,
+  strings = DEFAULTS.en.languagePicker,
 }: {
   value: string;
   onChange: (tag: string) => void;

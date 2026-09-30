@@ -10,7 +10,7 @@ import { healthDcatApShapes } from "@examples/health-dcat-ap/index.js";
 
 const shapes = healthDcatApShapes;
 
-/** Test helper: the unified usage (hook + component) inside a Radix . */
+/** Test helper: the unified usage (hook + component). */
 function Form(props: UseMetadataFormOptions & { onReady?: (q: number) => void }) {
   const form = useMetadataForm({ validateOn: "off", ...props });
   props.onReady?.(form.quads.length);

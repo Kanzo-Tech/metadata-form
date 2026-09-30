@@ -1,8 +1,6 @@
-import { useMemo } from "react";
 import type { Term } from "@rdfjs/types";
 import type { FieldModel, FormModel } from "../../form/FormModel.js";
 import type { FieldError, Severity } from "../../form/validation.js";
-import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 
 /**
  * The single derived model of a form's state. Everything the validation and
@@ -201,9 +199,4 @@ export function computeFormReport(
     nextField: pending[0],
     health: { mood, message },
   };
-}
-
-/** Hook form for consumers building custom surfaces on top of `form.report`. */
-export function useFormReport(form: MetadataFormController): FormReport {
-  return useMemo(() => computeFormReport(form.model, form.errors), [form.model, form.errors]);
 }

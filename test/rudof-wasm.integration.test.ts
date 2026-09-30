@@ -7,9 +7,9 @@ import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { RudofEngine } from "@/engine/RudofEngine.js";
 import { namedNode, literal } from "@/engine/factory.js";
 import { mapResults } from "@/form/validation.js";
-import { computeFormReport } from "@/react/validation/useFormReport.js";
+import { computeFormReport } from "@/react/validation/formReport.js";
 import { buildFormModel } from "@/form/buildFormModel.js";
-import { projectTree, projectTreeSync } from "@/engine/projectTree.js";
+import { projectTree } from "@/engine/projectTree.js";
 import { allFields } from "@/form/FormModel.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import type { RudofModule, RudofSession } from "@/engine/abi.js";
@@ -145,7 +145,7 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(await engine.validateFocus(namedNode(`${EX}alice`), SHAPE)).toHaveLength(0);
   });
 
-  it("exposes a live editable GraphBackend (add / match / remove / serialize)", async () => {
+  it("exposes a live editable RudofGraphBackend (add / match / remove / serialize)", async () => {
     const graph = await engine.newGraph();
     const s = namedNode(`${EX}carol`);
     const p = namedNode(`${EX}name`);
@@ -204,7 +204,7 @@ describe("RudofEngine over the REAL wasm", () => {
     const model = await engine.loadShapes(healthDcatApShapes);
     await engine.loadData(healthDcatApSampleData);
     const dataset = namedNode("http://example.org/dataset/covid-registry");
-    const { values, satisfied } = await projectTree((f, s) => engine.projectForm(f, s), model, healthDcatApRootShape, dataset);
+    const { values, satisfied } = projectTree((f, s) => engine.projectFormSync(f, s), model, healthDcatApRootShape, dataset);
 
     // Data store is EMPTY — all values come from rudof's projection.
     const form = buildFormModel({
@@ -259,7 +259,7 @@ describe("RudofEngine over the REAL wasm", () => {
     const namePred = namedNode(`${EX}name`);
 
     const rebuild = async () => {
-      const { values, satisfied } = await projectTree((f, s) => engine.projectForm(f, s), model, SHAPE, alice);
+      const { values, satisfied } = projectTree((f, s) => engine.projectFormSync(f, s), model, SHAPE, alice);
       return buildFormModel({ shapes: model, focusNode: alice, shape, values, satisfied });
     };
     const nameValues = (form: { groups: { fields: { path: { value: string }; values: { value: { value: string } | null }[] }[] }[] }) =>
@@ -285,8 +285,8 @@ describe("RudofEngine over the REAL wasm", () => {
 
     graph.add(alice, namedNode(`${EX}name`), literal("Alice"));
 
-    // Fully synchronous: projectTreeSync → buildFormModel, no await.
-    const { values, satisfied } = projectTreeSync((f, s) => engine.projectFormSync(f, s), model, SHAPE, alice);
+    // Fully synchronous: projectTree → buildFormModel, no await.
+    const { values, satisfied } = projectTree((f, s) => engine.projectFormSync(f, s), model, SHAPE, alice);
     const form = buildFormModel({ shapes: model, focusNode: alice, shape, values, satisfied });
     expect(allFields(form).find((f) => f.path.value === `${EX}name`)?.values[0]?.value?.value).toBe("Alice");
   });
@@ -313,7 +313,7 @@ describe("RudofEngine over the REAL wasm", () => {
     expect(whole).toHaveLength(1);
     expect(whole[0].constraint).toBe("http://www.w3.org/ns/shacl#NodeConstraintComponent");
 
-    const tree = projectTreeSync((f, s) => engine.projectFormSync(f, s), model, `${EX}DatasetShape`, d1);
+    const tree = projectTree((f, s) => engine.projectFormSync(f, s), model, `${EX}DatasetShape`, d1);
     expect(tree.nodes.map((n) => n.shapeId)).toEqual([`${EX}DatasetShape`, `${EX}AgentShape`]);
 
     const results = await engine.validateTree(tree.nodes);

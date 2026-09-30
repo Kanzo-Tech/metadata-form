@@ -37,36 +37,19 @@ export interface ProjectedTree {
   nodes: ProjectedNode[];
 }
 
-/** A synchronous projector: `(focus, shapeId) => ProjectedForm` (e.g.
+/** A projector: `(focus, shapeId) => ProjectedForm` (e.g.
  *  `RudofEngine.projectFormSync`, valid once `ready()` has resolved). */
-export type SyncProjector = (focus: Term, shapeId: string) => ProjectedForm;
-
-/** An asynchronous projector: `(focus, shapeId) => Promise<ProjectedForm>` (e.g.
- *  `RudofEngine.projectForm`). */
-export type AsyncProjector = (focus: Term, shapeId: string) => Promise<ProjectedForm>;
+export type Projector = (focus: Term, shapeId: string) => ProjectedForm;
 
 /**
  * Project a focus node's entire form tree — recursing into every `sh:node`
  * sub-focus — into a flat {@link ProjectedValues} map keyed by `${focus}|${pathKey}`.
- * Done once, up front, so `buildFormModel` can read values synchronously on every
- * edit without re-entering WASM.
+ * Done once per edit, synchronously, so `buildFormModel` reads values without
+ * re-entering WASM or awaiting.
  */
-export async function projectTree(
-  project: AsyncProjector,
-  shapes: ShapeModel,
-  shapeId: string,
-  focus: Term,
-): Promise<ProjectedTree> {
+export function projectTree(project: Projector, shapes: ShapeModel, shapeId: string, focus: Term): ProjectedTree {
   const tree: ProjectedTree = { values: new Map(), satisfied: new Map(), nodes: [] };
-  await recurse(project, shapes, shapeId, focus, tree, new Set());
-  return tree;
-}
-
-/** Synchronous {@link projectTree}, driving a {@link SyncProjector}. Lets the
- *  React per-edit rebuild project the whole tree without an await. */
-export function projectTreeSync(project: SyncProjector, shapes: ShapeModel, shapeId: string, focus: Term): ProjectedTree {
-  const tree: ProjectedTree = { values: new Map(), satisfied: new Map(), nodes: [] };
-  recurseSync(project, shapes, shapeId, focus, tree, new Set());
+  recurse(project, shapes, shapeId, focus, tree, new Set());
   return tree;
 }
 
@@ -82,8 +65,8 @@ function projectedPropertyShapes(node: NodeShapeIR): PropertyShapeIR[] {
   return [...node.properties, ...branch].filter((ps) => !ps.deactivated);
 }
 
-function recurseSync(
-  project: SyncProjector,
+function recurse(
+  project: Projector,
   shapes: ShapeModel,
   shapeId: string,
   focus: Term,
@@ -108,43 +91,7 @@ function recurseSync(
     const ps = propShapes.find((p) => p.pathKey === prop.pathKey);
     if (ps?.node) {
       for (const v of prop.values) {
-        if (v.nested) recurseSync(project, shapes, ps.node, toTerm(v.nested), tree, visited);
-      }
-    }
-  }
-}
-
-async function recurse(
-  project: AsyncProjector,
-  shapes: ShapeModel,
-  shapeId: string,
-  focus: Term,
-  tree: ProjectedTree,
-  visited: Set<string>,
-): Promise<void> {
-  const guard = `${shapeId}|${focus.value}`;
-  if (visited.has(guard)) return;
-  visited.add(guard);
-
-  const node = shapes.nodeShapes.get(shapeId);
-  // A deactivated node shape (SHACL §2.1.6) renders nothing and validates nothing.
-  if (!node || node.deactivated) return;
-  tree.nodes.push({ focus, shapeId });
-
-  const form = await project(focus, shapeId);
-  tree.satisfied.set(focus.value, new Set(form.satisfied ?? []));
-  const propShapes = projectedPropertyShapes(node);
-  for (const prop of form.properties) {
-    tree.values.set(
-      `${focus.value}|${prop.pathKey}`,
-      prop.values.map((v) => ({ value: toTerm(v.value), nestedFocus: v.nested ? toTerm(v.nested) : undefined })),
-    );
-
-    // Recurse into nested node shapes for their sub-focuses.
-    const ps = propShapes.find((p) => p.pathKey === prop.pathKey);
-    if (ps?.node) {
-      for (const v of prop.values) {
-        if (v.nested) await recurse(project, shapes, ps.node, toTerm(v.nested), tree, visited);
+        if (v.nested) recurse(project, shapes, ps.node, toTerm(v.nested), tree, visited);
       }
     }
   }

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ValidationPanel } from "@/react/validation/ValidationPanel.js";
-import { computeFormReport, type IssueRow } from "@/react/validation/useFormReport.js";
+import { computeFormReport, type IssueRow } from "@/react/validation/formReport.js";
 import { fieldKey, type FieldError } from "@/form/validation.js";
 import type { FieldModel, FormModel } from "@/form/FormModel.js";
 import { blankNode, literal, namedNode } from "@/engine/factory.js";

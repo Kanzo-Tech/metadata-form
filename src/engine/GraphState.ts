@@ -10,7 +10,7 @@ import {
   type WriteBranch,
   type WriteStep,
 } from "../form/writePath.js";
-import type { GraphBackend } from "./GraphBackend.js";
+import type { RudofGraphBackend } from "./RudofEngine.js";
 
 const RDF_TYPE = namedNode(rdf("type").value);
 
@@ -24,7 +24,7 @@ function nextBlankId(): string {
 
 /**
  * Holds the editable data graph — the single source of truth. The graph itself
- * lives in the engine session behind a {@link GraphBackend} (rudof-over-WASM by
+ * lives in the engine session behind a {@link RudofGraphBackend} (rudof-over-WASM by
  * default); this class adds React change tracking (version + subscribe) over it.
  * Form fields are projections of this graph. Mutations route to the backend and
  * bump a version, notifying subscribers (consumed via useSyncExternalStore).
@@ -40,7 +40,7 @@ export class GraphState {
   private version = 0;
   private listeners = new Set<Listener>();
 
-  constructor(private readonly backend: GraphBackend) {}
+  constructor(private readonly backend: RudofGraphBackend) {}
 
   getVersion = (): number => this.version;
 

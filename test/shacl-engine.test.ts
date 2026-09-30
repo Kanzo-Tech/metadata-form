@@ -6,7 +6,7 @@ import { createRudofEngine } from "@/engine/index.js";
 import { projectTree } from "@/engine/projectTree.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { allFields } from "@/form/FormModel.js";
-import { computeFormReport } from "@/react/validation/useFormReport.js";
+import { computeFormReport } from "@/react/validation/formReport.js";
 import type { FieldError, ValidationResult } from "@/form/validation.js";
 import { mapResults } from "@/form/validation.js";
 import { namedNode } from "@/engine/factory.js";
@@ -50,7 +50,7 @@ async function buildWithData(
   const model = await engine.loadShapes(sTtl);
   await engine.loadData(dataTtl);
   const shape = model.nodeShapes.get(rootIri)!;
-  const { values, satisfied } = await projectTree((f, s) => engine.projectForm(f, s), model, rootIri, focusNode);
+  const { values, satisfied } = projectTree((f, s) => engine.projectFormSync(f, s), model, rootIri, focusNode);
   return buildFormModel({ shapes: model, focusNode, shape, values, satisfied, locale: "en" });
 }
 

@@ -26,8 +26,8 @@ describe("SHACL 1.2 conditional rendering — real rudof wasm", () => {
     const focus = session.focusNode;
 
     const rebuild = async () => {
-      const { values, satisfied } = await projectTree(
-        (f, s) => engine.projectForm(f, s),
+      const { values, satisfied } = projectTree(
+        (f, s) => engine.projectFormSync(f, s),
         shapes,
         session.rootShapeId,
         focus,

@@ -5,15 +5,6 @@
    `dist`, so it scans that instead of `metadata-form/tailwind.css`. */
 @source "../src";
 
-/* Radix <Theme> sets min-height:100vh on its root; the browser's default
-   8px body margin then pushes the page past the viewport → a vertical
-   scrollbar even when content is short. Resetting the margin fixes it.
-   (The off-canvas Preferences panel is clipped by its own fixed wrapper,
-   so no global overflow rule is needed for it.) */
-body {
-  margin: 0;
-}
-
 /* IDE-style panel divider (playground ResizeHandle): the hairline thickens
    and picks up the accent colour on hover/drag. */
 .mf-resize-handle > span {

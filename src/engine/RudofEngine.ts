@@ -2,9 +2,8 @@ import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode, quad, rdf } from "./factory.js";
 import { toTerm, toTermValue } from "./termValue.js";
 import { freshFocusNode, resolveRootShapeFromTypes } from "../form/buildFormModel.js";
-import { projectTreeSync, type ProjectedNode, type ProjectedTree } from "./projectTree.js";
+import { projectTree, type ProjectedNode, type ProjectedTree } from "./projectTree.js";
 import type { NodeShapeIR, ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
-import type { GraphBackend } from "./GraphBackend.js";
 import type { Severity, ValidationResult } from "../form/validation.js";
 import type { RudofLoader, RudofResult, RudofSession, ShapeModelJson } from "./abi.js";
 
@@ -40,7 +39,7 @@ function shapeModelFromJson(json: ShapeModelJson): ShapeModel {
 }
 
 /** The focus node's rdf:type values, read from the live session backend. */
-function typesOf(backend: GraphBackend, focus: Term): string[] {
+function typesOf(backend: RudofGraphBackend, focus: Term): string[] {
   return backend.match(focus, RDF_TYPE, null).map((q) => q.object.value);
 }
 
@@ -48,7 +47,7 @@ function typesOf(backend: GraphBackend, focus: Term): string[] {
  *  root shape's target class. Returns undefined when none is found. */
 function inferFocusFromBackend(
   shapes: ShapeModel,
-  backend: GraphBackend,
+  backend: RudofGraphBackend,
   rootShape?: NamedNode,
 ): Term | undefined {
   const shape = rootShape ? shapes.nodeShapes.get(rootShape.value) : undefined;
@@ -63,7 +62,7 @@ function inferFocusFromBackend(
 /** Stamp the focus node with the root shape's target class plus any sh:hasValue /
  *  sh:defaultValue seeds, directly into the session graph, so a new instance is
  *  complete and validation targets it. */
-function seedIntoBackend(backend: GraphBackend, focus: Term, shape: NodeShapeIR): void {
+function seedIntoBackend(backend: RudofGraphBackend, focus: Term, shape: NodeShapeIR): void {
   if (shape.instanceClass) {
     const cls = namedNode(shape.instanceClass);
     if (backend.match(focus, RDF_TYPE, cls).length === 0) backend.add(focus, RDF_TYPE, cls);
@@ -77,21 +76,21 @@ function seedIntoBackend(backend: GraphBackend, focus: Term, shape: NodeShapeIR)
   }
 }
 
-/** The live editable graph of a form session: the engine-owned {@link GraphBackend}
+/** The live editable graph of a form session: the engine-owned {@link RudofGraphBackend}
  *  (the single source of truth) plus the resolved subject and root shape, returned
  *  by {@link RudofEngine.createGraph}. */
 export interface GraphSession {
   /** The live, mutable, queryable data graph (the engine session). */
-  backend: GraphBackend;
+  backend: RudofGraphBackend;
   /** The resolved subject to edit (inferred/seeded when not given). */
   focusNode: Term;
   /** The resolved root node-shape id — for projection + scoped validation. */
   rootShapeId: string;
 }
 
-/** A {@link GraphBackend} over a rudof session's current graph. The session owns
+/** A {@link RudofGraphBackend} over a rudof session's current graph. The session owns
  *  the single in-wasm graph; this just adapts term marshalling to RDF/JS. */
-export class RudofGraphBackend implements GraphBackend {
+export class RudofGraphBackend {
   constructor(private readonly session: RudofSession) {}
 
   add(s: Term, p: Term, o: Term): void {
@@ -121,7 +120,7 @@ export class RudofGraphBackend implements GraphBackend {
  * the initial data once, resolves + seeds the focus, returns the live editable
  * {@link GraphSession}); `projectValues` re-derives field values on every edit and
  * `validateFocus` validates the live graph in place. `serialize` emits the live
- * graph (rudof owns all RDF I/O — there is no n3/jsonld here).
+ * graph (rudof owns all RDF I/O).
  */
 export class RudofEngine {
   private session?: RudofSession;
@@ -149,14 +148,14 @@ export class RudofEngine {
   }
 
   /** Parse a data document into the session graph; returns the live backend. */
-  async loadData(text: string, mediaType = TURTLE): Promise<GraphBackend> {
+  async loadData(text: string, mediaType = TURTLE): Promise<RudofGraphBackend> {
     await this.ready();
     this.s.loadData(text, mediaType);
     return new RudofGraphBackend(this.s);
   }
 
   /** Start an empty editable graph backend. */
-  async newGraph(): Promise<GraphBackend> {
+  async newGraph(): Promise<RudofGraphBackend> {
     await this.ready();
     this.s.newData();
     return new RudofGraphBackend(this.s);
@@ -221,7 +220,7 @@ export class RudofEngine {
    *  consumed by `buildFormModel`. Called on every edit to re-derive the form from
    *  the single graph. */
   projectValues(shapes: ShapeModel, focusNode: Term, rootShapeId: string): ProjectedTree {
-    return projectTreeSync((f, s) => this.projectFormSync(f, s), shapes, rootShapeId, focusNode);
+    return projectTree((f, s) => this.projectFormSync(f, s), shapes, rootShapeId, focusNode);
   }
 
   /** Validate the current graph (optionally scoped to one shape) against the shapes. */

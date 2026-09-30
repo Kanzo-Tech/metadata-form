@@ -36,9 +36,9 @@ export function MetadataForm({ form, widgets, layout, grid, className }: Metadat
   );
 
   const ctx = useMemo<FormContextValue | null>(() => {
-    if (!form._graph || !form.model) return null;
+    if (!form.graph || !form.model) return null;
     return {
-      graph: form._graph,
+      graph: form.graph,
       model: form.model,
       widgets: registry,
       locale: form.locale,
@@ -50,7 +50,7 @@ export function MetadataForm({ form, widgets, layout, grid, className }: Metadat
       grid,
       revealTarget: form._revealTarget,
     };
-  }, [form._graph, form.model, registry, form.locale, form.strings, form.errors, form.report, form.assist, layout, grid, form._revealTarget]);
+  }, [form.graph, form.model, registry, form.locale, form.strings, form.errors, form.report, form.assist, layout, grid, form._revealTarget]);
 
   if (form.error) {
     return (

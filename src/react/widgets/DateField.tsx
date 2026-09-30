@@ -16,7 +16,7 @@ import {
   useField,
   type DateValue,
 } from "@kanzo-tech/ui";
-import type { Widget, WidgetProps } from "./widgets.js";
+import type { WidgetProps } from "./widgets.js";
 import { grow, row } from "../styles.js";
 
 /**
@@ -105,5 +105,3 @@ export function makeDateField(withTime: boolean) {
     );
   };
 }
-
-export const DateFieldWidget: Widget = makeDateField(false);

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@kanzo-tech/ui";
 import type { FormModel } from "../../form/FormModel.js";
 import type { GridLayout } from "../form/context.js";
-import type { GroupIssues } from "../validation/useFormReport.js";
+import type { GroupIssues } from "../validation/formReport.js";
 import { FieldsGrid } from "./FieldsGrid.js";
 import { GroupIssuesBadge } from "./GroupIssuesBadge.js";
 import { column, row } from "../styles.js";

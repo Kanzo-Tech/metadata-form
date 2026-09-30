@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { namedNode } from "@/engine/factory.js";
 import { buildFormModel, resolveRootShapeFromTypes } from "@/form/buildFormModel.js";
 import type { Diagnostic } from "@/form/buildFormModel.js";
-import { projectTreeSync } from "@/engine/projectTree.js";
+import { projectTree } from "@/engine/projectTree.js";
 import { allFields } from "@/form/FormModel.js";
 import type { NodeShapeIR, ProjectedForm, PropertyShapeIR, ShapeModel } from "@/form/ShapeIR.js";
 
@@ -150,14 +150,14 @@ describe("sh:deactivated (projectTree)", () => {
   };
 
   it("does not descend into a deactivated node shape", () => {
-    const tree = projectTreeSync(project, shapes, datasetShape.id, focus);
+    const tree = projectTree(project, shapes, datasetShape.id, focus);
     expect(tree.nodes.map((n) => n.shapeId)).toEqual([datasetShape.id]);
     // Nothing was projected — or later validated — for the switched-off subtree.
     expect([...tree.values.keys()].some((k) => k.includes("/sub"))).toBe(false);
   });
 
   it("projects nothing at all when the root shape itself is deactivated", () => {
-    const tree = projectTreeSync(project, shapes, categoryShape.id, focus);
+    const tree = projectTree(project, shapes, categoryShape.id, focus);
     expect(tree.nodes).toEqual([]);
     expect(tree.values.size).toBe(0);
   });

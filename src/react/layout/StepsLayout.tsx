@@ -14,7 +14,7 @@ import {
 } from "@kanzo-tech/ui";
 import type { FormModel } from "../../form/FormModel.js";
 import type { GridLayout } from "../form/context.js";
-import type { GroupIssues } from "../validation/useFormReport.js";
+import type { GroupIssues } from "../validation/formReport.js";
 import { scrollToField } from "../utils/scrollToField.js";
 import { FieldsGrid } from "./FieldsGrid.js";
 import { GroupIssuesBadge } from "./GroupIssuesBadge.js";

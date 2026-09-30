@@ -22,7 +22,7 @@ field's **SHACL-UI editor** to a widget and renders the form.
 - ✅ **Live validation** — per-field errors from rudof's SHACL validator, plus a
   ready-made `<ValidationSummary>` pill.
 - 🤖 **Optional AI assist** — one `assist` seam: streaming inline ghost-text
-  completion (a CodeMirror editor; Tab/Esc) and live value suggestions, with a
+  completion (ghost text in a textarea; Tab/Esc) and live value suggestions, with a
   one-line [Vercel AI SDK](https://sdk.vercel.ai) adapter. The core imports no LLM SDK.
 - 📦 **Bundled example shapes** (e.g. **HealthDCAT-AP**) in the playground.
 - 🧩 **ShEx-ready** — the engine seam is shape-language-agnostic; ShEx can be
@@ -123,7 +123,7 @@ patterns and renders what these (all optional) callbacks return:
 
 - `suggest` — value candidates for a field, **streamed** into a ✨ popover (a fixed
   window that refills as you dismiss rows); for short free text.
-- `complete` — a **streaming** inline continuation (ghost text in a CodeMirror editor;
+- `complete` — a **streaming** inline continuation (ghost text in a textarea;
   **Tab** accepts, **Esc** dismisses); for `textarea`.
 - `search` — `sh:class` instance autocomplete (a typeahead combobox); for `reference`.
 

@@ -4,21 +4,14 @@ import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from "@r
  * A minimal, dependency-free RDF/JS term factory. The TS side only needs terms
  * to talk to the rudof ABI ({@link TermValue} marshalling) and to track the
  * editable graph (GraphState) — rudof owns all real RDF I/O (parse/serialize),
- * so there is no n3 / @rdfjs runtime dependency here.
+ * so there is no RDF library at runtime — `@rdfjs/types` is type-only.
  */
 
 /** Base IRIs for the vocabularies used across the form engine. */
 export const NS = {
   rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-  rdfs: "http://www.w3.org/2000/01/rdf-schema#",
   xsd: "http://www.w3.org/2001/XMLSchema#",
   sh: "http://www.w3.org/ns/shacl#",
-  shui: "http://www.w3.org/ns/shacl-ui#",
-  owl: "http://www.w3.org/2002/07/owl#",
-  skos: "http://www.w3.org/2004/02/skos/core#",
-  dcat: "http://www.w3.org/ns/dcat#",
-  dcterms: "http://purl.org/dc/terms/",
-  foaf: "http://xmlns.com/foaf/0.1/",
 } as const;
 
 const RDF_LANGSTRING = `${NS.rdf}langString`;

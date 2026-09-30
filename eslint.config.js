@@ -26,7 +26,7 @@ export default tseslint.config(
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       // Pragmatic: surface these as warnings (don't fail the build) — the RDF
-      // binding layer uses deliberate casts at the rdfjs/n3 boundary.
+      // binding layer uses deliberate casts at the rdfjs boundary.
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "@typescript-eslint/no-non-null-assertion": "off",

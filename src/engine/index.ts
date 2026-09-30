@@ -11,9 +11,7 @@ export { loadRudof };
 export { RudofEngine, RudofGraphBackend, type GraphSession } from "./RudofEngine.js";
 export {
   projectTree,
-  projectTreeSync,
-  type SyncProjector,
-  type AsyncProjector,
+  type Projector,
   type ProjectedSlot,
   type ProjectedValues,
   type ProjectedTree,

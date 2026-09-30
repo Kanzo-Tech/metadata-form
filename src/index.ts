@@ -19,8 +19,8 @@ export type { ValidationSummaryProps } from "./react/validation/ValidationSummar
 export { ValidationPanel } from "./react/validation/ValidationPanel.js";
 export type { ValidationPanelProps, ValidationPanelLabels } from "./react/validation/ValidationPanel.js";
 // Derived form state — the single source for validation + completion + health.
-export { computeFormReport, useFormReport } from "./react/validation/useFormReport.js";
-export type { FormReport, FormProgress, FormMood, IssueRow, GroupIssues } from "./react/validation/useFormReport.js";
+export { computeFormReport } from "./react/validation/formReport.js";
+export type { FormReport, FormProgress, FormMood, IssueRow, GroupIssues } from "./react/validation/formReport.js";
 export { FormAssistant } from "./react/assistant/FormAssistant.js";
 export type { FormAssistantProps } from "./react/assistant/FormAssistant.js";
 export { defaultMascot } from "./react/assistant/mascot.js";

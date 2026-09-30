@@ -1,5 +1,5 @@
 import { Badge } from "@kanzo-tech/ui";
-import type { GroupIssues } from "../validation/useFormReport.js";
+import type { GroupIssues } from "../validation/formReport.js";
 
 /**
  * Per-section issue count — **wayfinding**: it says which section is wrong and by

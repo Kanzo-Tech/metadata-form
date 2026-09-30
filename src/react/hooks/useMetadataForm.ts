@@ -11,7 +11,7 @@ import { createRudofEngine } from "../../engine/index.js";
 import type { RudofEngine } from "../../engine/RudofEngine.js";
 import { buildFormModel, type DiagnosticSink } from "../../form/buildFormModel.js";
 import type { FormAssist } from "../widgets/widgets.js";
-import { computeFormReport, type FormReport } from "../validation/useFormReport.js";
+import { computeFormReport, type FormReport } from "../validation/formReport.js";
 
 export interface UseMetadataFormOptions {
   /** The SHACL shapes document — a Turtle or JSON-LD string (rudof parses it). */
@@ -72,8 +72,6 @@ export interface MetadataFormController {
    * pulse it. Lets `<FormAssistant>`/`<ValidationSummary>` (rendered outside the
    * form) drive navigation through the shared controller. */
   revealField(fieldId: string): void;
-  /** Internal wiring consumed by <MetadataForm>. */
-  readonly _graph?: GraphState;
   /** Internal: the current reveal request (id + bump counter). */
   readonly _revealTarget?: { id: string; n: number };
 }
@@ -128,7 +126,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     setError(undefined);
     setErrors(new Map());
     (async () => {
-      // rudof parses both documents (Turtle / JSON-LD by media type) — no n3.
+      // rudof parses both documents (Turtle / JSON-LD by media type).
       const shapeModel = await engine.loadShapes(shapes, detectMediaType(shapes));
       const root = rootShape ? (namedNode(rootShape) as NamedNode) : undefined;
       // Load the initial data into the engine session ONCE, seed the focus into it,
@@ -171,7 +169,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const projected = useMemo(() => {
     if (!prepared) return undefined;
     // Single graph: re-derive field values from the engine session (sync, after
-    // ready()) on every edit, then build the model over them — no n3 read path.
+    // ready()) on every edit, then build the model over them.
     const { values, satisfied, nodes } = engine.projectValues(prepared.shapes, prepared.focusNode, prepared.rootShapeId);
     const model = buildFormModel({
       shapes: prepared.shapes,
@@ -265,7 +263,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       subscribe,
       assist,
       revealField,
-      _graph: graph,
       _revealTarget: revealTarget,
     }),
     [model, error, getQuads, errors, isValid, report, locale, strings, graph, engine, validate, reset, subscribe, assist, revealField, revealTarget],

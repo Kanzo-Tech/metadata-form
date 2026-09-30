@@ -4,7 +4,7 @@ import type { GraphState } from "../../engine/GraphState.js";
 import type { FormModel } from "../../form/FormModel.js";
 import type { FieldError } from "../../form/validation.js";
 import type { FormAssist, WidgetRegistry } from "../widgets/widgets.js";
-import type { FormReport } from "../validation/useFormReport.js";
+import type { FormReport } from "../validation/formReport.js";
 import type { Strings } from "../../i18n/strings.js";
 
 /** Arrangement of the root property groups. */

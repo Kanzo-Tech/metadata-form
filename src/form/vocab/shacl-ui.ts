@@ -10,11 +10,6 @@
 
 export const SHUI = "http://www.w3.org/ns/shacl-ui#";
 
-/** Property assigning an editor to a property shape (≈ legacy dash:editor). */
-export const SHUI_EDITOR = `${SHUI}editor`;
-/** Property assigning a viewer to a property shape (≈ legacy dash:viewer). */
-export const SHUI_VIEWER = `${SHUI}viewer`;
-
 /** Canonical SHACL-UI editor IRIs, used as {@link EditorId} values engine-wide. */
 export const Editors = {
   TextField: `${SHUI}TextFieldEditor`,

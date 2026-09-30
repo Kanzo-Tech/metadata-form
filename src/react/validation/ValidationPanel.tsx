@@ -15,7 +15,7 @@ import {
 } from "@kanzo-tech/ui";
 import type { Severity } from "../../form/validation.js";
 import type { Strings } from "../../i18n/strings.js";
-import type { IssueRow } from "./useFormReport.js";
+import type { IssueRow } from "./formReport.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 import { ink } from "../styles.js";
 

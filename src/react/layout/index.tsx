@@ -1,6 +1,6 @@
 import type { FormModel } from "../../form/FormModel.js";
 import type { FormLayout, GridLayout } from "../form/context.js";
-import type { GroupIssues } from "../validation/useFormReport.js";
+import type { GroupIssues } from "../validation/formReport.js";
 import { SequentialLayout } from "./SequentialLayout.js";
 import { TabsLayout } from "./TabsLayout.js";
 import { StepsLayout } from "./StepsLayout.js";
