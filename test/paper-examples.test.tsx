@@ -17,6 +17,7 @@ import {
 } from "@examples/paper-target-where/index.js";
 import { paperMappingShapes, paperMappingSampleData, paperMappingRootShape } from "@examples/paper-mapping/index.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
+import { createRudofEngine } from "@/engine/index.js";
 
 const HEALTH = "http://healthdataportal.eu/ns/health#";
 const STRUCTURED = `${HEALTH}hasStructuredData`;
@@ -131,5 +132,68 @@ describe("the mapping example", () => {
     expect(editors.code.required).toBe(true);
     expect(editors.keyword.repeatable).toBe(true);
     expect(editors.status.repeatable).toBe(false);
+  });
+});
+
+/**
+ * The two standard spellings of one conditional accept and reject the same data.
+ *
+ * The Core implication `sh:or ( [ sh:not C ] T )` reports one node-level `sh:or`
+ * result on the focus node; `sh:targetWhere` reports the consequent's own
+ * path-level result. So the verdict of the whole-graph validation and the error the
+ * form puts on the field are what must agree — not the shape of the report.
+ */
+describe("the two encodings of the conditional agree", () => {
+  const PREFIXES = `
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix healthdcatap: <http://healthdataportal.eu/ns/health#> .
+@prefix csvw: <http://www.w3.org/ns/csvw#> .
+@prefix ex: <http://example.org/> .
+`;
+  const dataset = (body: string) => `${PREFIXES}ex:d a dcat:Dataset ; dct:title "A registry"@en ${body} .`;
+  const CASES = [
+    { name: "the condition is false", data: dataset("; healthdcatap:hasStructuredData false"), conforms: true },
+    { name: "the condition is absent", data: dataset(""), conforms: true },
+    {
+      name: "the condition holds and the consequence is satisfied",
+      data: dataset('; healthdcatap:hasStructuredData true ; healthdcatap:hasVariables [ csvw:name "age" ]'),
+      conforms: true,
+    },
+    {
+      name: "the condition holds and the consequence is missing",
+      data: dataset("; healthdcatap:hasStructuredData true"),
+      conforms: false,
+    },
+  ];
+  const ENCODINGS = Object.entries(CONDITIONALS) as [keyof typeof CONDITIONALS, (typeof CONDITIONALS)[keyof typeof CONDITIONALS]][];
+
+  it.each(CASES)("gives one verdict under both encodings: $name", async ({ data, conforms }) => {
+    for (const [, { shapes }] of ENCODINGS) {
+      const engine = createRudofEngine();
+      await engine.loadShapes(shapes);
+      await engine.newGraph();
+      await engine.loadData(data);
+      expect((await engine.validate()).length === 0).toBe(conforms);
+    }
+  });
+
+  it.each(CASES)("puts the same error on the same field of the form: $name", async ({ data, conforms }) => {
+    const seen: Record<string, { path: string; constraint: string | undefined; message: string }[]> = {};
+    for (const [encoding, { shapes, rootShape }] of ENCODINGS) {
+      const { result } = renderHook(() =>
+        useMetadataForm({ shapes, data, rootShape, validateOn: "change", locale: "en" }),
+      );
+      await waitFor(() => expect(result.current.ready).toBe(true));
+      await waitFor(() => expect(result.current.isValid).toBe(conforms));
+      const fields = new Map(allFields(result.current.model!).map((f) => [f.id, f.path.value]));
+      seen[encoding] = [...result.current.errors].flatMap(([id, list]) =>
+        list.map((e) => ({ path: fields.get(id) ?? id, constraint: e.constraint, message: result.current.messageOf(e) })),
+      );
+    }
+    const [first, ...rest] = Object.values(seen);
+    for (const other of rest) expect(other).toEqual(first);
+    if (!conforms) expect(first.map((e) => e.path)).toEqual([VARIABLES]);
+    else expect(first).toEqual([]);
   });
 });
