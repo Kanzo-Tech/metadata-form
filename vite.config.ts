@@ -19,18 +19,19 @@ const entries = {
   "engine/index": r("src/engine/index.ts"),
 };
 
-// Anything that must NOT be bundled into the library output.
+// Anything that must NOT be bundled into the library output: the peers, the
+// design system (and what it is built on), and the wasm engine.
 const external = [
   "react",
   "react-dom",
   "react/jsx-runtime",
   // The rudof WASM module — a declared dependency, never bundled.
   "@kanzo-tech/rudof-wasm",
-  "@radix-ui/themes",
-  // The /ai adapter's deps — kept external (optional peer deps).
+  // The /ai adapter's optional peers.
   "ai",
   "zod",
 ];
+const externalPackages = /^(@kanzo-tech\/|@ark-ui\/|lucide-react(\/|$))/;
 
 export default defineConfig({
   plugins: [
@@ -50,18 +51,9 @@ export default defineConfig({
     },
     rollupOptions: {
       external: (id) =>
-        external.includes(id) ||
-        /^@rdfjs\//.test(id) ||
-        /^@radix-ui\//.test(id) ||
-        /^@ai-sdk\//.test(id) ||
-        // CodeMirror must stay external: @codemirror/state demands a single
-        // instance — bundling it would risk a duplicate-copy break in apps
-        // that also use CodeMirror. Resolved via our declared `dependencies`.
-        /^@codemirror\//.test(id),
+        external.includes(id) || externalPackages.test(id),
       output: {
         preserveModules: false,
-        assetFileNames: (info) =>
-          info.name === "style.css" ? "styles.css" : "[name][extname]",
         entryFileNames: "[name].js",
         chunkFileNames: "chunks/[name]-[hash].js",
       },
