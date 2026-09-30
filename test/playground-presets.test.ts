@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { EXAMPLES, SH_TARGET_WHERE_SUPPORTED } from "@playground/presets.js";
+import { EXAMPLES } from "@playground/presets.js";
 import { fill, pickChrome } from "@playground/i18n.js";
 
 /**
@@ -37,8 +37,8 @@ describe("the paper's examples", () => {
     expect(EXAMPLES.some((e) => e.id === "paper-mapping")).toBe(true);
   });
 
-  it("keep the sh:targetWhere variant out of the list until the engine reads it", () => {
-    expect(EXAMPLES.some((e) => e.id === "paper-target-where")).toBe(SH_TARGET_WHERE_SUPPORTED);
+  it("offer the sh:targetWhere variant beside the running example", () => {
+    expect(EXAMPLES.map((e) => e.id).slice(0, 2)).toEqual(["paper-conditional", "paper-target-where"]);
   });
 });
 

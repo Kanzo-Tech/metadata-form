@@ -74,11 +74,6 @@ const PAPER_MAPPING_OPTIONS: PermalinkOptions = { validateOn: "change", rootShap
 /** The paper's examples speak English and Spanish; English first, the library's own. */
 const PAPER_LOCALES = ["en", "es"];
 
-/** Whether the installed engine reads `sh:targetWhere` (`@kanzo-tech/rudof-wasm`
- *  0.3.9 does not; 0.3.10 does). While it is false the example is registered but
- *  not offered: a reader would open a form that silently lacks its conditional. */
-export const SH_TARGET_WHERE_SUPPORTED = false;
-
 /** Evidenze branding, shared by both Evidenze examples. */
 const EVIDENZE_BRANDING: ExampleBranding = {
   logoUrl: evidenzeLogo,
@@ -129,7 +124,7 @@ export const EXAMPLES: ShapeExample[] = [
       },
     ],
   },
-  ...(SH_TARGET_WHERE_SUPPORTED ? [PAPER_TARGET_WHERE] : []),
+  PAPER_TARGET_WHERE,
   {
     id: "paper-mapping",
     label: "Paper example: from shapes to fields",

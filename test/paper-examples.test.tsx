@@ -10,6 +10,11 @@ import {
   paperConditionalSampleData,
   paperConditionalRootShape,
 } from "@examples/paper-conditional/index.js";
+import {
+  paperTargetWhereShapes,
+  paperTargetWhereSampleData,
+  paperTargetWhereRootShape,
+} from "@examples/paper-target-where/index.js";
 import { paperMappingShapes, paperMappingSampleData, paperMappingRootShape } from "@examples/paper-mapping/index.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 
@@ -34,12 +39,19 @@ describe("the paper's Listing 1", () => {
   });
 });
 
-function openForm(options: Pick<UseMetadataFormOptions, "locale">) {
+/** The same condition, stated as an implication of Core (`sh:or ( [ sh:not C ] T )`)
+ *  and as SHACL 1.2's `sh:targetWhere`: the form behaves the same for both. */
+const CONDITIONALS = {
+  "sh:or":
+    { shapes: paperConditionalShapes, data: paperConditionalSampleData, rootShape: paperConditionalRootShape },
+  "sh:targetWhere":
+    { shapes: paperTargetWhereShapes, data: paperTargetWhereSampleData, rootShape: paperTargetWhereRootShape },
+} as const;
+
+function openForm(statedWith: keyof typeof CONDITIONALS, options: Pick<UseMetadataFormOptions, "locale">) {
   return renderHook(() =>
     useMetadataForm({
-      shapes: paperConditionalShapes,
-      data: paperConditionalSampleData,
-      rootShape: paperConditionalRootShape,
+      ...CONDITIONALS[statedWith],
       validateOn: "change",
       validationDebounceMs: 0,
       ...options,
@@ -50,12 +62,14 @@ function openForm(options: Pick<UseMetadataFormOptions, "locale">) {
 const fieldOf = (form: ReturnType<typeof useMetadataForm>, path: string): FieldModel | undefined =>
   form.model && allFields(form.model).find((f) => f.path.value === path);
 
-describe.each([
-  ["en", "en", "Describe the variables of a structured dataset."],
-  ["es", ["es"], "Describe las variables de un dataset estructurado."],
-] as const)("the running example, in %s", (_name, locale, message) => {
+describe.each(
+  (Object.keys(CONDITIONALS) as (keyof typeof CONDITIONALS)[]).flatMap((statedWith) => [
+    [statedWith, "en", "en", "Describe the variables of a structured dataset."] as const,
+    [statedWith, "es", ["es"], "Describe las variables de un dataset estructurado."] as const,
+  ]),
+)("the running example stated with %s, in %s", (statedWith, _name, locale, message) => {
   it("shows the variables field, required, only while the dataset has structured data", async () => {
-    const { result } = openForm({ locale });
+    const { result } = openForm(statedWith, { locale });
     await waitFor(() => expect(result.current.ready).toBe(true));
     const focus = result.current.focusNode!;
     const structured = fieldOf(result.current, STRUCTURED)!;
@@ -84,9 +98,6 @@ describe.each([
     expect(result.current.isValid).toBe(true);
   });
 });
-
-/** The sh:targetWhere variant needs an engine that reads it (rudof-wasm >= 0.3.10). */
-it.todo("the same condition stated with sh:targetWhere behaves as the running example (rudof-wasm >= 0.3.10)");
 
 describe("the mapping example", () => {
   it("resolves each property to the editor the paper's figure names", async () => {
