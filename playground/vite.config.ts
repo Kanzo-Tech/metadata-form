@@ -1,5 +1,6 @@
 import { resolve } from "node:path";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
+import { themeScript } from "@kanzo-tech/ui";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
@@ -8,9 +9,19 @@ import tailwindcss from "@tailwindcss/vite";
 const root = __dirname;
 const lib = (p: string) => resolve(root, "..", p);
 
+// The theme attributes land on <html> before first paint, so a reader's saved theme,
+// density and radius are there when the page is, not a frame after it. Not given the
+// tenant policy: which example is open — and so whose brand is the default — is only
+// known once the permalink has been read, so a branded default still arrives with
+// the app; what the reader chose does not.
+const themeInit: Plugin = {
+  name: "theme-init",
+  transformIndexHtml: () => [{ tag: "script", children: themeScript(), injectTo: "head-prepend" }],
+};
+
 export default defineConfig({
   root,
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), themeInit],
   // wasm-pack `--target web`: keep it out of Vite's dep pre-bundle so the .wasm
   // is served verbatim from node_modules. Pre-bundling rewrites the binding's
   // `new URL('rudof_wasm_bg.wasm', import.meta.url)` into `.vite/deps/` (no .wasm
