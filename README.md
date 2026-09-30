@@ -125,10 +125,69 @@ The main entry is deliberately small.
 | `ValidationSummary`, `ValidationPanel` | the issue pill and the issue list |
 | `FormAssistant` | the corner companion |
 | `defaultWidgets`, `Editors` | the widget registry and the `shui:` editor IRIs it is keyed by |
-| types | the form model (`FormModel`, `FieldModel`, …), the report (`FormReport`, `FieldError`, …), the widget contract (`Widget`, `WidgetProps`, `WidgetRegistry`, …), `FormAssist`, `Strings` |
+| types | the form model (`FormModel`, `FieldModel`, …), the report (`FormReport`, `FieldError`, …), the widget contract (`Widget`, `WidgetProps`, `WidgetRegistry`, …), `FormAssist`, `Strings`, `StringTables` |
 
 Everything else is on a subpath: `metadata-form/rudof` (the engine and the shape
-IR), `metadata-form/ai` (the Vercel AI SDK adapter), `metadata-form/tailwind.css`.
+IR), `metadata-form/ai` (the Vercel AI SDK adapter), `metadata-form/i18n` (languages other than
+English, as data), `metadata-form/tailwind.css`.
+
+### Languages
+
+What the reader sees comes from three places, and the library says which:
+
+| What | Where it comes from | Localised how |
+|---|---|---|
+| field labels (`sh:name`), help (`sh:description`), group names, `sh:or` alternative names, the author's `sh:message` | **the profile** — language-tagged literals in the shapes graph | picked by the reader's languages |
+| the wording of a failure when the author wrote no `sh:message` in that language | **a message graph** — Turtle triples `<constraint component> sh:message "…"@lang`, English built in | picked by the same function |
+| placeholders, `Yes`/`No`, counts, progress, the read-only reasons, the findings panel | **the strings table** — typed, English built in | by language tag |
+
+```tsx
+import { es, ca } from "metadata-form/i18n"; // languages other than English, as data
+
+useMetadataForm({
+  shapes,
+  locale: ["ca", "es"],                          // ordered, most preferred first; default: navigator.languages, else "en"
+  strings: { es: es.strings, ca: ca.strings },   // interface strings, by tag
+  messages: [es.messages, ca.messages],          // default failure messages, as Turtle
+});
+```
+
+**Picking.** One function picks every language-tagged string. It follows the SHACL-UI
+Editor's Draft, *Label and Language Resolution*: the order of the property shape's
+`sh:languageIn`, then the application's list (`locale`), with the browser's
+`navigator.languages` as the default; tags match ranges by RFC 4647 §3.3.1 basic
+filtering (the tag `en-US` matches the range `en`, and `en` does not match `en-US`, so
+give `["es-ES", "es"]`, as a browser does); when nothing matches, an untagged literal,
+else any. A property with no `sh:name` is labelled with its local name split into words;
+the draft's two intermediate steps (an `rdfs:label` of the predicate in the data or shapes
+graph) are **not** taken, since the shape IR does not carry them.
+
+**Messages are data.** The core returns each failure as its constraint component and its
+language-tagged messages, never as a sentence; the text is chosen when it is drawn, so
+changing `locale` re-words the errors already on screen without validating again. The
+default wording lives in `src/i18n/messages.en.ttl` (and `src/i18n/locales/*.ttl`) as
+`sh:MinCountConstraintComponent sh:message "This field is required"@en .`.
+`sh:message` is the property SHACL uses for the wording of a constraint's results
+(§2.1.5, and SHACL-SPARQL validators); putting it on the component IRI reads it as "results
+of this component read like this unless the shape says otherwise". That reading is this
+library's convention, not a rule of the SHACL recommendation, and no term is minted in a W3C
+namespace (`rdfs:comment` and `skos:definition` describe the component rather than the error).
+`sh:ConstraintComponent` holds the message for any component not named. The message graph is
+parsed by rudof, like every other RDF the form reads.
+
+**Adding a language** is supplying data, with no code change: triples for the messages
+(`messages: "@prefix sh: <http://www.w3.org/ns/shacl#> . sh:MinCountConstraintComponent sh:message \"Ce champ est obligatoire\"@fr ."`)
+and a table for the strings (`strings: { fr: { chrome: { yes: "Oui", no: "Non" } } }`; a
+table may be partial and what it leaves out stays English). The same `strings` option
+re-words English itself (`{ en: { … } }`).
+
+**Not localised.** Ark UI's own widgets (calendar, number formatting, collation) keep the
+browser default: Ark's `LocaleProvider` is not re-exported by `@kanzo-tech/ui`, and
+`@ark-ui/react` is not a dependency of this package. The `Diagnostic` messages passed to
+`onDiagnostic` (developer-facing) and any text the AI adapter's prompts contain are English.
+A shape's `sh:languageIn` orders the labels of its own property; it is not consulted when
+choosing a failure message. Plural forms follow `Intl.PluralRules` for the table's language,
+so a table must supply the forms its language uses.
 
 ### Assistance — one seam (`assist`)
 
