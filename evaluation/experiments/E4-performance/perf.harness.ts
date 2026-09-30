@@ -470,7 +470,6 @@ async function measureEdits(
   dataTtl: string,
 ): Promise<EditResult> {
   const cond = rig.conditional!;
-  const path = namedNode(cond.path);
   // Each profile starts from an empty document and no mounted React root, so one
   // profile's trees cannot influence the next one's render scheduling.
   cleanup();
@@ -499,12 +498,15 @@ async function measureEdits(
   };
   const graphA = hook.result.current.graph!;
   const focusA = hook.result.current.model!.focusNode;
+  // A commit is addressed by the field's `FieldWrite`, which the model carries.
+  const writeA = allFields(hook.result.current.model!).find((f) => f.path.value === cond.path)?.write;
+  if (!writeA) throw new Error(`[E4] ${spec.id}: no writable field for ${cond.path}`);
   // `setValues` replaces the predicate's whole value list — the commit a discrete
   // widget makes, and independent of what the graph happened to hold, so the flip
   // does not depend on reading the current value back first.
   const flip = (on: boolean) => {
     act(() => {
-      graphA.setValues(focusA, path, on ? [cond.on] : []);
+      graphA.setValues(focusA, writeA, on ? [cond.on] : []);
     });
   };
 
@@ -561,13 +563,15 @@ async function measureEdits(
 
   const graphB = controller!.graph!;
   const focusB = controller!.model!.focusNode;
+  const writeB = allFields(controller!.model!).find((f) => f.path.value === cond.path)?.write;
+  if (!writeB) throw new Error(`[E4] ${spec.id}: no writable field for ${cond.path}`);
   const domVisible = () => {
     const field = allFields(controller!.model!).find((f) => f.path.value === cond.revealed);
     return !!field && !!document.querySelector(`[data-field="${CSS.escape(field.id)}"]`);
   };
   const flipB = (on: boolean) => {
     act(() => {
-      graphB.setValues(focusB, path, on ? [cond.on] : []);
+      graphB.setValues(focusB, writeB, on ? [cond.on] : []);
     });
   };
 
@@ -576,7 +580,7 @@ async function measureEdits(
   flipB(false);
   const domOff = domVisible();
   if (!domOn || domOff) {
-    const subjects = graphB.allQuads().filter((q) => q.predicate.equals(path)).map((q) => `${q.subject.value} → ${q.object.value}`);
+    const subjects = graphB.allQuads().filter((q) => q.predicate.value === cond.path).map((q) => `${q.subject.value} → ${q.object.value}`);
     throw new Error(
       `[E4] ${spec.id}: the conditional field did not appear/disappear in the DOM ` +
         `(on=${domOn}, off=${domOff}). focus=${focusB.value} path=${cond.path} ` +
@@ -677,16 +681,12 @@ function markdown(
   L.push(`  edit reaches a new \`FormModel\` with updated conditional visibility in`);
   L.push(`  ${ms(Math.min(...edited))}–${ms(Math.max(...edited))} ms at p95. A 60 Hz frame is 16.7 ms.`);
   const smallest = primary.reduce((a, b) => (a.shapeBytes < b.shapeBytes ? a : b));
-  L.push(`- **Parsing is the one-off cost, and it is the one that scales badly.** It`);
-  L.push(`  spans ${ms(smallest.ops.loadShapes.p50)} ms for ${smallest.label} (${(smallest.shapeBytes / 1024).toFixed(1)} kB) to`);
-  L.push(`  **${ms(biggest.ops.loadShapes.p50)} ms** for ${biggest.label}`);
-  L.push(`  (${biggest.propertyShapes} property shapes, ${(biggest.shapeBytes / 1024).toFixed(0)} kB of Turtle) — and it grows faster than`);
-  L.push(`  input size, not with it (see Tab. 4). Instantiating the module adds a flat`);
-  L.push(`  ${ms(cold.instantiate.p50)} ms. This is a load-time cost, paid once and never per edit, but at the`);
-  L.push("  top of the corpus it is seconds, not milliseconds, and a profile of that size");
-  L.push("  needs the shapes parsed off the interaction path (a worker, or a cached IR)");
-  L.push("  rather than in front of the user. The earlier Health-RI-only corpus topped out");
-  L.push("  at 83 kB and did not show this at all.");
+  const perKb = primary.map((p) => p.ops.loadShapes.p50 / (p.shapeBytes / 1024));
+  L.push(`- **Parsing is the one-off cost.** It spans ${ms(smallest.ops.loadShapes.p50)} ms for ${smallest.label}`);
+  L.push(`  (${(smallest.shapeBytes / 1024).toFixed(1)} kB) to **${ms(biggest.ops.loadShapes.p50)} ms** for ${biggest.label}`);
+  L.push(`  (${biggest.propertyShapes} property shapes, ${(biggest.shapeBytes / 1024).toFixed(0)} kB of Turtle): ${ms(Math.min(...perKb))}–${ms(Math.max(...perKb))} ms per kB`);
+  L.push(`  of Turtle across the corpus (see Tab. 4). Instantiating the module adds a flat`);
+  L.push(`  ${ms(cold.instantiate.p50)} ms. This is a load-time cost, paid once and never per edit.`);
   L.push(`- **Validation is off the visibility path.** \`validate()\` is ${ms(Math.max(...validateP95))} ms at worst`);
   L.push("  here, and runs after the edit is drawn (a deferred render), so it never gates a field appearing.");
   L.push(`- **The payload is the weak point.** ${kb(sizes.wasmBrotli)} of brotli-compressed wasm plus`);
@@ -748,11 +748,17 @@ function markdown(
   L.push("");
   L.push("A “—” means no live session was stood up for that profile — see the corpus");
   L.push("table above for why; it never means the operation was slow or failed.", "");
-  L.push("**Parse does not scale linearly.** Across the corpus, roughly a 4× larger");
-  L.push("shapes document costs 5–6× the parse, so the cost per kB rises with size:");
-  L.push("the smallest profiles parse at well under 1 ms/kB and the largest at ~16 ms/kB.");
-  L.push("Every other operation is projection- and instance-bound, not document-bound,");
-  L.push("and stays sub-frame even on the largest profile a session could be stood up for.", "");
+  {
+    const bySize = [...primary].sort((a, b) => a.shapeBytes - b.shapeBytes);
+    const lo = bySize[0], hi = bySize[bySize.length - 1];
+    const sizeRatio = hi.shapeBytes / lo.shapeBytes;
+    const timeRatio = hi.ops.loadShapes.p50 / lo.ops.loadShapes.p50;
+    L.push(`**Parse against document size.** The largest document is ${sizeRatio.toFixed(0)}× the smallest and its`);
+    L.push(`parse is ${timeRatio.toFixed(0)}× the smallest's; per kB of Turtle the corpus spans`);
+    L.push(`${ms(Math.min(...perKb))}–${ms(Math.max(...perKb))} ms (median parse over shapes size, one figure per profile).`);
+    L.push("Every other operation is projection- and instance-bound, not document-bound,");
+    L.push("and stays sub-frame even on the largest profile a session could be stood up for.", "");
+  }
   L.push(`Samples: parse n=${N_PARSE}, everything else n=${N}, after ${WARMUP} warm-up calls.`);
   L.push("All figures are **warm**: the process has already instantiated the module and");
   L.push("V8 has JIT-compiled the wasm↔JS glue. The first call of each operation in a");
@@ -811,7 +817,7 @@ function markdown(
   L.push("for the engine claim rather than the second.", "");
   L.push("Two deliberate delays sit *outside* this number and are not engine cost:", "");
   L.push(`- free-text widgets buffer keystrokes locally and commit after **${edits[0]?.textCommitDebounceMs ?? 250} ms**`);
-  L.push("  (`useCommit` in `defaultWidgets.tsx`), so typing is never blocked by the engine.");
+  L.push("  (`useDebouncedCommit`, `@kanzo-tech/ui`'s default delay; a blur commits at once), so typing is never blocked by the engine.");
   L.push("  Discrete widgets — the kind a `sh:if` keys off — commit immediately, with no debounce.");
   L.push("- validation runs in the render React defers behind the edit (`useDeferredValue`),");
   L.push("  with no timer, so it never sits on the visibility path at all.", "");
@@ -909,15 +915,14 @@ function markdown(
   L.push("   measured.");
   L.push("6. **No memory figure.** Peak wasm heap per session is not measured, and a");
   L.push("   long editing session's memory behaviour is unknown.");
-  L.push("7. **The large parse-only profiles are not stable to a single figure.** Across");
-  L.push("   repeat runs on the same idle machine, the SPHN and Bioschemas parse *medians*");
-  L.push("   moved by up to 4× (Bioschemas: 2.5 s, 2.5 s, 9.6 s), and SPHN's p95 ranged");
-  L.push("   from 16 s to 66 s against a median that stayed near 15 s. The small and");
-  L.push("   mid-sized profiles repeat to within a few percent. Read the top two rows of");
-  L.push("   Tab. 4 as an order of magnitude — seconds, not milliseconds — and not as a");
-  L.push("   figure to quote to three digits. Why parse variance grows this sharply with");
-  L.push("   input size is not established here; wasm heap growth is the obvious suspect");
-  L.push("   and is not measured (see 6).");
+  {
+    const spread = primary.reduce((a, b) => (a.ops.loadShapes.p95 / a.ops.loadShapes.p50 > b.ops.loadShapes.p95 / b.ops.loadShapes.p50 ? a : b));
+    L.push("7. **Repeat-run variance of the large parse-only profiles is not re-established.**");
+    L.push(`   Within this run, the widest parse spread is ${spread.label}: p95 is`);
+    L.push(`   ${(spread.ops.loadShapes.p95 / spread.ops.loadShapes.p50).toFixed(2)}× its median. Earlier engine versions showed run-to-run swings of the *medians*`);
+    L.push("   of the largest profiles that a single run cannot reveal; this run does not test");
+    L.push("   whether 0.3.10 still has them. Quote the large parse figures as one observation.");
+  }
   L.push("8. **One machine, one run, and the machine must be idle.** No cross-machine");
   L.push("   variance and no thermal control. This matters more than it sounds: running");
   L.push("   the harness on a loaded machine inflated p95 by up to 3× in our own repeats,");
@@ -930,6 +935,10 @@ function markdown(
 
 // ────────────────────────────────────────────────────────────────────  run ──
 
+/** Let the test runner's own timers run: the loops above are all microtask chains
+ *  and a minute of them starves its worker RPC ("Timeout calling onTaskUpdate"). */
+const macrotask = () => new Promise<void>((r) => setTimeout(r, 0));
+
 it("E4: measure engine + per-edit cost across the E1 profiles", async () => {
   const env = environment();
 
@@ -938,6 +947,7 @@ it("E4: measure engine + per-edit cost across the E1 profiles", async () => {
   for (const spec of CORPUS) {
     console.log(`[E4] engine: ${spec.id}${RIGS[spec.id] ? "" : " (parse only)"}…`);
     profiles.push(await measureProfile(spec, RIGS[spec.id]));
+    await macrotask();
   }
 
   const edits: EditResult[] = [];
@@ -946,6 +956,7 @@ it("E4: measure engine + per-edit cost across the E1 profiles", async () => {
     if (!rig?.conditional) continue;
     console.log(`[E4] edits: ${spec.id}…`);
     edits.push(await measureEdits(spec, rig, readAll(spec.sources, spec.exclude), readAll(rig.data)));
+    await macrotask();
   }
 
   console.log(`[E4] cold start × ${N_COLD} child processes…`);

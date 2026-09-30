@@ -50,7 +50,6 @@ createRoot(document.getElementById("root")!).render(<div>baseline</div>);
 // component and the default widget set (which `<MetadataForm>` pulls in anyway).
 const WITH_LIB = `import { createRoot } from "react-dom/client";
 import { useMetadataForm, MetadataForm } from "metadata-form";
-import "@kanzo-tech/ui/styles.css";
 import shapes from "./shapes.ttl?raw";
 
 function App() {

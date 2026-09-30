@@ -1,6 +1,6 @@
 # E4 — performance of per-edit conditional re-evaluation
 
-Generated 2026-08-28T17:47:02Z by `perf.harness.ts`. Do not edit by hand.
+Generated 2026-09-30T14:29:53Z by `perf.harness.ts`. Do not edit by hand.
 
 Every cell is **median / p95** over the stated sample count, nearest-rank
 (no interpolation), so each figure is an observation that happened.
@@ -9,23 +9,18 @@ Every cell is **median / p95** over the stated sample count, nearest-rank
 
 - **Per-edit re-evaluation is sub-frame.** Re-projecting the whole form tree from
   the graph — the wasm call that re-evaluates every `sh:if` — costs
-  0.008–8.64 ms at p95 across 8 published profiles, and a committed
+  0.012–1.56 ms at p95 across 8 published profiles, and a committed
   edit reaches a new `FormModel` with updated conditional visibility in
-  0.352–1.79 ms at p95. A 60 Hz frame is 16.7 ms.
-- **Parsing is the one-off cost, and it is the one that scales badly.** It
-  spans 0.543 ms for Health-RI domain modules (health, imaging, omics) (4.8 kB) to
-  **13383 ms** for SPHN 2026.1 (Swiss Personalized Health Network)
-  (1246 property shapes, 930 kB of Turtle) — and it grows faster than
-  input size, not with it (see Tab. 4). Instantiating the module adds a flat
-  10.1 ms. This is a load-time cost, paid once and never per edit, but at the
-  top of the corpus it is seconds, not milliseconds, and a profile of that size
-  needs the shapes parsed off the interaction path (a worker, or a cached IR)
-  rather than in front of the user. The earlier Health-RI-only corpus topped out
-  at 83 kB and did not show this at all.
-- **Validation is off the visibility path.** `validate()` is 29.9 ms at worst
-  here, and runs on its own 300 ms debounce, so it never gates a field appearing.
-- **The payload is the weak point.** 629.9 kB of brotli-compressed wasm plus
-  114.9 kB of JS. That is the honest cost of putting a SHACL engine in
+  0.365–2.05 ms at p95. A 60 Hz frame is 16.7 ms.
+- **Parsing is the one-off cost.** It spans 8.67 ms for Health-RI domain modules (health, imaging, omics)
+  (4.8 kB) to **1062 ms** for SPHN 2026.1 (Swiss Personalized Health Network)
+  (1246 property shapes, 930 kB of Turtle): 0.387–1.82 ms per kB
+  of Turtle across the corpus (see Tab. 4). Instantiating the module adds a flat
+  10.9 ms. This is a load-time cost, paid once and never per edit.
+- **Validation is off the visibility path.** `validate()` is 4.89 ms at worst
+  here, and runs after the edit is drawn (a deferred render), so it never gates a field appearing.
+- **The payload is the weak point.** 662.2 kB of brotli-compressed wasm plus
+  118.6 kB of JS. That is the honest cost of putting a SHACL engine in
   the browser, and it is a first-load cost, not a per-edit one.
 
 ## What was measured, and where
@@ -36,8 +31,8 @@ Every cell is **median / p95** over the stated sample count, nearest-rank
 | OS | macOS 26.2 (darwin arm64) |
 | Runtime | Node v23.9.0 (V8 12.9.202.28-node.13) |
 | DOM | jsdom, via vitest — **not a browser** |
-| Engine | `@kanzo-tech/rudof-wasm@0.3.5` |
-| `.wasm` sha256 | `e6ff1f2ee9cc5ae0…` |
+| Engine | `@kanzo-tech/rudof-wasm@0.3.10` |
+| `.wasm` sha256 | `0030b43f8775995b…` |
 
 > **Node-only, not a browser measurement.** V8 is the engine Chrome runs and
 > the `.wasm` is byte-identical to the one a browser would fetch, so the engine
@@ -91,24 +86,24 @@ only the `projectForm` / `projectValues` / `validate` columns read “—”.
 
 | Profile | Shapes (kB / lines) | Node shapes | Prop. shapes | Data triples | Parse | `projectForm` | `projectValues` (tree) | `validate()` | `validateTree` |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| DCAT-AP 3.0.1 (SEMIC) | 65.5 / 2155 | 91 | 298 | 198 | 1216 / 1337 | 0.987 / 3.23 | 0.940 / 2.59 | 11.5 / 26.0 | 2.76 / 3.80 |
-| HealthDCAT-AP Release 5 (European Commission) | 49.5 / 1281 | 52 | 139 | 198 | 287 / 394 | 1.41 / 2.98 | 1.53 / 2.18 | 6.19 / 10.0 | 1.75 / 2.55 |
-| Health-RI Core (HealthDCAT-AP national implementation) | 82.8 / 1819 | 14 | 143 | 198 | 227 / 301 | 4.49 / 8.34 | 6.02 / 8.64 | 22.2 / 29.9 | 82.8 / 108 |
-| DCAT-AP.de 2.0 (national extension, Germany) | 69.6 / 1608 | 29 | 121 | 198 | 164 / 204 | 2.28 / 3.45 | 2.42 / 3.91 | 4.82 / 6.82 | 1.98 / 2.81 |
-| FAIR Data Point (FAIRDataTeam reference implementation) | 9.1 / 340 | 13 | 37 | 198 | 25.6 / 32.4 | 0.466 / 0.893 | 0.456 / 0.873 | 1.02 / 1.92 | 0.407 / 0.730 |
-| SPHN 2026.1 (Swiss Personalized Health Network) | 929.9 / 17025 | 1744 | 1246 | — | 13383 / 66730 | — | — | — | — |
-| Bioschemas profiles v20250219 | 222.3 / 2152 | 32 | 643 | — | 2315 / 2331 | — | — | — | — |
-| SPDX 3.0.1 model | 178.9 / 3331 | 64 | 193 | — | 280 / 282 | — | — | — | — |
-| Health-RI domain modules (health, imaging, omics) | 4.8 / 147 | 1 | 6 | 1 | 0.543 / 0.558 | 0.003 / 0.003 | 0.005 / 0.008 | 0.032 / 0.035 | 0.029 / 0.030 |
-| Evidenze HealthDCAT-AP onboarding (ours) | 32.8 / 793 | 10 | 48 | 98 | 17.8 / 18.2 | 0.299 / 0.314 | 0.797 / 0.818 | 0.377 / 0.387 | 2.56 / 2.61 |
-| Evidenze data space onboarding (ours) | 27.6 / 590 | 7 | 33 | 23 | 10.3 / 10.4 | 0.123 / 0.132 | 0.154 / 0.163 | 0.160 / 0.168 | 0.386 / 0.394 |
+| DCAT-AP 3.0.1 (SEMIC) | 65.5 / 2155 | 91 | 298 | 198 | 88.9 / 92.7 | 0.186 / 0.212 | 0.181 / 0.199 | 2.24 / 2.41 | 0.570 / 0.586 |
+| HealthDCAT-AP Release 5 (European Commission) | 49.5 / 1281 | 52 | 139 | 198 | 44.9 / 45.7 | 0.382 / 0.408 | 0.388 / 0.403 | 1.50 / 1.57 | 0.393 / 0.403 |
+| Health-RI Core (HealthDCAT-AP national implementation) | 82.8 / 1819 | 14 | 143 | 198 | 44.2 / 45.2 | 0.964 / 1.03 | 1.46 / 1.56 | 4.53 / 4.89 | 15.4 / 15.8 |
+| DCAT-AP.de 2.0 (national extension, Germany) | 69.6 / 1608 | 29 | 121 | 198 | 42.0 / 43.4 | 0.588 / 0.608 | 0.597 / 0.628 | 1.07 / 1.14 | 0.437 / 0.451 |
+| FAIR Data Point (FAIRDataTeam reference implementation) | 9.1 / 340 | 13 | 37 | 198 | 16.4 / 16.7 | 0.142 / 0.151 | 0.144 / 0.149 | 0.261 / 0.278 | 0.110 / 0.116 |
+| SPHN 2026.1 (Swiss Personalized Health Network) | 929.9 / 17025 | 1744 | 1246 | — | 1062 / 1080 | — | — | — | — |
+| Bioschemas profiles v20250219 | 222.3 / 2152 | 32 | 643 | — | 169 / 173 | — | — | — | — |
+| SPDX 3.0.1 model | 178.9 / 3331 | 64 | 193 | — | 69.3 / 72.9 | — | — | — | — |
+| Health-RI domain modules (health, imaging, omics) | 4.8 / 147 | 1 | 6 | 1 | 8.67 / 8.89 | 0.003 / 0.004 | 0.006 / 0.012 | 0.040 / 0.045 | 0.035 / 0.039 |
+| Evidenze HealthDCAT-AP onboarding (ours) | 33.1 / 795 | 11 | 48 | 98 | 23.8 / 24.5 | 0.313 / 0.332 | 0.958 / 0.998 | 0.342 / 0.361 | 2.72 / 2.79 |
+| Evidenze data space onboarding (ours) | 28.0 / 591 | 8 | 33 | 23 | 19.1 / 19.8 | 0.131 / 0.144 | 0.173 / 0.182 | 0.154 / 0.164 | 0.463 / 0.478 |
 
 A “—” means no live session was stood up for that profile — see the corpus
 table above for why; it never means the operation was slow or failed.
 
-**Parse does not scale linearly.** Across the corpus, roughly a 4× larger
-shapes document costs 5–6× the parse, so the cost per kB rises with size:
-the smallest profiles parse at well under 1 ms/kB and the largest at ~16 ms/kB.
+**Parse against document size.** The largest document is 195× the smallest and its
+parse is 122× the smallest's; per kB of Turtle the corpus spans
+0.387–1.82 ms (median parse over shapes size, one figure per profile).
 Every other operation is projection- and instance-bound, not document-bound,
 and stays sub-frame even on the largest profile a session could be stood up for.
 
@@ -121,17 +116,17 @@ fresh process is reported separately below.
 
 | Profile | Parse warm p50 | Parse 1st call | `validate()` warm p50 | `validate()` 1st call |
 |---|---:|---:|---:|---:|
-| DCAT-AP 3.0.1 (SEMIC) | 1216 | 1051 | 11.5 | 23.9 |
-| HealthDCAT-AP Release 5 (European Commission) | 287 | 266 | 6.19 | 8.89 |
-| Health-RI Core (HealthDCAT-AP national implementation) | 227 | 235 | 22.2 | 30.7 |
-| DCAT-AP.de 2.0 (national extension, Germany) | 164 | 155 | 4.82 | 4.61 |
-| FAIR Data Point (FAIRDataTeam reference implementation) | 25.6 | 28.3 | 1.02 | 2.43 |
-| SPHN 2026.1 (Swiss Personalized Health Network) | 13383 | 62075 | — | — |
-| Bioschemas profiles v20250219 | 2315 | 2327 | — | — |
-| SPDX 3.0.1 model | 280 | 279 | — | — |
-| Health-RI domain modules (health, imaging, omics) | 0.543 | 0.565 | 0.032 | 0.058 |
-| Evidenze HealthDCAT-AP onboarding (ours) | 17.8 | 17.9 | 0.377 | 0.425 |
-| Evidenze data space onboarding (ours) | 10.3 | 10.2 | 0.160 | 0.192 |
+| DCAT-AP 3.0.1 (SEMIC) | 88.9 | 89.8 | 2.24 | 2.58 |
+| HealthDCAT-AP Release 5 (European Commission) | 44.9 | 43.5 | 1.50 | 1.73 |
+| Health-RI Core (HealthDCAT-AP national implementation) | 44.2 | 42.5 | 4.53 | 5.09 |
+| DCAT-AP.de 2.0 (national extension, Germany) | 42.0 | 40.9 | 1.07 | 1.25 |
+| FAIR Data Point (FAIRDataTeam reference implementation) | 16.4 | 16.2 | 0.261 | 0.319 |
+| SPHN 2026.1 (Swiss Personalized Health Network) | 1062 | 1309 | — | — |
+| Bioschemas profiles v20250219 | 169 | 168 | — | — |
+| SPDX 3.0.1 model | 69.3 | 68.0 | — | — |
+| Health-RI domain modules (health, imaging, omics) | 8.67 | 9.43 | 0.040 | 0.060 |
+| Evidenze HealthDCAT-AP onboarding (ours) | 23.8 | 23.7 | 0.342 | 0.429 |
+| Evidenze data space onboarding (ours) | 19.1 | 18.9 | 0.154 | 0.185 |
 
 ## Cold start — module instantiate (ms, median / p95)
 
@@ -139,24 +134,24 @@ One fresh Node process per sample, n=25.
 
 | Stage | median | p95 |
 |---|---:|---:|
-| Read 2.6 MB `.wasm` from disk (stands in for `fetch`) | 0.241 | 0.264 |
-| `import` the wasm-bindgen glue | 0.647 | 0.670 |
-| **compile + instantiate** | **10.1** | **10.3** |
-| `new Session()` | 0.146 | 0.171 |
-| total, bytes in hand → usable session | 11.2 | 11.3 |
+| Read 2.6 MB `.wasm` from disk (stands in for `fetch`) | 0.273 | 0.297 |
+| `import` the wasm-bindgen glue | 0.713 | 0.771 |
+| **compile + instantiate** | **10.9** | **11.4** |
+| `new Session()` | 0.161 | 0.171 |
+| total, bytes in hand → usable session | 12.0 | 12.6 |
 
 **The fetch is not in these numbers.** A disk read is not a network round trip;
 a browser's real cold path is `WebAssembly.instantiateStreaming(fetch(…))`,
 which overlaps transfer with compilation and is dominated by transfer. Take the
 compile+instantiate row as the engine's own cost and add your own transfer
-estimate for 629.9 kB over the wire.
+estimate for 662.2 kB over the wire.
 
 ## End-to-end: edit → updated conditional visibility (ms, median / p95)
 
 | Profile | Fields rendered | commit → new `FormModel` | commit → DOM mutated |
 |---|---:|---:|---:|
-| Evidenze HealthDCAT-AP onboarding (ours) | 39 | 1.41 / 1.79 | 26.3 / 53.2 |
-| Evidenze data space onboarding (ours) | 24 | 0.334 / 0.352 | 5.45 / 6.41 |
+| Evidenze HealthDCAT-AP onboarding (ours) | 39 | 1.70 / 2.05 | 51.5 / 67.9 |
+| Evidenze data space onboarding (ours) | 24 | 0.337 / 0.365 | 12.0 / 14.7 |
 
 n=30 flips per profile (alternating on/off), after 5 warm-up flips.
 Each flip writes the committed value into the graph the way a discrete widget
@@ -177,30 +172,30 @@ browser must do. It is therefore neither an upper nor a lower bound on browser
 latency — it is a different quantity, and the paper should quote the first column
 for the engine claim rather than the second.
 
-Two deliberate debounces sit *outside* this number and are not engine cost:
+Two deliberate delays sit *outside* this number and are not engine cost:
 
 - free-text widgets buffer keystrokes locally and commit after **250 ms**
-  (`useCommit` in `defaultWidgets.tsx`), so typing is never blocked by the engine.
+  (`useDebouncedCommit`, `@kanzo-tech/ui`'s default delay; a blur commits at once), so typing is never blocked by the engine.
   Discrete widgets — the kind a `sh:if` keys off — commit immediately, with no debounce.
-- validation runs on a separate **300 ms** debounce
-  (`validationDebounceMs`), so it never sits on the visibility path at all.
+- validation runs in the render React defers behind the edit (`useDeferredValue`),
+  with no timer, so it never sits on the visibility path at all.
 
 So a user typing into a text field sees their character echoed immediately, the
-form re-shape ~250 ms after they stop, and errors ~300 ms after that. A user
+form re-shape ~250 ms after they stop, and errors as soon as React has drawn it. A user
 picking from a select sees the form re-shape within the figure above.
 
 ## Payload
 
 | Artefact | Raw | gzip -9 | brotli -11 |
 |---|---:|---:|---:|
-| `rudof_wasm_bg.wasm` | 2655.3 kB | 909.2 kB | 629.9 kB |
-| wasm-bindgen glue `rudof_wasm.js` | 22.2 kB | 4.9 kB | 4.3 kB |
+| `rudof_wasm_bg.wasm` | 2810.5 kB | 958.5 kB | 662.2 kB |
+| wasm-bindgen glue `rudof_wasm.js` | 24.3 kB | 5.4 kB | 4.7 kB |
 | App JS, baseline (React 19.2.8 + ReactDOM only) | 189.9 kB | 59.2 kB | 51.1 kB |
-| App JS, + `metadata-form/rudof` (engine seam only) | 233.8 kB | 70.5 kB | 61.0 kB |
-| App JS, + `metadata-form` (hook + `<MetadataForm>`) | 689.8 kB | 201.7 kB | 165.9 kB |
-| — of which the engine seam | 43.9 kB | 11.4 kB | 10.0 kB |
-| **JS delta the full library adds** | **499.9 kB** | **142.5 kB** | **114.9 kB** |
-| App CSS added by the library | 223.2 kB | 34.0 kB | — |
+| App JS, + `metadata-form/rudof` (engine seam only) | 234.9 kB | 70.9 kB | 61.4 kB |
+| App JS, + `metadata-form` (hook + `<MetadataForm>`) | 699.4 kB | 206.6 kB | 169.7 kB |
+| — of which the engine seam | 45.0 kB | 11.7 kB | 10.4 kB |
+| **JS delta the full library adds** | **509.5 kB** | **147.4 kB** | **118.6 kB** |
+| App CSS added by the library | 0.0 kB | 0.0 kB | — |
 
 Three real production builds of the same minimal React app (Vite 6.4.3,
 `bundle-delta.mjs`), differing only in how much of the library they import. The
@@ -210,7 +205,7 @@ which is emitted as a separate on-demand asset and is listed on its own row abov
 
 The split matters for the paper's claim. The **engine seam** — the wasm-bindgen
 glue, the `RudofEngine` wrapper, the shape IR and projection — is
-11.4 kB gzipped. Everything above that is the form UI and the design
+11.7 kB gzipped. Everything above that is the form UI and the design
 system it is built on, which an adopter with their own components does not have
 to take: the argument for browser-native SHACL does not rest on the larger number.
 
@@ -228,12 +223,12 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 1074 | 1216 | 1337 | 1370 | 1051 |
-| `projectForm` | 50 | 0.527 | 0.987 | 3.23 | 5.51 | 1.17 |
-| `projectTree` | 50 | 0.388 | 0.940 | 2.59 | 4.11 | 3.24 |
-| `validateFull` | 50 | 7.86 | 11.5 | 26.0 | 43.5 | 23.9 |
-| `validateTree` | 50 | 1.97 | 2.76 | 3.80 | 7.01 | 3.73 |
-| `serializeTurtle` | 50 | 1.01 | 1.43 | 2.44 | 3.54 | 6.61 |
+| `loadShapes` | 30 | 87.0 | 88.9 | 92.7 | 93.4 | 89.8 |
+| `projectForm` | 50 | 0.183 | 0.186 | 0.212 | 0.348 | 0.262 |
+| `projectTree` | 50 | 0.179 | 0.181 | 0.199 | 0.203 | 0.277 |
+| `validateFull` | 50 | 2.19 | 2.24 | 2.41 | 2.70 | 2.58 |
+| `validateTree` | 50 | 0.558 | 0.570 | 0.586 | 0.606 | 0.864 |
+| `serializeTurtle` | 50 | 0.343 | 0.351 | 0.383 | 0.404 | 1.81 |
 
 ### HealthDCAT-AP Release 5 (European Commission)
 
@@ -247,12 +242,12 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 231 | 287 | 394 | 400 | 266 |
-| `projectForm` | 50 | 0.968 | 1.41 | 2.98 | 3.40 | 3.19 |
-| `projectTree` | 50 | 1.07 | 1.53 | 2.18 | 2.56 | 1.45 |
-| `validateFull` | 50 | 3.98 | 6.19 | 10.0 | 11.4 | 8.89 |
-| `validateTree` | 50 | 1.16 | 1.75 | 2.55 | 2.62 | 2.06 |
-| `serializeTurtle` | 50 | 0.918 | 1.51 | 2.67 | 2.98 | 1.76 |
+| `loadShapes` | 30 | 43.9 | 44.9 | 45.7 | 46.1 | 43.5 |
+| `projectForm` | 50 | 0.378 | 0.382 | 0.408 | 0.629 | 0.475 |
+| `projectTree` | 50 | 0.384 | 0.388 | 0.403 | 0.409 | 0.413 |
+| `validateFull` | 50 | 1.45 | 1.50 | 1.57 | 1.81 | 1.73 |
+| `validateTree` | 50 | 0.378 | 0.393 | 0.403 | 0.407 | 0.447 |
+| `serializeTurtle` | 50 | 0.337 | 0.341 | 0.364 | 0.412 | 0.450 |
 
 ### Health-RI Core (HealthDCAT-AP national implementation)
 
@@ -266,12 +261,12 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 197 | 227 | 301 | 306 | 235 |
-| `projectForm` | 50 | 3.27 | 4.49 | 8.34 | 12.0 | 7.66 |
-| `projectTree` | 50 | 4.48 | 6.02 | 8.64 | 11.4 | 7.15 |
-| `validateFull` | 50 | 16.0 | 22.2 | 29.9 | 33.0 | 30.7 |
-| `validateTree` | 50 | 56.8 | 82.8 | 108 | 109 | 88.1 |
-| `serializeTurtle` | 50 | 0.902 | 1.46 | 2.53 | 4.29 | 2.34 |
+| `loadShapes` | 30 | 42.9 | 44.2 | 45.2 | 45.3 | 42.5 |
+| `projectForm` | 50 | 0.943 | 0.964 | 1.03 | 1.15 | 1.06 |
+| `projectTree` | 50 | 1.44 | 1.46 | 1.56 | 1.63 | 1.58 |
+| `validateFull` | 50 | 4.47 | 4.53 | 4.89 | 5.16 | 5.09 |
+| `validateTree` | 50 | 15.2 | 15.4 | 15.8 | 17.3 | 15.7 |
+| `serializeTurtle` | 50 | 0.336 | 0.342 | 0.380 | 0.384 | 0.428 |
 
 ### DCAT-AP.de 2.0 (national extension, Germany)
 
@@ -285,12 +280,12 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 139 | 164 | 204 | 236 | 155 |
-| `projectForm` | 50 | 1.76 | 2.28 | 3.45 | 3.58 | 2.98 |
-| `projectTree` | 50 | 1.88 | 2.42 | 3.91 | 5.28 | 2.13 |
-| `validateFull` | 50 | 3.30 | 4.82 | 6.82 | 10.8 | 4.61 |
-| `validateTree` | 50 | 1.32 | 1.98 | 2.81 | 3.77 | 1.73 |
-| `serializeTurtle` | 50 | 1.04 | 1.50 | 2.04 | 2.20 | 1.36 |
+| `loadShapes` | 30 | 40.8 | 42.0 | 43.4 | 43.8 | 40.9 |
+| `projectForm` | 50 | 0.584 | 0.588 | 0.608 | 0.693 | 0.656 |
+| `projectTree` | 50 | 0.590 | 0.597 | 0.628 | 0.651 | 0.598 |
+| `validateFull` | 50 | 1.04 | 1.07 | 1.14 | 1.56 | 1.25 |
+| `validateTree` | 50 | 0.424 | 0.437 | 0.451 | 0.465 | 0.470 |
+| `serializeTurtle` | 50 | 0.334 | 0.340 | 0.363 | 0.374 | 0.418 |
 
 ### FAIR Data Point (FAIRDataTeam reference implementation)
 
@@ -304,12 +299,12 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 22.1 | 25.6 | 32.4 | 38.8 | 28.3 |
-| `projectForm` | 50 | 0.328 | 0.466 | 0.893 | 1.02 | 0.568 |
-| `projectTree` | 50 | 0.342 | 0.456 | 0.873 | 1.42 | 0.521 |
-| `validateFull` | 50 | 0.760 | 1.02 | 1.92 | 3.72 | 2.43 |
-| `validateTree` | 50 | 0.291 | 0.407 | 0.730 | 0.790 | 0.773 |
-| `serializeTurtle` | 50 | 1.12 | 1.37 | 2.29 | 2.50 | 1.59 |
+| `loadShapes` | 30 | 16.2 | 16.4 | 16.7 | 17.1 | 16.2 |
+| `projectForm` | 50 | 0.140 | 0.142 | 0.151 | 0.156 | 0.173 |
+| `projectTree` | 50 | 0.143 | 0.144 | 0.149 | 0.153 | 0.149 |
+| `validateFull` | 50 | 0.254 | 0.261 | 0.278 | 0.293 | 0.319 |
+| `validateTree` | 50 | 0.107 | 0.110 | 0.116 | 0.119 | 0.123 |
+| `serializeTurtle` | 50 | 0.341 | 0.348 | 0.396 | 0.439 | 0.424 |
 
 ### SPHN 2026.1 (Swiss Personalized Health Network)
 
@@ -321,7 +316,7 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 13250 | 13383 | 66730 | 106095 | 62075 |
+| `loadShapes` | 30 | 1047 | 1062 | 1080 | 1080 | 1309 |
 
 ### Bioschemas profiles v20250219
 
@@ -333,7 +328,7 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 2304 | 2315 | 2331 | 2335 | 2327 |
+| `loadShapes` | 30 | 163 | 169 | 173 | 175 | 168 |
 
 ### SPDX 3.0.1 model
 
@@ -345,7 +340,7 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 277 | 280 | 282 | 283 | 279 |
+| `loadShapes` | 30 | 67.5 | 69.3 | 72.9 | 75.8 | 68.0 |
 
 ### Health-RI domain modules (health, imaging, omics)
 
@@ -359,50 +354,50 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 0.524 | 0.543 | 0.558 | 0.566 | 0.565 |
-| `projectForm` | 50 | 0.003 | 0.003 | 0.003 | 0.004 | 0.006 |
-| `projectTree` | 50 | 0.005 | 0.005 | 0.008 | 0.018 | 0.006 |
-| `validateFull` | 50 | 0.029 | 0.032 | 0.035 | 0.043 | 0.058 |
-| `validateTree` | 50 | 0.028 | 0.029 | 0.030 | 0.033 | 0.041 |
-| `serializeTurtle` | 50 | 0.002 | 0.002 | 0.002 | 0.002 | 0.017 |
+| `loadShapes` | 30 | 8.56 | 8.67 | 8.89 | 9.00 | 9.43 |
+| `projectForm` | 50 | 0.003 | 0.003 | 0.004 | 0.004 | 0.007 |
+| `projectTree` | 50 | 0.005 | 0.006 | 0.012 | 0.014 | 0.011 |
+| `validateFull` | 50 | 0.039 | 0.040 | 0.045 | 0.045 | 0.060 |
+| `validateTree` | 50 | 0.035 | 0.035 | 0.039 | 0.045 | 0.044 |
+| `serializeTurtle` | 50 | 0.002 | 0.002 | 0.003 | 0.003 | 0.012 |
 
 ### Evidenze HealthDCAT-AP onboarding (ours)
 
 > Pure SHACL 1.2 + SHACL-UI. The deployment.
 
-- 1 shape file(s), 33566 B, 793 lines
-- 10 node shapes, 48 property shapes, 1 `sh:if` conditional(s)
+- 1 shape file(s), 33892 B, 795 lines
+- 11 node shapes, 48 property shapes, 1 `sh:if` conditional(s)
 - root shape pinned: `https://dataspace.evidenze.example/shapes#HealthDatasetOnboardingShape`
-- projected tree: 16 node(s) — `validateTree` re-enters wasm once per node
+- projected tree: 17 node(s) — `validateTree` re-enters wasm once per node
 - data graph: 5991 B, 98 triples; `validate()` returned 0 result(s)
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 17.2 | 17.8 | 18.2 | 18.3 | 17.9 |
-| `projectForm` | 50 | 0.286 | 0.299 | 0.314 | 0.322 | 0.349 |
-| `projectTree` | 50 | 0.779 | 0.797 | 0.818 | 0.834 | 0.862 |
-| `validateFull` | 50 | 0.369 | 0.377 | 0.387 | 0.391 | 0.425 |
-| `validateTree` | 50 | 2.53 | 2.56 | 2.61 | 2.77 | 2.65 |
-| `serializeTurtle` | 50 | 0.402 | 0.418 | 0.438 | 0.442 | 0.520 |
+| `loadShapes` | 30 | 23.3 | 23.8 | 24.5 | 24.5 | 23.7 |
+| `projectForm` | 50 | 0.304 | 0.313 | 0.332 | 0.337 | 0.380 |
+| `projectTree` | 50 | 0.934 | 0.958 | 0.998 | 1.18 | 1.10 |
+| `validateFull` | 50 | 0.331 | 0.342 | 0.361 | 0.367 | 0.429 |
+| `validateTree` | 50 | 2.68 | 2.72 | 2.79 | 3.05 | 2.84 |
+| `serializeTurtle` | 50 | 0.391 | 0.403 | 0.426 | 0.440 | 0.520 |
 
 ### Evidenze data space onboarding (ours)
 
 > Pure SHACL 1.2 + SHACL-UI.
 
-- 1 shape file(s), 28309 B, 590 lines
-- 7 node shapes, 33 property shapes, 1 `sh:if` conditional(s)
+- 1 shape file(s), 28628 B, 591 lines
+- 8 node shapes, 33 property shapes, 1 `sh:if` conditional(s)
 - root shape pinned: `https://dataspace.evidenze.example/shapes#DatasetOnboardingShape`
-- projected tree: 4 node(s) — `validateTree` re-enters wasm once per node
+- projected tree: 5 node(s) — `validateTree` re-enters wasm once per node
 - data graph: 1971 B, 23 triples; `validate()` returned 0 result(s)
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 9.85 | 10.3 | 10.4 | 10.7 | 10.2 |
-| `projectForm` | 50 | 0.113 | 0.123 | 0.132 | 0.133 | 0.143 |
-| `projectTree` | 50 | 0.150 | 0.154 | 0.163 | 0.167 | 0.176 |
-| `validateFull` | 50 | 0.155 | 0.160 | 0.168 | 0.172 | 0.192 |
-| `validateTree` | 50 | 0.380 | 0.386 | 0.394 | 0.400 | 0.406 |
-| `serializeTurtle` | 50 | 0.055 | 0.057 | 0.063 | 0.067 | 0.104 |
+| `loadShapes` | 30 | 18.7 | 19.1 | 19.8 | 19.9 | 18.9 |
+| `projectForm` | 50 | 0.126 | 0.131 | 0.144 | 0.157 | 0.171 |
+| `projectTree` | 50 | 0.168 | 0.173 | 0.182 | 0.201 | 0.195 |
+| `validateFull` | 50 | 0.148 | 0.154 | 0.164 | 0.174 | 0.185 |
+| `validateTree` | 50 | 0.454 | 0.463 | 0.478 | 0.485 | 0.492 |
+| `serializeTurtle` | 50 | 0.056 | 0.058 | 0.068 | 0.073 | 0.104 |
 
 ### DCAT-AP 3.0.1 — generated encoding *(variant of dcat-ap-3 — excluded from the headline)*
 
@@ -416,12 +411,12 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 148 | 149 | 151 | 153 | 148 |
-| `projectForm` | 50 | 0.697 | 0.701 | 0.711 | 0.713 | 0.761 |
-| `projectTree` | 50 | 0.654 | 0.715 | 0.724 | 0.805 | 0.719 |
-| `validateFull` | 50 | 1.23 | 1.30 | 1.35 | 1.68 | 1.38 |
-| `validateTree` | 50 | 0.473 | 0.482 | 0.502 | 0.508 | 0.508 |
-| `serializeTurtle` | 50 | 0.332 | 0.334 | 0.348 | 0.355 | 0.413 |
+| `loadShapes` | 30 | 82.3 | 84.2 | 85.6 | 86.3 | 82.2 |
+| `projectForm` | 50 | 0.759 | 0.771 | 0.789 | 0.793 | 0.842 |
+| `projectTree` | 50 | 0.773 | 0.786 | 0.809 | 0.871 | 0.807 |
+| `validateFull` | 50 | 1.42 | 1.45 | 1.49 | 1.54 | 1.67 |
+| `validateTree` | 50 | 0.505 | 0.519 | 0.572 | 0.582 | 0.564 |
+| `serializeTurtle` | 50 | 0.335 | 0.339 | 0.350 | 0.354 | 0.426 |
 
 ### HealthDCAT-AP Release 5 — restricted tier *(variant of healthdcat-ap — excluded from the headline)*
 
@@ -435,12 +430,12 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 21.9 | 22.4 | 22.8 | 22.9 | 22.5 |
-| `projectForm` | 50 | 0.336 | 0.338 | 0.356 | 0.359 | 0.396 |
-| `projectTree` | 50 | 0.341 | 0.346 | 0.354 | 0.362 | 0.346 |
-| `validateFull` | 50 | 0.818 | 0.847 | 0.869 | 1.17 | 0.969 |
-| `validateTree` | 50 | 0.203 | 0.208 | 0.218 | 0.231 | 0.240 |
-| `serializeTurtle` | 50 | 0.331 | 0.333 | 0.346 | 0.351 | 0.414 |
+| `loadShapes` | 30 | 28.5 | 29.4 | 31.4 | 35.3 | 29.1 |
+| `projectForm` | 50 | 0.364 | 0.375 | 0.424 | 0.441 | 0.459 |
+| `projectTree` | 50 | 0.364 | 0.373 | 0.392 | 0.455 | 0.402 |
+| `validateFull` | 50 | 0.990 | 1.01 | 1.05 | 1.08 | 1.62 |
+| `validateTree` | 50 | 0.240 | 0.251 | 0.272 | 0.471 | 0.287 |
+| `serializeTurtle` | 50 | 0.333 | 0.343 | 0.384 | 0.406 | 0.430 |
 
 ### DCAT-AP as vendored by Health-RI *(variant of dcat-ap-3 — excluded from the headline)*
 
@@ -454,12 +449,12 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 33.5 | 33.9 | 34.4 | 34.4 | 33.6 |
-| `projectForm` | 50 | 0.665 | 0.668 | 0.677 | 0.680 | 0.719 |
-| `projectTree` | 50 | 0.675 | 0.682 | 0.698 | 0.731 | 0.684 |
-| `validateFull` | 50 | 0.621 | 0.655 | 0.719 | 0.971 | 0.729 |
-| `validateTree` | 50 | 0.225 | 0.232 | 0.245 | 0.251 | 0.247 |
-| `serializeTurtle` | 50 | 0.332 | 0.336 | 0.347 | 0.352 | 0.428 |
+| `loadShapes` | 30 | 34.3 | 35.4 | 37.1 | 37.2 | 34.7 |
+| `projectForm` | 50 | 0.709 | 0.736 | 0.839 | 0.846 | 0.793 |
+| `projectTree` | 50 | 0.719 | 0.738 | 0.797 | 0.818 | 0.780 |
+| `validateFull` | 50 | 0.738 | 0.772 | 0.868 | 0.925 | 1.03 |
+| `validateTree` | 50 | 0.241 | 0.252 | 0.268 | 0.273 | 0.281 |
+| `serializeTurtle` | 50 | 0.337 | 0.348 | 0.415 | 0.440 | 0.429 |
 
 ### Health-RI FAIR Data Point shapes *(variant of health-ri-core — excluded from the headline)*
 
@@ -473,12 +468,12 @@ to take: the argument for browser-native SHACL does not rest on the larger numbe
 
 | Operation | n | min | p50 | p95 | max | 1st call |
 |---|---:|---:|---:|---:|---:|---:|
-| `loadShapes` | 30 | 52.8 | 53.7 | 54.5 | 54.6 | 52.7 |
-| `projectForm` | 50 | 0.853 | 0.890 | 0.951 | 2.35 | 0.981 |
-| `projectTree` | 50 | 1.23 | 1.28 | 1.32 | 1.33 | 1.32 |
-| `validateFull` | 50 | 4.39 | 4.49 | 4.52 | 4.53 | 4.79 |
-| `validateTree` | 50 | 15.1 | 15.2 | 15.4 | 15.6 | 15.2 |
-| `serializeTurtle` | 50 | 0.333 | 0.336 | 0.346 | 0.355 | 0.424 |
+| `loadShapes` | 30 | 43.9 | 45.4 | 46.9 | 47.4 | 46.1 |
+| `projectForm` | 50 | 0.949 | 0.959 | 0.980 | 0.987 | 1.06 |
+| `projectTree` | 50 | 1.46 | 1.49 | 1.55 | 1.66 | 1.52 |
+| `validateFull` | 50 | 4.55 | 4.67 | 4.86 | 5.00 | 4.98 |
+| `validateTree` | 50 | 15.5 | 15.8 | 16.4 | 16.7 | 15.7 |
+| `serializeTurtle` | 50 | 0.335 | 0.342 | 0.374 | 0.439 | 0.440 |
 
 (4 variant profiles above are reported in full but kept out of
 the headline table. Which profiles are variants, and why, is E1's judgement —
@@ -510,15 +505,11 @@ carried here with the corpus rather than decided again.)
    measured.
 6. **No memory figure.** Peak wasm heap per session is not measured, and a
    long editing session's memory behaviour is unknown.
-7. **The large parse-only profiles are not stable to a single figure.** Across
-   repeat runs on the same idle machine, the SPHN and Bioschemas parse *medians*
-   moved by up to 4× (Bioschemas: 2.5 s, 2.5 s, 9.6 s), and SPHN's p95 ranged
-   from 16 s to 66 s against a median that stayed near 15 s. The small and
-   mid-sized profiles repeat to within a few percent. Read the top two rows of
-   Tab. 4 as an order of magnitude — seconds, not milliseconds — and not as a
-   figure to quote to three digits. Why parse variance grows this sharply with
-   input size is not established here; wasm heap growth is the obvious suspect
-   and is not measured (see 6).
+7. **Repeat-run variance of the large parse-only profiles is not re-established.**
+   Within this run, the widest parse spread is SPDX 3.0.1 model: p95 is
+   1.05× its median. Earlier engine versions showed run-to-run swings of the *medians*
+   of the largest profiles that a single run cannot reveal; this run does not test
+   whether 0.3.10 still has them. Quote the large parse figures as one observation.
 8. **One machine, one run, and the machine must be idle.** No cross-machine
    variance and no thermal control. This matters more than it sounds: running
    the harness on a loaded machine inflated p95 by up to 3× in our own repeats,
