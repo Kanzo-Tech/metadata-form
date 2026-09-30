@@ -51,6 +51,8 @@ export const strings: Strings = {
     loadFailed: "No se pudo cargar el formulario: {error}",
     group: "Grupo {n}",
     step: "Paso {n}",
+    back: "Atrás",
+    next: "Siguiente",
     issues: { one: "{n} incidencia", other: "{n} incidencias" },
     valid: "Válido",
   },

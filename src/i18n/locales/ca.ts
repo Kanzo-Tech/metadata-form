@@ -51,6 +51,8 @@ export const strings: Strings = {
     loadFailed: "No s'ha pogut carregar el formulari: {error}",
     group: "Grup {n}",
     step: "Pas {n}",
+    back: "Enrere",
+    next: "Següent",
     issues: { one: "{n} incidència", other: "{n} incidències" },
     valid: "Vàlid",
   },

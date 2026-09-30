@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormModel } from "../../form/FormModel.js";
 import { NodeContext, useFormContext } from "./context.js";
-import { LayoutBody } from "../layout/index.js";
+import { SequentialLayout } from "../layout/SequentialLayout.js";
+import { StepsLayout } from "../layout/StepsLayout.js";
+import { TabsLayout } from "../layout/TabsLayout.js";
 import { scrollToField } from "../utils/scrollToField.js";
 
 /** Renders one FormModel (a focus node + its groups/fields) as a node scope.
- * `root` enables the layout axes (sequential/tabs/steps + grid) via `layout/`;
+ * `root` enables the layout axes (sequential/tabs/steps + grid);
  * nested sub-forms always render sequentially. The root also owns the active
  * tab/step so `form.revealField` can switch to a field's group before scrolling. */
 export function NodeForm({ model, root = false }: { model: FormModel; root?: boolean }) {
@@ -32,16 +34,20 @@ export function NodeForm({ model, root = false }: { model: FormModel; root?: boo
     if (scrollToField(pending.current)) pending.current = null;
   }, [activeGroup, revealTarget?.n]);
 
+  // Per-group validation badges come from `form.report.issues.byGroup`; the active
+  // group is controlled so a tab or step can be switched from outside.
+  const issues = report.issues.byGroup;
+  const layoutProps = { model, grid, issues, activeGroup, onActiveGroupChange: setActiveGroup };
+
   return (
     <NodeContext.Provider value={model.focusNode}>
-      <LayoutBody
-        mode={mode}
-        model={model}
-        grid={grid}
-        issues={report.issues.byGroup}
-        activeGroup={activeGroup}
-        onActiveGroupChange={setActiveGroup}
-      />
+      {mode === "tabs" ? (
+        <TabsLayout {...layoutProps} />
+      ) : mode === "steps" ? (
+        <StepsLayout {...layoutProps} />
+      ) : (
+        <SequentialLayout model={model} grid={grid} issues={issues} />
+      )}
     </NodeContext.Provider>
   );
 }

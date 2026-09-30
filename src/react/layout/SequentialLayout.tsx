@@ -1,10 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@kanzo-tech/ui";
+import { Card, CardContent } from "@kanzo-tech/ui";
 import type { FormModel } from "../../form/FormModel.js";
 import type { GridLayout } from "../form/context.js";
 import type { GroupIssues } from "../validation/formReport.js";
-import { FieldsGrid } from "./FieldsGrid.js";
+import { GroupFieldSet } from "./GroupFieldSet.js";
 import { GroupIssuesBadge } from "./GroupIssuesBadge.js";
-import { column, row } from "../styles.js";
 
 /** Default layout: a Card per property group, stacked. */
 export function SequentialLayout({
@@ -17,19 +16,22 @@ export function SequentialLayout({
   issues?: Map<string, GroupIssues>;
 }) {
   return (
-    <div style={{ ...column, gap: "1rem" }}>
+    <div className="flex flex-col gap-4">
       {model.groups.map((group) => (
         <Card key={group.id}>
-          {group.label && (
-            <CardHeader>
-              <div style={row}>
-                <CardTitle>{group.label}</CardTitle>
-                <GroupIssuesBadge issues={issues?.get(group.id)} />
-              </div>
-            </CardHeader>
-          )}
           <CardContent>
-            <FieldsGrid group={group} grid={grid} />
+            <GroupFieldSet
+              group={group}
+              grid={grid}
+              legend={
+                group.label && (
+                  <>
+                    {group.label}
+                    <GroupIssuesBadge issues={issues?.get(group.id)} />
+                  </>
+                )
+              }
+            />
           </CardContent>
         </Card>
       ))}

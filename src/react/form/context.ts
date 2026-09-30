@@ -12,16 +12,19 @@ import { EN, type ResolvedStrings } from "../../i18n/strings.js";
 /** Arrangement of the root property groups. */
 export type FormLayout = "sequential" | "tabs" | "steps";
 
+/** The column counts of the design system's `FieldGroup`. */
+export type Columns = 1 | 2 | 3 | 4;
+
 /** Column layout within each group (eje B). Keys are stable schema ids, not the
  * focus-node-derived `field.id`: groups by `GroupModel.id` (sh:PropertyGroup IRI),
  * spans by the predicate IRI (`field.path.value`). */
 export interface GridLayout {
   /** Default number of columns for every group. */
-  columns?: number;
+  columns?: Columns;
   /** Per-group column overrides, keyed by `GroupModel.id`. */
-  groups?: Record<string, { columns?: number }>;
+  groups?: Record<string, { columns?: Columns }>;
   /** Per-field column span, keyed by predicate IRI (`field.path.value`). */
-  spans?: Record<string, number>;
+  spans?: Record<string, Columns>;
 }
 
 export interface FormContextValue {

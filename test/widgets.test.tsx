@@ -162,3 +162,29 @@ describe("the findings a value survives", () => {
     expect(fieldOf("note")).not.toHaveAttribute("data-invalid");
   });
 });
+
+describe("the layouts", () => {
+  it("labels the steps' Back and Next", async () => {
+    function Steps() {
+      form = useMetadataForm({ shapes, rootShape: `${ex}S`, validateOn: "off" });
+      return <MetadataForm form={form} layout="steps" />;
+    }
+    render(<Steps />);
+    await waitFor(() => expect(screen.getByText("Link")).toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+  });
+
+  it("lays a group out in the design system's columns, a field spanning as many as it asks", async () => {
+    function Grid() {
+      form = useMetadataForm({ shapes, rootShape: `${ex}S`, validateOn: "off" });
+      return <MetadataForm form={form} grid={{ columns: 3, spans: { [`${ex}title`]: 2 } }} />;
+    }
+    render(<Grid />);
+    await waitFor(() => expect(screen.getByText("Link")).toBeInTheDocument());
+    const group = document.querySelector('[data-slot="field-group"]')!;
+    expect(group).toHaveClass("grid-cols-3");
+    expect(fieldOf("title").parentElement).toHaveClass("col-span-2");
+    expect(fieldOf("link").parentElement).not.toHaveClass("col-span-2");
+  });
+});

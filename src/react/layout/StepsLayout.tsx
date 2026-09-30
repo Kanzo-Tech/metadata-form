@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardContent,
   Steps,
@@ -17,9 +18,8 @@ import { useStrings, type GridLayout } from "../form/context.js";
 import { fill } from "../../i18n/strings.js";
 import type { GroupIssues } from "../validation/formReport.js";
 import { scrollToField } from "../utils/scrollToField.js";
-import { FieldsGrid } from "./FieldsGrid.js";
+import { GroupFieldSet } from "./GroupFieldSet.js";
 import { GroupIssuesBadge } from "./GroupIssuesBadge.js";
-import { row } from "../styles.js";
 
 /**
  * A wizard — one group per step.
@@ -66,7 +66,7 @@ export function StepsLayout({
             <StepsItem index={i} key={group.id}>
               <StepsTrigger>
                 <StepsIndicator>{i + 1}</StepsIndicator>
-                <StepsTitle style={{ ...row, gap: "0.375rem" }}>
+                <StepsTitle className="flex items-center gap-1.5">
                   {group.label || fill(chrome.step, { n: i + 1 })}
                   <GroupIssuesBadge
                     issues={gi}
@@ -83,14 +83,20 @@ export function StepsLayout({
         <StepsContent index={i} key={group.id}>
           <Card>
             <CardContent>
-              <FieldsGrid group={group} grid={grid} />
+              <GroupFieldSet group={group} grid={grid} />
             </CardContent>
           </Card>
         </StepsContent>
       ))}
-      <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
-        <StepsPrevious />
-        <StepsNext />
+      <div className="flex justify-between gap-2">
+        <StepsPrevious asChild>
+          <Button size="sm" variant="outline">
+            {chrome.back}
+          </Button>
+        </StepsPrevious>
+        <StepsNext asChild>
+          <Button size="sm">{chrome.next}</Button>
+        </StepsNext>
       </div>
     </Steps>
   );

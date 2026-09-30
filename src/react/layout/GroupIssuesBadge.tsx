@@ -22,20 +22,19 @@ export function GroupIssuesBadge({ issues, onJump }: { issues?: GroupIssues; onJ
   const strings = useStrings();
   if (!issues || issues.count === 0) return null;
   const label = count(strings, strings.chrome.issues, issues.count);
-  const badge = (
-    <Badge pill size="xs" variant={issues.hasViolation ? "destructive" : "warning"}>
-      {issues.count}
-    </Badge>
-  );
-  if (!onJump) return <span aria-label={label}>{badge}</span>;
+  const variant = issues.hasViolation ? "destructive" : "warning";
+  if (!onJump) {
+    return (
+      <Badge aria-label={label} pill size="xs" variant={variant}>
+        {issues.count}
+      </Badge>
+    );
+  }
   return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onJump}
-      style={{ display: "inline-flex", background: "none", border: 0, padding: 0, cursor: "pointer" }}
-    >
-      {badge}
-    </button>
+    <Badge asChild pill size="xs" variant={variant}>
+      <button aria-label={label} onClick={onJump} type="button">
+        {issues.count}
+      </button>
+    </Badge>
   );
 }

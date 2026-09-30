@@ -82,6 +82,9 @@ export interface Strings {
     group: string;
     /** Same, in a stepped layout. */
     step: string;
+    /** The stepped layout's buttons. */
+    back: string;
+    next: string;
     /** "n issues". */
     issues: Plural;
     /** The summary pill of a clean form. */
@@ -152,6 +155,8 @@ export const EN: Strings = {
     loadFailed: "Failed to load form: {error}",
     group: "Group {n}",
     step: "Step {n}",
+    back: "Back",
+    next: "Next",
     issues: { one: "{n} issue", other: "{n} issues" },
     valid: "Valid",
   },

@@ -3,7 +3,7 @@ import type { FormModel } from "../../form/FormModel.js";
 import { useStrings, type GridLayout } from "../form/context.js";
 import { fill } from "../../i18n/strings.js";
 import type { GroupIssues } from "../validation/formReport.js";
-import { FieldsGrid } from "./FieldsGrid.js";
+import { GroupFieldSet } from "./GroupFieldSet.js";
 import { GroupIssuesBadge } from "./GroupIssuesBadge.js";
 
 /** One tab per group, each badged with its issue count (a view of form.report).
@@ -41,7 +41,7 @@ export function TabsLayout({
         <TabsContent key={group.id} value={group.id}>
           <Card>
             <CardContent>
-              <FieldsGrid group={group} grid={grid} />
+              <GroupFieldSet group={group} grid={grid} />
             </CardContent>
           </Card>
         </TabsContent>
