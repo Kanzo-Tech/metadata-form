@@ -34,6 +34,68 @@ field's **SHACL-UI editor** to a widget and renders the form.
 - 🧩 **ShEx-ready** — the engine seam is shape-language-agnostic; ShEx can be
   added without touching the UI.
 
+## A running example
+
+A complete shapes graph (prefix declarations omitted). It describes a dataset with a
+title, a yes/no answer to "does it contain structured data?" and, only when the
+answer is yes, a description of its variables:
+
+```turtle
+ex:DatasetShape a sh:NodeShape ;
+  sh:targetClass dcat:Dataset ;
+  sh:property ex:title , ex:structured ;
+  sh:or ( [ sh:not ex:HasStructuredData ] ex:DescribesVariables ) .
+
+ex:title sh:path dct:title ;
+  sh:name "Title"@en , "Título"@es ;
+  sh:datatype rdf:langString ; sh:minCount 1 ;
+  sh:message "A dataset needs a title."@en ,
+             "El dataset necesita un título."@es .
+
+ex:structured sh:path healthdcatap:hasStructuredData ;
+  sh:name "Structured data"@en , "Datos estructurados"@es ;
+  sh:datatype xsd:boolean ; sh:maxCount 1 .
+
+ex:HasStructuredData a sh:NodeShape ;        # the condition, C
+  sh:property [ sh:path healthdcatap:hasStructuredData ;
+                sh:hasValue true ] .
+
+ex:DescribesVariables a sh:NodeShape ;       # the consequence, T
+  sh:property [ sh:path healthdcatap:hasVariables ;
+    sh:name "Variables"@en , "Variables"@es ;
+    sh:node ex:VariableShape ; sh:minCount 1 ;
+    sh:message "Describe the variables of a structured dataset."@en ,
+               "Describe las variables de un dataset estructurado."@es ] .
+
+ex:VariableShape a sh:NodeShape ;
+  sh:property [ sh:path csvw:name ; sh:name "Name"@en , "Nombre"@es ;
+                sh:datatype xsd:string ; sh:minCount 1 ; sh:maxCount 1 ] .
+```
+
+From those triples, and with no code written for this profile, the form is:
+
+![The form generated from the shapes above. Left: the dataset declares no structured data and the variables are absent. Right: it declares structured data; the variables appear, are required, and their message is the one the profile's author wrote.](docs/figures/conditional.png)
+
+Each line has a visible consequence:
+
+- `ex:title` is a language-tagged string that must occur at least once, so the form
+  shows a text field with a language selector, marks it required, and lets the user
+  add further titles in other languages. Its label is "Title" or "Título" depending on
+  the reader's language, and so is the message shown while it is empty.
+- `ex:structured` is a boolean that may occur at most once, so it is a single yes/no
+  control and nothing offers a second value.
+- The `sh:or` on the dataset shape says that a dataset either does not satisfy the
+  condition (`ex:HasStructuredData`) or satisfies the consequence
+  (`ex:DescribesVariables`). While the answer is "no" the variables are not in the
+  form at all; when it becomes "yes" they appear, are required, and the record is
+  reported invalid until one is described.
+- A variable is itself described by a shape (`sh:node`), so it is edited in a nested
+  form with its own required field.
+
+The same graph validates the result: the form cannot accept what the profile
+rejects, because one engine produces both. This is the example the
+[playground](https://kanzo-tech.github.io/metadata-form/) opens on.
+
 ## Install
 
 ```sh
@@ -302,6 +364,34 @@ covered in "required". `<ValidationSummary>` counts every issue from the start
 `form.revealAll`, which shows all of them on their fields at once. A host with its
 own "Save" can call `form.setRevealAll(true)` on a failed submit.
 
+### Conditional fields
+
+A field that belongs in the form only when another answer makes it so is stated as
+the constraint itself, not in a rule language of the form's own. Two standard
+spellings are read, and the tests run the running example in both and check that
+they give the same verdict, the same error and the same message on the same field:
+
+- **SHACL Core**: `sh:or ( [ sh:not C ] T )` on the node shape — either the node does
+  not satisfy the condition `C`, or it satisfies the consequence `T`. It is recognised
+  deliberately narrowly (two branches, one of which only negates a shape), so every
+  other `sh:or` stays a disjunction.
+- **SHACL 1.2**: `T sh:targetWhere C` — the consequence is a shape that applies to
+  exactly the nodes satisfying the condition.
+
+```turtle
+ex:DescribesVariables a sh:NodeShape ;       # the consequence, T
+  sh:targetWhere ex:HasStructuredData ;      # applies where C holds
+  sh:property [ sh:path healthdcatap:hasVariables ;
+    sh:node ex:VariableShape ; sh:minCount 1 ] .
+```
+
+The rule for drawing them is one sentence: **the fields of the consequence are shown
+exactly when the validator says the condition holds**. The form has no logic of its
+own for deciding this; after each edit it asks the engine that will validate the
+record. The engine also validates the node against the consequence by itself, which
+is what puts the error on the field that can fix it rather than on the `sh:or`.
+A third spelling, a node expression that computes `sh:minCount`, is not supported.
+
 ### Attribution
 
 `<MetadataForm>` ends with a small "Made with ♥ at Kanzo" line, translated with
@@ -338,6 +428,8 @@ metadata-form's job is exactly the editor-IRI → widget binding below, so a new
 editor is a widget, not an engine change.
 
 ### The mapping
+
+![From shapes to fields: a fact stated in the shapes graph, the shui: editor the engine resolves from it, and the control the default widget registry binds to that editor.](docs/figures/mapping.png)
 
 `Repeatable` is the control a field gets when the shape allows more than one value
 (no `sh:maxCount 1`). It is selected by **cardinality, not by a second vocabulary**:
@@ -435,47 +527,19 @@ const widgets: WidgetRegistry = {
 
 ## Architecture
 
-```mermaid
-flowchart LR
-  shape["SHACL shape<br/>(+ SHACL-UI editors)"]
-  data[("RDF data graph<br/>(optional)")]
+![Architecture: the four inputs of a SHACL-UI renderer go into one rudof session compiled to WebAssembly, which parses, projects, selects an editor per property, evaluates the conditions and validates; the React layer binds each editor IRI to a component.](docs/figures/architecture.png)
 
-  subgraph engine["rudof engine · WebAssembly"]
-    direction TB
-    parse["parse → ShapeModel IR<br/>groups · fields · editor IRIs · paths"]
-    validate["SHACL validation<br/>per-field errors"]
-    project["project values<br/>from the data graph"]
-    serialize["serialize<br/>Turtle · JSON-LD"]
-  end
+The layering is that of model-based user interfaces, and the renderer model of
+[SHACL 1.2 User Interfaces](https://www.w3.org/TR/shacl12-ui/) can be read as an
+instance of it. The *domain* is the shapes graph and the data graph; with a focus
+node and a node shape they are the four inputs of a SHACL-UI renderer, inferred
+from the data and the shapes' targets when not given. The *abstract interface* is a
+tree of node and property components. The *concrete interface* is the same tree
+with one `shui:` editor chosen for every property — the engine's intermediate
+representation (IR), plain records rather than RDF terms. The *final interface* is
+the React layer, whose widget registry is keyed by editor IRI.
 
-  subgraph ui["React layer · metadata-form"]
-    direction TB
-    controller["useMetadataForm<br/>controller + observable graph"]
-    form["MetadataForm → FieldRenderer"]
-    binding["binding layer<br/>RDF ⇄ primitive"]
-    widgets["dumb widgets · keyed by editor IRI"]
-    controller --> form --> widgets
-    widgets <--> binding
-  end
-
-  subgraph assist["assist seam · optional"]
-    direction TB
-    seam["suggest · complete · search"]
-    ai["metadata-form/ai<br/>assistUi · fieldContext · SDK adapter"]
-    ai -. provides .-> seam
-  end
-
-  shape --> parse
-  data --> project
-  parse --> controller
-  validate --> controller
-  project --> controller
-  binding --> serialize
-  controller --> out["Turtle · JSON-LD · live quads"]
-  seam -. streams .-> widgets
-```
-
-rudof (left) owns every RDF concern — parsing, validation, projection,
+rudof owns every RDF concern — parsing, validation, projection,
 serialization, and SHACL-UI editor resolution — over a **single** wasm graph. The
 React layer is shape-language-agnostic: it consumes the `ShapeModel` IR and binds
 editor IRIs to widgets, and nothing in it imports an AI package (the `assist` seam is
