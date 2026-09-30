@@ -170,7 +170,14 @@ would. Measured on the same shapes: the published DCAT-AP inventory falls from
 than one field, up to 4 on one predicate — to **131 fields over 131 pairs, 0
 duplicated**. One control per predicate, carrying every constraint on it.
 
-What the widget now prevents, and why:
+What the widget now prevents, and why. The `sh:datatype` row means the control
+writes the *declared datatype* (`primitiveToTerm`, run per field by
+`form_fields.harness.ts`), which is what the corpus's wrong-datatype defects
+lack. It does not make an ill-formed lexical value impossible: a number field
+still accepts `1.5` for an integer, and the validator, not the control, reports
+it. (The date-time control now commits a valid `xsd:dateTime` and `xsd:anyURI`
+is a typed literal; neither occurs among this corpus's defects, so neither moved
+a number.)
 
 | | defects | why |
 |---|---:|---|

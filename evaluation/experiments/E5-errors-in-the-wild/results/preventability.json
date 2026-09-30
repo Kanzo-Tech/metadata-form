@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-09-30T14:34:32+00:00",
+ "generated_utc": "2026-09-30T14:48:36+00:00",
  "total_defects": 1367,
  "old_claim": {
   "statement": "L1 and L2 are preventable at entry by construction",
@@ -121,7 +121,7 @@
   {
    "component": "L1:DatatypeConstraintComponent",
    "bucket": "widget",
-   "reason": "every control on this path stamps the declared datatype",
+   "reason": "every control on this path writes the declared datatype (the datatype, not the lexical form: 1.5 can still be typed into an integer field, and the validator reports it)",
    "n": 330
   },
   {

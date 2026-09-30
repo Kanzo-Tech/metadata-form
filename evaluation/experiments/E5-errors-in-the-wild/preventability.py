@@ -159,7 +159,9 @@ def rule_datatype(d, fields):
     # `boundDatatype` is the datatype of the literal the binding really writes
     # for this control (form_fields.harness.ts runs `primitiveToTerm`).
     if declared and all(f["boundDatatype"] in declared for f in fields):
-        return WIDGET, "every control on this path stamps the declared datatype"
+        return WIDGET, ("every control on this path writes the declared datatype "
+                        "(the datatype, not the lexical form: 1.5 can still be "
+                        "typed into an integer field, and the validator reports it)")
     return VALIDATION, ("at least one control on this path writes a literal of "
                         "another datatype than the declared one, or none")
 
