@@ -4,15 +4,3 @@ dist
 .DS_Store
 coverage
 .vite
-
-# `vendor/` IS committed, deliberately and temporarily.
-#
-# package.json points at `file:vendor/kanzo-tech-*.tgz` because @kanzo-tech/* is
-# not published yet, and CI checks out this repo alone — it cannot reach the
-# kanzo-ui workspace to rebuild them, so a gitignored vendor/ means `npm install`
-# fails on the first CI step. Committing ~700 KB of tarballs is the lesser evil
-# until the packages are on npm, at which point these files and
-# scripts/link-kanzo-ui.sh both go.
-#
-# Refresh them with `npm run link:kanzo` after a `pnpm build` in kanzo-ui, and
-# commit the result — a stale tarball here is a stale design system everywhere.

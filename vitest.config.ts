@@ -9,7 +9,7 @@ export default defineConfig({
       "metadata-form/ai": r("src/ai/index.ts"),
       "metadata-form": r("src/index.ts"),
       "@": r("src"),
-      "@examples": r("playground/examples"),
+      "@examples": r("examples"),
       "@playground": r("playground/src"),
     },
   },

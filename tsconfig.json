@@ -11,7 +11,7 @@
       "metadata-form/ai": ["./src/ai/index.ts"],
       "metadata-form": ["./src/index.ts"],
       "@/*": ["./src/*"],
-      "@examples/*": ["./playground/examples/*"],
+      "@examples/*": ["./examples/*"],
       "@playground/*": ["./playground/src/*"]
     },
     "allowImportingTsExtensions": false,
@@ -32,7 +32,7 @@
   "include": [
     "src",
     "test",
-    "playground/examples",
+    "examples",
     "playground/raw.d.ts",
     "vite.config.ts",
     "vitest.config.ts"

@@ -196,7 +196,7 @@ Nested sub-forms always render sequentially; only the root honors `layout`.
 ### Example shapes
 
 Shapes are just SHACL/Turtle strings — bring your own. The **playground** ships a
-HealthDCAT-AP demo (`playground/examples/health-dcat-ap/*.ttl`) you can copy; the
+HealthDCAT-AP demo (`examples/health-dcat-ap/*.ttl`) you can copy; the
 library itself ships no shapes (its job is shape→form, not shipping vocabularies).
 
 ## SHACL-UI editors (`shui:`)
@@ -391,9 +391,8 @@ The playground is its own app under `playground/` with its own Vite/TS config; t
 library build (`npm run build`) is decoupled from it.
 
 **Contributors — building the wasm.** `@kanzo-tech/rudof-wasm` is published from the
-[rudof fork](https://github.com/Kanzo-Tech/rudof); `npm run build:wasm` rebuilds it
-locally from a sibling `../rudof-fork` checkout (wasm-pack `--target web`) when you
-need to test an unpublished engine change.
+[rudof fork](https://github.com/Kanzo-Tech/rudof); `rudof_wasm/build.sh` in that fork rebuilds it
+(wasm-pack `--target web`) when you need to test an unpublished engine change.
 
 ## License
 

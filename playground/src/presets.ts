@@ -76,7 +76,7 @@ const EVIDENZE_BRANDING: ExampleBranding = {
 
 /** Bundled examples as permalink presets: picking one applies its state and syncs
  *  the URL — the exact same path as opening a shared link. The content is authored
- *  as the Turtle files under `playground/examples/` and embedded into the presets
+ *  as the Turtle files under `examples/` and embedded into the presets
  *  here, so there is one runtime representation (a `PermalinkState`) for both. */
 export const EXAMPLES: ShapeExample[] = [
   {

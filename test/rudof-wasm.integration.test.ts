@@ -17,7 +17,7 @@ import type { ProjectedForm } from "@/form/ShapeIR.js";
 import { healthDcatApShapes, healthDcatApRootShape, healthDcatApSampleData } from "@examples/health-dcat-ap/index.js";
 
 /**
- * End-to-end against the REAL rudof wasm (built by `npm run build:wasm`). Proves
+ * End-to-end against the REAL rudof wasm (`@kanzo-tech/rudof-wasm`). Proves
  * the wasm `Session` satisfies the `RudofModule`/`RudofSession` ABI through the
  * TS `RudofEngine` — the same assertions as the fake test, but on the real crate.
  *

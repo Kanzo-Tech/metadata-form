@@ -7,8 +7,7 @@ import { namedNode } from "@/engine/factory.js";
 import { evidenzeShapes, evidenzeRootShape } from "@examples/evidenze-dataspace/index.js";
 
 /**
- * End-to-end conditional rendering through the REAL rudof wasm (built by
- * `npm run build:wasm`): the Evidenze shape's `sh:if`/`sh:then` reveals the
+ * End-to-end conditional rendering through the REAL rudof wasm: the Evidenze shape's `sh:if`/`sh:then` reveals the
  * `evds:accessJustification` field only when the focus's `dct:accessRights` is
  * RESTRICTED. rudof evaluates the condition and reports it via `satisfied`; the
  * form gains/loses the field with no per-field logic on the JS side.
