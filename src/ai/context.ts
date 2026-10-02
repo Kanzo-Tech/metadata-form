@@ -17,15 +17,17 @@ export interface ContextLimits {
 export const DEFAULT_CONTEXT_LIMITS: ContextLimits = { maxOptions: 25, maxSiblings: 12, maxValue: 200 };
 
 /**
- * What a model needs to know about a field, read off the field model — the only
- * SHACL-specific part of the AI layer, and the only part that changes for another
- * shape language: the constraints are already the model's, whatever wrote them.
- * One line per fact the field states; a fact it does not state is not mentioned.
+ * What a model needs to know about a field beyond its name, read off the field
+ * model — the only SHACL-specific part of the AI layer, and the only part that
+ * changes for another shape language: the constraints are already the model's,
+ * whatever wrote them. One line per fact the field states; a fact it does not
+ * state is not mentioned. The name is not one: `Assist` reads it off the label,
+ * and saying it twice is noise in a prompt.
  */
 export function fieldContext(field: FieldModel, limits: Partial<ContextLimits> = {}): string {
   const { maxOptions, maxValue } = { ...DEFAULT_CONTEXT_LIMITS, ...limits };
   const c = field.constraints;
-  const lines = [`Field: ${field.label}`];
+  const lines: string[] = [];
   if (field.description) lines.push(`Description: ${field.description}`);
 
   const kind = c.datatype ?? c.nodeKind ?? (c.classIn ?? (c.classIri ? [c.classIri] : [])).join(" | ");

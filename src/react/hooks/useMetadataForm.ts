@@ -339,8 +339,11 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     [projected, messageDiagnostics],
   );
 
-  const getQuads = useCallback(
+  // The graph is edited in place, so its identity never changes: `version` is the
+  // counter that says it did, and the only thing that makes this read current.
+  const quads = useMemo(
     () => (graph && model ? graph.subgraphFrom(model.focusNode) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `version` is the mutable graph's change signal
     [graph, model, version],
   );
 
@@ -370,7 +373,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       error,
       model,
       focusNode: model?.focusNode,
-      quads: getQuads(),
+      quads,
       errors,
       isValid,
       report,
@@ -395,6 +398,6 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
       setRevealAll,
       _revealTarget: revealTarget,
     }),
-    [model, error, getQuads, errors, isValid, report, locale, languages, availableLanguages, strings, messageOf, resolveMessage, diagnostics, graph, engine, validate, reset, subscribe, assist, revealField, revealAll, revealTarget],
+    [model, error, quads, errors, isValid, report, locale, languages, availableLanguages, strings, messageOf, resolveMessage, diagnostics, graph, engine, validate, reset, subscribe, assist, revealField, revealAll, revealTarget],
   );
 }

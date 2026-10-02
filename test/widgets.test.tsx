@@ -200,6 +200,20 @@ describe("the layouts", () => {
     expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
   });
 
+  it("counts a step's issues without putting a button inside the step's own", async () => {
+    const required = `
+      @prefix sh: <http://www.w3.org/ns/shacl#> . @prefix ex: <${ex}> .
+      ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
+        sh:property [ sh:path ex:name ; sh:name "Name" ; sh:minCount 1 ] .`;
+    function Steps() {
+      form = useMetadataForm({ shapes: required, rootShape: `${ex}S`, validateOn: "change" });
+      return <MetadataForm form={form} layout="steps" />;
+    }
+    render(<Steps />);
+    await waitFor(() => expect(screen.getByLabelText("1 issue")).toBeInTheDocument(), { timeout: 3000 });
+    expect(document.querySelectorAll("button button")).toHaveLength(0);
+  });
+
   it("lays a group out in the design system's columns, a field spanning as many as it asks", async () => {
     function Grid() {
       form = useMetadataForm({ shapes, rootShape: `${ex}S`, validateOn: "off" });

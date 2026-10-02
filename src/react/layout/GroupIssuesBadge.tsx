@@ -16,25 +16,21 @@ import type { GroupIssues } from "../validation/formReport.js";
  * geometry, where the pill is the house's `Badge` at its smallest and inherits a
  * re-skin for free.
  *
- * Optionally jumps on click.
+ * Never a control: it sits inside a tab or a step trigger, which is already the
+ * button that goes there, and a button inside a button is announced as neither.
+ * Going to a particular issue is the tally's.
  */
-export function GroupIssuesBadge({ issues, onJump }: { issues?: GroupIssues; onJump?: () => void }) {
+export function GroupIssuesBadge({ issues }: { issues?: GroupIssues }) {
   const strings = useStrings();
   if (!issues || issues.count === 0) return null;
-  const label = count(strings, strings.chrome.issues, issues.count);
-  const variant = issues.hasViolation ? "destructive" : "warning";
-  if (!onJump) {
-    return (
-      <Badge aria-label={label} pill size="xs" variant={variant}>
-        {issues.count}
-      </Badge>
-    );
-  }
   return (
-    <Badge asChild pill size="xs" variant={variant}>
-      <button aria-label={label} onClick={onJump} type="button">
-        {issues.count}
-      </button>
+    <Badge
+      aria-label={count(strings, strings.chrome.issues, issues.count)}
+      pill
+      size="xs"
+      variant={issues.hasViolation ? "destructive" : "warning"}
+    >
+      {issues.count}
     </Badge>
   );
 }

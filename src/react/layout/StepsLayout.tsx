@@ -17,7 +17,6 @@ import type { FormModel } from "../../form/FormModel.js";
 import { useStrings, type GridLayout } from "../form/context.js";
 import { fill } from "../../i18n/strings.js";
 import type { GroupIssues } from "../validation/formReport.js";
-import { scrollToField } from "../utils/scrollToField.js";
 import { GroupFieldSet } from "./GroupFieldSet.js";
 import { GroupIssuesBadge } from "./GroupIssuesBadge.js";
 
@@ -68,10 +67,7 @@ export function StepsLayout({
                 <StepsIndicator>{i + 1}</StepsIndicator>
                 <StepsTitle className="flex items-center gap-1.5">
                   <span lang={group.labelLang}>{group.label || fill(chrome.step, { n: i + 1 })}</span>
-                  <GroupIssuesBadge
-                    issues={gi}
-                    onJump={gi?.firstFieldId ? () => scrollToField(gi.firstFieldId!) : undefined}
-                  />
+                  <GroupIssuesBadge issues={gi} />
                 </StepsTitle>
               </StepsTrigger>
               <StepsSeparator />

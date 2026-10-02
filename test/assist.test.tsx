@@ -148,7 +148,7 @@ function field(over: Partial<FieldModel> & { constraints?: FieldModel["constrain
 
 describe("fieldContext", () => {
   it("says only what the field states", () => {
-    expect(fieldContext(field({ label: "Note" }))).toBe("Field: Note\nCardinality: optional, one value");
+    expect(fieldContext(field({ label: "Note" }))).toBe("Cardinality: optional, one value");
   });
 
   it("reads a required, bounded, patterned string", () => {
@@ -164,7 +164,6 @@ describe("fieldContext", () => {
     );
     expect(text).toBe(
       [
-        "Field: Title",
         "Description: A name given to the dataset.",
         "Value type: string",
         "Must match the regular expression: ^[A-Z] (flags i)",
