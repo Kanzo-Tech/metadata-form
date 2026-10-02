@@ -11,8 +11,8 @@ const r = (p: string) => resolve(__dirname, p);
 // Library entry points → mirror the package.json "exports" map.
 const entries = {
   index: r("src/index.ts"),
-  // The optional AI layer (`metadata-form/ai`): @kanzo-tech/ai, the Vercel AI SDK
-  // and zod are imported here and nowhere in the core.
+  // The optional AI layer (`metadata-form/ai`): @kanzo-tech/ai's `Assist` is
+  // imported here and nowhere in the core.
   "ai/index": r("src/ai/index.ts"),
   // Direct rudof-engine access subpath (`metadata-form/rudof`) for custom wiring.
   // Emitted under dist/engine/ so the JS bundle and the dts (which mirrors the
@@ -31,11 +31,10 @@ const external = [
   "react/jsx-runtime",
   // The rudof WASM module — a declared dependency, never bundled.
   "@kanzo-tech/rudof-wasm",
-  // The /ai subpath's optional peers (`@kanzo-tech/ai` is matched by `externalPackages`).
+  // The /ai subpath's optional peers (`@kanzo-tech/*` is matched by `externalPackages`).
   "ai",
-  "zod",
 ];
-const externalPackages = /^(@kanzo-tech\/|@ark-ui\/|lucide-react(\/|$))/;
+const externalPackages = /^(@kanzo-tech\/|@ark-ui\/|@ai-sdk\/|lucide-react(\/|$))/;
 
 export default defineConfig({
   plugins: [

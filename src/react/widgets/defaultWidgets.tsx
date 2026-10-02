@@ -26,7 +26,7 @@ import {
   useDebouncedCommit,
   type DebouncedCommit,
 } from "@kanzo-tech/ui";
-import { useState } from "react";
+import { type ReactElement, useState } from "react";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import type {
   MultiWidget,
@@ -41,7 +41,7 @@ import {
   ReferenceCombobox,
   ReferenceMultiCombobox,
 } from "../fieldassist/Comboboxes.js";
-import { useFormContext, useStrings } from "../form/context.js";
+import { useStrings } from "../form/context.js";
 
 /**
  * Default widgets — dumb presentational inputs over @kanzo-tech/ui, keyed by the
@@ -106,7 +106,7 @@ type Text = DebouncedCommit<string | null>;
 function textField(type: string): Widget {
   return (p: WidgetProps) => {
     const { draft, change, flush } = useText(p.value, p.onChange);
-    return (
+    const control = (
       <Input
         type={type}
         step={p.step}
@@ -120,7 +120,30 @@ function textField(type: string): Widget {
         onBlur={flush}
       />
     );
+    return <Assisted assist={p.assist} control={control} text={{ draft, change }} />;
   };
+}
+
+/**
+ * A control under the field's model assistance, when it has any. A proposal is
+ * taken through the draft, so it commits as typing does — after the pause, or on
+ * the blur that follows.
+ */
+function Assisted({
+  assist: Wrap,
+  control,
+  text,
+}: {
+  assist: WidgetProps["assist"];
+  control: ReactElement;
+  text: Pick<Text, "draft" | "change">;
+}) {
+  if (!Wrap) return control;
+  return (
+    <Wrap onValueChange={(v) => text.change(v as string)} value={text.draft ?? ""}>
+      {control}
+    </Wrap>
+  );
 }
 
 /**
@@ -202,10 +225,16 @@ const LangField: Widget = (p) => {
   const text = useText(p.value, (v) => p.onChange(v, lang.language));
   return (
     <InputGroup>
-      <InputGroupInput
-        value={text.draft ?? ""}
-        onChange={(e) => text.change(e.target.value)}
-        onBlur={text.flush}
+      <Assisted
+        assist={p.assist}
+        control={
+          <InputGroupInput
+            value={text.draft ?? ""}
+            onChange={(e) => text.change(e.target.value)}
+            onBlur={text.flush}
+          />
+        }
+        text={text}
       />
       <InputGroupAddon align="inline-end">
         <LangSlot {...p} lang={lang} text={text.draft ?? ""} />
@@ -221,7 +250,7 @@ const LangArea: Widget = (p) => {
   const text = useText(p.value, (v) => p.onChange(v, lang.language));
   return (
     <div className="flex flex-col gap-1">
-      <AssistedTextarea text={text} complete={p.complete} placeholder={p.placeholder} />
+      <AreaControl assist={p.assist} placeholder={p.placeholder} text={text} />
       <div className="ms-auto w-fit">
         <LangSlot {...p} lang={lang} text={text.draft ?? ""} />
       </div>
@@ -278,58 +307,23 @@ const ReferenceMulti: MultiWidget = (p) => {
   );
 };
 
-/**
- * A textarea over the design system's, with ghost-text completion when the form
- * has an `assistUi` and the consumer wired `assist.complete`.
- *
- * The ghost is `@kanzo-tech/ai`'s compound composed *over* a plain `Textarea`
- * rather than an editor with a completion prop. The form receives it as
- * `assistUi.complete` (the core imports no AI package), so without one — or
- * without `complete` — this is the plain textarea and nothing else.
- *
- * `Root` owns the field's value while it is mounted, so the debounce feeds it
- * and the graph commit stays on the same blur as everywhere else.
- */
-function AssistedTextarea({
-  text,
-  complete,
-  placeholder,
-}: {
-  text: Text;
-  complete: WidgetProps["complete"];
-  placeholder: string | undefined;
-}) {
-  const { assistUi, strings } = useFormContext();
-  const ghost = assistUi?.complete;
-  if (!complete || !ghost) {
-    return (
-      <Textarea
-        value={text.draft ?? ""}
-        placeholder={placeholder}
-        onChange={(e) => text.change(e.target.value)}
-        onBlur={text.flush}
-      />
-    );
-  }
-  return (
-    <ghost.Root
+/** A textarea; under model assistance, ghost text continues it at the caret. */
+function AreaControl({ text, assist, placeholder }: { text: Text; assist: WidgetProps["assist"]; placeholder: string | undefined }) {
+  const control = (
+    <Textarea
       value={text.draft ?? ""}
-      onValueChange={text.change}
-      announcement={strings.assist.completeAnnouncement}
-      complete={complete}
-    >
-      <ghost.Textarea>
-        <Textarea placeholder={placeholder} onBlur={text.flush} />
-      </ghost.Textarea>
-      <ghost.Hint acceptLabel={strings.assist.completeAccept} dismissLabel={strings.assist.completeDismiss} />
-    </ghost.Root>
+      placeholder={placeholder}
+      onChange={(e) => text.change(e.target.value)}
+      onBlur={text.flush}
+    />
   );
+  return <Assisted assist={assist} control={control} text={text} />;
 }
 
 /** Long free text. */
 const Area: Widget = (p) => {
   const text = useText(p.value, p.onChange);
-  return <AssistedTextarea text={text} complete={p.complete} placeholder={p.placeholder} />;
+  return <AreaControl assist={p.assist} placeholder={p.placeholder} text={text} />;
 };
 
 /**
@@ -342,7 +336,7 @@ const Area: Widget = (p) => {
  */
 const TagsMulti: MultiWidget = (p) => {
   const { chrome } = useStrings();
-  return (
+  const control = (
     <TagsInput value={p.values} max={p.maxCount} onValueChange={(d) => p.onChange(d.value)}>
       <TagsInputControl>
         <TagsInputContext>
@@ -361,6 +355,13 @@ const TagsMulti: MultiWidget = (p) => {
         <TagsInputInput placeholder={p.placeholder ?? chrome.add} />
       </TagsInputControl>
     </TagsInput>
+  );
+  if (!p.assist) return control;
+  // A list proposal is added to the list, so it commits at once: a tag has no draft.
+  return (
+    <p.assist onValueChange={(vs) => p.onChange(vs as string[])} value={p.values}>
+      {control}
+    </p.assist>
   );
 };
 
@@ -476,30 +477,30 @@ const BooleanField: Widget = (p) => {
 export const defaultWidgets: WidgetRegistry = {
   // Free text declares the assistance it supports; discrete kinds opt out by
   // being bare widgets. Repeatable free text becomes one tags input.
-  [Editors.TextField]: { render: textField("text"), multi: TagsMulti, assist: { suggest: true } },
+  [Editors.TextField]: { render: textField("text"), multi: TagsMulti, assist: true },
   [Editors.NumberField]: NumberField,
   [Editors.IRI]: IriField,
   [Editors.DatePicker]: makeDateField(false),
   [Editors.DateTimePicker]: makeDateField(true),
 
-  // Long free text → inline ghost-text completion (not the ✨ menu, which is clunky
-  // for paragraphs). One affordance per field. No `multi`: several paragraphs are
-  // several rows, and chips would hide the text that is the point of the field.
-  [Editors.TextArea]: { render: Area, assist: { complete: true } },
+  // Long free text: under assistance a textarea is continued at the caret, where a
+  // one-line input gets whole values. No `multi`: several paragraphs are several
+  // rows, and chips would hide the text that is the point of the field.
+  [Editors.TextArea]: { render: Area, assist: true },
   // No rich-text editor in the design system, so rich text is edited as plain
   // text. Stated here rather than silently folded into the entry above: the
   // profile asked for something we do not provide, and that is worth seeing.
-  [Editors.RichText]: { render: Area, assist: { complete: true } },
+  [Editors.RichText]: { render: Area, assist: true },
 
-  [Editors.TextFieldWithLang]: { render: LangField, assist: { suggest: true } },
-  [Editors.TextAreaWithLang]: { render: LangArea, assist: { complete: true } },
+  [Editors.TextFieldWithLang]: { render: LangField, assist: true },
+  [Editors.TextAreaWithLang]: { render: LangArea, assist: true },
 
   [Editors.Boolean]: BooleanField,
   // Categorical (sh:in): the control already lists exactly the allowed values, so
   // an LLM ✨ suggestion is redundant and could propose an out-of-enum value.
   [Editors.EnumSelect]: { render: makeSelect((p) => p.options ?? []), multi: EnumMulti },
 
-  [Editors.AutoComplete]: { render: ReferenceField, multi: ReferenceMulti, assist: { suggest: true } },
-  [Editors.InstancesSelect]: { render: ReferenceField, multi: ReferenceMulti, assist: { suggest: true } },
-  [Editors.SubClass]: { render: ReferenceField, multi: ReferenceMulti, assist: { suggest: true } },
+  [Editors.AutoComplete]: { render: ReferenceField, multi: ReferenceMulti },
+  [Editors.InstancesSelect]: { render: ReferenceField, multi: ReferenceMulti },
+  [Editors.SubClass]: { render: ReferenceField, multi: ReferenceMulti },
 };

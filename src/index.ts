@@ -28,10 +28,10 @@ export type {
   WidgetRegistry,
   WidgetDef,
   WidgetEntry,
-  AssistSupport,
+  AssistWrap,
 } from "./react/widgets/widgets.js";
-export type { WidgetOption, FormAssist, Candidate, CompletionRequest } from "./assist.js";
-export type { AssistUi } from "./react/assistUi.js";
+export type { WidgetOption, FormAssist } from "./assist.js";
+export type { AssistUi, AssistUiProps } from "./react/assistUi.js";
 
 // The form model and the report derived from it.
 export type {

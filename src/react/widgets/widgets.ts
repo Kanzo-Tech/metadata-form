@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
+import type { ComponentType, ReactElement, ReactNode } from "react";
 import { INTEGRAL, NUMERIC } from "../../form/termBinding.js";
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import type { FieldModel } from "../../form/FormModel.js";
-import type { CompletionRequest, WidgetOption } from "../../assist.js";
+import type { WidgetOption } from "../../assist.js";
 
 /**
  * The presentation contract. Widgets are *dumb*: they render an input for a
@@ -35,10 +35,9 @@ export interface WidgetProps {
   languageIn?: string[];
   /** Async suggestion loader for `reference` fields (from `assist.search`). */
   loadOptions?: (query: string, signal?: AbortSignal) => Promise<WidgetOption[]>;
-  /** Streaming inline completion for free text (from `assist.complete`) — ghost
-   * text at the caret. Yields continuation chunks; the request's `AbortSignal`
-   * cancels a stale run. Present only when the form has an `assistUi` to draw it. */
-  complete?: (request: CompletionRequest) => AsyncIterable<string>;
+  /** Wraps the control in model assistance. Present only when the form has an
+   *  `assistUi` and the widget declares `assist`; see {@link AssistWrap}. */
+  assist?: AssistWrap;
   /** The sh:class IRI for `reference` fields. */
   classIri?: string;
   /** Every class the value may belong to, when an `sh:or` allowed more than one
@@ -113,20 +112,24 @@ export interface MultiWidgetProps {
   minCount?: number;
   maxCount?: number;
   placeholder?: string;
+  /** See {@link WidgetProps.assist}; here around the one list control. */
+  assist?: AssistWrap;
 }
 
 export type MultiWidget = (props: MultiWidgetProps) => ReactNode;
 
-/** Which assistance a widget supports. Declared by the widget itself (a
- * tester-style capability, like JSON Forms pairing a renderer with a tester) so
- * the ✨ menu / ghost text appear only where they make sense — and a custom widget
- * can opt in/out without any central list. */
-export interface AssistSupport {
-  /** Offers discrete value suggestions (the ✨ menu, fed by `assist.suggest`). */
-  suggest?: boolean;
-  /** Offers inline streaming completion / ghost text (fed by `assist.complete`). */
-  complete?: boolean;
-}
+/**
+ * Model assistance around a control, already bound to its field. A widget wraps
+ * the control it draws and hands over the value it shows and how a proposal is
+ * taken — a single value is the draft, so a pick commits like typing does:
+ *
+ *   <p.assist value={draft} onValueChange={change}><Textarea … /></p.assist>
+ */
+export type AssistWrap = ComponentType<{
+  value: string | string[];
+  onValueChange: (value: string | string[]) => void;
+  children: ReactElement;
+}>;
 
 /** A registry entry: a bare render function, or a render function paired with the
  * assistance it supports and, optionally, the one-control form of the same editor
@@ -137,7 +140,9 @@ export interface WidgetDef {
    *  field actually is repeatable; the single-value `render` stays the answer for
    *  `sh:maxCount 1`. */
   multi?: MultiWidget;
-  assist?: AssistSupport;
+  /** Free text the model can help write — declared by the widget, so a custom
+   *  widget opts in or out without any central list. */
+  assist?: boolean;
 }
 export type WidgetEntry = Widget | WidgetDef;
 /** Editor IRI → widget. Keys are `shui:` editor IRIs (see {@link Editors}). */
@@ -147,9 +152,9 @@ export type WidgetRegistry = Readonly<Record<string, WidgetEntry>>;
 export function widgetRender(entry: WidgetEntry): Widget {
   return typeof entry === "function" ? entry : entry.render;
 }
-/** A registry entry's declared assistance (none for a bare function). */
-export function widgetAssist(entry: WidgetEntry): AssistSupport {
-  return typeof entry === "function" ? {} : entry.assist ?? {};
+/** Whether a registry entry takes model assistance (never for a bare function). */
+export function widgetAssist(entry: WidgetEntry): boolean {
+  return typeof entry === "function" ? false : entry.assist === true;
 }
 /** The entry's one-control form for a repeatable field, if it declares one. */
 export function widgetMulti(entry: WidgetEntry): MultiWidget | undefined {

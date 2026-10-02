@@ -1,9 +1,8 @@
-// `metadata-form/ai` — the optional AI layer: the UI that draws a `FormAssist`
-// (`assistUi`, from @kanzo-tech/ai), the prompt context read off a field
-// (`fieldContext`), and an adapter from a Vercel AI SDK model (`createFormAssist`).
-// The core imports none of it; peers: @kanzo-tech/ai, ai, zod.
+// `metadata-form/ai` — the optional AI layer: model assistance around a field
+// (`assistUi`, over @kanzo-tech/ai's `Assist`), its words for the host's
+// `AssistProvider` (`assistTranslations`), and the prompt context read off a field
+// (`fieldContext`, `siblingValues`). The core imports none of it; peers:
+// @kanzo-tech/ai, @kanzo-tech/llm, ai, @ai-sdk/react.
 
-export { assistUi } from "./ui.js";
+export { assistTranslations, assistUi } from "./ui.js";
 export { DEFAULT_CONTEXT_LIMITS, fieldContext, siblingValues, type ContextLimits } from "./context.js";
-export { createFormAssist } from "./adapter.js";
-export type { CreateFormAssistOptions } from "./adapter.js";

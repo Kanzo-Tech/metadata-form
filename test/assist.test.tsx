@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import type { Term } from "@rdfjs/types";
-import { simulateReadableStream } from "ai";
-import { MockLanguageModelV3 } from "ai/test";
-import { assistUi, createFormAssist, fieldContext, siblingValues } from "@/ai/index.js";
+import { AssistProvider } from "@kanzo-tech/ai";
+import { assistTranslations, assistUi, fieldContext, siblingValues } from "@/ai/index.js";
+import { mockModel, promptOf } from "./support/model.js";
 import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { useMetadataForm } from "@/react/hooks/useMetadataForm.js";
 import { Companion } from "@playground/components/Companion.js";
@@ -13,7 +13,6 @@ import { literal, namedNode, NS } from "@/form/factory.js";
 import { es } from "@/i18n/index.js";
 import type { FieldModel } from "@/form/FormModel.js";
 import type { GraphState } from "@/engine/GraphState.js";
-import type { FormAssist } from "@/assist.js";
 import type { FormReport } from "@/react/validation/formReport.js";
 
 const SRC = resolve(__dirname, "../src");
@@ -27,8 +26,8 @@ function sources(dir: string): string[] {
 }
 
 describe("the core carries no AI layer", () => {
-  it("imports neither @kanzo-tech/ai, ai nor zod anywhere outside src/ai", () => {
-    const AI_PACKAGE = /(?:from|import)\s*\(?\s*["'](?:@kanzo-tech\/ai(?:\/[^"']*)?|ai|zod)["']/;
+  it("imports neither @kanzo-tech/ai, @kanzo-tech/llm, ai nor @ai-sdk anywhere outside src/ai", () => {
+    const AI_PACKAGE = /(?:from|import)\s*\(?\s*["'](?:@kanzo-tech\/(?:ai|llm)(?:\/[^"']*)?|ai|@ai-sdk\/[^"']*)["']/;
     const importers = sources(SRC).filter((f) => AI_PACKAGE.test(readFileSync(f, "utf8")));
     expect(importers.map((f) => relative(SRC, f))).toEqual([]);
   });
@@ -58,86 +57,72 @@ const DATA = `
 @prefix ex: <http://example.org/> .
 ex:t1 a ex:Thing ; ex:summary "Hello world"@en ; ex:notes "Some notes" .`;
 
-/** A fake seam: async generators, so the streaming path is the real one. */
-const calls: string[] = [];
-const fake: FormAssist = {
-  suggest: async function* ({ field }) {
-    calls.push(`suggest:${field.label}`);
-    yield { value: `Suggested ${field.label}` };
-  },
-  complete: async function* ({ field }) {
-    calls.push(`complete:${field.label}`);
-    yield "the";
-    yield " rest";
-  },
-};
-
-function Form({ withUi, locale }: { withUi: boolean; locale?: string }) {
+function Form({ withUi, locale, model }: { withUi: boolean; locale?: string; model: ReturnType<typeof mockModel> }) {
   const form = useMetadataForm({
     shapes: SHAPES,
     data: DATA,
     focusNode: "http://example.org/t1",
     rootShape: "http://example.org/Shape",
     validateOn: "off",
-    assist: fake,
     locale,
     strings: { es: es.strings },
   });
-  return <MetadataForm form={form} assistUi={withUi ? assistUi : undefined} />;
+  return (
+    <AssistProvider model={model} translations={assistTranslations(form.strings)}>
+      <MetadataForm form={form} assistUi={withUi ? assistUi : undefined} />
+    </AssistProvider>
+  );
 }
 
 const areas = () => Array.from(document.querySelectorAll("textarea"));
 
 describe("assistance UI is opt-in", () => {
-  it("without assistUi the textareas are plain, no ✨ is drawn and the seam is never asked", async () => {
-    calls.length = 0;
-    render(<Form withUi={false} />);
+  it("without assistUi the controls are plain, no ✨ is drawn and the model is never asked", async () => {
+    const model = mockModel(() => " the rest");
+    render(<Form model={model} withUi={false} />);
     await waitFor(() => expect(areas()).toHaveLength(2));
 
-    expect(document.querySelector('[data-slot="complete"]')).toBeNull();
-    expect(screen.queryAllByRole("button", { name: "Suggest" })).toHaveLength(0);
-
+    expect(document.querySelector('[data-slot="assist"]')).toBeNull();
     fireEvent.change(areas()[1], { target: { value: "Some notes." } });
     await new Promise((r) => setTimeout(r, 900));
-    expect(document.body.textContent).not.toContain("the rest");
-    expect(calls).toEqual([]);
+    expect(model.doStreamCalls).toHaveLength(0);
   });
 
-  it("with assistUi a text field gets its ✨ and a pick commits", async () => {
-    render(<Form withUi />);
-    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
-
-    const title = document.querySelector('[data-field$="|http://example.org/title"]')!;
-    const mark = within(title as HTMLElement).getByRole("button", { name: "Suggest" });
-    mark.focus();
-    fireEvent.focus(mark);
-    fireEvent.click(mark);
-    fireEvent.click(await screen.findByText("Suggested Title"));
-
-    await waitFor(() => expect(title.querySelector("input")?.value).toBe("Suggested Title"));
-  });
-
-  it("with assistUi both TextArea and TextAreaWithLang stream ghost text", async () => {
-    render(<Form withUi />);
+  it("with assistUi every free-text control is assisted, and a textarea is continued at the caret", async () => {
+    const model = mockModel(() => " the rest");
+    render(<Form model={model} withUi />);
     await waitFor(() => expect(areas()).toHaveLength(2));
-    expect(document.querySelectorAll('[data-slot="complete"]')).toHaveLength(2);
+    // Title (an input), Summary (a textarea with a language) and Notes (a textarea).
+    expect(document.querySelectorAll('[data-slot="assist"]')).toHaveLength(3);
 
-    // TextAreaWithLang is the first of the two (declared first, same order).
-    const lang = areas().find((a) => a.value === "Hello world")!;
-    fireEvent.change(lang, { target: { value: "Hello world." } });
-    await waitFor(() => expect(document.body.textContent).toContain("the rest"), { timeout: 3000 });
-    expect(calls).toContain("complete:Summary");
+    const summary = areas().find((a) => a.value === "Hello world")!;
+    fireEvent.change(summary, { target: { value: "Hello world.", selectionStart: 12 } });
+    await waitFor(() => expect(model.doStreamCalls).toHaveLength(1), { timeout: 3000 });
 
-    fireEvent.keyDown(lang, { key: "Tab" });
-    await waitFor(() => expect(lang.value).toContain("the rest"));
+    fireEvent.keyDown(summary, { key: "Tab" });
+    await waitFor(() => expect(summary.value).toContain("the rest"));
   });
 
-  it("words the completion's keys hint in the reader's language", async () => {
-    render(<Form locale="es" withUi />);
+  it("tells the model what the shape says about the field, and the record around it", async () => {
+    const model = mockModel(() => " the rest");
+    render(<Form model={model} withUi />);
     await waitFor(() => expect(areas()).toHaveLength(2));
-    fireEvent.change(areas().find((a) => a.value === "Hello world")!, { target: { value: "Hello world." } });
-    await waitFor(() => expect(screen.getByText("aceptar")).toBeInTheDocument(), { timeout: 3000 });
-    expect(screen.getByText("descartar")).toBeInTheDocument();
+    const summary = areas().find((a) => a.value === "Hello world")!;
+    fireEvent.change(summary, { target: { value: "Hello world.", selectionStart: 12 } });
+    await waitFor(() => expect(model.doStreamCalls).toHaveLength(1), { timeout: 3000 });
+
+    const prompt = promptOf(model.doStreamCalls[0]!);
+    expect(prompt).toContain("Field context:");
+    expect(prompt).toContain("Value type: langString");
+    expect(prompt).toContain("notes: Some notes");
+    expect(prompt).toMatch(/Write in the language tagged "en(-[A-Z]+)?"\./);
+  });
+
+  it("words the ✨ in the reader's language", async () => {
+    render(<Form locale="es" model={mockModel(() => "")} withUi />);
+    await waitFor(() => expect(areas()).toHaveLength(2));
+    expect(screen.getAllByRole("button", { name: es.strings.assist.assist }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: "AI assist" })).toBeNull();
   });
 });
 
@@ -238,20 +223,6 @@ describe("the bounds of a prompt are options", () => {
       allQuads: () => ["a", "b", "c"].map((n) => ({ subject: me, predicate: namedNode(`http://e/${n}`), object: literal(n) })),
     } as unknown as GraphState;
     expect(siblingValues({ graph, focus: me, field: field({}) }, { maxSiblings: 2 }).split("\n")).toEqual(["a: a", "b: b"]);
-  });
-
-  it("reaches the default prompts through createFormAssist", async () => {
-    let prompt = "";
-    const model = new MockLanguageModelV3({
-      doStream: async (options) => {
-        prompt = JSON.stringify(options.prompt);
-        return { stream: simulateReadableStream({ chunks: [{ type: "text-start", id: "1" }, { type: "text-delta", id: "1", delta: "x" }, { type: "text-end", id: "1" }, { type: "finish", finishReason: "stop", usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 } }] as never }) };
-      },
-    });
-    const graph = { allQuads: () => [] } as unknown as GraphState;
-    const args = { field: many, focus: namedNode("http://example.org/d1"), graph, locale: "en", signal: new AbortController().signal, value: "", position: 0 };
-    for await (const _ of createFormAssist(model, { limits: { maxOptions: 1 } }).complete!(args)) void _;
-    expect(prompt).toContain("Allowed values: A, … (3 more)");
   });
 });
 

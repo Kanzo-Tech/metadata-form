@@ -56,19 +56,31 @@ export interface Strings {
     /** The control on a finding that goes to its field. */
     goTo: string;
   };
-  /** The words of the assistance UI — the ✨ and the ghost text — which `assistUi`
-   *  receives as props: the parts are `@kanzo-tech/ai`'s, and the core reads
-   *  the catalog, not them. */
+  /** The words of model assistance — `@kanzo-tech/ai`'s `AssistTranslations`, as
+   *  data: `metadata-form/ai`'s `assistTranslations` hands them to the host's
+   *  `AssistProvider`, so the parts need know no language. */
   assist: {
-    /** Accessible name of the ✨ at rest. */
-    suggest: string;
-    /** Accessible name of the ✨ while candidates are on offer. */
-    suggestOffering: string;
-    /** What a screen reader hears once, when a completion lands. */
-    completeAnnouncement: string;
-    /** The words after the Tab and Esc keys in the completion's keys hint. */
-    completeAccept: string;
-    completeDismiss: string;
+    /** The ✨ at rest. */
+    assist: string;
+    /** The ✨ while a continuation is on offer. */
+    accept: string;
+    /** The ✨ while candidates are on offer. */
+    others: string;
+    /** The ✨ right after a value was taken: put the old one back. */
+    revert: string;
+    /** Beside the keys under a continuation. */
+    acceptKey: string;
+    dismissKey: string;
+    nextKey: string;
+    /** Read once by a screen reader when a continuation lands. */
+    announcement: string;
+    /** While candidates are on their way, and when there were none. */
+    thinking: string;
+    empty: string;
+    /** When asking failed with no message of its own. */
+    failed: string;
+    /** A candidate's ✕; `{text}` is the candidate. */
+    dismiss: string;
   };
   /**
    * Why a field shows its values but does not take input, keyed by
@@ -159,11 +171,18 @@ export const EN: Strings = {
     goTo: "Go to field",
   },
   assist: {
-    suggest: "Suggest",
-    suggestOffering: "Suggest different values",
-    completeAnnouncement: "Suggestion ready. Press Tab to accept, Escape to dismiss.",
-    completeAccept: "accept",
-    completeDismiss: "dismiss",
+    assist: "AI assist",
+    accept: "Accept suggestion",
+    others: "Suggest different values",
+    revert: "Undo AI suggestion",
+    acceptKey: "accept",
+    dismissKey: "dismiss",
+    nextKey: "next",
+    announcement: "Suggestion ready. Press Tab to accept, Escape to dismiss.",
+    thinking: "Thinking…",
+    empty: "Nothing to suggest.",
+    failed: "The suggestion could not be fetched.",
+    dismiss: "Dismiss {text}",
   },
   readOnly: {
     "variable-length-path":

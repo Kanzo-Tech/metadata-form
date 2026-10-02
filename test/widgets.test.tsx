@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
-import { assistUi } from "@/ai/index.js";
+import { AssistProvider } from "@kanzo-tech/ai";
+import { assistTranslations, assistUi } from "@/ai/index.js";
+import { resolveStrings } from "@/i18n/strings.js";
+import { mockModel } from "./support/model.js";
 import type { AssistUi } from "@/react/assistUi.js";
 import { es } from "metadata-form/i18n";
 import { Editors } from "@/form/vocab/shacl-ui.js";
@@ -224,18 +227,13 @@ describe("the words of the parts the design system draws", () => {
 
   it("reach the ✨, through assistUi", async () => {
     render(
-      <Form
-        {...spanish}
-        assist={{
-          suggest: async function* () { yield { value: "x" }; },
-          complete: async function* () { yield "y"; },
-        }}
-        assistUi={assistUi}
-      />,
+      <AssistProvider model={mockModel(() => "")} translations={assistTranslations(resolveStrings(["es"], { es: es.strings }))}>
+        <Form {...spanish} assistUi={assistUi} />
+      </AssistProvider>,
     );
     await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
-    expect(screen.getAllByRole("button", { name: es.strings.assist.suggest }).length).toBeGreaterThan(0);
-    expect(screen.queryByRole("button", { name: "Suggest" })).toBeNull();
+    expect(screen.getAllByRole("button", { name: es.strings.assist.assist }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: "AI assist" })).toBeNull();
   });
 });
 

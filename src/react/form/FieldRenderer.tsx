@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import {
   Field,
   FieldArray,
@@ -11,7 +11,7 @@ import {
   NativeSelectOption,
 } from "@kanzo-tech/ui";
 import type { Term } from "@rdfjs/types";
-import type { CompletionRequest } from "../../assist.js";
+import type { AssistUiProps } from "../assistUi.js";
 import { alternativeFor } from "../../form/disjunction.js";
 import type {
   FieldAlternative,
@@ -22,6 +22,7 @@ import type {
 import { Editors } from "../../form/vocab/shacl-ui.js";
 import { languageOf, primitiveToTerm, termToPrimitive } from "../../form/termBinding.js";
 import {
+  type AssistWrap,
   optionsFor,
   resolveWidget,
   stepFor,
@@ -158,11 +159,8 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
   // One control for the whole list cannot hold a per-value alternative, so a field
   // that offers alternatives renders its rows one at a time.
   const Multi = alts ? undefined : widgetMulti(entry);
-  const caps = widgetAssist(entry); // assistance this widget declares it supports
-  const complete =
-    assist?.complete && assistUi && !field.readOnly && caps.complete
-      ? (request: CompletionRequest) => assist.complete!({ ...request, field, focus, graph, locale })
-      : undefined;
+  // Model assistance, where the form has a UI for it and the widget declares it.
+  const assisted = assistUi && !field.readOnly && widgetAssist(entry) ? BoundAssist : undefined;
 
   const searchFor = (f: FieldModel) => {
     const classIri = f.constraints.classIri;
@@ -171,15 +169,6 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     return (query: string, signal?: AbortSignal) => assist.search!({ classIri, classIn, query, signal });
   };
   const loadOptions = searchFor(field);
-
-  const applySuggestion = (raw: string) => {
-    setTouched(true);
-    const term = primitiveToTerm(fieldAt(singleValue ? 0 : real.length), raw);
-    if (!term) return;
-    const current = singleValue ? (real[0]?.value ?? null) : null;
-    if (current) ops.setValue(current, term);
-    else ops.addValue(term);
-  };
 
   /** Switch a row to another alternative. A row that already holds a value is
    *  re-committed under the new binding rather than left alone: the alternative a
@@ -216,7 +205,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
         onChange={(v, language) => setTerm(i, primitiveToTerm(rowField, v, language))}
         options={options}
         loadOptions={rowLoadOptions}
-        complete={complete}
+        assist={assisted}
         classIri={classIri}
         classIn={c.classIn}
         required={field.required}
@@ -281,6 +270,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
       classIn={field.constraints.classIn}
       minCount={field.minCount}
       maxCount={field.maxCount}
+      assist={assisted}
     />
   ) : null;
 
@@ -300,29 +290,9 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     </FieldArray>
   ));
 
-  const suggests = assist?.suggest && assistUi && !field.readOnly && caps.suggest;
-  if (!suggests) return <FieldShell field={field} errors={errs}>{rows}</FieldShell>;
-
-  // The ✨ and its candidates are one compound around the field's own rows: the
-  // mark is bound to the stream by context, so it reads correctly in the label
-  // row and the strip lands under the values it is offering to fill.
-  const { Root, Mark, List } = assistUi.suggest;
-  return (
-    <Root
-      suggest={(signal) => assist.suggest!({ field, focus, graph, locale, signal })}
-      existing={real.map((s) => s.value?.value ?? "").filter(Boolean)}
-      onPick={applySuggestion}
-    >
-      <FieldShell
-        field={field}
-        errors={errs}
-        action={<Mark label={strings.assist.suggest} offeringLabel={strings.assist.suggestOffering} />}
-      >
-        {rows}
-        <List />
-      </FieldShell>
-    </Root>
-  );
+  const shell = <FieldShell field={field} errors={errs}>{rows}</FieldShell>;
+  if (!assisted) return shell;
+  return <FieldAssist.Provider value={{ field, focus, graph, locale }}>{shell}</FieldAssist.Provider>;
 }
 
 /**
@@ -397,3 +367,23 @@ function FieldShell({
     </Field>
   );
 }
+
+/** The field a control's assistance is about, for {@link BoundAssist}. */
+const FieldAssist = createContext<Pick<AssistUiProps, "field" | "focus" | "graph" | "locale"> | null>(null);
+
+/**
+ * The form's `assistUi`, bound to the field it sits in. One component for every
+ * field, with the field read from context: a wrapper made per render would be a
+ * new component type each time, and React would remount the control under it —
+ * losing the caret and the focus on every keystroke.
+ */
+const BoundAssist: AssistWrap = ({ value, onValueChange, children }) => {
+  const { assistUi: Ui } = useFormContext();
+  const at = useContext(FieldAssist);
+  if (!Ui || !at) return children;
+  return (
+    <Ui {...at} onValueChange={onValueChange} value={value}>
+      {children}
+    </Ui>
+  );
+};

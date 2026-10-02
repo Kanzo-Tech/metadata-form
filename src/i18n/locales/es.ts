@@ -25,11 +25,18 @@ export const strings: Strings = {
     goTo: "Ir al campo",
   },
   assist: {
-    suggest: "Sugerir",
-    suggestOffering: "Sugerir otros valores",
-    completeAnnouncement: "Sugerencia lista. Pulsa Tab para aceptarla, Escape para descartarla.",
-    completeAccept: "aceptar",
-    completeDismiss: "descartar",
+    assist: "Asistencia IA",
+    accept: "Aceptar sugerencia",
+    others: "Sugerir otros valores",
+    revert: "Deshacer la sugerencia",
+    acceptKey: "aceptar",
+    dismissKey: "descartar",
+    nextKey: "siguiente",
+    announcement: "Sugerencia lista. Pulsa Tab para aceptarla, Escape para descartarla.",
+    thinking: "Pensando…",
+    empty: "Nada que sugerir.",
+    failed: "No se pudo obtener la sugerencia.",
+    dismiss: "Descartar {text}",
   },
   readOnly: {
     "variable-length-path":

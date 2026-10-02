@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent, waitFor, renderHook, act, within } from "@testing-library/react";
 import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { ValidationSummary } from "@/react/validation/ValidationSummary.js";
-import { assistUi } from "@/ai/index.js";
 import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { namedNode } from "@/form/factory.js";
@@ -63,111 +62,6 @@ describe("useMetadataForm + <MetadataForm>", () => {
     // Revealing it must switch to its tab and mount it.
     act(() => formRef!.revealField(target.id));
     await waitFor(() => expect(document.querySelector(sel)).not.toBeNull());
-  });
-
-  it("offers field-assist suggestions via the ✨ button and commits the pick", async () => {
-    function AssistForm() {
-      const form = useMetadataForm({
-        shapes,
-        validateOn: "off",
-        assist: { suggest: async function* ({ field }) { yield { value: `Suggested ${field.label}` }; } },
-      });
-      return (
-        <MetadataForm form={form} assistUi={assistUi} />
-      );
-    }
-    render(<AssistForm />);
-    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
-
-    // The ✨ asks the seam and the candidates stream into a strip under the field.
-    // The strip is shown while the field has focus, and jsdom's click does not
-    // move focus the way a real press does — so focus it as a browser would.
-    // Title is the first suggestible field.
-    const sparkles = screen.getAllByRole("button", { name: "Suggest" });
-    sparkles[0].focus();
-    fireEvent.focus(sparkles[0]);
-    fireEvent.click(sparkles[0]);
-
-    const pick = await screen.findByText("Suggested Title");
-    fireEvent.click(pick);
-
-    await waitFor(() => {
-      const input = document.querySelector<HTMLInputElement>("input");
-      expect(input?.value).toBe("Suggested Title");
-    });
-  });
-
-  it("takes a budget from the stream, and dismissing one does not refill it", async () => {
-    function AssistForm() {
-      const form = useMetadataForm({
-        shapes,
-        validateOn: "off",
-        assist: {
-          suggest: async function* () {
-            for (const v of ["Alpha", "Bravo", "Charlie", "Delta", "Echo"]) yield { value: v };
-          },
-        },
-      });
-      return (
-        <MetadataForm form={form} assistUi={assistUi} />
-      );
-    }
-    render(<AssistForm />);
-    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
-
-    // See above: the strip lives for as long as the field has focus.
-    const mark = screen.getAllByRole("button", { name: "Suggest" })[0];
-    mark.focus();
-    fireEvent.focus(mark);
-    fireEvent.click(mark);
-
-    // A strip wraps, so the count is a budget rather than a window: all five
-    // arrive, and dismissing one leaves four. The old three-row window existed to
-    // keep a popover full, and there is no popover now.
-    await screen.findByText("Echo");
-    expect(screen.getAllByRole("button", { name: /^Dismiss / })).toHaveLength(5);
-
-    fireEvent.click(screen.getByRole("button", { name: "Dismiss Alpha" }));
-    await waitFor(() => expect(screen.queryByText("Alpha")).toBeNull());
-    expect(screen.getAllByRole("button", { name: /^Dismiss / })).toHaveLength(4);
-  });
-
-  it("streams inline ghost-text into the textarea and Tab accepts it", async () => {
-    // Preload a description so the (repeatable) textarea field renders a row.
-    const data = `@prefix dcterms: <http://purl.org/dc/terms/> .
-      @prefix dcat: <http://www.w3.org/ns/dcat#> .
-      <http://example.org/d1> a dcat:Dataset ; dcterms:description "Hello world" .`;
-    function GhostForm() {
-      const form = useMetadataForm({
-        shapes,
-        data,
-        focusNode: "http://example.org/d1",
-        validateOn: "off",
-        // Streaming completion seam: two chunks.
-        assist: { complete: async function* () { yield "the"; yield " rest"; } },
-      });
-      return (
-        <MetadataForm form={form} assistUi={assistUi} />
-      );
-    }
-    render(<GhostForm />);
-
-    // A plain <textarea> again: the ghost is a compound composed over the design
-    // system's Textarea, not an editor with a completion prop, so there is no
-    // CodeMirror document to interrogate — only the value and what is painted.
-    const area = () =>
-      screen.getAllByRole("textbox").find((el) => el.tagName === "TEXTAREA") as HTMLTextAreaElement;
-    await waitFor(() => expect(area()?.value).toContain("Hello world"));
-
-    // A user edit requests a completion (debounced) which then streams into the ghost.
-    fireEvent.change(area(), { target: { value: "Hello world." } });
-    await waitFor(() => expect(document.body.textContent ?? "").toContain("the rest"), {
-      timeout: 3000,
-    });
-
-    // Tab takes what is on offer, into the field's own value.
-    fireEvent.keyDown(area(), { key: "Tab" });
-    await waitFor(() => expect(area().value).toContain("the rest"));
   });
 
   it("renders the custom date picker (calendar button) for xsd:date fields", async () => {
