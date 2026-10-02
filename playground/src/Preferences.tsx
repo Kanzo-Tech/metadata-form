@@ -3,20 +3,16 @@ import {
   InputGroup,
   InputGroupButton,
   InputGroupInput,
-  PreferencesColor,
-  PreferencesDensity,
   PreferencesField,
-  PreferencesFont,
-  PreferencesMonoFont,
   PreferencesPanel,
-  PreferencesRadius,
   PreferencesSections,
   useKanzoTheme,
 } from "@kanzo-tech/ui";
-import { prefBoolean, type SectionManifest } from "@kanzo-tech/theme";
+import type { SectionManifest } from "@kanzo-tech/theme";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import type { FormLayout, GridLayout } from "metadata-form";
 import { useChrome } from "./i18n.js";
+import { columnsSpecimen, layoutSpecimen, mascotSpecimen } from "./components/LayoutSpecimens.js";
 
 /**
  * The playground's preferences.
@@ -25,15 +21,15 @@ import { useChrome } from "./i18n.js";
  * and whether the mascot shows are a `SectionManifest` — the mechanism an optional
  * package uses to contribute a choice — registered on the theme provider. So they
  * are drawn by `PreferencesSections` in the panel's own language, resolved through
- * the same chain as radius and density (a tenant could pin them), and persisted
+ * the same chain as appearance and density (a tenant could pin them), and persisted
  * beside them; this file keeps no store of its own for them.
  *
  * What is left is the consumer's own API key. A section has three kinds — choice,
  * toggle, range — and by design no text field, and a credential is not a choice
  * anyway: it stays here, in its own storage key, masked.
  *
- * Note that passing `children` to `PreferencesPanel` REPLACES the library's
- * sections, so the theme axes below are rendered explicitly.
+ * Passing `children` to `PreferencesPanel` replaces what it draws, so the sections
+ * are named explicitly below — all of them, the theme's included.
  */
 
 const NAMESPACE = "playground";
@@ -68,11 +64,17 @@ export const PLAYGROUND_SECTION: SectionManifest = {
         { value: "3", label: "Three" },
       ],
     },
+    // A choice and not a toggle, so it is drawn as the other two are: a card that
+    // shows what it does, rather than a switch under a sentence.
     mascot: {
-      kind: "toggle",
-      label: "Show the mascot companion",
-      default: "false",
+      kind: "choice",
+      label: "Companion",
+      default: "hidden",
       doc: "The corner companion that reads the form's health.",
+      options: [
+        { value: "hidden", label: "Hidden" },
+        { value: "shown", label: "Shown" },
+      ],
     },
   },
 };
@@ -90,8 +92,8 @@ export function useLayoutPrefs(): { layout: FormLayout; columns: NonNullable<Gri
 /** Whether the mascot shows, and how to put it away. */
 export function useMascot(): [boolean, (on: boolean) => void] {
   const { sectionPrefs, setSectionPref } = useKanzoTheme();
-  const shown = prefBoolean(sectionPrefs[NAMESPACE]?.mascot?.value ?? "false");
-  return [shown, (on) => setSectionPref(NAMESPACE, { mascot: String(on) })];
+  const shown = sectionPrefs[NAMESPACE]?.mascot?.value === "shown";
+  return [shown, (on) => setSectionPref(NAMESPACE, { mascot: on ? "shown" : "hidden" })];
 }
 
 const KEY_STORAGE = "mf_claude_key";
@@ -163,21 +165,20 @@ function ClaudeKeySection() {
   );
 }
 
-/** The panel: colour first, then the section this app contributes, its key, then
- *  the design system's remaining axes in the order it publishes them.
- *
- *  Colour leads because it is the only light/dark control this app has, and a
- *  person hunting for one looks at the top of a settings panel. */
+/** How the form's own choices look, drawn as density's are. */
+const SPECIMENS = {
+  [`${NAMESPACE}.layout`]: layoutSpecimen,
+  [`${NAMESPACE}.columns`]: columnsSpecimen,
+  [`${NAMESPACE}.mascot`]: mascotSpecimen,
+};
+
+/** The panel: every section — the theme's (appearance, the theme per side,
+ *  density) and this app's — then the key, which is not a preference at all. */
 export function PreferencesPanelContent() {
   return (
     <PreferencesPanel>
-      <PreferencesColor />
-      <PreferencesSections />
+      <PreferencesSections specimens={SPECIMENS} />
       <ClaudeKeySection />
-      <PreferencesDensity />
-      <PreferencesRadius />
-      <PreferencesFont />
-      <PreferencesMonoFont />
     </PreferencesPanel>
   );
 }

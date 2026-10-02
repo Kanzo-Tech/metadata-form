@@ -56,23 +56,27 @@
     "lint": "eslint ."
   },
   "peerDependencies": {
-    "@kanzo-tech/ai": "^0.13.0",
-    "@kanzo-tech/ui": "^0.13.0",
-    "ai": ">=5",
+    "@ai-sdk/react": "^4.0.0",
+    "@kanzo-tech/ai": "^0.25.0",
+    "@kanzo-tech/llm": "^0.25.0",
+    "@kanzo-tech/ui": "^0.25.0",
+    "ai": "^7.0.0",
     "lucide-react": ">=1",
     "react": ">=19",
     "react-dom": ">=19",
-    "tailwindcss": "^4",
-    "zod": ">=3.23"
+    "tailwindcss": "^4"
   },
   "peerDependenciesMeta": {
+    "@ai-sdk/react": {
+      "optional": true
+    },
     "@kanzo-tech/ai": {
       "optional": true
     },
-    "ai": {
+    "@kanzo-tech/llm": {
       "optional": true
     },
-    "zod": {
+    "ai": {
       "optional": true
     }
   },
@@ -81,7 +85,8 @@
     "@rdfjs/types": "^1.1.2"
   },
   "devDependencies": {
-    "@ai-sdk/anthropic": "^3.0.86",
+    "@ai-sdk/anthropic": "^4.0.0",
+    "@ai-sdk/react": "^4.0.0",
     "@codemirror/autocomplete": "^6.20.3",
     "@codemirror/commands": "^6.11.0",
     "@codemirror/lang-json": "^6.0.2",
@@ -91,9 +96,10 @@
     "@codemirror/state": "^6.7.1",
     "@codemirror/view": "^6.43.9",
     "@eslint/js": "^9.39.4",
-    "@kanzo-tech/ai": "^0.13.0",
-    "@kanzo-tech/theme": "^0.13.0",
-    "@kanzo-tech/ui": "^0.13.0",
+    "@kanzo-tech/ai": "^0.25.0",
+    "@kanzo-tech/llm": "^0.25.0",
+    "@kanzo-tech/theme": "^0.25.0",
+    "@kanzo-tech/ui": "^0.25.0",
     "@lezer/highlight": "^1.2.3",
     "@tailwindcss/vite": "^4.1.0",
     "@testing-library/dom": "^10.4.1",
@@ -102,7 +108,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "@vitejs/plugin-react": "^4.3.4",
-    "ai": "^6.0.209",
+    "ai": "^7.0.0",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^26.0.0",
@@ -115,7 +121,6 @@
     "typescript-eslint": "^8.62.0",
     "vite": "^6.0.11",
     "vite-plugin-dts": "^4.5.0",
-    "vitest": "^3.0.5",
-    "zod": "^4.4.3"
+    "vitest": "^3.0.5"
   }
 }

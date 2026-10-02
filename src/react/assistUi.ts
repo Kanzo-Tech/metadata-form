@@ -1,36 +1,25 @@
-import type { ComponentType, ReactElement, ReactNode } from "react";
-import type { Candidate, CompletionRequest } from "../assist.js";
+import type { Term } from "@rdfjs/types";
+import type { ComponentType, ReactElement } from "react";
+import type { GraphState } from "../engine/GraphState.js";
+import type { FieldModel } from "../form/FormModel.js";
+
+/** What the form hands the assistance around one control. */
+export interface AssistUiProps {
+  /** The field the control edits, its node, and the graph — what the model is told. */
+  field: FieldModel;
+  focus: Term;
+  graph: GraphState;
+  locale: string;
+  /** The control's value: a string for one value, the list for a tags field. */
+  value: string | string[];
+  onValueChange: (value: string | string[]) => void;
+  /** The control: `Textarea`, `Input` or `TagsInput`. */
+  children: ReactElement;
+}
 
 /**
- * The assistance UI the form draws when a `FormAssist` is wired — supplied by the
- * consumer, never imported by the core, so a form without it renders plain
- * inputs and carries no AI package. `metadata-form/ai` provides `assistUi`;
- * these are the parts of `@kanzo-tech/ai`'s two field compounds, typed by the
- * props the form passes them — among them the words they draw, which the core
- * reads from its catalog (`Strings.assist`) so the parts need know no language.
+ * Model assistance around one control — supplied by the consumer, never imported
+ * by the core, so a form without it renders plain inputs and carries no AI package.
+ * `metadata-form/ai` provides `assistUi`, over `@kanzo-tech/ai`'s `Assist`.
  */
-export interface AssistUi {
-  /** The ✨ and its candidate strip around a field (`FormAssist.suggest`). */
-  suggest: {
-    Root: ComponentType<{
-      suggest: (signal?: AbortSignal) => AsyncIterable<Candidate>;
-      existing?: string[];
-      onPick: (value: string) => void;
-      children: ReactNode;
-    }>;
-    Mark: ComponentType<{ label: string; offeringLabel: string }>;
-    List: ComponentType;
-  };
-  /** Ghost text over a textarea (`FormAssist.complete`). */
-  complete: {
-    Root: ComponentType<{
-      complete: (request: CompletionRequest) => AsyncIterable<string>;
-      value: string;
-      onValueChange: (value: string) => void;
-      announcement: string;
-      children: ReactNode;
-    }>;
-    Textarea: ComponentType<{ children: ReactElement }>;
-    Hint: ComponentType<{ acceptLabel: string; dismissLabel: string }>;
-  };
-}
+export type AssistUi = ComponentType<AssistUiProps>;
