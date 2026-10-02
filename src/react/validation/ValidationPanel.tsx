@@ -22,8 +22,9 @@ import type { IssueRow } from "./formReport.js";
 import type { MetadataFormController } from "../hooks/useMetadataForm.js";
 
 /** Severity is a domain word; the design system spells the same three families
- *  `destructive` / `warning` / `info`. Same mapping `ValidationSummary` makes. */
-const VARIANT: Record<Severity, "destructive" | "warning" | "info"> = {
+ *  `destructive` / `warning` / `info`, and `destructive` is what every other
+ *  recipe uses for "this went wrong". */
+export const VARIANT: Record<Severity, "destructive" | "warning" | "info"> = {
   violation: "destructive",
   warning: "warning",
   info: "info",
@@ -38,18 +39,29 @@ export interface ValidationPanelLabels {
   reportedValue?: string;
   /** Accessible name of the disclosure. `{field}` is replaced by the field's label. */
   detailsOf?: string;
+  /** The tally's subtitle, group headings and go-to control. */
+  description?: string;
+  groups?: Partial<Record<Severity, string>>;
+  goTo?: string;
 }
 
 /** The panel's own wording, from the catalog the controller already resolved for
  *  the active locale — the same one the messages themselves came through. A form
  *  whose fields and errors are Spanish and whose badge says "Violation" is a form
  *  that is half translated. `labels` still wins, per consumer. */
-function wordsFor(strings: ResolvedStrings, labels: ValidationPanelLabels | undefined) {
+export function wordsFor(strings: ResolvedStrings, labels: ValidationPanelLabels | undefined) {
   const p = strings.validationPanel;
   return {
     empty: labels?.empty ?? p.empty,
     reportedValue: labels?.reportedValue ?? p.reportedValue,
     detailsOf: labels?.detailsOf ?? p.detailsOf,
+    description: labels?.description ?? p.description,
+    goTo: labels?.goTo ?? p.goTo,
+    groups: {
+      violation: labels?.groups?.violation ?? p.violations,
+      warning: labels?.groups?.warning ?? p.warnings,
+      info: labels?.groups?.info ?? p.infos,
+    } as Record<Severity, string>,
     severity: {
       violation: labels?.severity?.violation ?? p.violation,
       warning: labels?.severity?.warning ?? p.warning,
@@ -101,15 +113,78 @@ const asPath = (label: string) => label.split(" › ").join("/");
 const valueText = (row: IssueRow) =>
   row.value ? (row.value.termType === "Literal" ? `“${row.value.value}”` : row.value.value) : undefined;
 
+/** The words one finding is drawn with, resolved once per list. */
+export type IssueWords = ReturnType<typeof wordsFor>;
+
+export interface IssueDiagnosticProps {
+  form: MetadataFormController;
+  row: IssueRow;
+  words: IssueWords;
+  /** Beside the disclosure: the tally's "go to field". */
+  actions?: React.ReactNode;
+  /** Where the field frame goes. Without it the frame is a static position. */
+  onSelect?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
 /**
- * The findings, as a panel: one collapsible diagnostic per issue, each carrying
- * the field it is about, the rule that raised it and a way back to the control.
+ * One finding as a collapsible `Diagnostic`: severity, where and the disclosure on
+ * one line, the message under them on its own (`basis-full`) — how every compiler
+ * prints one, and the only shape that survives a narrow column. Opened, it says
+ * what the severity costs, the offending value and the field as a position.
  *
- * The counterpart of {@link ValidationSummary}, not its replacement — the two
- * answer different questions and the pill cannot answer this one. A hover card
- * closes as soon as the pointer leaves its trigger, so a collapsible inside one
- * is a control nobody can open; the summary stays a summary and this is where a
- * finding is read. Both project the same `form.report.issues.rows`.
+ * The one row both the tally and the panel draw, so a finding reads the same
+ * wherever it is listed.
+ */
+export function IssueDiagnostic({ form, row, words, actions, onSelect, open, onOpenChange }: IssueDiagnosticProps) {
+  // The leaf of the hierarchical label, and NOT the constraint: three fields
+  // missing a value all say "This field is required", so the constraint name
+  // in the one always-visible identifier slot would make three rows a reader
+  // cannot tell apart. The rule that raised it is a frame below.
+  const where = row.label.split(" › ").pop() || row.label;
+  const message = form.resolveMessage(row);
+  const value = valueText(row);
+
+  return (
+    <Diagnostic
+      onOpenChange={onOpenChange && ((d) => onOpenChange(d.open))}
+      open={open}
+      variant={VARIANT[row.severity]}
+    >
+      <DiagnosticHeader>
+        <DiagnosticSeverity>{words.severity[row.severity]}</DiagnosticSeverity>
+        <DiagnosticSource>{where}</DiagnosticSource>
+        <DiagnosticActions className="ms-auto">
+          {actions}
+          {/* The chevron alone; the name it carries is what `aria-label` is for. */}
+          <DiagnosticTrigger aria-label={words.detailsOf.replace("{field}", row.label)} />
+        </DiagnosticActions>
+        <DiagnosticTitle className="basis-full" lang={message.lang}>
+          {message.text}
+        </DiagnosticTitle>
+      </DiagnosticHeader>
+      <DiagnosticContent>
+        <DiagnosticDescription>{words.consequence[row.severity]}</DiagnosticDescription>
+        {value ? (
+          // An IRI has no spaces, so it needs telling that it may break; without
+          // this the reported value pushes the list's own scrollbar sideways.
+          <DiagnosticDescription className="wrap-anywhere">
+            {words.reportedValue}: {value}
+          </DiagnosticDescription>
+        ) : null}
+        <DiagnosticFrames>
+          <DiagnosticFrame label={constraintName(row.constraint)} onSelect={onSelect} path={asPath(row.label)} />
+        </DiagnosticFrames>
+      </DiagnosticContent>
+    </Diagnostic>
+  );
+}
+
+/**
+ * The findings, as a panel: one {@link IssueDiagnostic} per issue, for a host that
+ * wants the list on the page rather than behind {@link ValidationSummary}'s tally.
+ * Both project the same `form.report.issues.rows`.
  *
  * **Library-side, chrome excluded.** What a host wraps this in — an aside, a
  * drawer, a header with counts — is the host's arrangement; what a finding *is*
@@ -137,61 +212,22 @@ export function ValidationPanel({ form, openId, onOpenChange, labels }: Validati
       {rows.map((row, i) => {
         // The index is part of the id because one field can fail two ways with the
         // same wording, and two rows that cannot be told apart cannot be opened apart.
-        const id = `${row.key}|${row.constraint ?? ""}|${i}`;
-        // The leaf of the hierarchical label, and NOT the constraint: three fields
-        // missing a value all say "This field is required", so the constraint name
-        // in the one always-visible identifier slot would make three rows a reader
-        // cannot tell apart. The rule that raised it is a frame below, where the
-        // showcase puts it — it is upstream of the finding, not the finding's name.
-        const where = row.label.split(" › ").pop() || row.label;
-        const rule = constraintName(row.constraint);
-        const value = valueText(row);
-
+        const id = issueId(row, i);
         return (
-          <Diagnostic
+          <IssueDiagnostic
+            form={form}
             key={id}
+            onOpenChange={(o) => setOpen(o ? id : null)}
+            onSelect={() => form.revealField(row.key)}
             open={open === id}
-            onOpenChange={(d) => setOpen(d.open ? id : null)}
-            variant={VARIANT[row.severity]}
-          >
-            {/* Severity, where and the trigger on one line; the message under them on
-                its own (`basis-full`), which is how every compiler prints one and the
-                only shape that survives a column this narrow. */}
-            <DiagnosticHeader>
-              <DiagnosticSeverity>
-                {words.severity[row.severity]}
-              </DiagnosticSeverity>
-              <DiagnosticSource>{where}</DiagnosticSource>
-              <DiagnosticActions className="ms-auto">
-                {/* The chevron alone; the name it carries is what `aria-label` is for. */}
-                <DiagnosticTrigger aria-label={words.detailsOf.replace("{field}", row.label)} />
-              </DiagnosticActions>
-              <DiagnosticTitle className="basis-full" lang={form.resolveMessage(row).lang}>
-                {form.resolveMessage(row).text}
-              </DiagnosticTitle>
-            </DiagnosticHeader>
-            <DiagnosticContent>
-              <DiagnosticDescription>
-                {words.consequence[row.severity]}
-              </DiagnosticDescription>
-              {value ? (
-                // An IRI has no spaces, so it needs telling that it may break; without
-                // this the reported value pushes the panel's own scrollbar sideways.
-                <DiagnosticDescription className="wrap-anywhere">
-                  {words.reportedValue}: {value}
-                </DiagnosticDescription>
-              ) : null}
-              <DiagnosticFrames>
-                <DiagnosticFrame
-                  label={rule}
-                  onSelect={() => form.revealField(row.key)}
-                  path={asPath(row.label)}
-                />
-              </DiagnosticFrames>
-            </DiagnosticContent>
-          </Diagnostic>
+            row={row}
+            words={words}
+          />
         );
       })}
     </DiagnosticList>
   );
 }
+
+/** A finding's identity in a list: its field, its rule and its place. */
+export const issueId = (row: IssueRow, i: number) => `${row.key}|${row.constraint ?? ""}|${i}`;

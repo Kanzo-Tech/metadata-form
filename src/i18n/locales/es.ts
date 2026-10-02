@@ -18,6 +18,11 @@ export const strings: Strings = {
     infoDetail: "Solo a título informativo.",
     reportedValue: "Valor recibido",
     detailsOf: "Detalles de la incidencia en {field}",
+    description: "Lo que la validación encontró en el formulario.",
+    violations: "Infracciones",
+    warnings: "Avisos",
+    infos: "Notas",
+    goTo: "Ir al campo",
   },
   assist: {
     suggest: "Sugerir",
@@ -65,7 +70,5 @@ export const strings: Strings = {
     madeWith: "Hecho con",
     madeAt: "en",
     love: "amor",
-    markIssues: "Marcar cada incidencia en su campo",
-    unmarkIssues: "Dejar de marcar las incidencias",
   },
 };

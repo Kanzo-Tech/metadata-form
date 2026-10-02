@@ -47,6 +47,14 @@ export interface Strings {
     /** Accessible name of the disclosure that opens one finding. `{field}` is the
      *  field's hierarchical label, substituted verbatim. */
     detailsOf: string;
+    /** Under the tally's heading: what the list is. */
+    description: string;
+    /** The tally's group headings, one per severity. */
+    violations: string;
+    warnings: string;
+    infos: string;
+    /** The control on a finding that goes to its field. */
+    goTo: string;
   };
   /** The words of the assistance UI — the ✨ and the ghost text — which `assistUi`
    *  receives as props: the parts are `@kanzo-tech/ai`'s, and the core reads
@@ -110,9 +118,6 @@ export interface Strings {
     madeWith: string;
     madeAt: string;
     love: string;
-    /** What pressing the summary pill does: mark every issue on its field, and stop. */
-    markIssues: string;
-    unmarkIssues: string;
   };
 }
 
@@ -147,6 +152,11 @@ export const EN: Strings = {
     infoDetail: "Reported for information only.",
     reportedValue: "Reported value",
     detailsOf: "Details of the issue on {field}",
+    description: "What validation found in the form.",
+    violations: "Violations",
+    warnings: "Warnings",
+    infos: "Notes",
+    goTo: "Go to field",
   },
   assist: {
     suggest: "Suggest",
@@ -194,8 +204,6 @@ export const EN: Strings = {
     madeWith: "Made with",
     madeAt: "at",
     love: "love",
-    markIssues: "Mark every issue on its field",
-    unmarkIssues: "Stop marking the issues",
   },
 };
 
