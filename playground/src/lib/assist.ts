@@ -1,16 +1,13 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
-import { createFormAssist } from "metadata-form/ai";
-import type { FormAssist } from "metadata-form";
+import type { LanguageModel } from "@kanzo-tech/llm";
 
-/** The assistance seam, wired to Claude via the `metadata-form/ai` adapter over the
- * Vercel AI SDK (the library core stays LLM-agnostic). `createFormAssist` gives
- * streaming ghost-text (`complete`) and typed ✨ suggestions (`suggest`) for free.
- * `dangerous-direct-browser-access` is only needed because this demo calls Anthropic
- * straight from the browser. */
-export function makeAssist(apiKey: string, model: string): FormAssist {
+/** The model the form's assistance calls — the consumer's choice, never the
+ *  library's: metadata-form imports no LLM SDK. `dangerous-direct-browser-access`
+ *  is only needed because this demo calls Anthropic straight from the browser. */
+export function makeModel(apiKey: string, model: string): LanguageModel {
   const provider = createAnthropic({
     apiKey,
     headers: { "anthropic-dangerous-direct-browser-access": "true" },
   });
-  return createFormAssist(provider(model));
+  return provider(model);
 }

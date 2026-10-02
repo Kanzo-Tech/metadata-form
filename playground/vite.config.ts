@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { defineConfig, type Plugin } from "vite";
 import { themeScript } from "@kanzo-tech/ui";
+import { DEFAULT_THEME } from "./src/theme";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
@@ -13,7 +14,7 @@ const lib = (p: string) => resolve(root, "..", p);
 // density and radius are there when the page is, not a frame after it.
 const themeInit: Plugin = {
   name: "theme-init",
-  transformIndexHtml: () => [{ tag: "script", children: themeScript(), injectTo: "head-prepend" }],
+  transformIndexHtml: () => [{ tag: "script", children: themeScript({ defaultTheme: DEFAULT_THEME }), injectTo: "head-prepend" }],
 };
 
 export default defineConfig({

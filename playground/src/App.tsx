@@ -17,12 +17,11 @@ import {
   ShellHeader,
   ShellMain,
   ShellRoot,
-  type ThemeOption,
 } from "@kanzo-tech/ui";
-import { themeIndex } from "@kanzo-tech/theme";
+import { AssistProvider } from "@kanzo-tech/ai";
 import { Code2Icon, DownloadIcon, FileTextIcon } from "lucide-react";
-import { MetadataForm, useMetadataForm, type FormAssist } from "metadata-form";
-import { assistUi } from "metadata-form/ai";
+import { MetadataForm, useMetadataForm } from "metadata-form";
+import { assistTranslations, assistUi } from "metadata-form/ai";
 import { es, ca } from "metadata-form/i18n";
 import { PLAYGROUND_SECTION, PreferencesPanelContent, useClaudeKey, useClaudeModel, useLayoutPrefs, useMascot } from "./Preferences.js";
 import { Header } from "./components/Header.js";
@@ -41,7 +40,8 @@ import { useFormOutputs } from "./hooks/useFormOutputs.js";
 import { useUrlState } from "./hooks/useUrlState.js";
 import { useWorkspace } from "./state/useWorkspace.js";
 import { ChromeContext, fill, pickChrome } from "./i18n.js";
-import { makeAssist } from "./lib/assist.js";
+import { makeModel } from "./lib/assist.js";
+import { DEFAULT_THEME } from "./theme.js";
 
 /** The form keeps what the panels do not take: 24% each, down to a floor of 34%.
  *  Written as a sum rather than a table of splits — there are eight open-sets with
@@ -59,14 +59,6 @@ const NARROW = "(max-width: 1024px)";
  *  the playground imports from `metadata-form/i18n`, like any consumer. */
 const STRINGS = { es: es.strings, ca: ca.strings };
 
-/** Every published theme, as the Preferences colour section wants them. Generated
- *  from the directory upstream, so this list cannot drift from what the sheet paints. */
-const THEMES: ThemeOption[] = themeIndex.map((t) => ({ value: t.name, label: t.name }));
-
-/** What each side defers to while nobody has chosen — a deferral target, never a
- *  preference, so it cannot overwrite a reader's saved theme. */
-const DEFAULT_THEME = { light: "kanzo", dark: "kanzo-dark" };
-
 export function App() {
   // The URL is read once, synchronously, so the workspace seeds from it before
   // first paint.
@@ -77,7 +69,7 @@ export function App() {
     // The theme lives on <html>, not on a wrapper element: Ark's overlays portal
     // to document.body, outside anything a wrapper could reach, and density sets
     // the root font-size the whole rem scale resolves against.
-    <KanzoThemeProvider themes={THEMES} defaultTheme={DEFAULT_THEME} sections={[PLAYGROUND_SECTION]}>
+    <KanzoThemeProvider defaultTheme={DEFAULT_THEME} sections={[PLAYGROUND_SECTION]}>
       {/* `p`, opt-in: a design system must not claim an unmodified key in its
           host's keymap without being asked. */}
       <PreferencesRoot hotkey="p">
@@ -100,8 +92,8 @@ function ThemedApp({
   const layoutPrefs = useLayoutPrefs();
   const [mascot, setMascot] = useMascot();
 
-  // The assistance seam is wired only when an API key is present.
-  const assist = useMemo<FormAssist | undefined>(() => (apiKey ? makeAssist(apiKey, model) : undefined), [apiKey, model]);
+  // Model assistance is drawn only when there is a key to call a model with.
+  const languageModel = useMemo(() => (apiKey ? makeModel(apiKey, model) : undefined), [apiKey, model]);
 
   const { share, status: shareStatus, decoded } = url;
   const { shapeText, dataText, setShapeText, setDataText, applied, shape } = workspace;
@@ -155,7 +147,6 @@ function ThemedApp({
     rootShape: options.rootShape,
     locale,
     strings: STRINGS,
-    assist,
   });
 
   useEffect(() => setLanguages(form.availableLanguages), [form.availableLanguages]);
@@ -262,8 +253,12 @@ function ThemedApp({
               {form.error.message}
             </CardContent>
           </Card>
+        ) : languageModel ? (
+          <AssistProvider model={languageModel} translations={assistTranslations(form.strings)}>
+            <MetadataForm form={form} assistUi={assistUi} layout={layoutPrefs.layout} grid={{ columns: layoutPrefs.columns }} />
+          </AssistProvider>
         ) : (
-          <MetadataForm form={form} assistUi={assistUi} layout={layoutPrefs.layout} grid={{ columns: layoutPrefs.columns }} />
+          <MetadataForm form={form} layout={layoutPrefs.layout} grid={{ columns: layoutPrefs.columns }} />
         )}
       </div>
     </ShellMain>
@@ -409,8 +404,7 @@ function ThemedApp({
           />
         )}
 
-        {/* The FAB and the drawer. The panel composes its own sections now — ours
-            first, then the design system's theme axes. */}
+        {/* The FAB and the drawer: every section, the theme's and ours, then the key. */}
         <PreferencesTrigger />
         <PreferencesPanelContent />
       </ShellRoot>
