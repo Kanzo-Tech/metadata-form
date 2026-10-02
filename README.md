@@ -73,7 +73,7 @@ ex:VariableShape a sh:NodeShape ;
 
 From those triples, and with no code written for this profile, the form is:
 
-![The form generated from the shapes above. Left: the dataset declares no structured data and the variables are absent. Right: it declares structured data; the variables appear, are required, and their message is the one the profile's author wrote.](docs/figures/conditional.png)
+![The form generated from the shapes above. Left: the dataset declares no structured data and the variables are absent. Right: it declares structured data; the variables appear, are required, and their message is the one the profile's author wrote.](assets/conditional.png)
 
 Each line has a visible consequence:
 
@@ -417,7 +417,7 @@ editor is a widget, not an engine change.
 
 ### The mapping
 
-![From shapes to fields: a fact stated in the shapes graph, the shui: editor the engine resolves from it, and the control the default widget registry binds to that editor.](docs/figures/mapping.png)
+![From shapes to fields: a fact stated in the shapes graph, the shui: editor the engine resolves from it, and the control the default widget registry binds to that editor.](assets/mapping.png)
 
 `Repeatable` is the control a field gets when the shape allows more than one value
 (no `sh:maxCount 1`). It is selected by **cardinality, not by a second vocabulary**:
@@ -514,7 +514,7 @@ const widgets: WidgetRegistry = {
 
 ## Architecture
 
-![Architecture: the four inputs of a SHACL-UI renderer go into one rudof session compiled to WebAssembly, which parses, projects, selects an editor per property, evaluates the conditions and validates; the React layer binds each editor IRI to a component.](docs/figures/architecture.png)
+![Architecture: the four inputs of a SHACL-UI renderer go into one rudof session compiled to WebAssembly, which parses, projects, selects an editor per property, evaluates the conditions and validates; the React layer binds each editor IRI to a component.](assets/architecture.png)
 
 The layering is that of model-based user interfaces, and the renderer model of
 [SHACL 1.2 User Interfaces](https://www.w3.org/TR/shacl12-ui/) can be read as an
