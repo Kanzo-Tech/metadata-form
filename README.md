@@ -22,13 +22,12 @@ field's **SHACL-UI editor** to a widget and renders the form.
   [@kanzo-tech/ui](https://github.com/Kanzo-Tech/kanzo-ui) over
   [Ark UI](https://ark-ui.com); swap any input by overriding its widget.
 - ✅ **Live validation** — per-field errors from rudof's SHACL validator, plus a
-  ready-made `<ValidationSummary>` tally: hover it for every issue, press it to
-  mark them all on their fields.
-- 🤖 **Optional AI assist** — one `assist` seam, and a separate `metadata-form/ai`
-  subpath that draws it: streaming ghost text in textareas (Tab/Esc), ✨ value
-  suggestions under text fields, prompts built from the field's own SHACL
-  constraints, and a one-line [Vercel AI SDK](https://sdk.vercel.ai) adapter.
-  The core imports no AI package.
+  ready-made `<ValidationSummary>` tally: open it for every issue, grouped worst
+  first, each with a way to its field — and opening it marks them all where they are.
+- 🤖 **Optional AI assist** — a separate `metadata-form/ai` subpath over
+  [@kanzo-tech/ai](https://github.com/Kanzo-Tech/kanzo-ui)'s `Assist`: ghost text
+  in textareas (Tab/Esc), candidate values under text fields and tags fields, and
+  the field's own SHACL constraints in every prompt. The core imports no AI package.
 - 📦 **Small example shapes** in the playground — a conditional field in SHACL
   Core and in SHACL 1.2, and one property per editor.
 - 🧩 **ShEx-ready** — the engine seam is shape-language-agnostic; ShEx can be
@@ -102,8 +101,8 @@ rejects, because one engine produces both. This is the example the
 npm install metadata-form react react-dom lucide-react tailwindcss @kanzo-tech/ui
 ```
 
-The AI layer is opt-in and has its own peers (`@kanzo-tech/ai`, and `ai` + `zod`
-for the model adapter) — see [Assistance](#assistance--one-seam-assist).
+The AI layer is opt-in and has its own peers (`@kanzo-tech/ai`, `@kanzo-tech/llm`,
+`ai` and `@ai-sdk/react`) — see [Assistance](#assistance).
 
 ESM-only, React 19+, Tailwind CSS v4. The UI is built on **@kanzo-tech/ui**
 (icons from [lucide](https://lucide.dev)), which ships Tailwind *source*, not
@@ -179,7 +178,7 @@ controller is the single handle for everything:
 | `form.toTurtle()` / `form.toJsonLd()` | serialized output (via rudof) |
 | `form.isValid` / `form.errors` | live SHACL validation |
 | `form.validate()` / `form.reset()` | imperative actions |
-| `form.revealAll` / `form.setRevealAll(on)` | show every field's errors, touched or not (what pressing `<ValidationSummary>` toggles) |
+| `form.revealAll` / `form.setRevealAll(on)` | show every field's errors, touched or not (what opening `<ValidationSummary>` sets) |
 | `form.report` | derived form state — `{progress, issues, pending, nextField, health}` |
 | `form.subscribe(cb)` | observe changes (autosave, external sync) |
 
@@ -192,7 +191,7 @@ The main entry is deliberately small.
 | `useMetadataForm`, `MetadataForm` | the controller hook and the component that renders it |
 | `ValidationSummary`, `ValidationPanel` | the issue tally and the issue list |
 | `defaultWidgets`, `Editors` | the widget registry and the `shui:` editor IRIs it is keyed by |
-| types | the form model (`FormModel`, `FieldModel`, …), the report (`FormReport`, `FieldError`, …), the widget contract (`Widget`, `WidgetProps`, `WidgetRegistry`, …), `FormAssist`, `AssistUi`, `Strings`, `StringTables` |
+| types | the form model (`FormModel`, `FieldModel`, …), the report (`FormReport`, `FieldError`, …), the widget contract (`Widget`, `WidgetProps`, `WidgetRegistry`, …), `FormAssist`, `AssistUi`, `AssistWrap`, `Strings`, `StringTables` |
 
 Everything else is on a subpath: `metadata-form/rudof` (the engine and the shape
 IR), `metadata-form/ai` (the AI layer: UI, prompt context, model adapter), `metadata-form/i18n` (languages other than
@@ -282,59 +281,47 @@ English. A shape's `sh:languageIn` orders the labels of its own property; it is 
 when choosing a failure message. Plural forms follow `Intl.PluralRules` for the table's
 language, so a table must supply the forms its language uses.
 
-### Assistance — one seam (`assist`)
+### Assistance
 
-All data/AI help goes through a single `assist` object with three optional
-callbacks: `suggest` (value candidates, streamed), `complete` (a streamed inline
-continuation at the caret) and `search` (`sh:class` instances for a reference
-combobox). Every callback gets an `AbortSignal`. The library **never calls an LLM
-or a vocabulary service itself**, and the core **draws no assistance UI**: without
-`metadata-form/ai` a form renders plain inputs and plain textareas, and a wired
-`assist.suggest`/`assist.complete` is never called (`search` feeds the reference
-combobox with or without it).
-
-**Enabling it** takes one import and one prop. `assistUi` is
-[`@kanzo-tech/ai`](https://github.com/Kanzo-Tech/kanzo-ui)'s ✨ suggestion strip
-(under text and reference fields) and ghost-text completion (over `textarea`,
-`rich text` and the language-tagged textarea), handed to the form:
+Model assistance is **[@kanzo-tech/ai](https://github.com/Kanzo-Tech/kanzo-ui)'s
+`Assist`**, and the core draws none of it: without `metadata-form/ai` a form renders
+plain inputs and plain textareas and calls no model. Enabling it is the provider
+you already mount for `Assist` anywhere, and one prop:
 
 ```tsx
-import { assistUi, createFormAssist } from "metadata-form/ai"; // peers: @kanzo-tech/ai, ai, zod
-import { createAnthropic } from "@ai-sdk/anthropic";
+import { AssistProvider } from "@kanzo-tech/ai";
+import { assistTranslations, assistUi } from "metadata-form/ai"; // peers: @kanzo-tech/ai, @kanzo-tech/llm, ai, @ai-sdk/react
 
-const assist = createFormAssist(createAnthropic({ apiKey })("claude-opus-5-5"));
-const form = useMetadataForm({ shapes, assist });
-return <MetadataForm form={form} assistUi={assistUi} />;
+<AssistProvider model={model} translations={assistTranslations(form.strings)}>
+  <MetadataForm form={form} assistUi={assistUi} />
+</AssistProvider>
 ```
 
-`createFormAssist` turns any [Vercel AI SDK](https://sdk.vercel.ai) `LanguageModel`
-into streamed `suggest` and `complete`; add your own `search` (a real vocabulary
-service) by spreading: `{ ...createFormAssist(model), search }`. It is the only
-part that touches the SDK, and it is domain-free — it only maps the SDK's streams
-onto the `AsyncIterable` sources `@kanzo-tech/ai` consumes. With another stack,
-implement the seam yourself and keep `assistUi`:
+`model` is any [AI SDK](https://ai-sdk.dev) `LanguageModel` — `createGateway` from
+`@kanzo-tech/llm` behind your own endpoint, or a provider such as `@ai-sdk/anthropic`.
+What it offers depends on the control, not on a setting: a **textarea** (`TextArea`,
+`RichText`, `TextAreaWithLang`) is continued at the caret as ghost text — Tab takes
+it, Ctrl/⌘+→ a word, Alt+] the next — a one-line **input** (`TextField`,
+`TextFieldWithLang`) gets candidate values under it, and a repeatable text field's
+**tags input** gets values to add. A widget opts in with `assist: true` in its
+registry entry; a custom widget wraps its control in the `assist` prop it receives.
+`assistTranslations` hands the form's own words to the provider, so the ✨ and its
+hints speak the form's language.
 
-```tsx
-assist={{
-  suggest: async function* ({ field, focus, graph, locale, signal }) { /* yield { value, label?, rationale? } */ },
-  complete: ({ field, value, position, signal }) => myLLM.stream(value, { signal }), // AsyncIterable<string>
-}}
-```
+**What the model is told.** `Assist` reads the field's label and helper text off the
+control; `assistUi` adds the field's own context: `fieldContext(field)` — everything
+its shape states, one line per fact and nothing it does not state: label,
+description, value type (`sh:datatype` / `sh:nodeKind` / `sh:class`), `sh:in`
+options, `sh:pattern` (+ flags), length and numeric bounds, allowed language tags
+(`sh:languageIn`), cardinality, and the values a repeatable field already holds —
+plus `siblingValues(…)`, the literals already entered on the same resource, and the
+form's language. Both are bounded (`DEFAULT_CONTEXT_LIMITS`: 25 listed `sh:in`
+values, 12 sibling values, 200 characters per value). The model is asked to satisfy
+the constraints; the shape still validates whatever is committed.
 
-**What the model is told.** The default prompts are written from `fieldContext(field)`
-— everything the field's own shape states, one line per fact and nothing it does
-not state: label, description, value type (`sh:datatype` / `sh:nodeKind` /
-`sh:class`), `sh:in` options, `sh:pattern` (+ flags), length and numeric bounds,
-allowed language tags (`sh:languageIn`), cardinality, and the values a repeatable
-field already holds — plus `siblingValues(…)`: the literals already entered on the
-same resource (predicate local name and value). Both are bounded, and the bounds are
-options: `createFormAssist(model, { limits: { maxOptions, maxSiblings, maxValue } })`,
-defaulting to 25 listed `sh:in` values, 12 sibling values and 200 characters per value
-(`DEFAULT_CONTEXT_LIMITS`; the same object is the last argument of `fieldContext` and
-`siblingValues`). For a completion the text before and after the caret is added. The
-model is asked to satisfy the constraints; the shape still validates whatever is
-committed. Override the prompts with `createFormAssist(model, { suggestPrompt,
-completePrompt })` — `fieldContext` and `siblingValues` are exported for that.
+**Reference search** is not a model: `useMetadataForm({ assist: { search } })` feeds
+the reference combobox with `sh:class` instances from your own vocabulary service,
+with or without the AI layer.
 
 ### Layout
 
@@ -359,10 +346,11 @@ Nested sub-forms always render sequentially; only the root honors `layout`.
 ### Errors, and when they show
 
 A field stays quiet until the reader has been in it, so a new form does not open
-covered in "required". `<ValidationSummary>` counts every issue from the start
-(hover it for the list; each entry jumps to its field), and pressing it sets
-`form.revealAll`, which shows all of them on their fields at once. A host with its
-own "Save" can call `form.setRevealAll(true)` on a failed submit.
+covered in "required". `<ValidationSummary>` counts every issue from the start;
+opening it lists them worst first, each with a way to its field, and sets
+`form.revealAll`, which shows all of them on their fields at once — closing it does
+not hide them again. A valid form's tally is a plain badge with nothing to open. A
+host with its own "Save" can call `form.setRevealAll(true)` on a failed submit.
 
 ### Conditional fields
 
@@ -441,7 +429,7 @@ inside a `FieldArray` with add/remove.
 | `shui:` editor | Picked when | Control | Repeatable |
 | --- | --- | --- | --- |
 | `TextFieldEditor` | anything with no better fact (the fallback) | `Input` | **`TagsInput`** — chips, one control |
-| `TextAreaEditor` | stated | `Textarea`, ghost-text completion when `assist.complete` and `assistUi` are wired | rows |
+| `TextAreaEditor` | stated | `Textarea`, ghost text under `assistUi` | rows |
 | `RichTextEditor` | stated | `Textarea` — **the design system ships no rich-text editor**; the profile asked for something we do not have | rows |
 | `TextFieldWithLangEditor` | `sh:datatype rdf:langString` | `InputGroup` + the language picker in its trailing slot; the language can be chosen before the text | rows |
 | `TextAreaWithLangEditor` | stated | `Textarea` (with the same ghost text) + the language picker under it | rows |
@@ -495,9 +483,8 @@ sees the whole shape; it is the *input* that cannot express the constraint.
 
 The look is the design system's, applied as `data-*` attributes on `<html>` by
 `KanzoThemeProvider` and controlled by the user through its own `Preferences`
-panel (appearance, theme, density, radius, fonts). Drop
-`<PreferencesRoot><PreferencesTrigger/><PreferencesPanel/></PreferencesRoot>`
-anywhere in your app and the form follows.
+panel (appearance, the theme per side, density; radius and typefaces are the
+theme's own). Drop `<Preferences />` anywhere in your app and the form follows.
 
 All RDF ⇄ value conversion lives in one binding layer; the inputs are **dumb
 widgets** that receive a primitive `value: string | null` + `onChange` and never
