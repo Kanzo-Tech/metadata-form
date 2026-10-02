@@ -310,8 +310,8 @@ hints speak the form's language.
 
 **What the model is told.** `Assist` reads the field's label and helper text off the
 control; `assistUi` adds the field's own context: `fieldContext(field)` — everything
-its shape states, one line per fact and nothing it does not state: label,
-description, value type (`sh:datatype` / `sh:nodeKind` / `sh:class`), `sh:in`
+its shape states beyond the name `Assist` already reads, one line per fact and
+nothing it does not state: description, value type (`sh:datatype` / `sh:nodeKind` / `sh:class`), `sh:in`
 options, `sh:pattern` (+ flags), length and numeric bounds, allowed language tags
 (`sh:languageIn`), cardinality, and the values a repeatable field already holds —
 plus `siblingValues(…)`, the literals already entered on the same resource, and the

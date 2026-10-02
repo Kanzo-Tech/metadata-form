@@ -308,12 +308,10 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
 function FieldShell({
   field,
   errors,
-  action,
   children,
 }: {
   field: FieldModel;
   errors: ReturnType<typeof useFieldBinding>["errors"];
-  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const { strings, resolveMessage } = useFormContext();
@@ -327,13 +325,10 @@ function FieldShell({
       disabled={field.readOnly ?? false}
       invalid={violations.length > 0}
     >
-      <div className="flex min-h-6 items-center justify-between gap-2">
-        <FieldLabel lang={field.labelLang}>
-          {field.label}
-          {field.required && <FieldRequiredIndicator />}
-        </FieldLabel>
-        {action}
-      </div>
+      <FieldLabel lang={field.labelLang}>
+        {field.label}
+        {field.required && <FieldRequiredIndicator />}
+      </FieldLabel>
       {field.description && <FieldDescription lang={field.descriptionLang}>{field.description}</FieldDescription>}
       {/* A disabled control with no account of itself reads as a broken form; this
           is the account. A second line of description, since the helper is the
