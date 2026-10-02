@@ -1,0 +1,50 @@
+name: Release
+
+# Publishes @kanzo-tech/metadata-form to npm when a GitHub Release is published.
+# The release tag is the version: `v0.2.0`, or `v0.3.0-rc.1`, whose prerelease
+# identifier becomes the dist-tag so `latest` stays where it was. The release is
+# the decision, made by a person; this only carries it out.
+#
+# Auth is the NPM_TOKEN repository secret (an npm automation token with publish
+# rights on the @kanzo-tech scope). Provenance is signed through the OIDC id-token.
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Resolve version and dist-tag
+        id: ver
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          case "$version" in
+            *-*) tag="${version#*-}"; tag="${tag%%.*}" ;;
+            *) tag=latest ;;
+          esac
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      # The committed version is a placeholder; the tag sets the published one.
+      - run: npm version "${{ steps.ver.outputs.version }}" --no-git-tag-version --allow-same-version
+
+      - run: npm publish --tag "${{ steps.ver.outputs.tag }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

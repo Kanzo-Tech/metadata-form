@@ -1,9 +1,15 @@
 {
-  "name": "metadata-form",
+  "name": "@kanzo-tech/metadata-form",
   "version": "0.1.0",
   "description": "Auto-generate editable React forms from SHACL shapes, powered by the rudof engine (WebAssembly). Edit an RDF graph and serialize to Turtle and JSON-LD.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kanzo-Tech/metadata-form.git"
+  },
+  "homepage": "https://kanzo-tech.github.io/metadata-form/",
+  "bugs": "https://github.com/Kanzo-Tech/metadata-form/issues",
   "keywords": [
     "rdf",
     "shacl",
@@ -122,5 +128,9 @@
     "vite": "^6.0.11",
     "vite-plugin-dts": "^4.5.0",
     "vitest": "^3.0.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

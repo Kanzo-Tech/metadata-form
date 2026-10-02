@@ -14,7 +14,7 @@ import { FieldRenderer } from "@/react/form/FieldRenderer.js";
 import { FormContext, NodeContext, type FormContextValue } from "@/react/form/context.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 import { resolveStrings } from "@/i18n/strings.js";
-import { es, ca } from "metadata-form/i18n";
+import { es, ca } from "@kanzo-tech/metadata-form/i18n";
 import type { Term } from "@rdfjs/types";
 import type { NodeShapeIR, PresentationHints, PropertyShapeIR, ShapeIR, ShapeModel } from "@/form/ShapeIR.js";
 

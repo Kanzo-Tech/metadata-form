@@ -2,7 +2,7 @@
 @import "@kanzo-tech/ui/tailwind.css";
 @import "@kanzo-tech/ai/tailwind.css";
 /* The playground consumes the library from `../src` (live sources), not from
-   `dist`, so it scans that instead of `metadata-form/tailwind.css`. */
+   `dist`, so it scans that instead of `@kanzo-tech/metadata-form/tailwind.css`. */
 @source "../src";
 
 /* IDE-style panel divider (playground ResizeHandle): the hairline thickens

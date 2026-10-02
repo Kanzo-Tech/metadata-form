@@ -8,9 +8,9 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "metadata-form/i18n": ["./src/i18n/index.ts"],
-      "metadata-form/ai": ["./src/ai/index.ts"],
-      "metadata-form": ["./src/index.ts"],
+      "@kanzo-tech/metadata-form/i18n": ["./src/i18n/index.ts"],
+      "@kanzo-tech/metadata-form/ai": ["./src/ai/index.ts"],
+      "@kanzo-tech/metadata-form": ["./src/index.ts"],
       "@/*": ["./src/*"],
       "@examples/*": ["./examples/*"],
       "@playground/*": ["./playground/src/*"]

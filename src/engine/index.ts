@@ -2,7 +2,7 @@ import { RudofEngine } from "./RudofEngine.js";
 import { loadRudof } from "./loader.js";
 
 /**
- * `metadata-form/rudof` — direct access to the rudof-over-WASM engine (the
+ * `@kanzo-tech/metadata-form/rudof` — direct access to the rudof-over-WASM engine (the
  * default engine behind `useMetadataForm`), for power-user wiring: a shared
  * engine or custom projection. These are the engine internals demoted off the
  * main entry.

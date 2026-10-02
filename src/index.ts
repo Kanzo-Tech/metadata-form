@@ -1,11 +1,11 @@
 // Public entry. The UI is built on @kanzo-tech/ui — compile its Tailwind entry
-// (see "metadata-form/tailwind.css") and put the theme attributes on <html> (see
+// (see "@kanzo-tech/metadata-form/tailwind.css") and put the theme attributes on <html> (see
 // KanzoThemeProvider). There is no wrapper component to render inside: Ark's
 // overlays portal to document.body, so a wrapper could not reach them.
 //
 // Deliberately small: a hook, the components that render it, and the types a
 // consumer writes against. The rudof engine and the shape IR are on the
-// `metadata-form/rudof` subpath, the whole AI layer on `metadata-form/ai`.
+// `@kanzo-tech/metadata-form/rudof` subpath, the whole AI layer on `@kanzo-tech/metadata-form/ai`.
 
 export { useMetadataForm } from "./react/hooks/useMetadataForm.js";
 export type { MetadataFormController, UseMetadataFormOptions } from "./react/hooks/useMetadataForm.js";
@@ -53,5 +53,5 @@ export type { FormReport, FormProgress, FormMood, IssueRow, GroupIssues } from "
 // The language picker every localised string goes through (RFC 4647 basic filtering).
 export { pickByLanguage, resolveLanguage, type Resolved } from "./form/terms.js";
 
-// Interface strings (English built in; other languages from `metadata-form/i18n`).
+// Interface strings (English built in; other languages from `@kanzo-tech/metadata-form/i18n`).
 export type { Strings, DeepPartial, StringTables, Plural } from "./i18n/strings.js";

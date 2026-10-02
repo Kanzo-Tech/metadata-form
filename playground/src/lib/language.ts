@@ -1,4 +1,4 @@
-import { resolveLanguage } from "metadata-form";
+import { resolveLanguage } from "@kanzo-tech/metadata-form";
 
 /** A language range and what it falls back to, most specific first: `ca-ES` is `ca-ES`,
  *  then `ca` (RFC 4647 §3.4, lookup). */

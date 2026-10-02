@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { EN, count, resolveStrings } from "@/i18n/strings.js";
 import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
-import { es, ca } from "metadata-form/i18n";
+import { es, ca } from "@kanzo-tech/metadata-form/i18n";
 
 const SH = "http://www.w3.org/ns/shacl#";
 const EX = "http://example.org/";

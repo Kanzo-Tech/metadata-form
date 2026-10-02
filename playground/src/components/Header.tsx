@@ -1,5 +1,5 @@
 import { ScrollTextIcon } from "lucide-react";
-import { ValidationSummary } from "metadata-form";
+import { ValidationSummary } from "@kanzo-tech/metadata-form";
 
 /**
  * The app chrome: **one row**, per the design system's own shell showcases —

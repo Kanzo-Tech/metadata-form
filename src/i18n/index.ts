@@ -1,9 +1,9 @@
-// `metadata-form/i18n` — languages other than English, as data.
+// `@kanzo-tech/metadata-form/i18n` — languages other than English, as data.
 //
 // The core carries English only. Each language here is the interface `strings`, a
 // typed table. Pass what you need to `useMetadataForm`:
 //
-//   import { es, ca } from "metadata-form/i18n";
+//   import { es, ca } from "@kanzo-tech/metadata-form/i18n";
 //   useMetadataForm({ locale: ["es", "ca"], strings: { es: es.strings, ca: ca.strings } });
 //
 // The default validation messages are not here: the engine carries English, Spanish

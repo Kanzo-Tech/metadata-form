@@ -31,10 +31,10 @@ export default defineConfig({
   server: { fs: { allow: [resolve(root, "..")] } },
   resolve: {
     alias: {
-      // More specific first — "metadata-form/ai" must win over "metadata-form".
-      "metadata-form/i18n": lib("src/i18n/index.ts"),
-      "metadata-form/ai": lib("src/ai/index.ts"),
-      "metadata-form": lib("src/index.ts"),
+      // More specific first — "@kanzo-tech/metadata-form/ai" must win over "@kanzo-tech/metadata-form".
+      "@kanzo-tech/metadata-form/i18n": lib("src/i18n/index.ts"),
+      "@kanzo-tech/metadata-form/ai": lib("src/ai/index.ts"),
+      "@kanzo-tech/metadata-form": lib("src/index.ts"),
       "@": lib("src"),
       "@examples": lib("examples"),
     },

@@ -13,7 +13,7 @@ export interface MetadataFormProps {
   form: MetadataFormController;
   /** Widget overrides, merged over the defaults. */
   widgets?: WidgetRegistry;
-  /** The UI for `form.assist` — `assistUi` from `metadata-form/ai`. Without it the
+  /** The UI for `form.assist` — `assistUi` from `@kanzo-tech/metadata-form/ai`. Without it the
    *  form draws plain inputs and never calls the assistance. */
   assistUi?: AssistUi;
   /** How the root property groups are arranged. Defaults to `sequential`. */
@@ -32,7 +32,7 @@ export interface MetadataFormProps {
  *   const form = useMetadataForm({ shapes, data });
  *   <MetadataForm form={form} />
  *
- * Requires the Tailwind entries in README (`metadata-form/tailwind.css`), and the theme attributes on `<html>` —
+ * Requires the Tailwind entries in README (`@kanzo-tech/metadata-form/tailwind.css`), and the theme attributes on `<html>` —
  * `KanzoThemeProvider` puts them there. Not a wrapper element: Ark's overlays
  * portal to `document.body`, outside anything this component could wrap, and
  * density sets the root font-size the whole `rem` scale resolves against.

@@ -10,7 +10,7 @@ import { SH_IRI } from "@/form/vocab/shacl.js";
 import { literal, namedNode } from "@/form/factory.js";
 import type { PathExpr } from "@/form/ShapeIR.js";
 import { EN, resolveStrings } from "@/i18n/strings.js";
-import { es, ca } from "metadata-form/i18n";
+import { es, ca } from "@kanzo-tech/metadata-form/i18n";
 
 /**
  * Writing through a property path.

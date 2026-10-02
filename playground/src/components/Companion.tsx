@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Card, CardContent } from "@kanzo-tech/ui";
 import { XIcon } from "lucide-react";
-import type { FormMood, FormReport } from "metadata-form";
+import type { FormMood, FormReport } from "@kanzo-tech/metadata-form";
 import { fill, useChrome } from "../i18n.js";
 
 /** One emoji per mood, on a halo tinted by the theme's own status colours. */

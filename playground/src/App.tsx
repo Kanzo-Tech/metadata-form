@@ -20,9 +20,9 @@ import {
 } from "@kanzo-tech/ui";
 import { AssistProvider } from "@kanzo-tech/ai";
 import { Code2Icon, DownloadIcon, FileTextIcon } from "lucide-react";
-import { MetadataForm, useMetadataForm } from "metadata-form";
-import { assistTranslations, assistUi } from "metadata-form/ai";
-import { es, ca } from "metadata-form/i18n";
+import { MetadataForm, useMetadataForm } from "@kanzo-tech/metadata-form";
+import { assistTranslations, assistUi } from "@kanzo-tech/metadata-form/ai";
+import { es, ca } from "@kanzo-tech/metadata-form/i18n";
 import { PLAYGROUND_SECTION, PreferencesPanelContent, useClaudeKey, useClaudeModel, useLayoutPrefs, useMascot } from "./Preferences.js";
 import { Header } from "./components/Header.js";
 import { ExamplePickers } from "./components/ExamplePickers.js";
@@ -56,7 +56,7 @@ const asideSplit = (asides: number) => {
 const NARROW = "(max-width: 1024px)";
 
 /** The interface strings of the languages the library ships beyond English: data
- *  the playground imports from `metadata-form/i18n`, like any consumer. */
+ *  the playground imports from `@kanzo-tech/metadata-form/i18n`, like any consumer. */
 const STRINGS = { es: es.strings, ca: ca.strings };
 
 export function App() {

@@ -48,7 +48,7 @@ import { useStrings } from "../form/context.js";
  * SHACL-UI editor IRI the shape states (or rudof infers). They carry no RDF logic;
  * term ⇄ primitive conversion is the binding layer's job.
  *
- * Requires the Tailwind entries in README (`metadata-form/tailwind.css`) and the theme attributes on `<html>` (see
+ * Requires the Tailwind entries in README (`@kanzo-tech/metadata-form/tailwind.css`) and the theme attributes on `<html>` (see
  * `KanzoThemeProvider`) — Ark's overlays portal to `document.body`, so a wrapper
  * element cannot theme them.
  *

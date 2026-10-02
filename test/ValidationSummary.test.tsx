@@ -4,7 +4,7 @@ import { ValidationSummary } from "@/react/validation/ValidationSummary.js";
 import type { IssueRow } from "@/react/validation/formReport.js";
 import type { FieldError } from "@/form/validation.js";
 import { resolveStrings } from "@/i18n/strings.js";
-import { es, ca } from "metadata-form/i18n";
+import { es, ca } from "@kanzo-tech/metadata-form/i18n";
 import type { MetadataFormController } from "@/react/hooks/useMetadataForm.js";
 
 const MIN_COUNT = "http://www.w3.org/ns/shacl#MinCountConstraintComponent";
