@@ -7,7 +7,7 @@ import { assistTranslations, assistUi } from "@/ai/index.js";
 import { resolveStrings } from "@/i18n/strings.js";
 import { mockModel } from "./support/model.js";
 import type { AssistUi } from "@/react/assistUi.js";
-import { es } from "metadata-form/i18n";
+import { es } from "@kanzo-tech/metadata-form/i18n";
 import { Editors } from "@/form/vocab/shacl-ui.js";
 import { defaultWidgets } from "@/react/widgets/defaultWidgets.js";
 

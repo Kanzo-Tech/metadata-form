@@ -11,14 +11,14 @@ const r = (p: string) => resolve(__dirname, p);
 // Library entry points → mirror the package.json "exports" map.
 const entries = {
   index: r("src/index.ts"),
-  // The optional AI layer (`metadata-form/ai`): @kanzo-tech/ai's `Assist` is
+  // The optional AI layer (`@kanzo-tech/metadata-form/ai`): @kanzo-tech/ai's `Assist` is
   // imported here and nowhere in the core.
   "ai/index": r("src/ai/index.ts"),
-  // Direct rudof-engine access subpath (`metadata-form/rudof`) for custom wiring.
+  // Direct rudof-engine access subpath (`@kanzo-tech/metadata-form/rudof`) for custom wiring.
   // Emitted under dist/engine/ so the JS bundle and the dts (which mirrors the
   // src tree) share a path; package.json maps `./rudof` → dist/engine/index.*.
   "engine/index": r("src/engine/index.ts"),
-  // The languages other than English, as data (`metadata-form/i18n`): the core carries
+  // The languages other than English, as data (`@kanzo-tech/metadata-form/i18n`): the core carries
   // English only, and a consumer imports the rest.
   "i18n/index": r("src/i18n/index.ts"),
 };

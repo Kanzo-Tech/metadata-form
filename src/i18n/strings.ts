@@ -1,7 +1,7 @@
 /**
  * The words of the interface itself — everything the library prints that no shape
  * and no validation report says. English is built in; every other language is data a
- * consumer imports (`metadata-form/i18n`) or writes, and passes as `strings`.
+ * consumer imports (`@kanzo-tech/metadata-form/i18n`) or writes, and passes as `strings`.
  *
  * What is NOT here: field labels, descriptions and group names (the profile's
  * `sh:name`/`sh:description`/`rdfs:label`, picked by language) and the wording of
@@ -57,7 +57,7 @@ export interface Strings {
     goTo: string;
   };
   /** The words of model assistance — `@kanzo-tech/ai`'s `AssistTranslations`, as
-   *  data: `metadata-form/ai`'s `assistTranslations` hands them to the host's
+   *  data: `@kanzo-tech/metadata-form/ai`'s `assistTranslations` hands them to the host's
    *  `AssistProvider`, so the parts need know no language. */
   assist: {
     /** The ✨ at rest. */
@@ -254,7 +254,7 @@ function merge<T>(base: T, over: DeepPartial<T> | undefined): T {
  * The strings for the reader: English, overlaid with the table of the most
  * preferred language that has one. `languages` is ordered and matched by basic
  * filtering, like every other language choice here; `tables` holds whatever the
- * consumer supplied (`es`/`ca` from `metadata-form/i18n`, their own, or a partial
+ * consumer supplied (`es`/`ca` from `@kanzo-tech/metadata-form/i18n`, their own, or a partial
  * override of `en`). A string missing from the chosen table stays English.
  */
 export function resolveStrings(languages: readonly string[], tables: StringTables = {}): ResolvedStrings {

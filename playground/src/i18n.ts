@@ -3,7 +3,7 @@ import { createContext, useContext } from "react";
 /**
  * The playground's own words, in the three languages the shapes speak.
  *
- * **Deliberately not `metadata-form`'s catalog, and the line is what each string
+ * **Deliberately not `@kanzo-tech/metadata-form`'s catalog, and the line is what each string
  * names.** `src/i18n/strings.ts` covers the FORM — the language picker's chrome
  * and the wording of a finding — which every consumer renders and therefore every
  * consumer needs translated. What is below names *this workspace's furniture*: a

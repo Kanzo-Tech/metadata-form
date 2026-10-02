@@ -34,7 +34,7 @@ export interface UseMetadataFormOptions {
    *  `navigator.languages`, else `en`. */
   locale?: string | readonly string[];
   /** Interface strings by language tag (`{ es: es.strings }` from
-   *  `metadata-form/i18n`, or your own). English is built in; a table may be partial. */
+   *  `@kanzo-tech/metadata-form/i18n`, or your own). English is built in; a table may be partial. */
   strings?: StringTables;
   /** Extra default validation messages, as Turtle documents of
    *  `<constraint component> sh:message "…"@lang` triples with `{$param}`

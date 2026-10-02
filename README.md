@@ -24,7 +24,7 @@ field's **SHACL-UI editor** to a widget and renders the form.
 - ✅ **Live validation** — per-field errors from rudof's SHACL validator, plus a
   ready-made `<ValidationSummary>` tally: open it for every issue, grouped worst
   first, each with a way to its field — and opening it marks them all where they are.
-- 🤖 **Optional AI assist** — a separate `metadata-form/ai` subpath over
+- 🤖 **Optional AI assist** — a separate `@kanzo-tech/metadata-form/ai` subpath over
   [@kanzo-tech/ai](https://github.com/Kanzo-Tech/kanzo-ui)'s `Assist`: ghost text
   in textareas (Tab/Esc), candidate values under text fields and tags fields, and
   the field's own SHACL constraints in every prompt. The core imports no AI package.
@@ -98,7 +98,7 @@ rejects, because one engine produces both. This is the example the
 ## Install
 
 ```sh
-npm install metadata-form react react-dom lucide-react tailwindcss @kanzo-tech/ui
+npm install @kanzo-tech/metadata-form react react-dom lucide-react tailwindcss @kanzo-tech/ui
 ```
 
 The AI layer is opt-in and has its own peers (`@kanzo-tech/ai`, `@kanzo-tech/llm`,
@@ -112,7 +112,7 @@ one stylesheet.
 ```css
 @import "tailwindcss";
 @import "@kanzo-tech/ui/tailwind.css";
-@import "metadata-form/tailwind.css";
+@import "@kanzo-tech/metadata-form/tailwind.css";
 ```
 
 (With Vite, add `@tailwindcss/vite`.) Then put the theme attributes
@@ -151,7 +151,7 @@ component. The controller owns the editable graph and exposes the live output
 reactively, so there is no `onChange`:
 
 ```tsx
-import { useMetadataForm, MetadataForm, ValidationSummary } from "metadata-form";
+import { useMetadataForm, MetadataForm, ValidationSummary } from "@kanzo-tech/metadata-form";
 import { KanzoThemeProvider } from "@kanzo-tech/ui";
 
 export function App({ shape, graph }: { shape: string; graph?: string }) {
@@ -193,9 +193,9 @@ The main entry is deliberately small.
 | `defaultWidgets`, `Editors` | the widget registry and the `shui:` editor IRIs it is keyed by |
 | types | the form model (`FormModel`, `FieldModel`, …), the report (`FormReport`, `FieldError`, …), the widget contract (`Widget`, `WidgetProps`, `WidgetRegistry`, …), `FormAssist`, `AssistUi`, `AssistWrap`, `Strings`, `StringTables` |
 
-Everything else is on a subpath: `metadata-form/rudof` (the engine and the shape
-IR), `metadata-form/ai` (the AI layer: UI, prompt context, model adapter), `metadata-form/i18n` (languages other than
-English, as data), `metadata-form/tailwind.css`.
+Everything else is on a subpath: `@kanzo-tech/metadata-form/rudof` (the engine and the shape
+IR), `@kanzo-tech/metadata-form/ai` (the AI layer: UI, prompt context, model adapter), `@kanzo-tech/metadata-form/i18n` (languages other than
+English, as data), `@kanzo-tech/metadata-form/tailwind.css`.
 
 ### Languages
 
@@ -208,7 +208,7 @@ What the reader sees comes from three places, and the library says which:
 | placeholders, `Yes`/`No`, counts, progress, the read-only reasons, the findings panel | **the strings table** — typed, English built in | by language tag |
 
 ```tsx
-import { es, ca } from "metadata-form/i18n"; // languages other than English, as data
+import { es, ca } from "@kanzo-tech/metadata-form/i18n"; // languages other than English, as data
 
 useMetadataForm({
   shapes,
@@ -284,13 +284,13 @@ language, so a table must supply the forms its language uses.
 ### Assistance
 
 Model assistance is **[@kanzo-tech/ai](https://github.com/Kanzo-Tech/kanzo-ui)'s
-`Assist`**, and the core draws none of it: without `metadata-form/ai` a form renders
+`Assist`**, and the core draws none of it: without `@kanzo-tech/metadata-form/ai` a form renders
 plain inputs and plain textareas and calls no model. Enabling it is the provider
 you already mount for `Assist` anywhere, and one prop:
 
 ```tsx
 import { AssistProvider } from "@kanzo-tech/ai";
-import { assistTranslations, assistUi } from "metadata-form/ai"; // peers: @kanzo-tech/ai, @kanzo-tech/llm, ai, @ai-sdk/react
+import { assistTranslations, assistUi } from "@kanzo-tech/metadata-form/ai"; // peers: @kanzo-tech/ai, @kanzo-tech/llm, ai, @ai-sdk/react
 
 <AssistProvider model={model} translations={assistTranslations(form.strings)}>
   <MetadataForm form={form} assistUi={assistUi} />
@@ -500,7 +500,7 @@ a custom `shui:editor` is one more entry rather than a new case in core.
 Override any widget per form:
 
 ```tsx
-import { Editors, type WidgetRegistry } from "metadata-form";
+import { Editors, type WidgetRegistry } from "@kanzo-tech/metadata-form";
 
 const widgets: WidgetRegistry = {
   [Editors.DatePicker]: (p) => <MyDatePicker value={p.value} onChange={p.onChange} />,
@@ -530,10 +530,10 @@ rudof owns every RDF concern — parsing, validation, projection,
 serialization, and SHACL-UI editor resolution — over a **single** wasm graph. The
 React layer is shape-language-agnostic: it consumes the `ShapeModel` IR and binds
 editor IRIs to widgets, and nothing in it imports an AI package (the `assist` seam is
-fed, and drawn, by `metadata-form/ai` or by the consumer). Adding **ShEx** is an engine-side change behind the
+fed, and drawn, by `@kanzo-tech/metadata-form/ai` or by the consumer). Adding **ShEx** is an engine-side change behind the
 same IR; the UI doesn't move.
 
-### `metadata-form/rudof` — direct engine access
+### `@kanzo-tech/metadata-form/rudof` — direct engine access
 
 Power-user wiring lives at the `./rudof` subpath: a shared `RudofEngine`, custom
 projection, or a raw graph session, without going through the hook. It also
@@ -541,7 +541,7 @@ carries the shape IR types (`ShapeModel`, `NodeShapeIR`, `PropertyShapeIR`,
 `ProjectedForm`, …).
 
 ```ts
-import { createRudofEngine, projectTree } from "metadata-form/rudof";
+import { createRudofEngine, projectTree } from "@kanzo-tech/metadata-form/rudof";
 
 const engine = createRudofEngine();
 const model = await engine.loadShapes(shapesTurtle);

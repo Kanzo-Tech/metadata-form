@@ -13,7 +13,7 @@ export interface WidgetOption {
  * The signal lets the UI cancel a stale run.
  *
  * Model assistance is not here: it is `@kanzo-tech/ai`'s `Assist`, drawn by
- * `assistUi` from `metadata-form/ai` under the host's own `AssistProvider`.
+ * `assistUi` from `@kanzo-tech/metadata-form/ai` under the host's own `AssistProvider`.
  */
 export interface FormAssist {
   /** `classIn` carries every class the value may belong to when an `sh:or`

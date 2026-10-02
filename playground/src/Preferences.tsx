@@ -10,7 +10,7 @@ import {
 } from "@kanzo-tech/ui";
 import type { SectionManifest } from "@kanzo-tech/theme";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import type { FormLayout, GridLayout } from "metadata-form";
+import type { FormLayout, GridLayout } from "@kanzo-tech/metadata-form";
 import { useChrome } from "./i18n.js";
 import { columnsSpecimen, layoutSpecimen, mascotSpecimen } from "./components/LayoutSpecimens.js";
 

@@ -20,6 +20,6 @@ export interface AssistUiProps {
 /**
  * Model assistance around one control — supplied by the consumer, never imported
  * by the core, so a form without it renders plain inputs and carries no AI package.
- * `metadata-form/ai` provides `assistUi`, over `@kanzo-tech/ai`'s `Assist`.
+ * `@kanzo-tech/metadata-form/ai` provides `assistUi`, over `@kanzo-tech/ai`'s `Assist`.
  */
 export type AssistUi = ComponentType<AssistUiProps>;
