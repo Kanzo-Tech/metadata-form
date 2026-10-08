@@ -5,8 +5,12 @@ name: Release
 # identifier becomes the dist-tag so `latest` stays where it was. The release is
 # the decision, made by a person; this only carries it out.
 #
-# Auth is the NPM_TOKEN repository secret (an npm automation token with publish
-# rights on the @kanzo-tech scope). Provenance is signed through the OIDC id-token.
+# Auth is npm Trusted Publishing: the OIDC id-token below, matched by the trusted
+# publisher configured for this package on npmjs.com (repo Kanzo-Tech/metadata-form,
+# workflow release.yml); provenance comes with it. npm tries OIDC first and falls
+# back to NODE_AUTH_TOKEN, which is what the FIRST publish needs: a trusted
+# publisher can only be attached to a package that already exists. Once it is,
+# the NPM_TOKEN secret can go.
 
 on:
   release:
@@ -36,6 +40,9 @@ jobs:
           esac
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      # Trusted Publishing needs npm >= 11.5.1.
+      - run: npm install -g npm@latest
 
       - run: npm ci
       - run: npm run typecheck
