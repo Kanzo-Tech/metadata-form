@@ -344,3 +344,48 @@ describe("serialization", () => {
     expect(await engine2.serialize("text/turtle")).toContain("Round trip");
   });
 });
+
+describe("required mark follows sh:severity", () => {
+  const severityTtl = `
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/> .
+
+ex:ItemShape a sh:NodeShape ;
+  sh:targetClass ex:Item ;
+  sh:property ex:title, ex:code, ex:age, ex:note,
+    [ sh:path ex:anon ; sh:minCount 1 ; sh:severity sh:Warning ] .
+
+ex:title a sh:PropertyShape ; sh:path ex:title ; sh:minCount 1 .
+ex:code a sh:PropertyShape ; sh:path ex:code ; sh:minCount 1 ; sh:severity sh:Violation .
+ex:age a sh:PropertyShape ; sh:path ex:age ; sh:minCount 1 ; sh:severity sh:Warning .
+ex:note a sh:PropertyShape ; sh:path ex:note ; sh:minCount 1 ; sh:severity sh:Info .
+`;
+
+  async function fieldsOf() {
+    const model = buildFrom(
+      await parseShapes(severityTtl),
+      namedNode("http://example.org/i1"),
+      "http://example.org/ItemShape",
+    );
+    const fields = allFields(model);
+    return (name: string) => fields.find((f) => f.path.value === `http://example.org/${name}`)!;
+  }
+
+  it("a sh:minCount is required when breaking it is a violation (the default or written)", async () => {
+    const field = await fieldsOf();
+    expect(field("title").required).toBe(true);
+    expect(field("code").required).toBe(true);
+  });
+
+  it("a sh:minCount with sh:Warning or sh:Info only recommends the value: no required mark", async () => {
+    const field = await fieldsOf();
+    expect(field("age").required).toBe(false);
+    expect(field("note").required).toBe(false);
+    expect(field("age").minCount).toBe(1);
+  });
+
+  it("an anonymous property shape keeps the required mark, as its severity has no IRI to be read by", async () => {
+    const field = await fieldsOf();
+    expect(field("anon").required).toBe(true);
+  });
+});

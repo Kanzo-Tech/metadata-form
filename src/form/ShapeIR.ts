@@ -176,6 +176,11 @@ export interface ShapeIR {
   logical: LogicalConstraints;
   /** sh:node — nested node-shape id. */
   node?: string;
+  /** sh:severity of the shape. rudof's IR does not carry it, so the engine reads
+   *  it from the shapes document itself (see `RudofEngine.loadShapes`). Only set
+   *  for a shape with an IRI: an anonymous property shape has no id to find it
+   *  by, and is read as a violation, the SHACL default (§2.1.5). */
+  severity?: "violation" | "warning" | "info";
   presentation: PresentationHints;
   /** Open list of all constraint components (typed-core superset). */
   components: ComponentIR[];
