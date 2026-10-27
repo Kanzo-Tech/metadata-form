@@ -5,7 +5,7 @@ import { freshFocusNode, resolveRootShapeFromTypes } from "./rootShape.js";
 import { projectTree, type ProjectedNode, type ProjectedTree } from "./projectTree.js";
 import type { NodeShapeIR, ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
 import type { Severity, ValidationResult } from "../form/validation.js";
-import type { RudofLoader, RudofModule, RudofResult, RudofSession, ShapeModelJson } from "./abi.js";
+import type { RudofLoader, RudofResult, RudofSession, ShapeModelJson } from "./abi.js";
 
 const TURTLE = "text/turtle";
 const SH_OR = "http://www.w3.org/ns/shacl#OrConstraintComponent";
@@ -31,30 +31,18 @@ function toValidationResult(r: RudofResult): ValidationResult {
 }
 
 /**
- * Stamp each property shape with its `sh:severity`, which rudof's IR does not
- * carry and which decides whether a `sh:minCount` makes a field required
- * (violation) or only recommended (warning, info). The shapes document is parsed
- * as data in a scratch session and asked for its `sh:severity` triples. Only
- * shapes with an IRI can be matched; an anonymous property shape keeps no id in
- * the IR, and stays unannotated (read as a violation, as before).
+ * Stamp each property shape with its `sh:severity`, which decides whether a
+ * `sh:minCount` makes a field required (violation) or only recommended
+ * (warning, info). rudof lists it among the shape's components, anonymous
+ * shapes included; this lifts it to a typed field, so the form need not search
+ * the open list.
  */
-function annotateSeverities(
-  json: ShapeModelJson,
-  scratch: RudofSession,
-  text: string,
-  mediaType: string,
-): void {
-  scratch.loadData(text, mediaType);
-  const bySubject = new Map<string, Severity>();
-  for (const q of scratch.quads(null, { termType: "NamedNode", value: SH_SEVERITY }, null)) {
-    if (q.subject.termType === "NamedNode") bySubject.set(q.subject.value, mapSeverity(q.object.value));
-  }
-  if (bySubject.size === 0) return;
+function annotateSeverities(json: ShapeModelJson): void {
   for (const shape of json.nodeShapes) {
     const conditional = (shape.conditionals ?? []).flatMap((c) => [...c.then, ...c.else]);
     for (const ps of [...shape.properties, ...conditional]) {
-      const severity = ps.id ? bySubject.get(ps.id) : undefined;
-      if (severity) ps.severity = severity;
+      const value = ps.components.find((c) => c.iri === SH_SEVERITY)?.params.get("value")?.[0]?.value;
+      if (value) ps.severity = mapSeverity(value);
     }
   }
 }
@@ -154,7 +142,6 @@ export class RudofGraphBackend {
  */
 export class RudofEngine {
   private session?: RudofSession;
-  private module?: RudofModule;
   private initOnce?: Promise<void>;
 
   constructor(private readonly load: RudofLoader) {}
@@ -162,7 +149,6 @@ export class RudofEngine {
   /** Resolve once the engine is usable (awaits WASM; memoized). */
   ready(): Promise<void> {
     return (this.initOnce ??= this.load().then((m) => {
-      this.module = m;
       this.session = m.newSession();
     }));
   }
@@ -177,12 +163,7 @@ export class RudofEngine {
   async loadShapes(text: string, mediaType = TURTLE): Promise<ShapeModel> {
     await this.ready();
     const json = this.s.loadShapes(text, mediaType);
-    try {
-      annotateSeverities(json, this.module!.newSession(), text, mediaType);
-    } catch {
-      // Without severities every sh:minCount reads as required, as it did before:
-      // the form stays usable, only recommended fields keep the required mark.
-    }
+    annotateSeverities(json);
     return shapeModelFromJson(json);
   }
 

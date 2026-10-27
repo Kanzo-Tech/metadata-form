@@ -361,9 +361,9 @@ ex:age a sh:PropertyShape ; sh:path ex:age ; sh:minCount 1 ; sh:severity sh:Warn
 ex:note a sh:PropertyShape ; sh:path ex:note ; sh:minCount 1 ; sh:severity sh:Info .
 `;
 
-  async function fieldsOf() {
+  async function fieldsOf(ttl = severityTtl) {
     const model = buildFrom(
-      await parseShapes(severityTtl),
+      await parseShapes(ttl),
       namedNode("http://example.org/i1"),
       "http://example.org/ItemShape",
     );
@@ -384,8 +384,28 @@ ex:note a sh:PropertyShape ; sh:path ex:note ; sh:minCount 1 ; sh:severity sh:In
     expect(field("age").minCount).toBe(1);
   });
 
-  it("an anonymous property shape keeps the required mark, as its severity has no IRI to be read by", async () => {
+  it("an anonymous property shape is read too: a warning takes no required mark", async () => {
     const field = await fieldsOf();
-    expect(field("anon").required).toBe(true);
+    expect(field("anon").required).toBe(false);
+  });
+
+  const mergedTtl = `
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/> .
+
+ex:ItemShape a sh:NodeShape ;
+  sh:targetClass ex:Item ;
+  sh:property
+    [ sh:path ex:age ; sh:minCount 1 ; sh:severity sh:Warning ] ,
+    [ sh:path ex:age ; sh:maxCount 1 ; sh:severity sh:Violation ] ,
+    [ sh:path ex:title ; sh:minCount 1 ; sh:severity sh:Warning ] ,
+    [ sh:path ex:title ; sh:minCount 1 ] .
+`;
+
+  it("a field merged from several shapes is required only when a shape setting sh:minCount is a violation", async () => {
+    const field = await fieldsOf(mergedTtl);
+    expect(field("age").required).toBe(false);
+    expect(field("age").maxCount).toBe(1);
+    expect(field("title").required).toBe(true);
   });
 });
