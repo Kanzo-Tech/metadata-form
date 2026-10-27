@@ -29,7 +29,12 @@ export interface IssueRow {
 }
 
 export interface GroupIssues {
+  /** All issues in the group: violations plus warnings (and infos). */
   count: number;
+  /** Issues of severity violation: the data does not conform until they are fixed. */
+  errors: number;
+  /** Issues of severity warning or info: the data conforms with them. */
+  warnings: number;
   hasViolation: boolean;
   /** First field id under the group with an error — for click-to-jump. */
   firstFieldId?: string;
@@ -172,16 +177,24 @@ export function computeFormReport(
   const byGroup = new Map<string, GroupIssues>();
   for (const [gid, ids] of groupFieldIds) {
     let count = 0;
+    let violations = 0;
     let hasViolation = false;
     let firstFieldId: string | undefined;
     for (const id of ids) {
       const errs = errors.get(id);
       if (!errs || errs.length === 0) continue;
       count += errs.length;
+      violations += errs.filter((e) => e.severity === "violation").length;
       firstFieldId ??= id;
       if (errs.some((e) => e.severity === "violation")) hasViolation = true;
     }
-    byGroup.set(gid, { count, hasViolation, firstFieldId });
+    byGroup.set(gid, {
+      count,
+      errors: violations,
+      warnings: count - violations,
+      hasViolation,
+      firstFieldId,
+    });
   }
 
   const violations = rows.filter((r) => r.severity === "violation").length;

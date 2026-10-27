@@ -202,7 +202,13 @@ describe("computeFormReport (single derived state)", () => {
     expect(report.issues.rows[0]).toMatchObject({ key: title.id, label: "Title", severity: "violation" });
 
     const group = model.groups.find((g) => g.fields.some((f) => f.id === title.id))!;
-    expect(report.issues.byGroup.get(group.id)).toMatchObject({ count: 1, hasViolation: true, firstFieldId: title.id });
+    expect(report.issues.byGroup.get(group.id)).toMatchObject({
+      count: 1,
+      errors: 1,
+      warnings: 0,
+      hasViolation: true,
+      firstFieldId: title.id,
+    });
 
     // completion + health derived in the same pass
     expect(report.progress.requiredTotal).toBeGreaterThan(0);
