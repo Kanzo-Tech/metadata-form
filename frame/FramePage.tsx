@@ -22,7 +22,7 @@ import {
 } from "@kanzo-tech/metadata-form";
 import { ca, es } from "@kanzo-tech/metadata-form/i18n";
 import {
-  DEFAULT_EMBED_TEXTS,
+  EMBED_TEXTS,
   isHostMessage,
   type EmbedConfig,
   type EmbedTexts,
@@ -58,12 +58,44 @@ export function parentChannel(): Channel | undefined {
 const fill = (text: string, values: Record<string, string | number>) =>
   text.replace(/\{(\w+)\}/g, (all, key: string) => (key in values ? String(values[key]) : all));
 
+const primary = (tag: string) => tag.split("-")[0].toLowerCase();
+
+/** The reader's languages: the one picked in the page's selector first, then
+ *  the app's (`locale`), else the browser's. */
+function readerLanguages(locale: EmbedConfig["locale"], picked?: string): string[] {
+  const base = locale === undefined ? [...navigator.languages] : typeof locale === "string" ? [locale] : [...locale];
+  return picked ? [picked, ...base.filter((l) => l !== picked)] : base;
+}
+
+/** The page's texts in the first of the reader's languages it has them in
+ *  (English otherwise), with the app's over them. */
+function textsFor(config: EmbedConfig | undefined, languages: readonly string[]): EmbedTexts {
+  const lang =
+    languages.map(primary).find((l) => l in EMBED_TEXTS || (config?.textsByLanguage && l in config.textsByLanguage)) ??
+    "en";
+  return { ...(EMBED_TEXTS[lang] ?? EMBED_TEXTS.en), ...config?.texts, ...config?.textsByLanguage?.[lang] };
+}
+
+/** A language's own name for itself ("Español"), from the browser. */
+function languageName(tag: string): string {
+  try {
+    const name = new Intl.DisplayNames([tag], { type: "language" }).of(tag);
+    return name ? name.charAt(0).toLocaleUpperCase(tag) + name.slice(1) : tag;
+  } catch {
+    return tag;
+  }
+}
+
 /** The page: waits for `mf:init`, then shows the form with a variant selector
  *  above it when there is more than one variant. */
 export function FramePage({ channel }: { channel?: Channel }) {
   const [config, setConfig] = useState<EmbedConfig>();
   const seen = useRef<string>(undefined);
   const root = useRef<HTMLDivElement>(null);
+  // The language picked in the selector, until the app sends another locale.
+  const [picked, setPicked] = useState<string>();
+  const localeKey = JSON.stringify(config?.locale ?? null);
+  useEffect(() => setPicked(undefined), [localeKey]);
 
   useEffect(() => {
     if (!channel) return;
@@ -99,7 +131,11 @@ export function FramePage({ channel }: { channel?: Channel }) {
     };
   }, [channel]);
 
-  const texts: EmbedTexts = { ...DEFAULT_EMBED_TEXTS, ...config?.texts };
+  const languages = readerLanguages(config?.locale, picked);
+  const texts = textsFor(config, languages);
+  // Only other variants start the form again: another language or other texts
+  // re-word it, and what was typed stays.
+  const variantsKey = config ? JSON.stringify([config.variants, config.variant ?? null]) : "";
   return (
     <div ref={root}>
       {!channel ? (
@@ -107,13 +143,35 @@ export function FramePage({ channel }: { channel?: Channel }) {
       ) : !config ? (
         <p className="p-6">{texts.waiting}</p>
       ) : config.variants.length === 0 ? null : (
-        <Variants key={seen.current} config={config} texts={texts} channel={channel} />
+        <Variants
+          key={variantsKey}
+          config={config}
+          texts={texts}
+          languages={languages}
+          picked={picked}
+          onPick={setPicked}
+          channel={channel}
+        />
       )}
     </div>
   );
 }
 
-function Variants({ config, texts, channel }: { config: EmbedConfig; texts: EmbedTexts; channel: Channel }) {
+function Variants({
+  config,
+  texts,
+  languages,
+  picked,
+  onPick,
+  channel,
+}: {
+  config: EmbedConfig;
+  texts: EmbedTexts;
+  languages: readonly string[];
+  picked?: string;
+  onPick: (language: string) => void;
+  channel: Channel;
+}) {
   const first = config.variants.find((v) => v.id === config.variant) ?? config.variants[0];
   const [variant, setVariant] = useState<EmbedVariant>(first);
   const [shapes, setShapes] = useState<string>();
@@ -122,6 +180,8 @@ function Variants({ config, texts, channel }: { config: EmbedConfig; texts: Embe
   const markDirty = useCallback(() => setDirty(true), []);
   // Bumped by "mf:reset": a new key mounts an empty form.
   const [run, setRun] = useState(0);
+  // The languages the shapes are written in, as the form reports them.
+  const [available, setAvailable] = useState<string[]>([]);
 
   useEffect(
     () =>
@@ -162,23 +222,51 @@ function Variants({ config, texts, channel }: { config: EmbedConfig; texts: Embe
     setVariant(next);
   }
 
+  const showLanguages = !!config.languageSelector && available.length > 1;
+  const language =
+    available.find((a) => picked && primary(a) === primary(picked)) ??
+    available.find((a) => languages.some((l) => primary(l) === primary(a))) ??
+    available[0];
+
   return (
     <div className="space-y-4 p-4">
-      {config.variants.length > 1 && (
-        <label className="block text-sm font-semibold">
-          {texts.variantLabel}
-          <select
-            className="mt-1 block rounded-md border px-3 py-2"
-            value={variant.id}
-            onChange={(e) => choose(e.target.value)}
-          >
-            {config.variants.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.label}
-              </option>
-            ))}
-          </select>
-        </label>
+      {(config.variants.length > 1 || showLanguages) && (
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          {config.variants.length > 1 ? (
+            <label className="block text-sm font-semibold">
+              {texts.variantLabel}
+              <select
+                className="mt-1 block rounded-md border px-3 py-2"
+                value={variant.id}
+                onChange={(e) => choose(e.target.value)}
+              >
+                {config.variants.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <span />
+          )}
+          {showLanguages && (
+            <label className="block text-sm font-semibold">
+              {texts.languageLabel}
+              <select
+                className="mt-1 block rounded-md border px-3 py-2"
+                value={language}
+                onChange={(e) => onPick(e.target.value)}
+              >
+                {available.map((tag) => (
+                  <option key={tag} value={tag}>
+                    {languageName(tag)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
       )}
       {error ? (
         <p>{fill(texts.loadFailed, { error })}</p>
@@ -189,10 +277,11 @@ function Variants({ config, texts, channel }: { config: EmbedConfig; texts: Embe
           key={`${variant.id}-${run}`}
           shapes={shapes}
           rootShape={variant.rootShape}
-          locale={config.locale}
+          locale={languages}
           texts={texts}
           channel={channel}
           onDirty={markDirty}
+          onLanguages={setAvailable}
         />
       )}
     </div>
@@ -206,6 +295,7 @@ function Form({
   texts,
   channel,
   onDirty,
+  onLanguages,
 }: {
   shapes: string;
   rootShape?: string;
@@ -213,6 +303,7 @@ function Form({
   texts: EmbedTexts;
   channel: Channel;
   onDirty: () => void;
+  onLanguages: (languages: string[]) => void;
 }) {
   const form = useMetadataForm({
     shapes,
@@ -227,6 +318,12 @@ function Form({
   useEffect(() => {
     if (form.ready) channel.post({ type: "mf:ready" });
   }, [form.ready, channel]);
+
+  const languagesKey = form.availableLanguages.join(",");
+  useEffect(() => {
+    onLanguages(form.availableLanguages);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [languagesKey, onLanguages]);
 
   useEffect(() => {
     if (!form.ready) return;

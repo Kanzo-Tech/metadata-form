@@ -584,7 +584,12 @@ does the same, with a ref for `revealErrors()` and `reset()`.
 `label` and its shapes as text (`shapes`) or a URL on the page's origin
 (`shapesUrl`), and optionally a `rootShape`; with more than one, the page shows a
 selector, and asks before switching if something was typed. `locale` sets the
-reader's languages; `texts` rewords the page's own strings (`DEFAULT_EMBED_TEXTS`).
+reader's languages, and `languageSelector: true` lets the reader pick one of the
+languages the shapes are written in (off by default). The page's own strings come in
+English, Spanish and Catalan (`EMBED_TEXTS`); `texts` rewords them in every language
+and `textsByLanguage` per language. A new configuration starts the form again only if
+its variants change: another language or other texts re-word it, and what was typed
+stays.
 
 **The messages** (`EmbedToHost`, `HostToEmbed`): the page says `mf:waiting` and
 renders nothing until it gets `mf:init` with the configuration; then `mf:ready`,

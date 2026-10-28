@@ -26,7 +26,8 @@ export interface MetadataFormFrameHandle {
 /**
  * The form in an iframe, for React apps: {@link createMetadataFormFrame} with
  * the iframe's height following the form. A new `config` (compared by value)
- * starts the form again with it.
+ * is sent to the frame: new variants start the form again; another language or
+ * other texts only re-word it.
  */
 export const MetadataFormFrame = forwardRef<MetadataFormFrameHandle, MetadataFormFrameProps>(
   function MetadataFormFrame({ src, config, onChange, onReady, style, title, ...rest }, ref) {

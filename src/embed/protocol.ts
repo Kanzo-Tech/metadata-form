@@ -51,9 +51,10 @@ export interface EmbedTexts {
   errorSeverity: string;
   warningSeverity: string;
   goToField: string;
+  languageLabel: string;
 }
 
-export const DEFAULT_EMBED_TEXTS: EmbedTexts = {
+const EN: EmbedTexts = {
   variantLabel: "Profile",
   changeVariant: "Changing the profile clears what you have typed. Continue?",
   waiting: "Waiting for the form's configuration…",
@@ -75,7 +76,64 @@ export const DEFAULT_EMBED_TEXTS: EmbedTexts = {
   errorSeverity: "Error",
   warningSeverity: "Warning",
   goToField: "Go to field",
+  languageLabel: "Language",
 };
+
+const ES: EmbedTexts = {
+  variantLabel: "Perfil",
+  changeVariant: "Cambiar de perfil borra lo que has escrito. ¿Continuar?",
+  waiting: "Esperando la configuración del formulario…",
+  notEmbedded:
+    "Esta página muestra un formulario de metadatos dentro de un iframe. Ábrela desde una aplicación que le mande su configuración.",
+  loadingShapes: "Cargando las shapes…",
+  loadingEngine: "Cargando el motor del formulario…",
+  loadFailed: "No se han podido cargar las shapes: {error}",
+  formFailed: "El formulario ha fallado: {error}",
+  noIssues: "Sin incidencias",
+  errorsTitle: "Errores",
+  warningsTitle: "Avisos",
+  errorsHint: "La ficha no es válida hasta corregirlos.",
+  warningsHint: "Valores recomendados sin rellenar. La ficha sigue siendo válida.",
+  errorOne: "{n} error",
+  errorOther: "{n} errores",
+  warningOne: "{n} aviso",
+  warningOther: "{n} avisos",
+  errorSeverity: "Error",
+  warningSeverity: "Aviso",
+  goToField: "Ir al campo",
+  languageLabel: "Idioma",
+};
+
+const CA: EmbedTexts = {
+  variantLabel: "Perfil",
+  changeVariant: "Canviar de perfil esborra el que has escrit. Vols continuar?",
+  waiting: "S'espera la configuració del formulari…",
+  notEmbedded:
+    "Aquesta pàgina mostra un formulari de metadades dins d'un iframe. Obre-la des d'una aplicació que li enviï la configuració.",
+  loadingShapes: "Carregant les shapes…",
+  loadingEngine: "Carregant el motor del formulari…",
+  loadFailed: "No s'han pogut carregar les shapes: {error}",
+  formFailed: "El formulari ha fallat: {error}",
+  noIssues: "Sense incidències",
+  errorsTitle: "Errors",
+  warningsTitle: "Avisos",
+  errorsHint: "La fitxa no és vàlida fins que no es corregeixin.",
+  warningsHint: "Valors recomanats sense omplir. La fitxa continua sent vàlida.",
+  errorOne: "{n} error",
+  errorOther: "{n} errors",
+  warningOne: "{n} avís",
+  warningOther: "{n} avisos",
+  errorSeverity: "Error",
+  warningSeverity: "Avís",
+  goToField: "Ves al camp",
+  languageLabel: "Llengua",
+};
+
+/** The page's texts in the languages the form itself ships (English, Spanish,
+ *  Catalan), by primary language subtag. */
+export const EMBED_TEXTS: Readonly<Record<string, EmbedTexts>> = { en: EN, es: ES, ca: CA };
+
+export const DEFAULT_EMBED_TEXTS: EmbedTexts = EN;
 
 /** What the app sends in `mf:init`. Plain data: it crosses windows by
  *  structured clone, so no functions. */
@@ -85,7 +143,14 @@ export interface EmbedConfig {
   variant?: string;
   /** The reader's languages, most preferred first. Defaults to the browser's. */
   locale?: string | readonly string[];
+  /** Show a language selector, with the languages the shapes are written in
+   *  (when there is more than one). Changing it re-words the form; what was
+   *  typed stays. Off by default. */
+  languageSelector?: boolean;
+  /** The page's texts, whatever the language… */
   texts?: Partial<EmbedTexts>;
+  /** …and per language (by primary subtag, e.g. `es`), over those. */
+  textsByLanguage?: Record<string, Partial<EmbedTexts>>;
 }
 
 /** The form's state, as `mf:change` reports it. */

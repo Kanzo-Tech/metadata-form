@@ -10,7 +10,8 @@ const config: EmbedConfig = {
     { id: "mapping", label: "From shapes to fields", shapes: paperMappingShapes, rootShape: paperMappingRootShape },
   ],
   locale: ["en"],
-  texts: { variantLabel: "Example" },
+  languageSelector: true,
+  textsByLanguage: { en: { variantLabel: "Example" }, es: { variantLabel: "Ejemplo" } },
 };
 
 const $ = (id: string) => document.getElementById(id)!;

@@ -22,7 +22,8 @@ export interface MetadataFormFrame {
   revealErrors(): void;
   /** Start the form again, empty (e.g. after the record was saved). */
   reset(): void;
-  /** Send another configuration; the form starts again with it. */
+  /** Send another configuration. The form starts again only if the variants
+   *  change; another language or other texts re-word it, keeping what was typed. */
   configure(config: EmbedConfig): void;
   /** Stop listening to the frame. */
   destroy(): void;
