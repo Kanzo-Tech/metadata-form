@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       "@kanzo-tech/metadata-form/i18n": r("src/i18n/index.ts"),
       "@kanzo-tech/metadata-form/ai": r("src/ai/index.ts"),
+      "@kanzo-tech/metadata-form/embed": r("src/embed/index.ts"),
       "@kanzo-tech/metadata-form": r("src/index.ts"),
       "@": r("src"),
       "@examples": r("examples"),

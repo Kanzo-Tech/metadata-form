@@ -49,11 +49,16 @@
       "types": "./dist/i18n/index.d.ts",
       "import": "./dist/i18n/index.js"
     },
+    "./embed": {
+      "types": "./dist/embed/index.d.ts",
+      "import": "./dist/embed/index.js"
+    },
     "./tailwind.css": "./tailwind.css"
   },
   "scripts": {
     "dev": "vite --config playground/vite.config.ts",
-    "build": "vite build",
+    "build": "vite build && vite build --config frame/vite.config.ts",
+    "dev:frame": "vite --config frame/vite.config.ts",
     "build:playground": "vite build --config playground/vite.config.ts",
     "preview": "vite preview --config playground/vite.config.ts",
     "test": "vitest run",
