@@ -437,7 +437,10 @@ function buildField(
     editorId: effectiveEditor,
     editorSource: fromBranch ? "branch" : editorSource,
     editors: fromBranch ? undefined : ps.presentation.editors,
-    required: minCount >= 1,
+    // A sh:minCount makes a field required only when breaking it is a violation.
+    // With sh:severity sh:Warning (or sh:Info) the value is recommended: the data
+    // conforms without it, so the field takes no required mark.
+    required: minCount >= 1 && (ps.severity ?? "violation") === "violation",
     repeatable,
     minCount,
     maxCount,

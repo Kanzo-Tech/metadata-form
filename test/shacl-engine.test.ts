@@ -202,7 +202,13 @@ describe("computeFormReport (single derived state)", () => {
     expect(report.issues.rows[0]).toMatchObject({ key: title.id, label: "Title", severity: "violation" });
 
     const group = model.groups.find((g) => g.fields.some((f) => f.id === title.id))!;
-    expect(report.issues.byGroup.get(group.id)).toMatchObject({ count: 1, hasViolation: true, firstFieldId: title.id });
+    expect(report.issues.byGroup.get(group.id)).toMatchObject({
+      count: 1,
+      errors: 1,
+      warnings: 0,
+      hasViolation: true,
+      firstFieldId: title.id,
+    });
 
     // completion + health derived in the same pass
     expect(report.progress.requiredTotal).toBeGreaterThan(0);
@@ -336,5 +342,70 @@ describe("serialization", () => {
     const engine2 = createRudofEngine();
     await engine2.loadData(out);
     expect(await engine2.serialize("text/turtle")).toContain("Round trip");
+  });
+});
+
+describe("required mark follows sh:severity", () => {
+  const severityTtl = `
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/> .
+
+ex:ItemShape a sh:NodeShape ;
+  sh:targetClass ex:Item ;
+  sh:property ex:title, ex:code, ex:age, ex:note,
+    [ sh:path ex:anon ; sh:minCount 1 ; sh:severity sh:Warning ] .
+
+ex:title a sh:PropertyShape ; sh:path ex:title ; sh:minCount 1 .
+ex:code a sh:PropertyShape ; sh:path ex:code ; sh:minCount 1 ; sh:severity sh:Violation .
+ex:age a sh:PropertyShape ; sh:path ex:age ; sh:minCount 1 ; sh:severity sh:Warning .
+ex:note a sh:PropertyShape ; sh:path ex:note ; sh:minCount 1 ; sh:severity sh:Info .
+`;
+
+  async function fieldsOf(ttl = severityTtl) {
+    const model = buildFrom(
+      await parseShapes(ttl),
+      namedNode("http://example.org/i1"),
+      "http://example.org/ItemShape",
+    );
+    const fields = allFields(model);
+    return (name: string) => fields.find((f) => f.path.value === `http://example.org/${name}`)!;
+  }
+
+  it("a sh:minCount is required when breaking it is a violation (the default or written)", async () => {
+    const field = await fieldsOf();
+    expect(field("title").required).toBe(true);
+    expect(field("code").required).toBe(true);
+  });
+
+  it("a sh:minCount with sh:Warning or sh:Info only recommends the value: no required mark", async () => {
+    const field = await fieldsOf();
+    expect(field("age").required).toBe(false);
+    expect(field("note").required).toBe(false);
+    expect(field("age").minCount).toBe(1);
+  });
+
+  it("an anonymous property shape is read too: a warning takes no required mark", async () => {
+    const field = await fieldsOf();
+    expect(field("anon").required).toBe(false);
+  });
+
+  const mergedTtl = `
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/> .
+
+ex:ItemShape a sh:NodeShape ;
+  sh:targetClass ex:Item ;
+  sh:property
+    [ sh:path ex:age ; sh:minCount 1 ; sh:severity sh:Warning ] ,
+    [ sh:path ex:age ; sh:maxCount 1 ; sh:severity sh:Violation ] ,
+    [ sh:path ex:title ; sh:minCount 1 ; sh:severity sh:Warning ] ,
+    [ sh:path ex:title ; sh:minCount 1 ] .
+`;
+
+  it("a field merged from several shapes is required only when a shape setting sh:minCount is a violation", async () => {
+    const field = await fieldsOf(mergedTtl);
+    expect(field("age").required).toBe(false);
+    expect(field("age").maxCount).toBe(1);
+    expect(field("title").required).toBe(true);
   });
 });

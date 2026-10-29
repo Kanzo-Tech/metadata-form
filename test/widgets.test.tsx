@@ -210,8 +210,24 @@ describe("the layouts", () => {
       return <MetadataForm form={form} layout="steps" />;
     }
     render(<Steps />);
-    await waitFor(() => expect(screen.getByLabelText("1 issue")).toBeInTheDocument(), { timeout: 3000 });
+    await waitFor(() => expect(screen.getByLabelText("1 violation")).toBeInTheDocument(), { timeout: 3000 });
     expect(document.querySelectorAll("button button")).toHaveLength(0);
+  });
+
+  it("counts a step's violations and warnings apart, a pill each", async () => {
+    const mixed = `
+      @prefix sh: <http://www.w3.org/ns/shacl#> . @prefix ex: <${ex}> .
+      ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
+        sh:property [ sh:path ex:name ; sh:name "Name" ; sh:minCount 1 ] ;
+        sh:property [ sh:path ex:note ; sh:name "Note" ; sh:minCount 1 ; sh:severity sh:Warning ] .`;
+    function Steps() {
+      form = useMetadataForm({ shapes: mixed, rootShape: `${ex}S`, validateOn: "change" });
+      return <MetadataForm form={form} layout="steps" />;
+    }
+    render(<Steps />);
+    await waitFor(() => expect(screen.getByLabelText("1 violation")).toBeInTheDocument(), { timeout: 3000 });
+    expect(screen.getByLabelText("1 warning")).toBeInTheDocument();
+    expect(screen.queryByLabelText(/issue/)).toBeNull();
   });
 
   it("lays a group out in the design system's columns, a field spanning as many as it asks", async () => {

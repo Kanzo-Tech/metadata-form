@@ -73,6 +73,8 @@ export const strings: Strings = {
     back: "Enrere",
     next: "Següent",
     issues: { one: "{n} incidència", other: "{n} incidències" },
+    violationCount: { one: "{n} infracció", other: "{n} infraccions" },
+    warningCount: { one: "{n} avís", other: "{n} avisos" },
     valid: "Vàlid",
     madeWith: "Fet amb",
     madeAt: "a",

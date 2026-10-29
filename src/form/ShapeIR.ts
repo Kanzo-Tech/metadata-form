@@ -176,6 +176,11 @@ export interface ShapeIR {
   logical: LogicalConstraints;
   /** sh:node — nested node-shape id. */
   node?: string;
+  /** sh:severity of the shape, lifted by the engine from its `sh:severity`
+   *  component (see `RudofEngine.loadShapes`). On a field merged from several
+   *  shapes on one path, the severity of those that set its lower bound (see
+   *  `conjoinByPath`). Absent reads as a violation, the SHACL default (§2.1.5). */
+  severity?: "violation" | "warning" | "info";
   presentation: PresentationHints;
   /** Open list of all constraint components (typed-core superset). */
   components: ComponentIR[];

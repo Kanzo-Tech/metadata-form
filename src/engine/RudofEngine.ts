@@ -10,6 +10,7 @@ import type { RudofLoader, RudofResult, RudofSession, ShapeModelJson } from "./a
 const TURTLE = "text/turtle";
 const SH_OR = "http://www.w3.org/ns/shacl#OrConstraintComponent";
 const RDF_TYPE = namedNode(rdf("type").value);
+const SH_SEVERITY = "http://www.w3.org/ns/shacl#severity";
 
 function mapSeverity(s: string | undefined): Severity {
   if (s?.endsWith("Warning")) return "warning";
@@ -27,6 +28,23 @@ function toValidationResult(r: RudofResult): ValidationResult {
     constraint: r.sourceConstraintComponent,
     value: r.value ? toTerm(r.value) : undefined,
   };
+}
+
+/**
+ * Stamp each property shape with its `sh:severity`, which decides whether a
+ * `sh:minCount` makes a field required (violation) or only recommended
+ * (warning, info). rudof lists it among the shape's components, anonymous
+ * shapes included; this lifts it to a typed field, so the form need not search
+ * the open list.
+ */
+function annotateSeverities(json: ShapeModelJson): void {
+  for (const shape of json.nodeShapes) {
+    const conditional = (shape.conditionals ?? []).flatMap((c) => [...c.then, ...c.else]);
+    for (const ps of [...shape.properties, ...conditional]) {
+      const value = ps.components.find((c) => c.iri === SH_SEVERITY)?.params.get("value")?.[0]?.value;
+      if (value) ps.severity = mapSeverity(value);
+    }
+  }
 }
 
 /** Rehydrate the JSON shape model (arrays) into the {@link ShapeModel} (Maps). */
@@ -144,7 +162,9 @@ export class RudofEngine {
    *  agnostic {@link ShapeModel} and retain it in the session. */
   async loadShapes(text: string, mediaType = TURTLE): Promise<ShapeModel> {
     await this.ready();
-    return shapeModelFromJson(this.s.loadShapes(text, mediaType));
+    const json = this.s.loadShapes(text, mediaType);
+    annotateSeverities(json);
+    return shapeModelFromJson(json);
   }
 
   /** Add default validation messages in another language, or reword a built-in

@@ -123,6 +123,10 @@ export interface Strings {
     next: string;
     /** "n issues". */
     issues: Plural;
+    /** "n violations" and "n warnings": the accessible names of a section's two
+     *  issue badges. */
+    violationCount: Plural;
+    warningCount: Plural;
     /** The summary pill of a clean form. */
     valid: string;
     /** The attribution under the form: `{madeWith} ♥ {madeAt} Kanzo`, and the word
@@ -219,6 +223,8 @@ export const EN: Strings = {
     back: "Back",
     next: "Next",
     issues: { one: "{n} issue", other: "{n} issues" },
+    violationCount: { one: "{n} violation", other: "{n} violations" },
+    warningCount: { one: "{n} warning", other: "{n} warnings" },
     valid: "Valid",
     madeWith: "Made with",
     madeAt: "at",
