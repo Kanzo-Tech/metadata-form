@@ -195,7 +195,8 @@ The main entry is deliberately small.
 
 Everything else is on a subpath: `@kanzo-tech/metadata-form/rudof` (the engine and the shape
 IR), `@kanzo-tech/metadata-form/ai` (the AI layer: UI, prompt context, model adapter), `@kanzo-tech/metadata-form/i18n` (languages other than
-English, as data), `@kanzo-tech/metadata-form/tailwind.css`.
+English, as data), `@kanzo-tech/metadata-form/embed` (the form in an iframe, see
+[below](#in-an-iframe--kanzo-techmetadata-formembed)), `@kanzo-tech/metadata-form/tailwind.css`.
 
 ### Languages
 
@@ -548,13 +549,69 @@ const model = await engine.loadShapes(shapesTurtle);
 await engine.loadData(dataTurtle);
 ```
 
+### In an iframe — `@kanzo-tech/metadata-form/embed`
+
+For an app that cannot render the form itself (no React, other versions of
+Kanzo UI, styles that would clash), the package ships the form as a page to show
+in an iframe, in `dist/frame/`, and the app's side of it at the `./embed` subpath.
+The page has its own document, styles and engine; the app hands it the shapes and
+gets the record back, as messages.
+
+1. Serve the page: copy `node_modules/@kanzo-tech/metadata-form/dist/frame/` to a
+   folder your app serves (e.g. in a `prebuild` step).
+2. Put an iframe on it and talk to it:
+
+```ts
+import { createMetadataFormFrame } from "@kanzo-tech/metadata-form/embed";
+
+const form = createMetadataFormFrame(document.querySelector("iframe")!, {
+  config: {
+    variants: [{ id: "dataset", label: "Dataset", shapesUrl: "/shapes/dataset.ttl" }],
+    locale: ["en"],
+  },
+  onChange: ({ valid, errors, warnings, jsonLd }) => {
+    // save or publish the record when valid
+  },
+});
+form.revealErrors(); // mark every field with an error
+form.reset();        // start again, empty
+```
+
+In React, `<MetadataFormFrame src="/frame/index.html" config={…} onChange={…} />`
+does the same, with a ref for `revealErrors()` and `reset()`.
+
+**The configuration** (`EmbedConfig`) is plain data: `variants`, each with an `id`, a
+`label` and its shapes as text (`shapes`) or a URL on the page's origin
+(`shapesUrl`), and optionally a `rootShape`; with more than one, the page shows a
+selector, and asks before switching if something was typed. `locale` sets the
+reader's languages, and `languageSelector: true` lets the reader pick one of the
+languages the shapes are written in (off by default). The page's own strings come in
+English, Spanish and Catalan (`EMBED_TEXTS`); `texts` rewords them in every language
+and `textsByLanguage` per language. A new configuration starts the form again only if
+its variants change: another language or other texts re-word it, and what was typed
+stays.
+
+**The messages** (`EmbedToHost`, `HostToEmbed`): the page says `mf:waiting` and
+renders nothing until it gets `mf:init` with the configuration; then `mf:ready`,
+`mf:change` (`valid`, `errors`, `warnings`, `jsonLd`) on every edit and `mf:resize`
+when its height changes. The app may send `mf:reveal-errors`, `mf:reset` and
+`mf:sync` (repeat your state). Each side reads messages only from the other's
+window and origin, and writes only to that origin. The page's origin is that of its
+URL; the app's is the page's own, unless the page's URL names another
+(`…/index.html?origin=https://app.example`).
+
+The page carries a Content Security Policy (`connect-src 'self'`, so `shapesUrl`
+is on its own origin; `'wasm-unsafe-eval'` for the engine). `npm run dev:frame`
+serves it with `demo.html`, a host page that frames it.
+
 ## Develop
 
 ```sh
 npm run dev          # standalone playground (Vite) — http://localhost:5173
 npm test             # vitest
 npm run typecheck    # library + playground projects
-npm run build        # ESM + types into dist/ (library only)
+npm run build        # ESM + types into dist/, and the iframe page into dist/frame/
+npm run dev:frame    # the iframe page with a demo host — /demo.html
 npm run build:playground   # the standalone playground app
 ```
 

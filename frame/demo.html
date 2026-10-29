@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>metadata-form in an iframe (demo host)</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; display: grid; grid-template-columns: 1fr 360px; gap: 24px; }
+      iframe { border: 1px solid #ccc; border-radius: 8px; width: 100%; }
+      pre { font-size: 12px; white-space: pre-wrap; background: #f5f5f5; padding: 8px; border-radius: 6px; }
+      button { margin: 0 8px 8px 0; }
+    </style>
+  </head>
+  <body>
+    <iframe id="frame" src="./index.html" title="Metadata form"></iframe>
+    <aside>
+      <h2>Host page</h2>
+      <p>This page is the app: it sends the configuration and receives the form's state.</p>
+      <button id="reveal">Reveal errors</button>
+      <button id="reset">Reset</button>
+      <button id="spanish">Spanish</button>
+      <p id="status">Waiting…</p>
+      <pre id="state"></pre>
+    </aside>
+    <script type="module" src="./demo.ts"></script>
+  </body>
+</html>

@@ -21,6 +21,9 @@ const entries = {
   // The languages other than English, as data (`@kanzo-tech/metadata-form/i18n`): the core carries
   // English only, and a consumer imports the rest.
   "i18n/index": r("src/i18n/index.ts"),
+  // The app's side of the form in an iframe (`@kanzo-tech/metadata-form/embed`). The
+  // page itself is built apart, by frame/vite.config.ts, into dist/frame/.
+  "embed/index": r("src/embed/index.ts"),
 };
 
 // Anything that must NOT be bundled into the library output: the peers, the

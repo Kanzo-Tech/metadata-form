@@ -1,0 +1,7 @@
+/* The frame's own Tailwind: it lives in its own document (the iframe), so
+   nothing here reaches the app's pages, and nothing of the app's reaches it.
+   The library is built from ../src (live sources), so that is what is scanned. */
+@import "tailwindcss" source(none);
+@import "@kanzo-tech/ui/tailwind.css";
+@source "./";
+@source "../src";

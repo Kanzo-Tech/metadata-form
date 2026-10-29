@@ -10,6 +10,7 @@
     "paths": {
       "@kanzo-tech/metadata-form/i18n": ["./src/i18n/index.ts"],
       "@kanzo-tech/metadata-form/ai": ["./src/ai/index.ts"],
+      "@kanzo-tech/metadata-form/embed": ["./src/embed/index.ts"],
       "@kanzo-tech/metadata-form": ["./src/index.ts"],
       "@/*": ["./src/*"],
       "@examples/*": ["./examples/*"],
@@ -34,6 +35,7 @@
     "src",
     "test",
     "examples",
+    "frame",
     "playground/raw.d.ts",
     "playground/src/env.d.ts",
     "vite.config.ts",
