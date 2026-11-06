@@ -379,9 +379,23 @@ function SegmentField(p: WidgetProps & { items: { value: string; label: string }
   // Leaving it off would make the first click unrepeatable — there would be no way
   // back to empty.
   const options = p.required ? p.items : [...p.items, { value: NONE, label: chrome.notSet }];
+  // An optional field always shows a choice ("Not set" at least), so the shared
+  // track with its sliding pill reads well. A required one starts with nothing
+  // chosen, and on the track its options would run together: there each option
+  // is a button of its own, apart from the next, and the chosen one is outlined
+  // and tinted on the item itself (the items are opaque, so the pill stays
+  // hidden behind them).
+  const apart = p.required
+    ? {
+        className: "data-[variant=solid]:border-0 data-[variant=solid]:bg-transparent data-[variant=solid]:p-0",
+        itemClassName:
+          "border-border bg-background data-[state=checked]:border-primary data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary",
+      }
+    : {};
   return (
     <SegmentGroup
       variant="solid"
+      {...apart}
       options={options}
       value={p.value ?? NONE}
       onValueChange={(d) => p.onChange(d.value === NONE ? null : d.value)}
@@ -450,15 +464,20 @@ const EnumMulti: MultiWidget = (p) => {
 /**
  * A boolean, and how many states it really has.
  *
- * A `Switch` has two, so it is only honest when the shape guarantees a value —
- * `sh:minCount ≥ 1`, or a `sh:defaultValue` that fills the slot. Otherwise the
- * property has **three** states and "off" is a lie: a `sh:minCount 0` boolean
- * nobody answered is not `false`, and writing `false` into the graph because a
- * control could not represent "unanswered" is data the user never entered.
+ * A `Switch` has two, so it is only honest when the slot always holds a value —
+ * a `sh:defaultValue` that fills it. Otherwise "off" is a lie: a boolean nobody
+ * answered is not `false`, and writing `false` into the graph because a control
+ * could not represent "unanswered" is data the user never entered.
+ *
+ * `sh:minCount ≥ 1` does not fill the slot: it only says the answer is required.
+ * A required boolean starts unanswered, so a switch there would look like "no"
+ * while the field reports it missing, and "no" would take two clicks. It gets
+ * Yes / No instead, with nothing chosen until the reader picks one (and no
+ * "Not set", since that is not an answer it may keep).
  */
 const BooleanField: Widget = (p) => {
   const { chrome } = useStrings();
-  const settled = !!p.required || p.defaultValue != null;
+  const settled = p.defaultValue != null;
   const items = [
     { value: "true", label: chrome.yes },
     { value: "false", label: chrome.no },

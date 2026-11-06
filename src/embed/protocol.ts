@@ -14,6 +14,8 @@
  * frame's own unless the frame's URL says otherwise (`?origin=`).
  */
 
+import type { FormLayout, GridLayout } from "../react/form/context.js";
+
 /** One shapes graph the frame can show. With more than one, a selector picks it. */
 export interface EmbedVariant {
   /** Stable key, e.g. `"public"`. */
@@ -147,6 +149,12 @@ export interface EmbedConfig {
    *  (when there is more than one). Changing it re-words the form; what was
    *  typed stays. Off by default. */
   languageSelector?: boolean;
+  /** How the form's sections are arranged, as `<MetadataForm layout>` takes it:
+   *  one after another (`"sequential"`, the default), behind tabs, or a step at
+   *  a time. Sending another one re-arranges the form; what was typed stays. */
+  layout?: FormLayout;
+  /** Columns within each section, as `<MetadataForm grid>` takes them. */
+  grid?: GridLayout;
   /** The page's texts, whatever the language… */
   texts?: Partial<EmbedTexts>;
   /** …and per language (by primary subtag, e.g. `es`), over those. */

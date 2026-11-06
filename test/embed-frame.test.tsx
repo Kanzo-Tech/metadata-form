@@ -117,6 +117,30 @@ describe("the frame page", () => {
     expect(count("mf:ready")).toBe(1);
   });
 
+  it("arranges the form as the app says (one after another by default), without starting it again", async () => {
+    const { channel, send, count } = fakeChannel();
+    render(<FramePage channel={channel} />);
+    const sections: EmbedConfig = { variants: [mapping], locale: ["en"] };
+    await send({ type: "mf:init", config: sections });
+    await waitFor(() => expect(count("mf:ready")).toBe(1));
+    expect(await screen.findByText("Values")).toBeInTheDocument();
+    expect(screen.queryAllByRole("tab")).toHaveLength(0);
+    expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
+
+    // The paper's mapping example has four groups: one tab each.
+    await send({ type: "mf:init", config: { ...sections, layout: "tabs" } });
+    await waitFor(() => expect(screen.getAllByRole("tab")).toHaveLength(4));
+    expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
+
+    // Steps: one per group too, with Back and Next.
+    await send({ type: "mf:init", config: { ...sections, layout: "steps", grid: { columns: 2 } } });
+    expect(await screen.findByRole("button", { name: "Next" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+    expect(document.querySelector('[data-slot="field-group"]')).toHaveClass("grid-cols-2");
+    await new Promise((r) => setTimeout(r, 100));
+    expect(count("mf:ready")).toBe(1);
+  });
+
   it("re-words the form when the app sends another language, without starting it again", async () => {
     const { channel, send, count } = fakeChannel();
     render(<FramePage channel={channel} />);

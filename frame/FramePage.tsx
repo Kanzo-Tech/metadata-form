@@ -17,6 +17,7 @@ import {
 import {
   MetadataForm,
   useMetadataForm,
+  type FormLayout,
   type IssueRow,
   type MetadataFormController,
 } from "@kanzo-tech/metadata-form";
@@ -278,6 +279,8 @@ function Variants({
           shapes={shapes}
           rootShape={variant.rootShape}
           locale={languages}
+          layout={config.layout}
+          grid={config.grid}
           texts={texts}
           channel={channel}
           onDirty={markDirty}
@@ -292,6 +295,8 @@ function Form({
   shapes,
   rootShape,
   locale,
+  layout,
+  grid,
   texts,
   channel,
   onDirty,
@@ -300,6 +305,8 @@ function Form({
   shapes: string;
   rootShape?: string;
   locale?: string | readonly string[];
+  layout?: FormLayout;
+  grid?: EmbedConfig["grid"];
   texts: EmbedTexts;
   channel: Channel;
   onDirty: () => void;
@@ -371,7 +378,7 @@ function Form({
     <KanzoThemeProvider storage={null}>
       <div className="space-y-4">
         <IssuePills form={form} texts={texts} />
-        <MetadataForm form={form} />
+        <MetadataForm form={form} layout={layout} grid={grid} />
       </div>
     </KanzoThemeProvider>
   );
