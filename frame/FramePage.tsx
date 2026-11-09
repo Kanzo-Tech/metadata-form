@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
   Badge,
   Diagnostic,
@@ -12,8 +12,10 @@ import {
   FindingsGroup,
   FindingsRoot,
   FindingsTrigger,
+  Button,
   KanzoThemeProvider,
 } from "@kanzo-tech/ui";
+import { ArrowLeftIcon, DatabaseIcon, FileCodeIcon } from "lucide-react";
 import {
   MetadataForm,
   useMetadataForm,
@@ -31,6 +33,11 @@ import {
   type EmbedVariant,
   type HostToEmbed,
 } from "@kanzo-tech/metadata-form/embed";
+
+// Loaded only when the app turns one of them on (showShapes, showOutput), so the
+// code editor is not fetched by a page that shows neither.
+const ShapesPanel = lazy(() => import("./Panels").then((m) => ({ default: m.ShapesPanel })));
+const OutputPanel = lazy(() => import("./Panels").then((m) => ({ default: m.OutputPanel })));
 
 /** How the page talks to the app that frames it. */
 export interface Channel {
@@ -278,9 +285,12 @@ function Variants({
           key={`${variant.id}-${run}`}
           shapes={shapes}
           rootShape={variant.rootShape}
+          variant={variant.id}
           locale={languages}
           layout={config.layout}
           grid={config.grid}
+          showShapes={!!config.showShapes}
+          showOutput={!!config.showOutput}
           texts={texts}
           channel={channel}
           onDirty={markDirty}
@@ -294,9 +304,12 @@ function Variants({
 function Form({
   shapes,
   rootShape,
+  variant,
   locale,
   layout,
   grid,
+  showShapes,
+  showOutput,
   texts,
   channel,
   onDirty,
@@ -304,9 +317,12 @@ function Form({
 }: {
   shapes: string;
   rootShape?: string;
+  variant: string;
   locale?: string | readonly string[];
   layout?: FormLayout;
   grid?: EmbedConfig["grid"];
+  showShapes: boolean;
+  showOutput: boolean;
   texts: EmbedTexts;
   channel: Channel;
   onDirty: () => void;
@@ -347,6 +363,8 @@ function Form({
       errors,
       warnings: rows.length - errors,
       jsonLd: await form.toJsonLd(),
+      turtle: await form.toTurtle(),
+      variant,
     });
   };
 
@@ -371,14 +389,56 @@ function Form({
     [channel, form, form.ready, form.isValid, form.report.issues.total],
   );
 
+  // The shapes and the record, when the app asks for them, are shown in the
+  // form's place from buttons on the right: buttons and not tabs, so they do not
+  // read as parts of the form to fill in. The form stays mounted behind them, so
+  // what was typed stays.
+  const [view, setView] = useState<"form" | "shapes" | "output">("form");
+  const toggle = (v: "shapes" | "output") => setView((now) => (now === v ? "form" : v));
+  const views = [
+    ...(showShapes ? [{ value: "shapes" as const, label: texts.showShapes, Icon: FileCodeIcon }] : []),
+    ...(showOutput ? [{ value: "output" as const, label: texts.showOutput, Icon: DatabaseIcon }] : []),
+  ];
+
   if (form.error) return <p>{fill(texts.formFailed, { error: form.error.message })}</p>;
   if (!form.ready) return <p>{texts.loadingEngine}</p>;
 
   return (
     <KanzoThemeProvider storage={null}>
       <div className="space-y-4">
-        <IssuePills form={form} texts={texts} />
-        <MetadataForm form={form} layout={layout} grid={grid} />
+        {views.length > 0 && (
+          <div className="flex items-center gap-2">
+            {view !== "form" && (
+              <Button size="sm" variant="ghost" onClick={() => setView("form")}>
+                <ArrowLeftIcon />
+                {texts.backToForm}
+              </Button>
+            )}
+            <div className="ms-auto flex gap-2">
+              {views.map(({ value, label, Icon }) => (
+                <Button
+                  key={value}
+                  size="sm"
+                  variant={view === value ? "secondary" : "outline"}
+                  aria-pressed={view === value}
+                  onClick={() => toggle(value)}
+                >
+                  <Icon />
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="space-y-4" hidden={view !== "form"}>
+          <IssuePills form={form} texts={texts} />
+          <MetadataForm form={form} layout={layout} grid={grid} />
+        </div>
+        {view !== "form" && (
+          <Suspense fallback={<p>{texts.loadingEngine}</p>}>
+            {view === "shapes" ? <ShapesPanel shapes={shapes} /> : <OutputPanel form={form} texts={texts} />}
+          </Suspense>
+        )}
       </div>
     </KanzoThemeProvider>
   );

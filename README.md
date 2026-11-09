@@ -610,6 +610,9 @@ const config: EmbedConfig = {
   layout: "steps",            // "sequential" (default) | "tabs" | "steps", as <MetadataForm layout>
   grid: { columns: 2 },       // columns per group, as <MetadataForm grid> (see Layout)
 
+  showShapes: false,          // true: a Shape button shows the variant's shapes (read only)
+  showOutput: false,          // true: a Data button shows the record as Turtle / JSON-LD, downloadable
+
   texts: { variantLabel: "Access level" },               // the page's own strings, in every language…
   textsByLanguage: { es: { variantLabel: "Nivel de acceso" } }, // …and per language, over those
 };
@@ -620,9 +623,17 @@ keys of `EmbedTexts`). A new configuration starts the form again only if its
 variants change: another language, other texts or another layout re-word or
 re-arrange it, and what was typed stays.
 
+`showShapes` and `showOutput` put a button each on the right above the form. They
+are buttons and not tabs, so they do not read as parts of the form to fill in: each
+shows its document in the form's place (the shapes the form is drawn from; the
+record, kept up to date with every edit, in Turtle or as a JSON-LD tree, with a
+download), and "Back to the form", or the button again, brings the form back as it
+was left. The code editor they use is loaded only when one of them is on.
+
 **The messages** (`EmbedToHost`, `HostToEmbed`): the page says `mf:waiting` and
 renders nothing until it gets `mf:init` with the configuration; then `mf:ready`,
-`mf:change` (`valid`, `errors`, `warnings`, `jsonLd`) on every edit and `mf:resize`
+`mf:change` (`valid`, `errors`, `warnings`, `jsonLd`, `turtle`, and the `variant`
+shown) on every edit and `mf:resize`
 when its height changes. The app may send `mf:reveal-errors`, `mf:reset` and
 `mf:sync` (repeat your state). Each side reads messages only from the other's
 window and origin, and writes only to that origin. The page's origin is that of its

@@ -54,6 +54,10 @@ export interface EmbedTexts {
   warningSeverity: string;
   goToField: string;
   languageLabel: string;
+  showShapes: string;
+  showOutput: string;
+  backToForm: string;
+  download: string;
 }
 
 const EN: EmbedTexts = {
@@ -79,6 +83,10 @@ const EN: EmbedTexts = {
   warningSeverity: "Warning",
   goToField: "Go to field",
   languageLabel: "Language",
+  showShapes: "Shape",
+  showOutput: "Data",
+  backToForm: "Back to the form",
+  download: "Download {format}",
 };
 
 const ES: EmbedTexts = {
@@ -104,6 +112,10 @@ const ES: EmbedTexts = {
   warningSeverity: "Aviso",
   goToField: "Ir al campo",
   languageLabel: "Idioma",
+  showShapes: "Shape",
+  showOutput: "Datos",
+  backToForm: "Volver al formulario",
+  download: "Descargar {format}",
 };
 
 const CA: EmbedTexts = {
@@ -129,6 +141,10 @@ const CA: EmbedTexts = {
   warningSeverity: "Avís",
   goToField: "Ves al camp",
   languageLabel: "Llengua",
+  showShapes: "Shape",
+  showOutput: "Dades",
+  backToForm: "Torna al formulari",
+  download: "Baixa {format}",
 };
 
 /** The page's texts in the languages the form itself ships (English, Spanish,
@@ -155,6 +171,13 @@ export interface EmbedConfig {
   layout?: FormLayout;
   /** Columns within each section, as `<MetadataForm grid>` takes them. */
   grid?: GridLayout;
+  /** A button, on the right above the form, that shows the shapes the form is
+   *  drawn from (the variant's, read only) in the form's place. Off by default. */
+  showShapes?: boolean;
+  /** A button, on the right above the form, that shows the record the form is
+   *  writing, in Turtle and JSON-LD, kept up to date with every edit and
+   *  downloadable, in the form's place. Off by default. */
+  showOutput?: boolean;
   /** The page's texts, whatever the language… */
   texts?: Partial<EmbedTexts>;
   /** …and per language (by primary subtag, e.g. `es`), over those. */
@@ -171,6 +194,10 @@ export interface EmbedState {
   warnings: number;
   /** The record, as JSON-LD. */
   jsonLd: object;
+  /** The record, as Turtle. */
+  turtle: string;
+  /** The variant shown (its `id`). */
+  variant: string;
 }
 
 export type EmbedToHost =
