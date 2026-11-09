@@ -14,6 +14,8 @@
  * frame's own unless the frame's URL says otherwise (`?origin=`).
  */
 
+import type { FormLayout, GridLayout } from "../react/form/context.js";
+
 /** One shapes graph the frame can show. With more than one, a selector picks it. */
 export interface EmbedVariant {
   /** Stable key, e.g. `"public"`. */
@@ -52,6 +54,10 @@ export interface EmbedTexts {
   warningSeverity: string;
   goToField: string;
   languageLabel: string;
+  showShapes: string;
+  showOutput: string;
+  backToForm: string;
+  download: string;
 }
 
 const EN: EmbedTexts = {
@@ -77,6 +83,10 @@ const EN: EmbedTexts = {
   warningSeverity: "Warning",
   goToField: "Go to field",
   languageLabel: "Language",
+  showShapes: "Shape",
+  showOutput: "Data",
+  backToForm: "Back to the form",
+  download: "Download {format}",
 };
 
 const ES: EmbedTexts = {
@@ -102,6 +112,10 @@ const ES: EmbedTexts = {
   warningSeverity: "Aviso",
   goToField: "Ir al campo",
   languageLabel: "Idioma",
+  showShapes: "Shape",
+  showOutput: "Datos",
+  backToForm: "Volver al formulario",
+  download: "Descargar {format}",
 };
 
 const CA: EmbedTexts = {
@@ -127,6 +141,10 @@ const CA: EmbedTexts = {
   warningSeverity: "Avís",
   goToField: "Ves al camp",
   languageLabel: "Llengua",
+  showShapes: "Shape",
+  showOutput: "Dades",
+  backToForm: "Torna al formulari",
+  download: "Baixa {format}",
 };
 
 /** The page's texts in the languages the form itself ships (English, Spanish,
@@ -147,6 +165,19 @@ export interface EmbedConfig {
    *  (when there is more than one). Changing it re-words the form; what was
    *  typed stays. Off by default. */
   languageSelector?: boolean;
+  /** How the form's sections are arranged, as `<MetadataForm layout>` takes it:
+   *  one after another (`"sequential"`, the default), behind tabs, or a step at
+   *  a time. Sending another one re-arranges the form; what was typed stays. */
+  layout?: FormLayout;
+  /** Columns within each section, as `<MetadataForm grid>` takes them. */
+  grid?: GridLayout;
+  /** A button, on the right above the form, that shows the shapes the form is
+   *  drawn from (the variant's, read only) in the form's place. Off by default. */
+  showShapes?: boolean;
+  /** A button, on the right above the form, that shows the record the form is
+   *  writing, in Turtle and JSON-LD, kept up to date with every edit and
+   *  downloadable, in the form's place. Off by default. */
+  showOutput?: boolean;
   /** The page's texts, whatever the language… */
   texts?: Partial<EmbedTexts>;
   /** …and per language (by primary subtag, e.g. `es`), over those. */
@@ -163,6 +194,10 @@ export interface EmbedState {
   warnings: number;
   /** The record, as JSON-LD. */
   jsonLd: object;
+  /** The record, as Turtle. */
+  turtle: string;
+  /** The variant shown (its `id`). */
+  variant: string;
 }
 
 export type EmbedToHost =

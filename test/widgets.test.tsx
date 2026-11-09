@@ -244,6 +244,47 @@ describe("the layouts", () => {
   });
 });
 
+describe("a yes/no answer (xsd:boolean)", () => {
+  const yesNo = (more: string) => `
+    @prefix sh: <http://www.w3.org/ns/shacl#> . @prefix ex: <${ex}> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
+      sh:property [ sh:path ex:flag ; sh:name "Flag" ; sh:datatype xsd:boolean ; sh:maxCount 1 ${more} ] .`;
+  function YesNo({ shapes }: { shapes: string }) {
+    form = useMetadataForm({ shapes, rootShape: `${ex}S`, validateOn: "off" });
+    return <MetadataForm form={form} />;
+  }
+  const answers = () =>
+    [...fieldOf("flag").querySelectorAll('[data-slot="segment-group-item"]')].map((i) => i.textContent);
+  const aSwitch = () => fieldOf("flag").querySelector('input[type="checkbox"]');
+
+  it("is Yes / No when it is required, with nothing chosen and nothing written until one is picked", async () => {
+    render(<YesNo shapes={yesNo("; sh:minCount 1")} />);
+    await waitFor(() => expect(screen.getByText("Flag")).toBeInTheDocument());
+    // A switch would look like "no" while the answer is still missing.
+    expect(aSwitch()).toBeNull();
+    expect(answers()).toEqual(["Yes", "No"]);
+    expect(fieldOf("flag").querySelector('[data-slot="segment-group-item"][data-state="checked"]')).toBeNull();
+    expect(objects("flag")).toEqual([]);
+
+    fireEvent.click(within(fieldOf("flag")).getByText("No"));
+    await waitFor(() => expect(objects("flag")).toEqual(["false"]));
+  });
+
+  it("is a switch when a default value fills it", async () => {
+    render(<YesNo shapes={yesNo("; sh:minCount 1 ; sh:defaultValue false")} />);
+    await waitFor(() => expect(screen.getByText("Flag")).toBeInTheDocument());
+    expect(aSwitch()).not.toBeNull();
+    expect(answers()).toEqual([]);
+  });
+
+  it("is Yes / No / Not set when it is optional", async () => {
+    render(<YesNo shapes={yesNo("")} />);
+    await waitFor(() => expect(screen.getByText("Flag")).toBeInTheDocument());
+    expect(aSwitch()).toBeNull();
+    expect(answers()).toEqual(["Yes", "No", "Not set"]);
+  });
+});
+
 describe("the words of the parts the design system draws", () => {
   const spanish = { locale: "es", strings: { es: es.strings } };
 

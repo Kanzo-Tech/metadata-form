@@ -117,6 +117,75 @@ describe("the frame page", () => {
     expect(count("mf:ready")).toBe(1);
   });
 
+  it("arranges the form as the app says (one after another by default), without starting it again", async () => {
+    const { channel, send, count } = fakeChannel();
+    render(<FramePage channel={channel} />);
+    const sections: EmbedConfig = { variants: [mapping], locale: ["en"] };
+    await send({ type: "mf:init", config: sections });
+    await waitFor(() => expect(count("mf:ready")).toBe(1));
+    expect(await screen.findByText("Values")).toBeInTheDocument();
+    expect(screen.queryAllByRole("tab")).toHaveLength(0);
+    expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
+
+    // The paper's mapping example has four groups: one tab each.
+    await send({ type: "mf:init", config: { ...sections, layout: "tabs" } });
+    await waitFor(() => expect(screen.getAllByRole("tab")).toHaveLength(4));
+    expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
+
+    // Steps: one per group too, with Back and Next.
+    await send({ type: "mf:init", config: { ...sections, layout: "steps", grid: { columns: 2 } } });
+    expect(await screen.findByRole("button", { name: "Next" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+    expect(document.querySelector('[data-slot="field-group"]')).toHaveClass("grid-cols-2");
+    await new Promise((r) => setTimeout(r, 100));
+    expect(count("mf:ready")).toBe(1);
+  });
+
+  it("shows no Shape or Data buttons unless the app asks for them", async () => {
+    const { channel, send, count } = fakeChannel();
+    render(<FramePage channel={channel} />);
+    await send({ type: "mf:init", config: one });
+    await waitFor(() => expect(count("mf:ready")).toBe(1));
+    expect(screen.queryByRole("button", { name: "Shape" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Data" })).not.toBeInTheDocument();
+  });
+
+  it("shows the shapes and the record in the form's place, and the form keeps what was typed", async () => {
+    const { channel, send, count } = fakeChannel();
+    render(<FramePage channel={channel} />);
+    await send({ type: "mf:init", config: { variants: [mapping], locale: ["en"], showShapes: true, showOutput: true } });
+    await waitFor(() => expect(count("mf:ready")).toBe(1));
+
+    // A value, picked in the form: a discrete control commits at once.
+    fireEvent.click(await screen.findByText("draft"));
+
+    // The shapes: the variant's own text, read only, in the form's place.
+    fireEvent.click(screen.getByRole("button", { name: "Shape" }));
+    await waitFor(() => expect(document.body.textContent).toContain("Status (sh:in)"));
+    expect(screen.getByRole("button", { name: "Shape" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByText("Values")).not.toBeVisible();
+
+    // The record, as Turtle, with the value picked.
+    fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    await waitFor(() => expect(document.querySelector(".cm-content")?.textContent).toContain('"draft"'));
+
+    // Back to the form: the value is still there.
+    fireEvent.click(screen.getByRole("button", { name: "Back to the form" }));
+    expect(screen.getByText("Values")).toBeVisible();
+    expect(screen.getByText("draft").closest('[data-slot="segment-group-item"]')).toHaveAttribute("data-state", "checked");
+    expect(count("mf:ready")).toBe(1);
+  });
+
+  it("reports the record as Turtle too, and which variant it was written for", async () => {
+    const { channel, sent, send, count } = fakeChannel();
+    render(<FramePage channel={channel} />);
+    await send({ type: "mf:init", config: two });
+    await waitFor(() => expect(count("mf:change")).toBeGreaterThan(0));
+    const change = sent.filter((m) => m.type === "mf:change").pop();
+    expect(change).toMatchObject({ variant: "conditional" });
+    expect((change as { turtle: string }).turtle).toContain("http://www.w3.org/ns/dcat#Dataset");
+  });
+
   it("re-words the form when the app sends another language, without starting it again", async () => {
     const { channel, send, count } = fakeChannel();
     render(<FramePage channel={channel} />);

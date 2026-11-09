@@ -59,7 +59,8 @@ export function createMetadataFormFrame(
       else iframe.style.height = `${Math.ceil(m.height)}px`;
     }
     if (m.type === "mf:change") {
-      options.onChange?.({ valid: m.valid, errors: m.errors, warnings: m.warnings, jsonLd: m.jsonLd });
+      const { valid, errors, warnings, jsonLd, turtle, variant } = m;
+      options.onChange?.({ valid, errors, warnings, jsonLd, turtle, variant });
     }
   }
   window.addEventListener("message", onMessage);

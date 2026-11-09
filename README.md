@@ -342,7 +342,10 @@ per-field spans by the predicate IRI:
 />
 ```
 
-Nested sub-forms always render sequentially; only the root honors `layout`.
+Nested sub-forms always render sequentially; only the root honors `layout`. With
+tabs and steps, the row of titles scrolls sideways on its own when the groups do not
+fit the width (the current step is kept in view), so the page around the form does
+not.
 
 ### Errors, and when they show
 
@@ -435,8 +438,8 @@ inside a `FieldArray` with add/remove.
 | `TextFieldWithLangEditor` | `sh:datatype rdf:langString` | `InputGroup` + the language picker in its trailing slot; the language can be chosen before the text | rows |
 | `TextAreaWithLangEditor` | stated | `Textarea` (with the same ghost text) + the language picker under it | rows |
 | `NumberFieldEditor` | numeric `sh:datatype` | `NumberInput` — steppers, scrubber, `tabular-nums`; bounds from `sh:minInclusive`/`sh:maxInclusive` | rows |
-| `BooleanEditor` | `sh:datatype xsd:boolean` | `SegmentGroup` (Yes / No / Not set) — or a `Switch` when `sh:minCount ≥ 1` or `sh:defaultValue` guarantees a value | rows |
-| `EnumSelectEditor` | `sh:in` | ≤ 4 options: `SegmentGroup`. ≤ 15: `NativeSelect`. Beyond that a searchable `Combobox` | **`Combobox multiple`** |
+| `BooleanEditor` | `sh:datatype xsd:boolean` | `SegmentGroup` (Yes / No / Not set); Yes / No with nothing chosen when `sh:minCount ≥ 1` (a required answer starts unanswered, and a switch would show it as "no"); a `Switch` only when `sh:defaultValue` fills it | rows |
+| `EnumSelectEditor` | `sh:in` | ≤ 4 options: `SegmentGroup` (a required one, with nothing chosen yet, draws its options as separate buttons). ≤ 15: `NativeSelect`. Beyond that a searchable `Combobox` | **`Combobox multiple`** |
 | `DatePickerEditor` | `sh:datatype xsd:date` | `DatePicker` + calendar | rows |
 | `DateTimePickerEditor` | `sh:datatype xsd:dateTime` | `DatePicker` + a time `Input` | rows |
 | `IRIEditor` | `sh:nodeKind sh:IRI`, or `xsd:anyURI` | `Input type="url"` | rows |
@@ -580,20 +583,57 @@ form.reset();        // start again, empty
 In React, `<MetadataFormFrame src="/frame/index.html" config={…} onChange={…} />`
 does the same, with a ref for `revealErrors()` and `reset()`.
 
-**The configuration** (`EmbedConfig`) is plain data: `variants`, each with an `id`, a
-`label` and its shapes as text (`shapes`) or a URL on the page's origin
-(`shapesUrl`), and optionally a `rootShape`; with more than one, the page shows a
-selector, and asks before switching if something was typed. `locale` sets the
-reader's languages, and `languageSelector: true` lets the reader pick one of the
-languages the shapes are written in (off by default). The page's own strings come in
-English, Spanish and Catalan (`EMBED_TEXTS`); `texts` rewords them in every language
-and `textsByLanguage` per language. A new configuration starts the form again only if
-its variants change: another language or other texts re-word it, and what was typed
-stays.
+**The configuration** (`EmbedConfig`) is plain data, since it crosses windows. Every
+option, with its default:
+
+```ts
+import type { EmbedConfig } from "@kanzo-tech/metadata-form/embed";
+
+const config: EmbedConfig = {
+  // The shapes graphs the page can show. With more than one, it shows a selector,
+  // and asks before switching if something was typed.
+  variants: [
+    {
+      id: "public",                        // stable key
+      label: "Public",                     // what the selector shows
+      shapesUrl: "/shapes/public.ttl",     // a URL on the page's origin…
+      // shapes: "…",                      // …or the shapes as text (Turtle, JSON-LD, N-Triples)
+      rootShape: "http://example.org/DatasetShape", // optional: else picked from the shapes
+    },
+    { id: "restricted", label: "Restricted", shapesUrl: "/shapes/restricted.ttl" },
+  ],
+  variant: "public",          // the one shown first (default: the first)
+
+  locale: ["en", "es"],       // the reader's languages, most preferred first (default: the browser's)
+  languageSelector: false,    // true: the reader picks one of the shapes' languages
+
+  layout: "steps",            // "sequential" (default) | "tabs" | "steps", as <MetadataForm layout>
+  grid: { columns: 2 },       // columns per group, as <MetadataForm grid> (see Layout)
+
+  showShapes: false,          // true: a Shape button shows the variant's shapes (read only)
+  showOutput: false,          // true: a Data button shows the record as Turtle / JSON-LD, downloadable
+
+  texts: { variantLabel: "Access level" },               // the page's own strings, in every language…
+  textsByLanguage: { es: { variantLabel: "Nivel de acceso" } }, // …and per language, over those
+};
+```
+
+The page's own strings come in English, Spanish and Catalan (`EMBED_TEXTS`, the
+keys of `EmbedTexts`). A new configuration starts the form again only if its
+variants change: another language, other texts or another layout re-word or
+re-arrange it, and what was typed stays.
+
+`showShapes` and `showOutput` put a button each on the right above the form. They
+are buttons and not tabs, so they do not read as parts of the form to fill in: each
+shows its document in the form's place (the shapes the form is drawn from; the
+record, kept up to date with every edit, in Turtle or as a JSON-LD tree, with a
+download), and "Back to the form", or the button again, brings the form back as it
+was left. The code editor they use is loaded only when one of them is on.
 
 **The messages** (`EmbedToHost`, `HostToEmbed`): the page says `mf:waiting` and
 renders nothing until it gets `mf:init` with the configuration; then `mf:ready`,
-`mf:change` (`valid`, `errors`, `warnings`, `jsonLd`) on every edit and `mf:resize`
+`mf:change` (`valid`, `errors`, `warnings`, `jsonLd`, `turtle`, and the `variant`
+shown) on every edit and `mf:resize`
 when its height changes. The app may send `mf:reveal-errors`, `mf:reset` and
 `mf:sync` (repeat your state). Each side reads messages only from the other's
 window and origin, and writes only to that origin. The page's origin is that of its
