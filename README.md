@@ -612,6 +612,7 @@ const config: EmbedConfig = {
 
   showShapes: false,          // true: a Shape button shows the variant's shapes (read only)
   showOutput: false,          // true: a Data button shows the record as Turtle / JSON-LD, downloadable
+  panels: "dialog-backdrop",  // where they show: "dialog-backdrop" (default) | "dialog" | "inline"
 
   texts: { variantLabel: "Access level" },               // the page's own strings, in every language…
   textsByLanguage: { es: { variantLabel: "Nivel de acceso" } }, // …and per language, over those
@@ -625,10 +626,26 @@ re-arrange it, and what was typed stays.
 
 `showShapes` and `showOutput` put a button each on the right above the form. They
 are buttons and not tabs, so they do not read as parts of the form to fill in: each
-shows its document in the form's place (the shapes the form is drawn from; the
-record, kept up to date with every edit, in Turtle or as a JSON-LD tree, with a
-download), and "Back to the form", or the button again, brings the form back as it
-was left. The code editor they use is loaded only when one of them is on.
+shows its document (the shapes the form is drawn from; the record, kept up to date
+with every edit, in Turtle or as a JSON-LD tree, with a download), and the form
+keeps what was typed. Where, `panels` says:
+
+| `panels` | The document shows… |
+|---|---|
+| `"dialog-backdrop"` (default) | in a dialog, with the form darkened behind it and the keyboard kept in the dialog until it closes |
+| `"dialog"` | in a dialog that floats over the form with its shadow; the form behind it can still be used, and the record in the dialog changes as one types |
+| `"inline"` | in the form's place; "Back to the form", or the button again, brings the form back |
+
+The dialog opens just below the buttons, not in the middle of the iframe, which
+grows with the form and may be taller than the screen; it is titled after its
+button ("Shape" or "Data"), and closes with its X (labelled with the `backToForm`
+text), Escape or a click outside. With `"dialog"` the other button stays at hand and
+switches the dialog to its document. The dialog lives in the iframe, so the dark of
+`"dialog-backdrop"` covers the form's box only, not the app's page around it.
+
+Before `panels`, the documents showed in the form's place: an app that wants that
+again sets `panels: "inline"`. The values are typed as `EmbedPanels`. The code
+editor the documents use is loaded only when one of the buttons is on.
 
 **The messages** (`EmbedToHost`, `HostToEmbed`): the page says `mf:waiting` and
 renders nothing until it gets `mf:init` with the configuration; then `mf:ready`,

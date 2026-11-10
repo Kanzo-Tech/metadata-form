@@ -13,9 +13,13 @@ import {
   FindingsRoot,
   FindingsTrigger,
   Button,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
   KanzoThemeProvider,
 } from "@kanzo-tech/ui";
-import { ArrowLeftIcon, DatabaseIcon, FileCodeIcon } from "lucide-react";
+import { ArrowLeftIcon, DatabaseIcon, FileCodeIcon, XIcon } from "lucide-react";
 import {
   MetadataForm,
   useMetadataForm,
@@ -28,6 +32,7 @@ import {
   EMBED_TEXTS,
   isHostMessage,
   type EmbedConfig,
+  type EmbedPanels,
   type EmbedTexts,
   type EmbedToHost,
   type EmbedVariant,
@@ -291,6 +296,7 @@ function Variants({
           grid={config.grid}
           showShapes={!!config.showShapes}
           showOutput={!!config.showOutput}
+          panels={config.panels ?? "dialog-backdrop"}
           texts={texts}
           channel={channel}
           onDirty={markDirty}
@@ -310,6 +316,7 @@ function Form({
   grid,
   showShapes,
   showOutput,
+  panels,
   texts,
   channel,
   onDirty,
@@ -323,6 +330,7 @@ function Form({
   grid?: EmbedConfig["grid"];
   showShapes: boolean;
   showOutput: boolean;
+  panels: EmbedPanels;
   texts: EmbedTexts;
   channel: Channel;
   onDirty: () => void;
@@ -389,27 +397,50 @@ function Form({
     [channel, form, form.ready, form.isValid, form.report.issues.total],
   );
 
-  // The shapes and the record, when the app asks for them, are shown in the
-  // form's place from buttons on the right: buttons and not tabs, so they do not
-  // read as parts of the form to fill in. The form stays mounted behind them, so
-  // what was typed stays.
-  const [view, setView] = useState<"form" | "shapes" | "output">("form");
-  const toggle = (v: "shapes" | "output") => setView((now) => (now === v ? "form" : v));
+  // The shapes and the record, when the app asks for them, come from buttons on
+  // the right: buttons and not tabs, so they do not read as parts of the form to
+  // fill in. Where they show, `panels` says: in a dialog (the default, with the
+  // form darkened behind it, or floating over it) or in the form's place. Either
+  // way the form stays mounted, so what was typed stays.
+  //
+  // The iframe grows with the form, so a dialog centred in it could open out of
+  // the reader's sight: it opens just below the buttons, which the reader has
+  // just pressed, and scrolls inside when it is taller than what is left.
+  const inline = panels === "inline";
+  const [view, setView] = useState<"shapes" | "output" | null>(null);
+  const bar = useRef<HTMLDivElement>(null);
+  const [top, setTop] = useState(0);
+  const press = (v: "shapes" | "output") => {
+    if (inline) return setView((now) => (now === v ? null : v));
+    setTop(Math.round(bar.current?.getBoundingClientRect().bottom ?? 0) + 8);
+    setView(v);
+  };
   const views = [
     ...(showShapes ? [{ value: "shapes" as const, label: texts.showShapes, Icon: FileCodeIcon }] : []),
     ...(showOutput ? [{ value: "output" as const, label: texts.showOutput, Icon: DatabaseIcon }] : []),
   ];
+  const shown = views.find((v) => v.value === view);
 
   if (form.error) return <p>{fill(texts.formFailed, { error: form.error.message })}</p>;
   if (!form.ready) return <p>{texts.loadingEngine}</p>;
+
+  const panel = (
+    <Suspense fallback={<p>{texts.loadingEngine}</p>}>
+      {view === "shapes" ? (
+        <ShapesPanel shapes={shapes} />
+      ) : view === "output" ? (
+        <OutputPanel form={form} texts={texts} />
+      ) : null}
+    </Suspense>
+  );
 
   return (
     <KanzoThemeProvider storage={null}>
       <div className="space-y-4">
         {views.length > 0 && (
-          <div className="flex items-center gap-2">
-            {view !== "form" && (
-              <Button size="sm" variant="ghost" onClick={() => setView("form")}>
+          <div ref={bar} className="flex items-center gap-2">
+            {inline && view !== null && (
+              <Button size="sm" variant="ghost" onClick={() => setView(null)}>
                 <ArrowLeftIcon />
                 {texts.backToForm}
               </Button>
@@ -420,8 +451,10 @@ function Form({
                   key={value}
                   size="sm"
                   variant={view === value ? "secondary" : "outline"}
-                  aria-pressed={view === value}
-                  onClick={() => toggle(value)}
+                  {...(inline
+                    ? { "aria-pressed": view === value }
+                    : { "aria-haspopup": "dialog" as const, "aria-expanded": view === value })}
+                  onClick={() => press(value)}
                 >
                   <Icon />
                   {label}
@@ -430,14 +463,43 @@ function Form({
             </div>
           </div>
         )}
-        <div className="space-y-4" hidden={view !== "form"}>
+        <div className="space-y-4" hidden={inline && view !== null}>
           <IssuePills form={form} texts={texts} />
           <MetadataForm form={form} layout={layout} grid={grid} />
         </div>
-        {view !== "form" && (
-          <Suspense fallback={<p>{texts.loadingEngine}</p>}>
-            {view === "shapes" ? <ShapesPanel shapes={shapes} /> : <OutputPanel form={form} texts={texts} />}
-          </Suspense>
+        {inline ? (
+          view !== null && panel
+        ) : (
+          <Dialog
+            modal={panels === "dialog-backdrop"}
+            open={view !== null}
+            onOpenChange={(d) => !d.open && setView(null)}
+          >
+            <DialogContent
+              size="4xl"
+              showCloseButton={false}
+              bottomStickOnMobile={false}
+              className="row-start-1 self-start"
+              style={{ marginTop: top, maxHeight: `calc(100svh - ${top}px - 1rem)` }}
+            >
+              <DialogHeader title={shown?.label} />
+              <DialogClose asChild>
+                <Button
+                  aria-label={texts.backToForm}
+                  title={texts.backToForm}
+                  className="absolute inset-e-2.5 top-2.5"
+                  size="icon-sm"
+                  variant="ghost"
+                >
+                  <XIcon />
+                </Button>
+              </DialogClose>
+              {/* Not DialogBody: its scroll area takes the width of the content, so
+                  the editor's long lines pushed past the dialog's right edge. The
+                  panels scroll inside on their own. */}
+              <div className="min-h-0 min-w-0 flex-1 overflow-auto px-6 pb-6">{panel}</div>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
     </KanzoThemeProvider>

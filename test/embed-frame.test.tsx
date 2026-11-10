@@ -150,7 +150,7 @@ describe("the frame page", () => {
     expect(screen.queryByRole("button", { name: "Data" })).not.toBeInTheDocument();
   });
 
-  it("shows the shapes and the record in the form's place, and the form keeps what was typed", async () => {
+  it("by default opens the shapes and the record in a dialog, the form darkened behind it and keeping what was typed", async () => {
     const { channel, send, count } = fakeChannel();
     render(<FramePage channel={channel} />);
     await send({ type: "mf:init", config: { variants: [mapping], locale: ["en"], showShapes: true, showOutput: true } });
@@ -159,11 +159,66 @@ describe("the frame page", () => {
     // A value, picked in the form: a discrete control commits at once.
     fireEvent.click(await screen.findByText("draft"));
 
-    // The shapes: the variant's own text, read only, in the form's place.
+    // The shapes: the variant's own text, read only, in a dialog named after the
+    // button, with the form darkened behind it.
+    fireEvent.click(screen.getByRole("button", { name: "Shape" }));
+    const shapes = await screen.findByRole("dialog", { name: "Shape" });
+    await waitFor(() => expect(shapes.textContent).toContain("Status (sh:in)"));
+    expect(document.querySelector('[data-slot="dialog-overlay"]')).not.toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Back to the form" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    // The record, as Turtle, with the value picked.
+    fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    const record = await screen.findByRole("dialog", { name: "Data" });
+    await waitFor(() => expect(record.querySelector(".cm-content")?.textContent).toContain('"draft"'));
+
+    // Closed: no dialog, and the value is still there.
+    fireEvent.click(screen.getByRole("button", { name: "Back to the form" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.getByText("draft").closest('[data-slot="segment-group-item"]')).toHaveAttribute("data-state", "checked");
+    expect(count("mf:ready")).toBe(1);
+  });
+
+  it('with panels "dialog", the dialog floats over the form, which can still be used', async () => {
+    const { channel, send, count } = fakeChannel();
+    render(<FramePage channel={channel} />);
+    await send({
+      type: "mf:init",
+      config: { variants: [mapping], locale: ["en"], showShapes: true, showOutput: true, panels: "dialog" },
+    });
+    await waitFor(() => expect(count("mf:ready")).toBe(1));
+
+    fireEvent.click(screen.getByRole("button", { name: "Shape" }));
+    await screen.findByRole("dialog", { name: "Shape" });
+    expect(screen.getByRole("button", { name: "Shape" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("Values")).toBeVisible();
+    expect(document.querySelector('[data-slot="dialog-overlay"]')).toBeNull();
+
+    // The other button is still there, behind no dark: it switches the dialog.
+    fireEvent.click(screen.getByRole("button", { name: "Data" }));
+    await screen.findByRole("dialog", { name: "Data" });
+    fireEvent.click(screen.getByRole("button", { name: "Back to the form" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  it('with panels "inline", shows the shapes and the record in the form\'s place, and the form keeps what was typed', async () => {
+    const { channel, send, count } = fakeChannel();
+    render(<FramePage channel={channel} />);
+    await send({
+      type: "mf:init",
+      config: { variants: [mapping], locale: ["en"], showShapes: true, showOutput: true, panels: "inline" },
+    });
+    await waitFor(() => expect(count("mf:ready")).toBe(1));
+
+    fireEvent.click(await screen.findByText("draft"));
+
+    // The shapes, in the form's place: no dialog.
     fireEvent.click(screen.getByRole("button", { name: "Shape" }));
     await waitFor(() => expect(document.body.textContent).toContain("Status (sh:in)"));
     expect(screen.getByRole("button", { name: "Shape" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.queryByText("Values")).not.toBeVisible();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
     // The record, as Turtle, with the value picked.
     fireEvent.click(screen.getByRole("button", { name: "Data" }));
