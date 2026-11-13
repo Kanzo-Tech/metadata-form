@@ -111,3 +111,40 @@ describe("a row added with + Add", () => {
     await waitFor(() => expect(tagOf()).toHaveValue("Español · es"));
   });
 });
+
+describe("two rows of a field written in two languages", () => {
+  it("keep each text with the language picked beside it, in the order they were written", async () => {
+    render(<Form shapes={shapeWith(`sh:path ex:title ; sh:name "Title" ; sh:nodeKind sh:Literal ; shui:editor shui:TextFieldWithLangEditor`)} />);
+    await waitFor(() => expect(screen.getByText("Title")).toBeInTheDocument());
+    const field = () => document.querySelector(`[data-field$="|${EX}title"]`)!;
+    const texts = () => [...field().querySelectorAll<HTMLInputElement>('input:not([type="hidden"]):not([role="combobox"])')];
+    const tags = () => [...field().querySelectorAll<HTMLInputElement>('input[role="combobox"]')];
+    const pick = async (tag: HTMLInputElement, name: string) => {
+      fireEvent.focus(tag);
+      fireEvent.click(tag);
+      fireEvent.click(await screen.findByRole("option", { name }));
+    };
+    const write = (el: HTMLInputElement, v: string) => {
+      fireEvent.change(el, { target: { value: v } });
+      fireEvent.blur(el);
+    };
+    const titles = () =>
+      form.quads
+        .filter((q) => q.predicate.value === `${EX}title`)
+        .map((q) => `"${q.object.value}"${q.object.termType === "Literal" && q.object.language ? `@${q.object.language}` : ""}`)
+        .sort();
+
+    fireEvent.click(screen.getByRole("button", { name: /add/i }));
+    await waitFor(() => expect(texts()).toHaveLength(1));
+    write(texts()[0], "Registro ES");
+    await pick(tags()[0], "Español · es");
+    await waitFor(() => expect(titles()).toEqual(['"Registro ES"@es']));
+
+    fireEvent.click(screen.getByRole("button", { name: /add/i }));
+    await waitFor(() => expect(texts()).toHaveLength(2));
+    write(texts()[1], "Registry EN");
+    await waitFor(() => expect(texts().map((t) => t.value)).toEqual(["Registro ES", "Registry EN"]));
+    await pick(tags()[1], "English · en");
+    await waitFor(() => expect(titles()).toEqual(['"Registro ES"@es', '"Registry EN"@en']));
+  });
+});

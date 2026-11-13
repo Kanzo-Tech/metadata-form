@@ -35,6 +35,30 @@ import { fill } from "../../i18n/strings.js";
 import { useFieldBinding } from "../hooks/useFieldBinding.js";
 import { NodeForm } from "./NodeForm.js";
 
+/** A value as the row order knows it: the same term, whatever object carries it. */
+const termKey = (t: Term) =>
+  t.termType === "Literal"
+    ? `L|${t.value}|${t.language}|${t.datatype?.value ?? ""}`
+    : `${t.termType}|${t.value}`;
+
+/**
+ * The values of a field in the order they were entered, not the graph's.
+ *
+ * RDF keeps a property's values as a set, and the engine hands them back in an
+ * order of its own that changes when one is added. Rows are keyed by position (a
+ * control keeps its caret while its value changes), so a reordering put each value
+ * under another row's control: a language picked in the second row went to the
+ * first text. `order` remembers the entry order across renders.
+ */
+function inEntryOrder<S extends { value: Term | null }>(slots: readonly S[], order: string[]): S[] {
+  const keyOf = (s: S) => (s.value ? termKey(s.value) : "");
+  const present = new Set(slots.map(keyOf));
+  const kept = order.filter((k) => present.has(k));
+  for (const s of slots) if (!kept.includes(keyOf(s))) kept.push(keyOf(s));
+  order.splice(0, order.length, ...kept);
+  return [...slots].sort((a, b) => kept.indexOf(keyOf(a)) - kept.indexOf(keyOf(b)));
+}
+
 /** Renders a single field: label, help, value rows (multi-value), errors. */
 export function FieldRenderer({ field }: { field: FieldModel }) {
   const { widgets, assist, assistUi, graph, locale, strings, revealAll } = useFormContext();
@@ -49,7 +73,13 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
     field.editorId === Editors.Details ||
     field.editorId === Editors.BlankNode ||
     !!field.nodeShape;
-  const real = field.values;
+  const entryOrder = useRef<string[]>([]);
+  const real = inEntryOrder(field.values, entryOrder.current);
+  /** A value edited in place keeps its row: its key in the entry order changes with it. */
+  const rekey = (from: Term, to: Term) => {
+    const i = entryOrder.current.indexOf(termKey(from));
+    if (i >= 0) entryOrder.current[i] = termKey(to);
+  };
 
   // Empty UI-only rows for repeatable fields. Start at 0 so a repeatable field
   // shows just "+ Add" when empty — consistent with nested repeatables (which
@@ -90,7 +120,10 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
   const setTerm = (rowIndex: number, newValue: Term | null) => {
     setTouched(true);
     const current = rowIndex < real.length ? real[rowIndex].value : null;
-    if (current && newValue) ops.setValue(current, newValue);
+    if (current && newValue) {
+      rekey(current, newValue);
+      ops.setValue(current, newValue);
+    }
     else if (current && !newValue) ops.removeValue(current);
     else if (!current && newValue) {
       ops.addValue(newValue);
@@ -114,7 +147,7 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
   // loses focus/hover/caret. Pending rows occupy indices >= real.length, so there
   // is no key collision with real slots. `FieldArray` asks for this key for
   // exactly this reason.
-  const rowKey = (i: number) => real[i]?.id ?? `${field.id}#${i}`;
+  const rowKey = (i: number) => `${field.id}#${i}`;
 
   if (isNested) {
     return (
@@ -198,7 +231,10 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
       termToPrimitive(current),
       languageOf(current),
     );
-    if (rebound) ops.setValue(current, rebound);
+    if (rebound) {
+      rekey(current, rebound);
+      ops.setValue(current, rebound);
+    }
   };
 
   const row = (i: number) => {
