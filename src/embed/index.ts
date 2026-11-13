@@ -7,6 +7,7 @@ export type { MetadataFormFrameHandle, MetadataFormFrameProps } from "./react.js
 export { DEFAULT_EMBED_TEXTS, EMBED_TEXTS, isEmbedMessage, isHostMessage } from "./protocol.js";
 export type {
   EmbedConfig,
+  EmbedPanels,
   EmbedState,
   EmbedTexts,
   EmbedToHost,

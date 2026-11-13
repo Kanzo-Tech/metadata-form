@@ -153,6 +153,16 @@ export const EMBED_TEXTS: Readonly<Record<string, EmbedTexts>> = { en: EN, es: E
 
 export const DEFAULT_EMBED_TEXTS: EmbedTexts = EN;
 
+/** Where the Shape and Data buttons show their document:
+ *  - `"dialog-backdrop"` (the default): in a dialog over the form, with the form
+ *    darkened behind it and the keyboard kept in the dialog until it closes. The
+ *    dialog lives in the iframe, so the dark covers the form's box only, not the
+ *    app's page around it.
+ *  - `"dialog"`: in a dialog that floats over the form with its shadow; the form
+ *    behind it can still be used.
+ *  - `"inline"`: in the form's place, with a button back to the form. */
+export type EmbedPanels = "dialog-backdrop" | "dialog" | "inline";
+
 /** What the app sends in `mf:init`. Plain data: it crosses windows by
  *  structured clone, so no functions. */
 export interface EmbedConfig {
@@ -172,12 +182,14 @@ export interface EmbedConfig {
   /** Columns within each section, as `<MetadataForm grid>` takes them. */
   grid?: GridLayout;
   /** A button, on the right above the form, that shows the shapes the form is
-   *  drawn from (the variant's, read only) in the form's place. Off by default. */
+   *  drawn from (the variant's, read only), where `panels` says. Off by default. */
   showShapes?: boolean;
   /** A button, on the right above the form, that shows the record the form is
    *  writing, in Turtle and JSON-LD, kept up to date with every edit and
-   *  downloadable, in the form's place. Off by default. */
+   *  downloadable, where `panels` says. Off by default. */
   showOutput?: boolean;
+  /** Where `showShapes` and `showOutput` show their document. */
+  panels?: EmbedPanels;
   /** The page's texts, whatever the language… */
   texts?: Partial<EmbedTexts>;
   /** …and per language (by primary subtag, e.g. `es`), over those. */
