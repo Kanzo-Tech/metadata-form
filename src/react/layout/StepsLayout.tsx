@@ -26,10 +26,19 @@ import { GroupIssuesBadge } from "./GroupIssuesBadge.js";
  *
  * This used to be a heading, two buttons and an index, because Radix had no
  * stepper. The design system does, so the progress rail, the reachable triggers,
- * the separators and the Back/Next disabled edges all come from the machine and
- * none of it is arithmetic here any more. Still controlled by `activeGroup`, so a
- * step can be switched externally (e.g. by `form.revealField`), and the badge
- * beside a step's title jumps to that step's first error.
+ * the separators and Back's disabled edge all come from the machine. Next's end is
+ * the exception: the machine counts a "completed" step after the last one, so on
+ * the last group its Next stayed enabled and led nowhere (the step it reached is
+ * not a group, and is clamped back). Here it is disabled on the last group. Still
+ * controlled by `activeGroup`, so a step can be switched externally (e.g. by
+ * `form.revealField`), and the badge beside a step's title jumps to that step's
+ * first error.
+ *
+ * Back and Next bring the top of the steps into view: from the bottom of a long
+ * group, the next one would otherwise open with the reader halfway down it. When
+ * the form sits in something with a top of its own (the frame page, with its
+ * profile, Shape/Data and counts), that something carries `data-form-top` and the
+ * view goes up to there instead, so the reader sees where the form starts.
  */
 export function StepsLayout({
   model,
@@ -63,6 +72,22 @@ export function StepsLayout({
       el.scrollLeft = left + item.offsetWidth - el.clientWidth;
   }, [index]);
 
+  // "nearest" moves nothing while the rail is on screen, and only Back and Next
+  // call it, so a step switched externally (e.g. to reveal a field) is left to
+  // scroll to that field. In an iframe it moves the app's page as well, which is
+  // what the reader needs there. Up to `data-form-top` it goes as the rail's scroll
+  // margin: the rail stays small enough for "nearest", the view still starts there.
+  const toTop = () => {
+    const el = rail.current;
+    if (!el) return;
+    const top = el.closest<HTMLElement>("[data-form-top]");
+    el.style.scrollMarginTop = top
+      ? `${Math.max(0, el.getBoundingClientRect().top - top.getBoundingClientRect().top)}px`
+      : "";
+    el.scrollIntoView({ block: "nearest" });
+  };
+  const last = index >= groups.length - 1;
+
   if (groups.length === 0) return null;
 
   return (
@@ -76,7 +101,7 @@ export function StepsLayout({
     >
       {/* With many groups the titles do not fit the width. They scroll on their
           own rail, so the page around the form does not scroll sideways. */}
-      <div ref={rail} className="overflow-x-auto pb-1">
+      <div ref={rail} className="scroll-mt-4 overflow-x-auto pb-1">
         <StepsList className="w-max min-w-full">
           {groups.map((group, i) => {
             const gi = issues.get(group.id);
@@ -108,12 +133,14 @@ export function StepsLayout({
       ))}
       <div className="flex justify-between gap-2">
         <StepsPrevious asChild>
-          <Button size="sm" variant="outline">
+          <Button size="sm" variant="outline" onClick={toTop}>
             {chrome.back}
           </Button>
         </StepsPrevious>
         <StepsNext asChild>
-          <Button size="sm">{chrome.next}</Button>
+          <Button size="sm" disabled={last} onClick={toTop}>
+            {chrome.next}
+          </Button>
         </StepsNext>
       </div>
     </Steps>

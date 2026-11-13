@@ -1,7 +1,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { NamedNode, Quad, Term } from "@rdfjs/types";
 import { namedNode } from "../../form/factory.js";
-import { mapResults } from "../../form/validation.js";
+import { mapResults, oncePerProblem } from "../../form/validation.js";
 import { langOf, localName, matchesLanguage, resolveLanguage } from "../../form/terms.js";
 import { shapeLanguages } from "../../form/languages.js";
 import { resolveStrings, type ResolvedStrings, type StringTables } from "../../i18n/strings.js";
@@ -290,7 +290,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
     if (deferred?.prepared !== prepared) return;
     let current = true;
     // Every node of the projected tree, not only the root: see `RudofEngine.validateTree`.
-    void engine.validateTree(deferred.nodes).then((results) => current && setErrors(mapResults(results)));
+    void engine.validateTree(deferred.nodes).then((results) => current && setErrors(oncePerProblem(mapResults(results))));
     return () => {
       current = false;
     };
@@ -362,7 +362,7 @@ export function useMetadataForm(options: UseMetadataFormOptions): MetadataFormCo
   const validate = useCallback(async () => {
     if (!prepared) return [];
     const results = await engine.validateTree(projected?.nodes ?? []);
-    const map = mapResults(results);
+    const map = oncePerProblem(mapResults(results));
     setErrors(map);
     return [...map.values()].flat();
   }, [engine, prepared, projected]);

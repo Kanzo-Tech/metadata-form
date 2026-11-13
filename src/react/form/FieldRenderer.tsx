@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import {
   Field,
   FieldArray,
@@ -73,6 +73,19 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
 
   const singleValue = !field.repeatable;
   const rowCount = singleValue ? 1 : real.length + pending;
+    // "+ Add" puts the caret in the row it adds: a new row is there to be written in,
+  // and an Add that left the focus on the button cost a second click into it.
+  const focusNewRow = useRef(false);
+  useEffect(() => {
+    if (!focusNewRow.current) return;
+    focusNewRow.current = false;
+    const shell = [...document.querySelectorAll<HTMLElement>("[data-field]")].find(
+      (el) => el.getAttribute("data-field") === field.id,
+    );
+    const texts = shell?.querySelectorAll<HTMLElement>('input:not([type="hidden"]):not([role="combobox"]), textarea');
+    const any = shell?.querySelectorAll<HTMLElement>('input:not([type="hidden"])');
+    (texts?.length ? texts[texts.length - 1] : any?.[any.length - 1])?.focus();
+  }, [rowCount, field.id]);
 
   const setTerm = (rowIndex: number, newValue: Term | null) => {
     setTouched(true);
@@ -283,7 +296,10 @@ export function FieldRenderer({ field }: { field: FieldModel }) {
       rowKey={rowKey}
       canAdd={canAddMore}
       canRemove={!field.readOnly}
-      onAdd={() => setPending((n) => n + 1)}
+      onAdd={() => {
+        focusNewRow.current = true;
+        setPending((n) => n + 1);
+      }}
       onRemove={removeRow}
     >
       {row}

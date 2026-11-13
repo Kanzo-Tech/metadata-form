@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MetadataForm } from "@/react/form/MetadataForm.js";
 import { useMetadataForm, type UseMetadataFormOptions } from "@/react/hooks/useMetadataForm.js";
@@ -198,6 +198,40 @@ describe("the layouts", () => {
     await waitFor(() => expect(screen.getByText("Link")).toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+  });
+
+  it("disables Next on the last step, and Back and Next bring the steps' top into view", async () => {
+    const twoSteps = `
+      @prefix sh: <http://www.w3.org/ns/shacl#> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+      @prefix ex: <${ex}> .
+      ex:one a sh:PropertyGroup ; rdfs:label "One" ; sh:order 1 .
+      ex:two a sh:PropertyGroup ; rdfs:label "Two" ; sh:order 2 .
+      ex:S a sh:NodeShape ; sh:targetClass ex:Thing ;
+        sh:property [ sh:path ex:name ; sh:name "Name" ; sh:group ex:one ] ;
+        sh:property [ sh:path ex:note ; sh:name "Note" ; sh:group ex:two ] .`;
+    function Steps() {
+      form = useMetadataForm({ shapes: twoSteps, rootShape: `${ex}S`, validateOn: "off" });
+      return <MetadataForm form={form} layout="steps" />;
+    }
+    const toTop = vi.spyOn(Element.prototype, "scrollIntoView");
+    try {
+      render(<Steps />);
+      await waitFor(() => expect(screen.getByText("Name")).toBeInTheDocument());
+      const next = () => screen.getByRole("button", { name: "Next" });
+      expect(next()).toBeEnabled();
+      expect(toTop).not.toHaveBeenCalled();
+
+      fireEvent.click(next());
+      await waitFor(() => expect(next()).toBeDisabled());
+      expect(toTop).toHaveBeenCalledWith({ block: "nearest" });
+
+      toTop.mockClear();
+      fireEvent.click(screen.getByRole("button", { name: "Back" }));
+      await waitFor(() => expect(next()).toBeEnabled());
+      expect(toTop).toHaveBeenCalledTimes(1);
+    } finally {
+      toTop.mockRestore();
+    }
   });
 
   it("counts a step's issues without putting a button inside the step's own", async () => {

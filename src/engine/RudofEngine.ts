@@ -3,7 +3,7 @@ import { namedNode, quad, rdf } from "../form/factory.js";
 import { toTerm, toTermValue } from "../form/termValue.js";
 import { freshFocusNode, resolveRootShapeFromTypes } from "./rootShape.js";
 import { projectTree, type ProjectedNode, type ProjectedTree } from "./projectTree.js";
-import type { NodeShapeIR, ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
+import type { LangString, NodeShapeIR, ProjectedForm, ShapeModel } from "../form/ShapeIR.js";
 import type { Severity, ValidationResult } from "../form/validation.js";
 import type { RudofLoader, RudofResult, RudofSession, ShapeModelJson } from "./abi.js";
 
@@ -11,6 +11,10 @@ const TURTLE = "text/turtle";
 const SH_OR = "http://www.w3.org/ns/shacl#OrConstraintComponent";
 const RDF_TYPE = namedNode(rdf("type").value);
 const SH_SEVERITY = "http://www.w3.org/ns/shacl#severity";
+const SH_MESSAGE = "http://www.w3.org/ns/shacl#message";
+
+/** A message as the set of the shapes graph's own words holds it. */
+const said = (m: LangString) => `${m.language ?? ""}\0${m.value}`;
 
 function mapSeverity(s: string | undefined): Severity {
   if (s?.endsWith("Warning")) return "warning";
@@ -18,12 +22,15 @@ function mapSeverity(s: string | undefined): Severity {
   return "violation";
 }
 
-function toValidationResult(r: RudofResult): ValidationResult {
+function toValidationResult(r: RudofResult, authored: ReadonlySet<string>): ValidationResult {
   return {
     focusNode: toTerm(r.focusNode),
     pathKey: r.pathKey,
     // Keep every lang-tagged message; the locale-aware pick is `messageOf`.
     messages: r.message,
+    // The shape's own words or the engine's: rudof hands both over the same way, and
+    // only the shapes document tells them apart.
+    authored: r.message.some((m) => authored.has(said(m))),
     severity: mapSeverity(r.severity),
     constraint: r.sourceConstraintComponent,
     value: r.value ? toTerm(r.value) : undefined,
@@ -143,6 +150,8 @@ export class RudofGraphBackend {
 export class RudofEngine {
   private session?: RudofSession;
   private initOnce?: Promise<void>;
+  /** The `sh:message` literals of the loaded shapes document (see {@link said}). */
+  private authored: ReadonlySet<string> = new Set();
 
   constructor(private readonly load: RudofLoader) {}
 
@@ -163,8 +172,28 @@ export class RudofEngine {
   async loadShapes(text: string, mediaType = TURTLE): Promise<ShapeModel> {
     await this.ready();
     const json = this.s.loadShapes(text, mediaType);
+    this.authored = await this.messagesOf(text, mediaType);
     annotateSeverities(json);
     return shapeModelFromJson(json);
+  }
+
+  /**
+   * Every `sh:message` the shapes document writes, read as data in a session of
+   * its own (this one's data graph is the record's). A result that carries one of
+   * them speaks in the shape's words; the rest are the engine's default wording.
+   */
+  private async messagesOf(text: string, mediaType: string): Promise<Set<string>> {
+    const scratch = (await this.load()).newSession();
+    try {
+      scratch.loadData(text, mediaType);
+      const out = new Set<string>();
+      for (const q of scratch.quads(null, { termType: "NamedNode", value: SH_MESSAGE }, null)) {
+        if (q.object.termType === "Literal") out.add(said({ value: q.object.value, language: q.object.language ?? "" }));
+      }
+      return out;
+    } finally {
+      scratch.free?.();
+    }
   }
 
   /** Add default validation messages in another language, or reword a built-in
@@ -253,14 +282,14 @@ export class RudofEngine {
   /** Validate the current graph (optionally scoped to one shape) against the shapes. */
   async validate(shapeId?: string): Promise<ValidationResult[]> {
     await this.ready();
-    return this.s.validate(shapeId ?? null).results.map(toValidationResult);
+    return this.s.validate(shapeId ?? null).results.map((r) => toValidationResult(r, this.authored));
   }
 
   /** Validate a single focus node against one shape — scoped revalidation for a
    *  form bound to one focus (cheaper than re-validating the whole graph). */
   async validateFocus(focus: Term, shapeId: string): Promise<ValidationResult[]> {
     await this.ready();
-    return this.s.validateFocus(toTermValue(focus), shapeId).results.map(toValidationResult);
+    return this.s.validateFocus(toTermValue(focus), shapeId).results.map((r) => toValidationResult(r, this.authored));
   }
 
   /**
@@ -284,7 +313,7 @@ export class RudofEngine {
     const out: ValidationResult[] = [];
     const branched = new Set<string>();
     for (const { focus, shapeId, branchOf } of nodes) {
-      const results = this.s.validateFocus(toTermValue(focus), shapeId).results.map(toValidationResult);
+      const results = this.s.validateFocus(toTermValue(focus), shapeId).results.map((r) => toValidationResult(r, this.authored));
       if (branchOf && results.length > 0) branched.add(focus.value);
       out.push(...results);
     }

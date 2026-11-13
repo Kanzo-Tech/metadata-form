@@ -87,8 +87,25 @@ const SEGMENT_MAX_OPTIONS = 4;
  * keystroke. Discrete inputs (date, select, boolean) commit immediately. An
  * emptied field is no value at all, not the empty string.
  */
-const useText = (value: string | null, onChange: (v: string | null) => void) =>
-  useDebouncedCommit(value, (v) => onChange(v || null));
+const useText = (value: string | null, onChange: (v: string | null) => void): Text => {
+  const text = useDebouncedCommit(value, (v) => onChange(v || null));
+  // Once left, the box shows what the graph holds, not what was typed: a value the
+  // binding tidied (an address pasted with spaces around it) then reads as it was
+  // saved. The draft only follows a value that changes, and a tidied one may not.
+  const [left, setLeft] = useState(false);
+  return {
+    ...text,
+    draft: left ? value : text.draft,
+    change: (v: string | null) => {
+      setLeft(false);
+      text.change(v);
+    },
+    flush: () => {
+      text.flush();
+      setLeft(true);
+    },
+  };
+};
 
 /** What {@link useText} hands a control. */
 type Text = DebouncedCommit<string | null>;
@@ -208,7 +225,10 @@ function useLanguage(p: WidgetProps) {
 function LangSlot(p: WidgetProps & { text: string; lang: ReturnType<typeof useLanguage> }) {
   const { label, ...translations } = useStrings().languagePicker;
   return (
+      // Keyed by the language so a pick shows at once: the picker ticks the item but
+    // left its box empty until the same language was picked a second time.
     <LanguagePicker
+      key={p.lang.language}
       inline
       aria-label={label}
       value={p.lang.language}
@@ -236,7 +256,7 @@ const LangField: Widget = (p) => {
         }
         text={text}
       />
-      <InputGroupAddon align="inline-end">
+      <InputGroupAddon align="inline-end" className="border-s ps-2">
         <LangSlot {...p} lang={lang} text={text.draft ?? ""} />
       </InputGroupAddon>
     </InputGroup>
@@ -337,7 +357,7 @@ const Area: Widget = (p) => {
 const TagsMulti: MultiWidget = (p) => {
   const { chrome } = useStrings();
   const control = (
-    <TagsInput value={p.values} max={p.maxCount} onValueChange={(d) => p.onChange(d.value)}>
+    <TagsInput addOnPaste value={p.values} max={p.maxCount} onValueChange={(d) => p.onChange(d.value)}>
       <TagsInputControl>
         <TagsInputContext>
           {(api) =>

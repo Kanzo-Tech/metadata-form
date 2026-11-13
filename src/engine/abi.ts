@@ -83,6 +83,8 @@ export interface RudofSession {
     object: TermValue | null,
   ): RudofQuad[];
   serialize(mediaType: string): string;
+  /** Release the session's wasm memory (wasm-bindgen's `free`), when it has one. */
+  free?(): void;
   /** Serialize only the subgraph reachable from `focus` (the focus-scoped form
    *  output), vs whole-graph {@link serialize}. */
   serializeFocus(focus: TermValue, mediaType: string): string;

@@ -242,7 +242,7 @@ function Variants({
     available[0];
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-4" data-form-top>
       {(config.variants.length > 1 || showLanguages) && (
         <div className="flex flex-wrap items-end justify-between gap-4">
           {config.variants.length > 1 ? (
